@@ -1,0 +1,4 @@
+syntax:glob
+*.[568]
+*.a
+go-app-builder/go-app-builder
