@@ -306,71 +306,63 @@ type Action struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Action) Reset() {
-	*this = Action{}
-}
+func (this *Action) Reset()         { *this = Action{} }
+func (this *Action) String() string { return proto.CompactTextString(this) }
 
 type StringProto struct {
 	Value            *string "PB(bytes,1,req,name=value)"
 	XXX_unrecognized []byte
 }
 
-func (this *StringProto) Reset() {
-	*this = StringProto{}
-}
+func (this *StringProto) Reset()         { *this = StringProto{} }
+func (this *StringProto) String() string { return proto.CompactTextString(this) }
 
 type Integer32Proto struct {
 	Value            *int32 "PB(varint,1,req,name=value)"
 	XXX_unrecognized []byte
 }
 
-func (this *Integer32Proto) Reset() {
-	*this = Integer32Proto{}
-}
+func (this *Integer32Proto) Reset()         { *this = Integer32Proto{} }
+func (this *Integer32Proto) String() string { return proto.CompactTextString(this) }
 
 type Integer64Proto struct {
 	Value            *int64 "PB(varint,1,req,name=value)"
 	XXX_unrecognized []byte
 }
 
-func (this *Integer64Proto) Reset() {
-	*this = Integer64Proto{}
-}
+func (this *Integer64Proto) Reset()         { *this = Integer64Proto{} }
+func (this *Integer64Proto) String() string { return proto.CompactTextString(this) }
 
 type BoolProto struct {
 	Value            *bool "PB(varint,1,req,name=value)"
 	XXX_unrecognized []byte
 }
 
-func (this *BoolProto) Reset() {
-	*this = BoolProto{}
-}
+func (this *BoolProto) Reset()         { *this = BoolProto{} }
+func (this *BoolProto) String() string { return proto.CompactTextString(this) }
 
 type DoubleProto struct {
 	Value            *float64 "PB(fixed64,1,req,name=value)"
 	XXX_unrecognized []byte
 }
 
-func (this *DoubleProto) Reset() {
-	*this = DoubleProto{}
-}
+func (this *DoubleProto) Reset()         { *this = DoubleProto{} }
+func (this *DoubleProto) String() string { return proto.CompactTextString(this) }
 
 type BytesProto struct {
 	Value            []byte "PB(bytes,1,req,name=value)"
 	XXX_unrecognized []byte
 }
 
-func (this *BytesProto) Reset() {
-	*this = BytesProto{}
-}
+func (this *BytesProto) Reset()         { *this = BytesProto{} }
+func (this *BytesProto) String() string { return proto.CompactTextString(this) }
 
 type VoidProto struct {
 	XXX_unrecognized []byte
 }
 
-func (this *VoidProto) Reset() {
-	*this = VoidProto{}
-}
+func (this *VoidProto) Reset()         { *this = VoidProto{} }
+func (this *VoidProto) String() string { return proto.CompactTextString(this) }
 
 type PropertyValue struct {
 	Int64Value       *int64                        "PB(varint,1,opt,name=int64Value)"
@@ -383,9 +375,8 @@ type PropertyValue struct {
 	XXX_unrecognized []byte
 }
 
-func (this *PropertyValue) Reset() {
-	*this = PropertyValue{}
-}
+func (this *PropertyValue) Reset()         { *this = PropertyValue{} }
+func (this *PropertyValue) String() string { return proto.CompactTextString(this) }
 
 type PropertyValue_PointValue struct {
 	X                *float64 "PB(fixed64,6,req,name=x)"
@@ -393,9 +384,8 @@ type PropertyValue_PointValue struct {
 	XXX_unrecognized []byte
 }
 
-func (this *PropertyValue_PointValue) Reset() {
-	*this = PropertyValue_PointValue{}
-}
+func (this *PropertyValue_PointValue) Reset()         { *this = PropertyValue_PointValue{} }
+func (this *PropertyValue_PointValue) String() string { return proto.CompactTextString(this) }
 
 type PropertyValue_UserValue struct {
 	Email             *string "PB(bytes,9,req,name=email)"
@@ -408,9 +398,8 @@ type PropertyValue_UserValue struct {
 	XXX_unrecognized  []byte
 }
 
-func (this *PropertyValue_UserValue) Reset() {
-	*this = PropertyValue_UserValue{}
-}
+func (this *PropertyValue_UserValue) Reset()         { *this = PropertyValue_UserValue{} }
+func (this *PropertyValue_UserValue) String() string { return proto.CompactTextString(this) }
 
 type PropertyValue_ReferenceValue struct {
 	App              *string                                     "PB(bytes,13,req,name=app)"
@@ -419,9 +408,8 @@ type PropertyValue_ReferenceValue struct {
 	XXX_unrecognized []byte
 }
 
-func (this *PropertyValue_ReferenceValue) Reset() {
-	*this = PropertyValue_ReferenceValue{}
-}
+func (this *PropertyValue_ReferenceValue) Reset()         { *this = PropertyValue_ReferenceValue{} }
+func (this *PropertyValue_ReferenceValue) String() string { return proto.CompactTextString(this) }
 
 type PropertyValue_ReferenceValue_PathElement struct {
 	Type             *string "PB(bytes,15,req,name=type)"
@@ -433,6 +421,9 @@ type PropertyValue_ReferenceValue_PathElement struct {
 func (this *PropertyValue_ReferenceValue_PathElement) Reset() {
 	*this = PropertyValue_ReferenceValue_PathElement{}
 }
+func (this *PropertyValue_ReferenceValue_PathElement) String() string {
+	return proto.CompactTextString(this)
+}
 
 type Property struct {
 	Meaning          *Property_Meaning "PB(varint,1,opt,name=meaning,enum=datastore.Property_Meaning)"
@@ -443,18 +434,16 @@ type Property struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Property) Reset() {
-	*this = Property{}
-}
+func (this *Property) Reset()         { *this = Property{} }
+func (this *Property) String() string { return proto.CompactTextString(this) }
 
 type Path struct {
-	Element          []*Path_Element "PB(group,1,rep,name=Element)"
+	Element          []*Path_Element "PB(group,1,rep)"
 	XXX_unrecognized []byte
 }
 
-func (this *Path) Reset() {
-	*this = Path{}
-}
+func (this *Path) Reset()         { *this = Path{} }
+func (this *Path) String() string { return proto.CompactTextString(this) }
 
 type Path_Element struct {
 	Type             *string "PB(bytes,2,req,name=type)"
@@ -463,9 +452,8 @@ type Path_Element struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Path_Element) Reset() {
-	*this = Path_Element{}
-}
+func (this *Path_Element) Reset()         { *this = Path_Element{} }
+func (this *Path_Element) String() string { return proto.CompactTextString(this) }
 
 type Reference struct {
 	App              *string "PB(bytes,13,req,name=app)"
@@ -474,9 +462,8 @@ type Reference struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Reference) Reset() {
-	*this = Reference{}
-}
+func (this *Reference) Reset()         { *this = Reference{} }
+func (this *Reference) String() string { return proto.CompactTextString(this) }
 
 type User struct {
 	Email             *string "PB(bytes,1,req,name=email)"
@@ -489,9 +476,8 @@ type User struct {
 	XXX_unrecognized  []byte
 }
 
-func (this *User) Reset() {
-	*this = User{}
-}
+func (this *User) Reset()         { *this = User{} }
+func (this *User) String() string { return proto.CompactTextString(this) }
 
 type EntityProto struct {
 	Key              *Reference        "PB(bytes,13,req,name=key)"
@@ -504,9 +490,8 @@ type EntityProto struct {
 	XXX_unrecognized []byte
 }
 
-func (this *EntityProto) Reset() {
-	*this = EntityProto{}
-}
+func (this *EntityProto) Reset()         { *this = EntityProto{} }
+func (this *EntityProto) String() string { return proto.CompactTextString(this) }
 
 type CompositeProperty struct {
 	IndexId          *int64   "PB(varint,1,req,name=index_id)"
@@ -514,20 +499,18 @@ type CompositeProperty struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CompositeProperty) Reset() {
-	*this = CompositeProperty{}
-}
+func (this *CompositeProperty) Reset()         { *this = CompositeProperty{} }
+func (this *CompositeProperty) String() string { return proto.CompactTextString(this) }
 
 type Index struct {
 	EntityType       *string           "PB(bytes,1,req,name=entity_type)"
 	Ancestor         *bool             "PB(varint,5,req,name=ancestor)"
-	Property         []*Index_Property "PB(group,2,rep,name=Property)"
+	Property         []*Index_Property "PB(group,2,rep)"
 	XXX_unrecognized []byte
 }
 
-func (this *Index) Reset() {
-	*this = Index{}
-}
+func (this *Index) Reset()         { *this = Index{} }
+func (this *Index) String() string { return proto.CompactTextString(this) }
 
 type Index_Property struct {
 	Name             *string                   "PB(bytes,3,req,name=name)"
@@ -535,9 +518,8 @@ type Index_Property struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Index_Property) Reset() {
-	*this = Index_Property{}
-}
+func (this *Index_Property) Reset()         { *this = Index_Property{} }
+func (this *Index_Property) String() string { return proto.CompactTextString(this) }
 
 const Default_Index_Property_Direction Index_Property_Direction = Index_Property_ASCENDING
 
@@ -549,9 +531,8 @@ type CompositeIndex struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CompositeIndex) Reset() {
-	*this = CompositeIndex{}
-}
+func (this *CompositeIndex) Reset()         { *this = CompositeIndex{} }
+func (this *CompositeIndex) String() string { return proto.CompactTextString(this) }
 
 type Transaction struct {
 	Handle           *uint64 "PB(fixed64,1,req,name=handle)"
@@ -560,9 +541,8 @@ type Transaction struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Transaction) Reset() {
-	*this = Transaction{}
-}
+func (this *Transaction) Reset()         { *this = Transaction{} }
+func (this *Transaction) String() string { return proto.CompactTextString(this) }
 
 const Default_Transaction_MarkChanges bool = false
 
@@ -571,9 +551,9 @@ type Query struct {
 	NameSpace          *string           "PB(bytes,29,opt,name=name_space)"
 	Kind               *string           "PB(bytes,3,opt,name=kind)"
 	Ancestor           *Reference        "PB(bytes,17,opt,name=ancestor)"
-	Filter             []*Query_Filter   "PB(group,4,rep,name=Filter)"
+	Filter             []*Query_Filter   "PB(group,4,rep)"
 	SearchQuery        *string           "PB(bytes,8,opt,name=search_query)"
-	Order              []*Query_Order    "PB(group,9,rep,name=Order)"
+	Order              []*Query_Order    "PB(group,9,rep)"
 	Hint               *Query_Hint       "PB(varint,18,opt,name=hint,enum=datastore.Query_Hint)"
 	Count              *int32            "PB(varint,23,opt,name=count)"
 	Offset             *int32            "PB(varint,12,opt,name=offset,def=0)"
@@ -591,9 +571,8 @@ type Query struct {
 	XXX_unrecognized   []byte
 }
 
-func (this *Query) Reset() {
-	*this = Query{}
-}
+func (this *Query) Reset()         { *this = Query{} }
+func (this *Query) String() string { return proto.CompactTextString(this) }
 
 const Default_Query_Offset int32 = 0
 const Default_Query_RequirePerfectPlan bool = false
@@ -606,9 +585,8 @@ type Query_Filter struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Query_Filter) Reset() {
-	*this = Query_Filter{}
-}
+func (this *Query_Filter) Reset()         { *this = Query_Filter{} }
+func (this *Query_Filter) String() string { return proto.CompactTextString(this) }
 
 type Query_Order struct {
 	Property         *string                "PB(bytes,10,req,name=property)"
@@ -616,9 +594,8 @@ type Query_Order struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Query_Order) Reset() {
-	*this = Query_Order{}
-}
+func (this *Query_Order) Reset()         { *this = Query_Order{} }
+func (this *Query_Order) String() string { return proto.CompactTextString(this) }
 
 const Default_Query_Order_Direction Query_Order_Direction = Query_Order_ASCENDING
 
@@ -633,9 +610,8 @@ type CompiledQuery struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CompiledQuery) Reset() {
-	*this = CompiledQuery{}
-}
+func (this *CompiledQuery) Reset()         { *this = CompiledQuery{} }
+func (this *CompiledQuery) String() string { return proto.CompactTextString(this) }
 
 const Default_CompiledQuery_Offset int32 = 0
 
@@ -651,9 +627,8 @@ type CompiledQuery_PrimaryScan struct {
 	XXX_unrecognized           []byte
 }
 
-func (this *CompiledQuery_PrimaryScan) Reset() {
-	*this = CompiledQuery_PrimaryScan{}
-}
+func (this *CompiledQuery_PrimaryScan) Reset()         { *this = CompiledQuery_PrimaryScan{} }
+func (this *CompiledQuery_PrimaryScan) String() string { return proto.CompactTextString(this) }
 
 type CompiledQuery_MergeJoinScan struct {
 	IndexName        *string  "PB(bytes,8,req,name=index_name)"
@@ -662,9 +637,8 @@ type CompiledQuery_MergeJoinScan struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CompiledQuery_MergeJoinScan) Reset() {
-	*this = CompiledQuery_MergeJoinScan{}
-}
+func (this *CompiledQuery_MergeJoinScan) Reset()         { *this = CompiledQuery_MergeJoinScan{} }
+func (this *CompiledQuery_MergeJoinScan) String() string { return proto.CompactTextString(this) }
 
 const Default_CompiledQuery_MergeJoinScan_ValuePrefix bool = false
 
@@ -675,21 +649,19 @@ type CompiledQuery_EntityFilter struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CompiledQuery_EntityFilter) Reset() {
-	*this = CompiledQuery_EntityFilter{}
-}
+func (this *CompiledQuery_EntityFilter) Reset()         { *this = CompiledQuery_EntityFilter{} }
+func (this *CompiledQuery_EntityFilter) String() string { return proto.CompactTextString(this) }
 
 const Default_CompiledQuery_EntityFilter_Distinct bool = false
 
 type CompiledCursor struct {
 	MultiqueryIndex  *int32                     "PB(varint,1,opt,name=multiquery_index)"
-	Position         []*CompiledCursor_Position "PB(group,2,rep,name=Position)"
+	Position         []*CompiledCursor_Position "PB(group,2,rep)"
 	XXX_unrecognized []byte
 }
 
-func (this *CompiledCursor) Reset() {
-	*this = CompiledCursor{}
-}
+func (this *CompiledCursor) Reset()         { *this = CompiledCursor{} }
+func (this *CompiledCursor) String() string { return proto.CompactTextString(this) }
 
 type CompiledCursor_Position struct {
 	StartKey         *string                               "PB(bytes,27,opt,name=start_key)"
@@ -699,9 +671,8 @@ type CompiledCursor_Position struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CompiledCursor_Position) Reset() {
-	*this = CompiledCursor_Position{}
-}
+func (this *CompiledCursor_Position) Reset()         { *this = CompiledCursor_Position{} }
+func (this *CompiledCursor_Position) String() string { return proto.CompactTextString(this) }
 
 const Default_CompiledCursor_Position_StartInclusive bool = true
 
@@ -711,9 +682,8 @@ type CompiledCursor_Position_IndexValue struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CompiledCursor_Position_IndexValue) Reset() {
-	*this = CompiledCursor_Position_IndexValue{}
-}
+func (this *CompiledCursor_Position_IndexValue) Reset()         { *this = CompiledCursor_Position_IndexValue{} }
+func (this *CompiledCursor_Position_IndexValue) String() string { return proto.CompactTextString(this) }
 
 type RunCompiledQueryRequest struct {
 	App              *string        "PB(bytes,5,req,name=app)"
@@ -725,9 +695,8 @@ type RunCompiledQueryRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *RunCompiledQueryRequest) Reset() {
-	*this = RunCompiledQueryRequest{}
-}
+func (this *RunCompiledQueryRequest) Reset()         { *this = RunCompiledQueryRequest{} }
+func (this *RunCompiledQueryRequest) String() string { return proto.CompactTextString(this) }
 
 type Cursor struct {
 	Cursor           *uint64 "PB(fixed64,1,req,name=cursor)"
@@ -735,29 +704,36 @@ type Cursor struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Cursor) Reset() {
-	*this = Cursor{}
-}
+func (this *Cursor) Reset()         { *this = Cursor{} }
+func (this *Cursor) String() string { return proto.CompactTextString(this) }
 
 type Error struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Error) Reset() {
-	*this = Error{}
-}
+func (this *Error) Reset()         { *this = Error{} }
+func (this *Error) String() string { return proto.CompactTextString(this) }
 
 type Cost struct {
-	IndexWrites      *int32 "PB(varint,1,opt,name=index_writes)"
-	IndexWriteBytes  *int32 "PB(varint,2,opt,name=index_write_bytes)"
-	EntityWrites     *int32 "PB(varint,3,opt,name=entity_writes)"
-	EntityWriteBytes *int32 "PB(varint,4,opt,name=entity_write_bytes)"
+	IndexWrites      *int32           "PB(varint,1,opt,name=index_writes)"
+	IndexWriteBytes  *int32           "PB(varint,2,opt,name=index_write_bytes)"
+	EntityWrites     *int32           "PB(varint,3,opt,name=entity_writes)"
+	EntityWriteBytes *int32           "PB(varint,4,opt,name=entity_write_bytes)"
+	Commitcost       *Cost_CommitCost "PB(group,5,opt,name=CommitCost)"
 	XXX_unrecognized []byte
 }
 
-func (this *Cost) Reset() {
-	*this = Cost{}
+func (this *Cost) Reset()         { *this = Cost{} }
+func (this *Cost) String() string { return proto.CompactTextString(this) }
+
+type Cost_CommitCost struct {
+	RequestedEntityPuts    *int32 "PB(varint,6,opt,name=requested_entity_puts)"
+	RequestedEntityDeletes *int32 "PB(varint,7,opt,name=requested_entity_deletes)"
+	XXX_unrecognized       []byte
 }
+
+func (this *Cost_CommitCost) Reset()         { *this = Cost_CommitCost{} }
+func (this *Cost_CommitCost) String() string { return proto.CompactTextString(this) }
 
 type GetRequest struct {
 	Key              []*Reference "PB(bytes,1,rep,name=key)"
@@ -767,27 +743,24 @@ type GetRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *GetRequest) Reset() {
-	*this = GetRequest{}
-}
+func (this *GetRequest) Reset()         { *this = GetRequest{} }
+func (this *GetRequest) String() string { return proto.CompactTextString(this) }
 
 type GetResponse struct {
-	Entity           []*GetResponse_Entity "PB(group,1,rep,name=Entity)"
+	Entity           []*GetResponse_Entity "PB(group,1,rep)"
 	XXX_unrecognized []byte
 }
 
-func (this *GetResponse) Reset() {
-	*this = GetResponse{}
-}
+func (this *GetResponse) Reset()         { *this = GetResponse{} }
+func (this *GetResponse) String() string { return proto.CompactTextString(this) }
 
 type GetResponse_Entity struct {
 	Entity           *EntityProto "PB(bytes,2,opt,name=entity)"
 	XXX_unrecognized []byte
 }
 
-func (this *GetResponse_Entity) Reset() {
-	*this = GetResponse_Entity{}
-}
+func (this *GetResponse_Entity) Reset()         { *this = GetResponse_Entity{} }
+func (this *GetResponse_Entity) String() string { return proto.CompactTextString(this) }
 
 type PutRequest struct {
 	Entity           []*EntityProto    "PB(bytes,1,rep,name=entity)"
@@ -799,9 +772,8 @@ type PutRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *PutRequest) Reset() {
-	*this = PutRequest{}
-}
+func (this *PutRequest) Reset()         { *this = PutRequest{} }
+func (this *PutRequest) String() string { return proto.CompactTextString(this) }
 
 const Default_PutRequest_Trusted bool = false
 const Default_PutRequest_Force bool = false
@@ -813,9 +785,8 @@ type PutResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *PutResponse) Reset() {
-	*this = PutResponse{}
-}
+func (this *PutResponse) Reset()         { *this = PutResponse{} }
+func (this *PutResponse) String() string { return proto.CompactTextString(this) }
 
 type TouchRequest struct {
 	Key              []*Reference      "PB(bytes,1,rep,name=key)"
@@ -823,18 +794,16 @@ type TouchRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TouchRequest) Reset() {
-	*this = TouchRequest{}
-}
+func (this *TouchRequest) Reset()         { *this = TouchRequest{} }
+func (this *TouchRequest) String() string { return proto.CompactTextString(this) }
 
 type TouchResponse struct {
 	Cost             *Cost "PB(bytes,1,opt,name=cost)"
 	XXX_unrecognized []byte
 }
 
-func (this *TouchResponse) Reset() {
-	*this = TouchResponse{}
-}
+func (this *TouchResponse) Reset()         { *this = TouchResponse{} }
+func (this *TouchResponse) String() string { return proto.CompactTextString(this) }
 
 type DeleteRequest struct {
 	Key              []*Reference "PB(bytes,6,rep,name=key)"
@@ -845,9 +814,8 @@ type DeleteRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *DeleteRequest) Reset() {
-	*this = DeleteRequest{}
-}
+func (this *DeleteRequest) Reset()         { *this = DeleteRequest{} }
+func (this *DeleteRequest) String() string { return proto.CompactTextString(this) }
 
 const Default_DeleteRequest_Trusted bool = false
 const Default_DeleteRequest_Force bool = false
@@ -858,9 +826,8 @@ type DeleteResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *DeleteResponse) Reset() {
-	*this = DeleteResponse{}
-}
+func (this *DeleteResponse) Reset()         { *this = DeleteResponse{} }
+func (this *DeleteResponse) String() string { return proto.CompactTextString(this) }
 
 type NextRequest struct {
 	Cursor           *Cursor "PB(bytes,1,req,name=cursor)"
@@ -870,9 +837,8 @@ type NextRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *NextRequest) Reset() {
-	*this = NextRequest{}
-}
+func (this *NextRequest) Reset()         { *this = NextRequest{} }
+func (this *NextRequest) String() string { return proto.CompactTextString(this) }
 
 const Default_NextRequest_Offset int32 = 0
 const Default_NextRequest_Compile bool = false
@@ -888,59 +854,8 @@ type QueryResult struct {
 	XXX_unrecognized []byte
 }
 
-func (this *QueryResult) Reset() {
-	*this = QueryResult{}
-}
-
-type GetSchemaRequest struct {
-	App              *string "PB(bytes,1,req,name=app)"
-	NameSpace        *string "PB(bytes,5,opt,name=name_space)"
-	StartKind        *string "PB(bytes,2,opt,name=start_kind)"
-	EndKind          *string "PB(bytes,3,opt,name=end_kind)"
-	Properties       *bool   "PB(varint,4,opt,name=properties,def=1)"
-	XXX_unrecognized []byte
-}
-
-func (this *GetSchemaRequest) Reset() {
-	*this = GetSchemaRequest{}
-}
-
-const Default_GetSchemaRequest_Properties bool = true
-
-type Schema struct {
-	Kind             []*EntityProto "PB(bytes,1,rep,name=kind)"
-	MoreResults      *bool          "PB(varint,2,opt,name=more_results,def=0)"
-	XXX_unrecognized []byte
-}
-
-func (this *Schema) Reset() {
-	*this = Schema{}
-}
-
-const Default_Schema_MoreResults bool = false
-
-type GetNamespacesRequest struct {
-	App              *string "PB(bytes,1,req,name=app)"
-	StartNamespace   *string "PB(bytes,2,opt,name=start_namespace)"
-	EndNamespace     *string "PB(bytes,3,opt,name=end_namespace)"
-	XXX_unrecognized []byte
-}
-
-func (this *GetNamespacesRequest) Reset() {
-	*this = GetNamespacesRequest{}
-}
-
-type GetNamespacesResponse struct {
-	Namespace        []string "PB(bytes,1,rep,name=namespace)"
-	MoreResults      *bool    "PB(varint,2,opt,name=more_results,def=0)"
-	XXX_unrecognized []byte
-}
-
-func (this *GetNamespacesResponse) Reset() {
-	*this = GetNamespacesResponse{}
-}
-
-const Default_GetNamespacesResponse_MoreResults bool = false
+func (this *QueryResult) Reset()         { *this = QueryResult{} }
+func (this *QueryResult) String() string { return proto.CompactTextString(this) }
 
 type AllocateIdsRequest struct {
 	ModelKey         *Reference "PB(bytes,1,req,name=model_key)"
@@ -949,9 +864,8 @@ type AllocateIdsRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *AllocateIdsRequest) Reset() {
-	*this = AllocateIdsRequest{}
-}
+func (this *AllocateIdsRequest) Reset()         { *this = AllocateIdsRequest{} }
+func (this *AllocateIdsRequest) String() string { return proto.CompactTextString(this) }
 
 type AllocateIdsResponse struct {
 	Start            *int64 "PB(varint,1,req,name=start)"
@@ -959,18 +873,16 @@ type AllocateIdsResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *AllocateIdsResponse) Reset() {
-	*this = AllocateIdsResponse{}
-}
+func (this *AllocateIdsResponse) Reset()         { *this = AllocateIdsResponse{} }
+func (this *AllocateIdsResponse) String() string { return proto.CompactTextString(this) }
 
 type CompositeIndices struct {
 	Index            []*CompositeIndex "PB(bytes,1,rep,name=index)"
 	XXX_unrecognized []byte
 }
 
-func (this *CompositeIndices) Reset() {
-	*this = CompositeIndices{}
-}
+func (this *CompositeIndices) Reset()         { *this = CompositeIndices{} }
+func (this *CompositeIndices) String() string { return proto.CompactTextString(this) }
 
 type AddActionsRequest struct {
 	Transaction      *Transaction "PB(bytes,1,req,name=transaction)"
@@ -978,35 +890,31 @@ type AddActionsRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *AddActionsRequest) Reset() {
-	*this = AddActionsRequest{}
-}
+func (this *AddActionsRequest) Reset()         { *this = AddActionsRequest{} }
+func (this *AddActionsRequest) String() string { return proto.CompactTextString(this) }
 
 type AddActionsResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *AddActionsResponse) Reset() {
-	*this = AddActionsResponse{}
-}
+func (this *AddActionsResponse) Reset()         { *this = AddActionsResponse{} }
+func (this *AddActionsResponse) String() string { return proto.CompactTextString(this) }
 
 type BeginTransactionRequest struct {
 	App              *string "PB(bytes,1,req,name=app)"
 	XXX_unrecognized []byte
 }
 
-func (this *BeginTransactionRequest) Reset() {
-	*this = BeginTransactionRequest{}
-}
+func (this *BeginTransactionRequest) Reset()         { *this = BeginTransactionRequest{} }
+func (this *BeginTransactionRequest) String() string { return proto.CompactTextString(this) }
 
 type CommitResponse struct {
 	Cost             *Cost "PB(bytes,1,opt,name=cost)"
 	XXX_unrecognized []byte
 }
 
-func (this *CommitResponse) Reset() {
-	*this = CommitResponse{}
-}
+func (this *CommitResponse) Reset()         { *this = CommitResponse{} }
+func (this *CommitResponse) String() string { return proto.CompactTextString(this) }
 
 func init() {
 	proto.RegisterEnum("datastore.Property_Meaning", Property_Meaning_name, Property_Meaning_value)

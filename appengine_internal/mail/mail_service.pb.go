@@ -22,6 +22,7 @@ const (
 	MailServiceError_BAD_REQUEST             = 2
 	MailServiceError_UNAUTHORIZED_SENDER     = 3
 	MailServiceError_INVALID_ATTACHMENT_TYPE = 4
+	MailServiceError_INVALID_HEADER_NAME     = 5
 )
 
 var MailServiceError_ErrorCode_name = map[int32]string{
@@ -30,6 +31,7 @@ var MailServiceError_ErrorCode_name = map[int32]string{
 	2: "BAD_REQUEST",
 	3: "UNAUTHORIZED_SENDER",
 	4: "INVALID_ATTACHMENT_TYPE",
+	5: "INVALID_HEADER_NAME",
 }
 var MailServiceError_ErrorCode_value = map[string]int32{
 	"OK":                      0,
@@ -37,6 +39,7 @@ var MailServiceError_ErrorCode_value = map[string]int32{
 	"BAD_REQUEST":             2,
 	"UNAUTHORIZED_SENDER":     3,
 	"INVALID_ATTACHMENT_TYPE": 4,
+	"INVALID_HEADER_NAME":     5,
 }
 
 func NewMailServiceError_ErrorCode(x int32) *MailServiceError_ErrorCode {
@@ -51,9 +54,8 @@ type MailServiceError struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MailServiceError) Reset() {
-	*this = MailServiceError{}
-}
+func (this *MailServiceError) Reset()         { *this = MailServiceError{} }
+func (this *MailServiceError) String() string { return proto.CompactTextString(this) }
 
 type MailAttachment struct {
 	FileName         *string "PB(bytes,1,req)"
@@ -61,9 +63,17 @@ type MailAttachment struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MailAttachment) Reset() {
-	*this = MailAttachment{}
+func (this *MailAttachment) Reset()         { *this = MailAttachment{} }
+func (this *MailAttachment) String() string { return proto.CompactTextString(this) }
+
+type MailHeader struct {
+	Name             *string "PB(bytes,1,req,name=name)"
+	Value            *string "PB(bytes,2,req,name=value)"
+	XXX_unrecognized []byte
 }
+
+func (this *MailHeader) Reset()         { *this = MailHeader{} }
+func (this *MailHeader) String() string { return proto.CompactTextString(this) }
 
 type MailMessage struct {
 	Sender           *string           "PB(bytes,1,req)"
@@ -75,12 +85,12 @@ type MailMessage struct {
 	TextBody         *string           "PB(bytes,7,opt)"
 	HtmlBody         *string           "PB(bytes,8,opt)"
 	Attachment       []*MailAttachment "PB(bytes,9,rep)"
+	Header           []*MailHeader     "PB(bytes,10,rep)"
 	XXX_unrecognized []byte
 }
 
-func (this *MailMessage) Reset() {
-	*this = MailMessage{}
-}
+func (this *MailMessage) Reset()         { *this = MailMessage{} }
+func (this *MailMessage) String() string { return proto.CompactTextString(this) }
 
 func init() {
 	proto.RegisterEnum("appengine.MailServiceError_ErrorCode", MailServiceError_ErrorCode_name, MailServiceError_ErrorCode_value)

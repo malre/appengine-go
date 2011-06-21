@@ -57,36 +57,32 @@ type BlobstoreServiceError struct {
 	XXX_unrecognized []byte
 }
 
-func (this *BlobstoreServiceError) Reset() {
-	*this = BlobstoreServiceError{}
-}
+func (this *BlobstoreServiceError) Reset()         { *this = BlobstoreServiceError{} }
+func (this *BlobstoreServiceError) String() string { return proto.CompactTextString(this) }
 
 type CreateUploadURLRequest struct {
 	SuccessPath      *string "PB(bytes,1,req,name=success_path)"
 	XXX_unrecognized []byte
 }
 
-func (this *CreateUploadURLRequest) Reset() {
-	*this = CreateUploadURLRequest{}
-}
+func (this *CreateUploadURLRequest) Reset()         { *this = CreateUploadURLRequest{} }
+func (this *CreateUploadURLRequest) String() string { return proto.CompactTextString(this) }
 
 type CreateUploadURLResponse struct {
 	Url              *string "PB(bytes,1,req,name=url)"
 	XXX_unrecognized []byte
 }
 
-func (this *CreateUploadURLResponse) Reset() {
-	*this = CreateUploadURLResponse{}
-}
+func (this *CreateUploadURLResponse) Reset()         { *this = CreateUploadURLResponse{} }
+func (this *CreateUploadURLResponse) String() string { return proto.CompactTextString(this) }
 
 type DeleteBlobRequest struct {
 	BlobKey          []string "PB(bytes,1,rep,name=blob_key)"
 	XXX_unrecognized []byte
 }
 
-func (this *DeleteBlobRequest) Reset() {
-	*this = DeleteBlobRequest{}
-}
+func (this *DeleteBlobRequest) Reset()         { *this = DeleteBlobRequest{} }
+func (this *DeleteBlobRequest) String() string { return proto.CompactTextString(this) }
 
 type FetchDataRequest struct {
 	BlobKey          *string "PB(bytes,1,req,name=blob_key)"
@@ -95,36 +91,32 @@ type FetchDataRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *FetchDataRequest) Reset() {
-	*this = FetchDataRequest{}
-}
+func (this *FetchDataRequest) Reset()         { *this = FetchDataRequest{} }
+func (this *FetchDataRequest) String() string { return proto.CompactTextString(this) }
 
 type FetchDataResponse struct {
 	Data             []byte "PB(bytes,1000,req,name=data)"
 	XXX_unrecognized []byte
 }
 
-func (this *FetchDataResponse) Reset() {
-	*this = FetchDataResponse{}
-}
+func (this *FetchDataResponse) Reset()         { *this = FetchDataResponse{} }
+func (this *FetchDataResponse) String() string { return proto.CompactTextString(this) }
 
 type DecodeBlobKeyRequest struct {
 	BlobKey          []string "PB(bytes,1,rep,name=blob_key)"
 	XXX_unrecognized []byte
 }
 
-func (this *DecodeBlobKeyRequest) Reset() {
-	*this = DecodeBlobKeyRequest{}
-}
+func (this *DecodeBlobKeyRequest) Reset()         { *this = DecodeBlobKeyRequest{} }
+func (this *DecodeBlobKeyRequest) String() string { return proto.CompactTextString(this) }
 
 type DecodeBlobKeyResponse struct {
 	Decoded          []string "PB(bytes,1,rep,name=decoded)"
 	XXX_unrecognized []byte
 }
 
-func (this *DecodeBlobKeyResponse) Reset() {
-	*this = DecodeBlobKeyResponse{}
-}
+func (this *DecodeBlobKeyResponse) Reset()         { *this = DecodeBlobKeyResponse{} }
+func (this *DecodeBlobKeyResponse) String() string { return proto.CompactTextString(this) }
 
 func init() {
 	proto.RegisterEnum("appengine.BlobstoreServiceError_ErrorCode", BlobstoreServiceError_ErrorCode_name, BlobstoreServiceError_ErrorCode_value)

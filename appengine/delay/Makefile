@@ -6,10 +6,8 @@ include $(GOROOT)/src/Make.inc
 
 
 
-TARG=appengine_internal
+TARG=appengine/delay
 GOFILES=\
-	app_id.go\
-	internal.go\
-	api_dev.go\
+	delay.go\
 
 include $(GOROOT)/src/Make.pkg

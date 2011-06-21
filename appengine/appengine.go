@@ -2,7 +2,7 @@
 // Use of this source code is governed by the Apache 2.0
 // license that can be found in the LICENSE file.
 
-// The appengine package provides functionality that is common across
+// Package appengine provides functionality that is common across
 // App Engine APIs.
 package appengine
 
@@ -28,11 +28,25 @@ type Context interface {
 	// Request returns environment-dependent request information.
 	Request() interface{}
 
-	// Logf formats its arguments according to the format, analogous to fmt.Printf,
-	// and records the text as a log message.
-	Logf(format string, args ...interface{})
+	// Debugf formats its arguments according to the format, analogous to fmt.Printf,
+	// and records the text as a log message at Debug level.
+	Debugf(format string, args ...interface{})
+
+	// Infof is like Debugf, but at Info level.
+	Infof(format string, args ...interface{})
+
+	// Warningf is like Debugf, but at Warning level.
+	Warningf(format string, args ...interface{})
+
+	// Errorf is like Debugf, but at Error level.
+	Errorf(format string, args ...interface{})
+
+	// Criticalf is like Debugf, but at Critical level.
+	Criticalf(format string, args ...interface{})
 
 	// AppID returns the application ID for the current application.
+	// The string will be a plain application ID (e.g. "appid"),
+	// with a domain prefix for custom domain deployments (e.g. "example.com:appid").
 	AppID() string
 }
 

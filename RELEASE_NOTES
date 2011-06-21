@@ -1,0 +1,31 @@
+App Engine Go SDK - Release Notes
+
+Changes that are not backward compatible
+are marked with an exclamation mark ("!").
+
+
+Version 1.5.1 - 20 June 2011
+============================
+appengine:
+  ! Replace Context's Logf method with Debugf/Infof/Warningf/Errorf/Criticalf.
+appengine/capability:
+  - New package.
+appengine/datastore:
+  - Add batch operations.
+  - Add transactions.
+appengine/delay:
+  - New package.
+appengine/memcache:
+  - Add GetStats function.
+appengine/taskqueue:
+  - Add "Delay" field to Task.
+  - Give leased tasks a method of "PULL".
+  ! Return the fully-populated equivalent Task from Add.
+appengine/urlfetch:
+  ! Remove error types.
+Other:
+  - Set the RemoteAddr field of http.Request correctly in the dev_appserver.
+
+Version 1.5.0 - 11 May 2011
+===========================
+Initial release. Viva il gopher!

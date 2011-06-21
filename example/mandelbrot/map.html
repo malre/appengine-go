@@ -72,8 +72,19 @@
     };
   }
   </script>
+  <style type="text/css">
+    body {
+      font-family: Helvetica, sans-serif;
+    }
+  </style>
 </head>
 <body onload="initialize()">
   <div id="map_canvas" style="width: 640px; height: 480px;"></div>
+
+  Powered by <a href="http://blog.golang.org/2011/05/go-and-google-app-engine.html">a horde of gophers</a>.
+
+  <p>
+  memcache: {{MemcacheStats}}
+  </p>
 </body>
 </html>

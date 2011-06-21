@@ -54,9 +54,8 @@ type UserServiceError struct {
 	XXX_unrecognized []byte
 }
 
-func (this *UserServiceError) Reset() {
-	*this = UserServiceError{}
-}
+func (this *UserServiceError) Reset()         { *this = UserServiceError{} }
+func (this *UserServiceError) String() string { return proto.CompactTextString(this) }
 
 type CreateLoginURLRequest struct {
 	DestinationUrl    *string "PB(bytes,1,req,name=destination_url)"
@@ -65,18 +64,16 @@ type CreateLoginURLRequest struct {
 	XXX_unrecognized  []byte
 }
 
-func (this *CreateLoginURLRequest) Reset() {
-	*this = CreateLoginURLRequest{}
-}
+func (this *CreateLoginURLRequest) Reset()         { *this = CreateLoginURLRequest{} }
+func (this *CreateLoginURLRequest) String() string { return proto.CompactTextString(this) }
 
 type CreateLoginURLResponse struct {
 	LoginUrl         *string "PB(bytes,1,req,name=login_url)"
 	XXX_unrecognized []byte
 }
 
-func (this *CreateLoginURLResponse) Reset() {
-	*this = CreateLoginURLResponse{}
-}
+func (this *CreateLoginURLResponse) Reset()         { *this = CreateLoginURLResponse{} }
+func (this *CreateLoginURLResponse) String() string { return proto.CompactTextString(this) }
 
 type CreateLogoutURLRequest struct {
 	DestinationUrl   *string "PB(bytes,1,req,name=destination_url)"
@@ -84,27 +81,24 @@ type CreateLogoutURLRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CreateLogoutURLRequest) Reset() {
-	*this = CreateLogoutURLRequest{}
-}
+func (this *CreateLogoutURLRequest) Reset()         { *this = CreateLogoutURLRequest{} }
+func (this *CreateLogoutURLRequest) String() string { return proto.CompactTextString(this) }
 
 type CreateLogoutURLResponse struct {
 	LogoutUrl        *string "PB(bytes,1,req,name=logout_url)"
 	XXX_unrecognized []byte
 }
 
-func (this *CreateLogoutURLResponse) Reset() {
-	*this = CreateLogoutURLResponse{}
-}
+func (this *CreateLogoutURLResponse) Reset()         { *this = CreateLogoutURLResponse{} }
+func (this *CreateLogoutURLResponse) String() string { return proto.CompactTextString(this) }
 
 type GetOAuthUserRequest struct {
 	Scope            *string "PB(bytes,1,opt,name=scope)"
 	XXX_unrecognized []byte
 }
 
-func (this *GetOAuthUserRequest) Reset() {
-	*this = GetOAuthUserRequest{}
-}
+func (this *GetOAuthUserRequest) Reset()         { *this = GetOAuthUserRequest{} }
+func (this *GetOAuthUserRequest) String() string { return proto.CompactTextString(this) }
 
 type GetOAuthUserResponse struct {
 	Email            *string "PB(bytes,1,req,name=email)"
@@ -115,9 +109,8 @@ type GetOAuthUserResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *GetOAuthUserResponse) Reset() {
-	*this = GetOAuthUserResponse{}
-}
+func (this *GetOAuthUserResponse) Reset()         { *this = GetOAuthUserResponse{} }
+func (this *GetOAuthUserResponse) String() string { return proto.CompactTextString(this) }
 
 const Default_GetOAuthUserResponse_IsAdmin bool = false
 
@@ -125,18 +118,16 @@ type CheckOAuthSignatureRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CheckOAuthSignatureRequest) Reset() {
-	*this = CheckOAuthSignatureRequest{}
-}
+func (this *CheckOAuthSignatureRequest) Reset()         { *this = CheckOAuthSignatureRequest{} }
+func (this *CheckOAuthSignatureRequest) String() string { return proto.CompactTextString(this) }
 
 type CheckOAuthSignatureResponse struct {
 	OauthConsumerKey *string "PB(bytes,1,req,name=oauth_consumer_key)"
 	XXX_unrecognized []byte
 }
 
-func (this *CheckOAuthSignatureResponse) Reset() {
-	*this = CheckOAuthSignatureResponse{}
-}
+func (this *CheckOAuthSignatureResponse) Reset()         { *this = CheckOAuthSignatureResponse{} }
+func (this *CheckOAuthSignatureResponse) String() string { return proto.CompactTextString(this) }
 
 type CreateFederatedLoginRequest struct {
 	ClaimedId        *string "PB(bytes,1,req,name=claimed_id)"
@@ -145,36 +136,32 @@ type CreateFederatedLoginRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CreateFederatedLoginRequest) Reset() {
-	*this = CreateFederatedLoginRequest{}
-}
+func (this *CreateFederatedLoginRequest) Reset()         { *this = CreateFederatedLoginRequest{} }
+func (this *CreateFederatedLoginRequest) String() string { return proto.CompactTextString(this) }
 
 type CreateFederatedLoginResponse struct {
 	RedirectedUrl    *string "PB(bytes,1,req,name=redirected_url)"
 	XXX_unrecognized []byte
 }
 
-func (this *CreateFederatedLoginResponse) Reset() {
-	*this = CreateFederatedLoginResponse{}
-}
+func (this *CreateFederatedLoginResponse) Reset()         { *this = CreateFederatedLoginResponse{} }
+func (this *CreateFederatedLoginResponse) String() string { return proto.CompactTextString(this) }
 
 type CreateFederatedLogoutRequest struct {
 	DestinationUrl   *string "PB(bytes,1,req,name=destination_url)"
 	XXX_unrecognized []byte
 }
 
-func (this *CreateFederatedLogoutRequest) Reset() {
-	*this = CreateFederatedLogoutRequest{}
-}
+func (this *CreateFederatedLogoutRequest) Reset()         { *this = CreateFederatedLogoutRequest{} }
+func (this *CreateFederatedLogoutRequest) String() string { return proto.CompactTextString(this) }
 
 type CreateFederatedLogoutResponse struct {
 	LogoutUrl        *string "PB(bytes,1,req,name=logout_url)"
 	XXX_unrecognized []byte
 }
 
-func (this *CreateFederatedLogoutResponse) Reset() {
-	*this = CreateFederatedLogoutResponse{}
-}
+func (this *CreateFederatedLogoutResponse) Reset()         { *this = CreateFederatedLogoutResponse{} }
+func (this *CreateFederatedLogoutResponse) String() string { return proto.CompactTextString(this) }
 
 func init() {
 	proto.RegisterEnum("appengine.UserServiceError_ErrorCode", UserServiceError_ErrorCode_name, UserServiceError_ErrorCode_value)

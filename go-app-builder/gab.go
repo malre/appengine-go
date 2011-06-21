@@ -9,6 +9,8 @@ It takes a list of source file names, loads and parses them,
 deduces their package structure, creates a synthetic main package,
 and finally compiles and links all these pieces.
 
+Files named *_test.go will be ignored.
+
 Usage:
 	go-app-builder [options] [file.go ...]
 */
@@ -97,6 +99,8 @@ func build(app *App) os.Error {
 	// Common environment for compiler and linker.
 	env := []string{
 		"GOROOT=" + *goRoot,
+		// Use a less efficient, but stricter malloc/free.
+		"MALLOC_CHECK_=3",
 	}
 
 	// Compile phase.

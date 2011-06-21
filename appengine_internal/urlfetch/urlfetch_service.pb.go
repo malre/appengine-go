@@ -90,14 +90,13 @@ type URLFetchServiceError struct {
 	XXX_unrecognized []byte
 }
 
-func (this *URLFetchServiceError) Reset() {
-	*this = URLFetchServiceError{}
-}
+func (this *URLFetchServiceError) Reset()         { *this = URLFetchServiceError{} }
+func (this *URLFetchServiceError) String() string { return proto.CompactTextString(this) }
 
 type URLFetchRequest struct {
 	Method                        *URLFetchRequest_RequestMethod "PB(varint,1,req,enum=appengine.URLFetchRequest_RequestMethod)"
 	Url                           *string                        "PB(bytes,2,req)"
-	Header                        []*URLFetchRequest_Header      "PB(group,3,rep,name=Header)"
+	Header                        []*URLFetchRequest_Header      "PB(group,3,rep)"
 	Payload                       []byte                         "PB(bytes,6,opt)"
 	FollowRedirects               *bool                          "PB(varint,7,opt,def=1)"
 	Deadline                      *float64                       "PB(fixed64,8,opt)"
@@ -105,9 +104,8 @@ type URLFetchRequest struct {
 	XXX_unrecognized              []byte
 }
 
-func (this *URLFetchRequest) Reset() {
-	*this = URLFetchRequest{}
-}
+func (this *URLFetchRequest) Reset()         { *this = URLFetchRequest{} }
+func (this *URLFetchRequest) String() string { return proto.CompactTextString(this) }
 
 const Default_URLFetchRequest_FollowRedirects bool = true
 const Default_URLFetchRequest_MustValidateServerCertificate bool = true
@@ -118,14 +116,13 @@ type URLFetchRequest_Header struct {
 	XXX_unrecognized []byte
 }
 
-func (this *URLFetchRequest_Header) Reset() {
-	*this = URLFetchRequest_Header{}
-}
+func (this *URLFetchRequest_Header) Reset()         { *this = URLFetchRequest_Header{} }
+func (this *URLFetchRequest_Header) String() string { return proto.CompactTextString(this) }
 
 type URLFetchResponse struct {
 	Content               []byte                     "PB(bytes,1,opt)"
 	StatusCode            *int32                     "PB(varint,2,req)"
-	Header                []*URLFetchResponse_Header "PB(group,3,rep,name=Header)"
+	Header                []*URLFetchResponse_Header "PB(group,3,rep)"
 	ContentWasTruncated   *bool                      "PB(varint,6,opt,def=0)"
 	ExternalBytesSent     *int64                     "PB(varint,7,opt)"
 	ExternalBytesReceived *int64                     "PB(varint,8,opt)"
@@ -136,9 +133,8 @@ type URLFetchResponse struct {
 	XXX_unrecognized      []byte
 }
 
-func (this *URLFetchResponse) Reset() {
-	*this = URLFetchResponse{}
-}
+func (this *URLFetchResponse) Reset()         { *this = URLFetchResponse{} }
+func (this *URLFetchResponse) String() string { return proto.CompactTextString(this) }
 
 const Default_URLFetchResponse_ContentWasTruncated bool = false
 const Default_URLFetchResponse_ApiCpuMilliseconds int64 = 0
@@ -151,9 +147,8 @@ type URLFetchResponse_Header struct {
 	XXX_unrecognized []byte
 }
 
-func (this *URLFetchResponse_Header) Reset() {
-	*this = URLFetchResponse_Header{}
-}
+func (this *URLFetchResponse_Header) Reset()         { *this = URLFetchResponse_Header{} }
+func (this *URLFetchResponse_Header) String() string { return proto.CompactTextString(this) }
 
 func init() {
 	proto.RegisterEnum("appengine.URLFetchServiceError_ErrorCode", URLFetchServiceError_ErrorCode_name, URLFetchServiceError_ErrorCode_value)

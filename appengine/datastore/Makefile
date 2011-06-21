@@ -14,6 +14,7 @@ GOFILES=\
 	load.go\
 	query.go\
 	save.go\
+	transaction.go\
 	count_dev.go\
 
 include $(GOROOT)/src/Make.pkg

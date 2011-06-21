@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 /*
-The taskqueue package provides a client for App Engine's taskqueue service.
+Package taskqueue provides a client for App Engine's taskqueue service.
 Using this service, applications may perform work outside a user's request.
 
 A Task may be constucted manually; alternatively, since the most common
@@ -21,6 +21,7 @@ package taskqueue
 import (
 	"http"
 	"os"
+	"time"
 
 	"appengine"
 	"appengine_internal"
@@ -53,28 +54,34 @@ type Task struct {
 	// If empty, a name will be chosen.
 	Name string
 
-	// TODO: countdown, eta
+	// Delay is how far into the future this task should execute, in microseconds.
+	Delay int64
 }
 
 // NewPOSTTask creates a Task that will POST to a path with the given form data.
 func NewPOSTTask(path string, params map[string][]string) *Task {
+	h := make(http.Header)
+	h.Set("Content-Type", "application/x-www-form-urlencoded")
 	return &Task{
 		Path:    path,
 		Payload: []byte(http.EncodeQuery(params)),
+		Header:  h,
 		Method:  "POST",
 	}
 }
 
 // Add adds the task to a named queue.
 // An empty queue name means that the default queue will be used.
-func Add(c appengine.Context, task *Task, queueName string) os.Error {
+// Add returns an equivalent Task with defaults filled in, including setting
+// the task's Name field to the chosen name if the original was empty.
+func Add(c appengine.Context, task *Task, queueName string) (*Task, os.Error) {
 	if queueName == "" {
 		queueName = "default"
 	}
 	req := &taskqueue_proto.TaskQueueAddRequest{
 		QueueName: []byte(queueName),
 		TaskName:  []byte(task.Name),
-		EtaUsec:   proto.Int64(0),
+		EtaUsec:   proto.Int64(time.Nanoseconds()/1e3 + task.Delay),
 	}
 	method := task.Method
 	if method == "" {
@@ -107,9 +114,14 @@ func Add(c appengine.Context, task *Task, queueName string) os.Error {
 	}
 	res := &taskqueue_proto.TaskQueueAddResponse{}
 	if err := c.Call("taskqueue", "Add", req, res); err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	resultTask := *task
+	resultTask.Method = method
+	if task.Name == "" {
+		resultTask.Name = string(res.ChosenTaskName)
+	}
+	return &resultTask, nil
 }
 
 // Delete deletes a task from a named queue.
@@ -152,6 +164,7 @@ func LeaseTasks(c appengine.Context, maxTasks int, queueName string, leaseTime i
 		tasks[i] = &Task{
 			Payload: t.Body,
 			Name:    string(t.TaskName),
+			Method:  "PULL",
 		}
 	}
 	return tasks, nil

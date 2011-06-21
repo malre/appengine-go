@@ -42,6 +42,8 @@ const (
 	TaskQueueServiceError_ACL_LOOKUP_ERROR                = 22
 	TaskQueueServiceError_TRANSACTIONAL_REQUEST_TOO_LARGE = 23
 	TaskQueueServiceError_INCORRECT_CREATOR_NAME          = 24
+	TaskQueueServiceError_TASK_LEASE_EXPIRED              = 25
+	TaskQueueServiceError_QUEUE_PAUSED                    = 26
 	TaskQueueServiceError_DATASTORE_ERROR                 = 10000
 )
 
@@ -71,6 +73,8 @@ var TaskQueueServiceError_ErrorCode_name = map[int32]string{
 	22:    "ACL_LOOKUP_ERROR",
 	23:    "TRANSACTIONAL_REQUEST_TOO_LARGE",
 	24:    "INCORRECT_CREATOR_NAME",
+	25:    "TASK_LEASE_EXPIRED",
+	26:    "QUEUE_PAUSED",
 	10000: "DATASTORE_ERROR",
 }
 var TaskQueueServiceError_ErrorCode_value = map[string]int32{
@@ -99,6 +103,8 @@ var TaskQueueServiceError_ErrorCode_value = map[string]int32{
 	"ACL_LOOKUP_ERROR":                22,
 	"TRANSACTIONAL_REQUEST_TOO_LARGE": 23,
 	"INCORRECT_CREATOR_NAME":          24,
+	"TASK_LEASE_EXPIRED":              25,
+	"QUEUE_PAUSED":                    26,
 	"DATASTORE_ERROR":                 10000,
 }
 
@@ -200,22 +206,32 @@ func (x TaskQueueQueryTasksResponse_Task_RequestMethod) String() string {
 	return proto.EnumName(TaskQueueQueryTasksResponse_Task_RequestMethod_name, int32(x))
 }
 
+type Transaction struct {
+	Handle           *uint64 "PB(fixed64,1,req,name=handle)"
+	App              *string "PB(bytes,2,req,name=app)"
+	MarkChanges      *bool   "PB(varint,3,opt,name=mark_changes,def=0)"
+	XXX_unrecognized []byte
+}
+
+func (this *Transaction) Reset()         { *this = Transaction{} }
+func (this *Transaction) String() string { return proto.CompactTextString(this) }
+
+const Default_Transaction_MarkChanges bool = false
+
 type TaskQueueServiceError struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueServiceError) Reset() {
-	*this = TaskQueueServiceError{}
-}
+func (this *TaskQueueServiceError) Reset()         { *this = TaskQueueServiceError{} }
+func (this *TaskQueueServiceError) String() string { return proto.CompactTextString(this) }
 
 type TaskPayload struct {
 	XXX_extensions   map[int32][]byte
 	XXX_unrecognized []byte
 }
 
-func (this *TaskPayload) Reset() {
-	*this = TaskPayload{}
-}
+func (this *TaskPayload) Reset()         { *this = TaskPayload{} }
+func (this *TaskPayload) String() string { return proto.CompactTextString(this) }
 
 func (this *TaskPayload) Marshal() ([]byte, os.Error) {
 	return proto.MarshalMessageSet(this.ExtensionMap())
@@ -250,9 +266,8 @@ type TaskQueueRetryParameters struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueRetryParameters) Reset() {
-	*this = TaskQueueRetryParameters{}
-}
+func (this *TaskQueueRetryParameters) Reset()         { *this = TaskQueueRetryParameters{} }
+func (this *TaskQueueRetryParameters) String() string { return proto.CompactTextString(this) }
 
 const Default_TaskQueueRetryParameters_MinBackoffSec float64 = 0.1
 const Default_TaskQueueRetryParameters_MaxBackoffSec float64 = 3600
@@ -263,9 +278,8 @@ type TaskQueueAcl struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueAcl) Reset() {
-	*this = TaskQueueAcl{}
-}
+func (this *TaskQueueAcl) Reset()         { *this = TaskQueueAcl{} }
+func (this *TaskQueueAcl) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueHttpHeader struct {
 	Key              []byte "PB(bytes,1,req,name=key)"
@@ -273,17 +287,15 @@ type TaskQueueHttpHeader struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueHttpHeader) Reset() {
-	*this = TaskQueueHttpHeader{}
-}
+func (this *TaskQueueHttpHeader) Reset()         { *this = TaskQueueHttpHeader{} }
+func (this *TaskQueueHttpHeader) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueMode struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueMode) Reset() {
-	*this = TaskQueueMode{}
-}
+func (this *TaskQueueMode) Reset()         { *this = TaskQueueMode{} }
+func (this *TaskQueueMode) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueAddRequest struct {
 	QueueName        []byte                             "PB(bytes,1,req,name=queue_name)"
@@ -291,8 +303,9 @@ type TaskQueueAddRequest struct {
 	EtaUsec          *int64                             "PB(varint,3,req,name=eta_usec)"
 	Method           *TaskQueueAddRequest_RequestMethod "PB(varint,5,opt,name=method,enum=appengine.TaskQueueAddRequest_RequestMethod,def=2)"
 	Url              []byte                             "PB(bytes,4,opt,name=url)"
-	Header           []*TaskQueueAddRequest_Header      "PB(group,6,rep,name=Header)"
+	Header           []*TaskQueueAddRequest_Header      "PB(group,6,rep)"
 	Body             []byte                             "PB(bytes,9,opt,name=body)"
+	Transaction      *Transaction                       "PB(bytes,10,opt,name=transaction)"
 	AppId            []byte                             "PB(bytes,11,opt,name=app_id)"
 	Crontimetable    *TaskQueueAddRequest_CronTimetable "PB(group,12,opt,name=CronTimetable)"
 	Description      []byte                             "PB(bytes,15,opt,name=description)"
@@ -302,9 +315,8 @@ type TaskQueueAddRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueAddRequest) Reset() {
-	*this = TaskQueueAddRequest{}
-}
+func (this *TaskQueueAddRequest) Reset()         { *this = TaskQueueAddRequest{} }
+func (this *TaskQueueAddRequest) String() string { return proto.CompactTextString(this) }
 
 const Default_TaskQueueAddRequest_Method TaskQueueAddRequest_RequestMethod = TaskQueueAddRequest_POST
 const Default_TaskQueueAddRequest_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
@@ -315,9 +327,8 @@ type TaskQueueAddRequest_Header struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueAddRequest_Header) Reset() {
-	*this = TaskQueueAddRequest_Header{}
-}
+func (this *TaskQueueAddRequest_Header) Reset()         { *this = TaskQueueAddRequest_Header{} }
+func (this *TaskQueueAddRequest_Header) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueAddRequest_CronTimetable struct {
 	Schedule         []byte "PB(bytes,13,req,name=schedule)"
@@ -325,36 +336,32 @@ type TaskQueueAddRequest_CronTimetable struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueAddRequest_CronTimetable) Reset() {
-	*this = TaskQueueAddRequest_CronTimetable{}
-}
+func (this *TaskQueueAddRequest_CronTimetable) Reset()         { *this = TaskQueueAddRequest_CronTimetable{} }
+func (this *TaskQueueAddRequest_CronTimetable) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueAddResponse struct {
 	ChosenTaskName   []byte "PB(bytes,1,opt,name=chosen_task_name)"
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueAddResponse) Reset() {
-	*this = TaskQueueAddResponse{}
-}
+func (this *TaskQueueAddResponse) Reset()         { *this = TaskQueueAddResponse{} }
+func (this *TaskQueueAddResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueBulkAddRequest struct {
 	AddRequest       []*TaskQueueAddRequest "PB(bytes,1,rep,name=add_request)"
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueBulkAddRequest) Reset() {
-	*this = TaskQueueBulkAddRequest{}
-}
+func (this *TaskQueueBulkAddRequest) Reset()         { *this = TaskQueueBulkAddRequest{} }
+func (this *TaskQueueBulkAddRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueBulkAddResponse struct {
 	Taskresult       []*TaskQueueBulkAddResponse_TaskResult "PB(group,1,rep,name=TaskResult)"
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueBulkAddResponse) Reset() {
-	*this = TaskQueueBulkAddResponse{}
-}
+func (this *TaskQueueBulkAddResponse) Reset()         { *this = TaskQueueBulkAddResponse{} }
+func (this *TaskQueueBulkAddResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueBulkAddResponse_TaskResult struct {
 	Result           *TaskQueueServiceError_ErrorCode "PB(varint,2,req,name=result,enum=appengine.TaskQueueServiceError_ErrorCode)"
@@ -365,6 +372,7 @@ type TaskQueueBulkAddResponse_TaskResult struct {
 func (this *TaskQueueBulkAddResponse_TaskResult) Reset() {
 	*this = TaskQueueBulkAddResponse_TaskResult{}
 }
+func (this *TaskQueueBulkAddResponse_TaskResult) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueDeleteRequest struct {
 	QueueName        []byte   "PB(bytes,1,req,name=queue_name)"
@@ -373,18 +381,16 @@ type TaskQueueDeleteRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueDeleteRequest) Reset() {
-	*this = TaskQueueDeleteRequest{}
-}
+func (this *TaskQueueDeleteRequest) Reset()         { *this = TaskQueueDeleteRequest{} }
+func (this *TaskQueueDeleteRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueDeleteResponse struct {
 	Result           []TaskQueueServiceError_ErrorCode "PB(varint,3,rep,name=result,enum=appengine.TaskQueueServiceError_ErrorCode)"
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueDeleteResponse) Reset() {
-	*this = TaskQueueDeleteResponse{}
-}
+func (this *TaskQueueDeleteResponse) Reset()         { *this = TaskQueueDeleteResponse{} }
+func (this *TaskQueueDeleteResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueForceRunRequest struct {
 	AppId            []byte "PB(bytes,1,req,name=app_id)"
@@ -393,18 +399,16 @@ type TaskQueueForceRunRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueForceRunRequest) Reset() {
-	*this = TaskQueueForceRunRequest{}
-}
+func (this *TaskQueueForceRunRequest) Reset()         { *this = TaskQueueForceRunRequest{} }
+func (this *TaskQueueForceRunRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueForceRunResponse struct {
 	Result           *TaskQueueServiceError_ErrorCode "PB(varint,3,req,name=result,enum=appengine.TaskQueueServiceError_ErrorCode)"
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueForceRunResponse) Reset() {
-	*this = TaskQueueForceRunResponse{}
-}
+func (this *TaskQueueForceRunResponse) Reset()         { *this = TaskQueueForceRunResponse{} }
+func (this *TaskQueueForceRunResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueUpdateQueueRequest struct {
 	AppId                 []byte                    "PB(bytes,1,req,name=app_id)"
@@ -420,9 +424,8 @@ type TaskQueueUpdateQueueRequest struct {
 	XXX_unrecognized      []byte
 }
 
-func (this *TaskQueueUpdateQueueRequest) Reset() {
-	*this = TaskQueueUpdateQueueRequest{}
-}
+func (this *TaskQueueUpdateQueueRequest) Reset()         { *this = TaskQueueUpdateQueueRequest{} }
+func (this *TaskQueueUpdateQueueRequest) String() string { return proto.CompactTextString(this) }
 
 const Default_TaskQueueUpdateQueueRequest_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
 
@@ -430,9 +433,8 @@ type TaskQueueUpdateQueueResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueUpdateQueueResponse) Reset() {
-	*this = TaskQueueUpdateQueueResponse{}
-}
+func (this *TaskQueueUpdateQueueResponse) Reset()         { *this = TaskQueueUpdateQueueResponse{} }
+func (this *TaskQueueUpdateQueueResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueFetchQueuesRequest struct {
 	AppId            []byte "PB(bytes,1,req,name=app_id)"
@@ -440,18 +442,16 @@ type TaskQueueFetchQueuesRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueFetchQueuesRequest) Reset() {
-	*this = TaskQueueFetchQueuesRequest{}
-}
+func (this *TaskQueueFetchQueuesRequest) Reset()         { *this = TaskQueueFetchQueuesRequest{} }
+func (this *TaskQueueFetchQueuesRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueFetchQueuesResponse struct {
-	Queue            []*TaskQueueFetchQueuesResponse_Queue "PB(group,1,rep,name=Queue)"
+	Queue            []*TaskQueueFetchQueuesResponse_Queue "PB(group,1,rep)"
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueFetchQueuesResponse) Reset() {
-	*this = TaskQueueFetchQueuesResponse{}
-}
+func (this *TaskQueueFetchQueuesResponse) Reset()         { *this = TaskQueueFetchQueuesResponse{} }
+func (this *TaskQueueFetchQueuesResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueFetchQueuesResponse_Queue struct {
 	QueueName             []byte                    "PB(bytes,2,req,name=queue_name)"
@@ -468,9 +468,8 @@ type TaskQueueFetchQueuesResponse_Queue struct {
 	XXX_unrecognized      []byte
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) Reset() {
-	*this = TaskQueueFetchQueuesResponse_Queue{}
-}
+func (this *TaskQueueFetchQueuesResponse_Queue) Reset()         { *this = TaskQueueFetchQueuesResponse_Queue{} }
+func (this *TaskQueueFetchQueuesResponse_Queue) String() string { return proto.CompactTextString(this) }
 
 const Default_TaskQueueFetchQueuesResponse_Queue_Paused bool = false
 const Default_TaskQueueFetchQueuesResponse_Queue_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
@@ -483,9 +482,8 @@ type TaskQueueFetchQueueStatsRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueFetchQueueStatsRequest) Reset() {
-	*this = TaskQueueFetchQueueStatsRequest{}
-}
+func (this *TaskQueueFetchQueueStatsRequest) Reset()         { *this = TaskQueueFetchQueueStatsRequest{} }
+func (this *TaskQueueFetchQueueStatsRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueScannerQueueInfo struct {
 	ExecutedLastMinute      *int64   "PB(varint,1,req,name=executed_last_minute)"
@@ -495,18 +493,16 @@ type TaskQueueScannerQueueInfo struct {
 	XXX_unrecognized        []byte
 }
 
-func (this *TaskQueueScannerQueueInfo) Reset() {
-	*this = TaskQueueScannerQueueInfo{}
-}
+func (this *TaskQueueScannerQueueInfo) Reset()         { *this = TaskQueueScannerQueueInfo{} }
+func (this *TaskQueueScannerQueueInfo) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueFetchQueueStatsResponse struct {
 	Queuestats       []*TaskQueueFetchQueueStatsResponse_QueueStats "PB(group,1,rep,name=QueueStats)"
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueFetchQueueStatsResponse) Reset() {
-	*this = TaskQueueFetchQueueStatsResponse{}
-}
+func (this *TaskQueueFetchQueueStatsResponse) Reset()         { *this = TaskQueueFetchQueueStatsResponse{} }
+func (this *TaskQueueFetchQueueStatsResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueFetchQueueStatsResponse_QueueStats struct {
 	NumTasks         *int32                     "PB(varint,2,req,name=num_tasks)"
@@ -518,6 +514,9 @@ type TaskQueueFetchQueueStatsResponse_QueueStats struct {
 func (this *TaskQueueFetchQueueStatsResponse_QueueStats) Reset() {
 	*this = TaskQueueFetchQueueStatsResponse_QueueStats{}
 }
+func (this *TaskQueueFetchQueueStatsResponse_QueueStats) String() string {
+	return proto.CompactTextString(this)
+}
 
 type TaskQueuePauseQueueRequest struct {
 	AppId            []byte "PB(bytes,1,req,name=app_id)"
@@ -526,17 +525,15 @@ type TaskQueuePauseQueueRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueuePauseQueueRequest) Reset() {
-	*this = TaskQueuePauseQueueRequest{}
-}
+func (this *TaskQueuePauseQueueRequest) Reset()         { *this = TaskQueuePauseQueueRequest{} }
+func (this *TaskQueuePauseQueueRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueuePauseQueueResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueuePauseQueueResponse) Reset() {
-	*this = TaskQueuePauseQueueResponse{}
-}
+func (this *TaskQueuePauseQueueResponse) Reset()         { *this = TaskQueuePauseQueueResponse{} }
+func (this *TaskQueuePauseQueueResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueuePurgeQueueRequest struct {
 	AppId            []byte "PB(bytes,1,opt,name=app_id)"
@@ -544,17 +541,15 @@ type TaskQueuePurgeQueueRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueuePurgeQueueRequest) Reset() {
-	*this = TaskQueuePurgeQueueRequest{}
-}
+func (this *TaskQueuePurgeQueueRequest) Reset()         { *this = TaskQueuePurgeQueueRequest{} }
+func (this *TaskQueuePurgeQueueRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueuePurgeQueueResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueuePurgeQueueResponse) Reset() {
-	*this = TaskQueuePurgeQueueResponse{}
-}
+func (this *TaskQueuePurgeQueueResponse) Reset()         { *this = TaskQueuePurgeQueueResponse{} }
+func (this *TaskQueuePurgeQueueResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueDeleteQueueRequest struct {
 	AppId            []byte "PB(bytes,1,req,name=app_id)"
@@ -562,34 +557,30 @@ type TaskQueueDeleteQueueRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueDeleteQueueRequest) Reset() {
-	*this = TaskQueueDeleteQueueRequest{}
-}
+func (this *TaskQueueDeleteQueueRequest) Reset()         { *this = TaskQueueDeleteQueueRequest{} }
+func (this *TaskQueueDeleteQueueRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueDeleteQueueResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueDeleteQueueResponse) Reset() {
-	*this = TaskQueueDeleteQueueResponse{}
-}
+func (this *TaskQueueDeleteQueueResponse) Reset()         { *this = TaskQueueDeleteQueueResponse{} }
+func (this *TaskQueueDeleteQueueResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueDeleteGroupRequest struct {
 	AppId            []byte "PB(bytes,1,req,name=app_id)"
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueDeleteGroupRequest) Reset() {
-	*this = TaskQueueDeleteGroupRequest{}
-}
+func (this *TaskQueueDeleteGroupRequest) Reset()         { *this = TaskQueueDeleteGroupRequest{} }
+func (this *TaskQueueDeleteGroupRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueDeleteGroupResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueDeleteGroupResponse) Reset() {
-	*this = TaskQueueDeleteGroupResponse{}
-}
+func (this *TaskQueueDeleteGroupResponse) Reset()         { *this = TaskQueueDeleteGroupResponse{} }
+func (this *TaskQueueDeleteGroupResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueQueryTasksRequest struct {
 	AppId            []byte "PB(bytes,1,req,name=app_id)"
@@ -600,20 +591,18 @@ type TaskQueueQueryTasksRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueQueryTasksRequest) Reset() {
-	*this = TaskQueueQueryTasksRequest{}
-}
+func (this *TaskQueueQueryTasksRequest) Reset()         { *this = TaskQueueQueryTasksRequest{} }
+func (this *TaskQueueQueryTasksRequest) String() string { return proto.CompactTextString(this) }
 
 const Default_TaskQueueQueryTasksRequest_MaxRows int32 = 1
 
 type TaskQueueQueryTasksResponse struct {
-	Task             []*TaskQueueQueryTasksResponse_Task "PB(group,1,rep,name=Task)"
+	Task             []*TaskQueueQueryTasksResponse_Task "PB(group,1,rep)"
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueQueryTasksResponse) Reset() {
-	*this = TaskQueueQueryTasksResponse{}
-}
+func (this *TaskQueueQueryTasksResponse) Reset()         { *this = TaskQueueQueryTasksResponse{} }
+func (this *TaskQueueQueryTasksResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueQueryTasksResponse_Task struct {
 	TaskName         []byte                                          "PB(bytes,2,req,name=task_name)"
@@ -621,7 +610,7 @@ type TaskQueueQueryTasksResponse_Task struct {
 	Url              []byte                                          "PB(bytes,4,opt,name=url)"
 	Method           *TaskQueueQueryTasksResponse_Task_RequestMethod "PB(varint,5,opt,name=method,enum=appengine.TaskQueueQueryTasksResponse_Task_RequestMethod)"
 	RetryCount       *int32                                          "PB(varint,6,opt,name=retry_count,def=0)"
-	Header           []*TaskQueueQueryTasksResponse_Task_Header      "PB(group,7,rep,name=Header)"
+	Header           []*TaskQueueQueryTasksResponse_Task_Header      "PB(group,7,rep)"
 	BodySize         *int32                                          "PB(varint,10,opt,name=body_size)"
 	Body             []byte                                          "PB(bytes,11,opt,name=body)"
 	CreationTimeUsec *int64                                          "PB(varint,12,req,name=creation_time_usec)"
@@ -633,9 +622,8 @@ type TaskQueueQueryTasksResponse_Task struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) Reset() {
-	*this = TaskQueueQueryTasksResponse_Task{}
-}
+func (this *TaskQueueQueryTasksResponse_Task) Reset()         { *this = TaskQueueQueryTasksResponse_Task{} }
+func (this *TaskQueueQueryTasksResponse_Task) String() string { return proto.CompactTextString(this) }
 
 const Default_TaskQueueQueryTasksResponse_Task_RetryCount int32 = 0
 
@@ -648,6 +636,9 @@ type TaskQueueQueryTasksResponse_Task_Header struct {
 func (this *TaskQueueQueryTasksResponse_Task_Header) Reset() {
 	*this = TaskQueueQueryTasksResponse_Task_Header{}
 }
+func (this *TaskQueueQueryTasksResponse_Task_Header) String() string {
+	return proto.CompactTextString(this)
+}
 
 type TaskQueueQueryTasksResponse_Task_CronTimetable struct {
 	Schedule         []byte "PB(bytes,14,req,name=schedule)"
@@ -657,6 +648,9 @@ type TaskQueueQueryTasksResponse_Task_CronTimetable struct {
 
 func (this *TaskQueueQueryTasksResponse_Task_CronTimetable) Reset() {
 	*this = TaskQueueQueryTasksResponse_Task_CronTimetable{}
+}
+func (this *TaskQueueQueryTasksResponse_Task_CronTimetable) String() string {
+	return proto.CompactTextString(this)
 }
 
 type TaskQueueQueryTasksResponse_Task_RunLog struct {
@@ -670,6 +664,9 @@ type TaskQueueQueryTasksResponse_Task_RunLog struct {
 func (this *TaskQueueQueryTasksResponse_Task_RunLog) Reset() {
 	*this = TaskQueueQueryTasksResponse_Task_RunLog{}
 }
+func (this *TaskQueueQueryTasksResponse_Task_RunLog) String() string {
+	return proto.CompactTextString(this)
+}
 
 type TaskQueueFetchTaskRequest struct {
 	AppId            []byte "PB(bytes,1,opt,name=app_id)"
@@ -678,18 +675,16 @@ type TaskQueueFetchTaskRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueFetchTaskRequest) Reset() {
-	*this = TaskQueueFetchTaskRequest{}
-}
+func (this *TaskQueueFetchTaskRequest) Reset()         { *this = TaskQueueFetchTaskRequest{} }
+func (this *TaskQueueFetchTaskRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueFetchTaskResponse struct {
 	Task             *TaskQueueQueryTasksResponse "PB(bytes,1,req,name=task)"
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueFetchTaskResponse) Reset() {
-	*this = TaskQueueFetchTaskResponse{}
-}
+func (this *TaskQueueFetchTaskResponse) Reset()         { *this = TaskQueueFetchTaskResponse{} }
+func (this *TaskQueueFetchTaskResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueUpdateStorageLimitRequest struct {
 	AppId            []byte "PB(bytes,1,req,name=app_id)"
@@ -697,9 +692,8 @@ type TaskQueueUpdateStorageLimitRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueUpdateStorageLimitRequest) Reset() {
-	*this = TaskQueueUpdateStorageLimitRequest{}
-}
+func (this *TaskQueueUpdateStorageLimitRequest) Reset()         { *this = TaskQueueUpdateStorageLimitRequest{} }
+func (this *TaskQueueUpdateStorageLimitRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueUpdateStorageLimitResponse struct {
 	NewLimit         *int64 "PB(varint,1,req,name=new_limit)"
@@ -709,6 +703,7 @@ type TaskQueueUpdateStorageLimitResponse struct {
 func (this *TaskQueueUpdateStorageLimitResponse) Reset() {
 	*this = TaskQueueUpdateStorageLimitResponse{}
 }
+func (this *TaskQueueUpdateStorageLimitResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueQueryAndOwnTasksRequest struct {
 	QueueName        []byte   "PB(bytes,1,req,name=queue_name)"
@@ -717,18 +712,16 @@ type TaskQueueQueryAndOwnTasksRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueQueryAndOwnTasksRequest) Reset() {
-	*this = TaskQueueQueryAndOwnTasksRequest{}
-}
+func (this *TaskQueueQueryAndOwnTasksRequest) Reset()         { *this = TaskQueueQueryAndOwnTasksRequest{} }
+func (this *TaskQueueQueryAndOwnTasksRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueQueryAndOwnTasksResponse struct {
-	Task             []*TaskQueueQueryAndOwnTasksResponse_Task "PB(group,1,rep,name=Task)"
+	Task             []*TaskQueueQueryAndOwnTasksResponse_Task "PB(group,1,rep)"
 	XXX_unrecognized []byte
 }
 
-func (this *TaskQueueQueryAndOwnTasksResponse) Reset() {
-	*this = TaskQueueQueryAndOwnTasksResponse{}
-}
+func (this *TaskQueueQueryAndOwnTasksResponse) Reset()         { *this = TaskQueueQueryAndOwnTasksResponse{} }
+func (this *TaskQueueQueryAndOwnTasksResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueQueryAndOwnTasksResponse_Task struct {
 	TaskName         []byte "PB(bytes,2,req,name=task_name)"
@@ -741,8 +734,30 @@ type TaskQueueQueryAndOwnTasksResponse_Task struct {
 func (this *TaskQueueQueryAndOwnTasksResponse_Task) Reset() {
 	*this = TaskQueueQueryAndOwnTasksResponse_Task{}
 }
+func (this *TaskQueueQueryAndOwnTasksResponse_Task) String() string {
+	return proto.CompactTextString(this)
+}
 
 const Default_TaskQueueQueryAndOwnTasksResponse_Task_RetryCount int32 = 0
+
+type TaskQueueModifyTaskLeaseRequest struct {
+	QueueName        []byte   "PB(bytes,1,req,name=queue_name)"
+	TaskName         []byte   "PB(bytes,2,req,name=task_name)"
+	EtaUsec          *int64   "PB(varint,3,req,name=eta_usec)"
+	LeaseSeconds     *float64 "PB(fixed64,4,req,name=lease_seconds)"
+	XXX_unrecognized []byte
+}
+
+func (this *TaskQueueModifyTaskLeaseRequest) Reset()         { *this = TaskQueueModifyTaskLeaseRequest{} }
+func (this *TaskQueueModifyTaskLeaseRequest) String() string { return proto.CompactTextString(this) }
+
+type TaskQueueModifyTaskLeaseResponse struct {
+	UpdatedEtaUsec   *int64 "PB(varint,1,req,name=updated_eta_usec)"
+	XXX_unrecognized []byte
+}
+
+func (this *TaskQueueModifyTaskLeaseResponse) Reset()         { *this = TaskQueueModifyTaskLeaseResponse{} }
+func (this *TaskQueueModifyTaskLeaseResponse) String() string { return proto.CompactTextString(this) }
 
 func init() {
 	proto.RegisterEnum("appengine.TaskQueueServiceError_ErrorCode", TaskQueueServiceError_ErrorCode_name, TaskQueueServiceError_ErrorCode_value)

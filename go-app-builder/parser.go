@@ -13,6 +13,7 @@ import (
 	"path"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 // App represents an entire Go App Engine app.
@@ -57,6 +58,10 @@ func ParseFiles(baseDir string, filenames []string) (*App, os.Error) {
 	// and check that there is only one package per directory.
 	pkgFiles := make(map[string][]*File)
 	for i, filename := range filenames {
+		if strings.HasSuffix(filename, "_test.go") {
+			continue
+		}
+
 		file, err := parseFile(baseDir, filename)
 		if err != nil {
 			return nil, err

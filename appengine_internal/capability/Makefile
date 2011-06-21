@@ -6,10 +6,8 @@ include $(GOROOT)/src/Make.inc
 
 
 
-TARG=appengine_internal
+TARG=appengine_internal/capability
 GOFILES=\
-	app_id.go\
-	internal.go\
-	api_dev.go\
+	capability_service.pb.go\
 
 include $(GOROOT)/src/Make.pkg

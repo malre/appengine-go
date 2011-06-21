@@ -2,7 +2,7 @@
 // Use of this source code is governed by the Apache 2.0
 // license that can be found in the LICENSE file.
 
-// The urlfetch package provides an http.RoundTripper implementation
+// Package urlfetch provides an http.RoundTripper implementation
 // for fetching URLs via App Engine's urlfetch service.
 package urlfetch
 
@@ -40,25 +40,6 @@ func Client(context appengine.Context) *http.Client {
 			Context: context,
 		},
 	}
-}
-
-// ErrFetch represents an error fetching a URL.
-type ErrFetch struct {
-	Message string
-}
-
-func (e *ErrFetch) String() string {
-	return fmt.Sprintf("urlfetch error: %s", e.Message)
-}
-
-// ErrInvalidFetchRequest represents an invalid fetch request.
-type ErrInvalidFetchRequest struct {
-	Message string
-	Error   os.Error
-}
-
-func (e *ErrInvalidFetchRequest) String() string {
-	return fmt.Sprintf("urlfetch invalid input error: %s: %v", e.Message, e.Error)
 }
 
 type bodyReader struct {
@@ -111,15 +92,14 @@ var methodAcceptsRequestBody = map[string]bool{
 
 // RoundTrip issues a single HTTP request and returns its response. Per the
 // http.RoundTripper interface, RoundTrip only returns an error if there
-// was a problem with the request being malformed
-// (ErrInvalidFetchRequest) or the URL Fetch proxy fails (ErrFetch).
+// was an unsupported request or the URL Fetch proxy fails.
 // Note that HTTP response codes such as 5xx, 403, 404, etc are not
 // errors as far as the transport is concerned and will be returned
 // with err set to nil.
 func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err os.Error) {
 	methNum, ok := pb.URLFetchRequest_RequestMethod_value[req.Method]
 	if !ok {
-		return nil, &ErrInvalidFetchRequest{"Unsupported method: " + req.Method, nil}
+		return nil, fmt.Errorf("urlfetch: unsupported HTTP method %q", req.Method)
 	}
 
 	method := pb.URLFetchRequest_RequestMethod(methNum)
@@ -146,13 +126,13 @@ func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err os.Err
 	if methodAcceptsRequestBody[req.Method] {
 		freq.Payload, err = ioutil.ReadAll(req.Body)
 		if err != nil {
-			return nil, &ErrInvalidFetchRequest{"Failed to read body", err}
+			return nil, err
 		}
 	}
 
 	fres := &pb.URLFetchResponse{}
 	if err := t.Context.Call("urlfetch", "Fetch", freq, fres); err != nil {
-		return nil, &ErrFetch{err.String()}
+		return nil, err
 	}
 
 	res = &http.Response{}

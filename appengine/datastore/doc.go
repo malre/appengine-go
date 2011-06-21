@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 /*
-The datastore package provides a client for App Engine's datastore service.
+Package datastore provides a client for App Engine's datastore service.
 
 Entities are the unit of storage and are associated with a key. A key
 consists of an optional parent key, a string application ID, a string kind
@@ -49,7 +49,7 @@ Example code:
 		k := datastore.NewKey("Entity", "stringID", 0, nil)
 		e := new(Entity)
 		if err := datastore.Get(c, k, e); err != nil {
-			serveError(w, err)
+			serveError(c, w, err)
 			return
 		}
 
@@ -57,16 +57,20 @@ Example code:
 		e.Value = r.URL.Path
 
 		if _, err := datastore.Put(c, k, e); err != nil {
-			serveError(w, err)
+			serveError(c, w, err)
 			return
 		}
 
-		w.SetHeader("Content-Type", "text/plain")
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		fmt.Fprintf(w, "old=%q\nnew=%q\n", old, e.Value)
 	}
 
 To derive example code that saves and loads a Map instead of a struct, replace
 e := new(Entity) and e.Value with e := make(datastore.Map) and e["Value"].
+
+GetMulti, PutMulti and DeleteMulti are batch versions of the Get, Put and
+Delete functions. They take a []*Key instead of a *Key, and may return an
+ErrMulti when encountering partial failure.
 
 Queries are created using datastore.NewQuery and are configured
 by calling its methods. Running a query yields an iterator of
@@ -94,15 +98,49 @@ Example code:
 				break
 			}
 			if err != nil {
-				serveError(w, err)
+				serveError(c, w, err)
 				return
 			}
 			fmt.Fprintf(b, "Key=%v\nWidget=%#v\n\n", x, key)
 		}
-		w.SetHeader("Content-Type", "text/plain")
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		io.Copy(w, b)
+	}
+
+RunInTransaction runs a function in a transaction.
+
+Example code:
+
+	type Counter struct {
+		Count int
+	}
+
+	func inc(c appengine.Context, key *datastore.Key) (int, os.Error) {
+		var x Counter
+		if err := datastore.Get(c, key, &x); err != nil && err != datastore.ErrNoSuchEntity {
+			return 0, err
+		}
+		x.Count++
+		if _, err := datastore.Put(c, key, &x); err != nil {
+			return 0, err
+		}
+		return x.Count, nil
+	}
+
+	func handle(w http.ResponseWriter, r *http.Request) {
+		c := appengine.NewContext(r)
+		var count int
+		err := datastore.RunInTransaction(c, func(c appengine.Context) os.Error {
+			var err1 os.Error
+			count, err1 = inc(c, datastore.NewKey("Counter", "singleton", 0, nil))
+			return err1
+		})
+		if err != nil {
+			serveError(c, w, err)
+			return
+		}
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		fmt.Fprintf(w, "Count=%d", count)
 	}
 */
 package datastore
-
-// TODO: batch operations, transactions.

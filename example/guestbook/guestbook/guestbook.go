@@ -24,15 +24,15 @@ type Greeting struct {
 
 func serve404(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNotFound)
-	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	io.WriteString(w, "Not Found")
 }
 
 func serveError(c appengine.Context, w http.ResponseWriter, err os.Error) {
 	w.WriteHeader(http.StatusInternalServerError)
-	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	io.WriteString(w, "Internal Server Error")
-	c.Logf("%v", err)
+	c.Errorf("%v", err)
 }
 
 var mainPage = template.MustParse(`<html><body>
@@ -59,9 +59,9 @@ func handleMainPage(w http.ResponseWriter, r *http.Request) {
 		serveError(c, w, err)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := mainPage.Execute(w, gg); err != nil {
-		c.Logf("%v", err)
+		c.Errorf("%v", err)
 	}
 }
 

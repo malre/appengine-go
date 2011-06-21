@@ -21,9 +21,8 @@ type Request struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Request) Reset() {
-	*this = Request{}
-}
+func (this *Request) Reset()         { *this = Request{} }
+func (this *Request) String() string { return proto.CompactTextString(this) }
 
 type ApplicationError struct {
 	Code             *int32  "PB(varint,1,req,name=code)"
@@ -31,9 +30,8 @@ type ApplicationError struct {
 	XXX_unrecognized []byte
 }
 
-func (this *ApplicationError) Reset() {
-	*this = ApplicationError{}
-}
+func (this *ApplicationError) Reset()         { *this = ApplicationError{} }
+func (this *ApplicationError) String() string { return proto.CompactTextString(this) }
 
 type Response struct {
 	Response         []byte            "PB(bytes,1,opt,name=response)"
@@ -43,9 +41,8 @@ type Response struct {
 	XXX_unrecognized []byte
 }
 
-func (this *Response) Reset() {
-	*this = Response{}
-}
+func (this *Response) Reset()         { *this = Response{} }
+func (this *Response) String() string { return proto.CompactTextString(this) }
 
 func init() {
 }

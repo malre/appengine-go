@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 /*
-The mail package provides the means of sending email from an
+Package mail provides the means of sending email from an
 App Engine application.
 
 Example:
@@ -14,7 +14,7 @@ Example:
 		Body:    "Don't forget our plans. Hark, 'til later.",
 	}
 	if err := mail.Send(c, msg); err != nil {
-		c.Logf("Alas, my user, the email failed to sendeth: %v", err)
+		c.Errorf("Alas, my user, the email failed to sendeth: %v", err)
 	}
 */
 package mail

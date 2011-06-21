@@ -128,9 +128,12 @@ func (q *Query) Order(fieldName string) *Query {
 	if strings.HasPrefix(fieldName, "-") {
 		o.Direction = descending
 		o.FieldName = strings.TrimSpace(fieldName[1:])
+	} else if strings.HasPrefix(fieldName, "+") {
+		q.err = fmt.Errorf("datastore: invalid order: %q", fieldName)
+		return q
 	}
-	if len(fieldName) == 0 {
-		q.err = os.NewError("datastore: invalid order: " + fieldName)
+	if len(o.FieldName) == 0 {
+		q.err = os.NewError("datastore: empty order")
 		return q
 	}
 	q.order = append(q.order, o)
@@ -229,7 +232,7 @@ func (q *Query) Run(c appengine.Context) *Iterator {
 	if q.err != nil {
 		return &Iterator{err: q.err}
 	}
-	req, err := q.toProto(c.AppID())
+	req, err := q.toProto(fullAppID(c))
 	return &Iterator{
 		c:        c,
 		keysOnly: q.keysOnly,

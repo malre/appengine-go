@@ -11,6 +11,8 @@ DIRS=\
 	appengine_internal/remote_api\
 	appengine_internal\
 	appengine_internal/blobstore\
+	appengine_internal/capability\
+	appengine_internal/channel\
 	appengine_internal/datastore\
 	appengine_internal/files\
 	appengine_internal/mail\
@@ -19,6 +21,8 @@ DIRS=\
 	appengine_internal/urlfetch\
 	appengine_internal/user\
 	appengine\
+	appengine/capability\
+	appengine/channel\
 	appengine/datastore\
 	appengine/mail\
 	appengine/memcache\
@@ -26,9 +30,10 @@ DIRS=\
 	appengine/urlfetch\
 	appengine/user\
 	appengine/blobstore\
+	appengine/delay\
 	go-app-builder\
 
 install clean nuke:
 	for dir in $(DIRS); do \
-		make -C $$dir $@ || break; \
+		$(MAKE) -C $$dir $@; \
 	done

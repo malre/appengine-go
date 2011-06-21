@@ -186,9 +186,8 @@ type MemcacheServiceError struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheServiceError) Reset() {
-	*this = MemcacheServiceError{}
-}
+func (this *MemcacheServiceError) Reset()         { *this = MemcacheServiceError{} }
+func (this *MemcacheServiceError) String() string { return proto.CompactTextString(this) }
 
 type AppOverride struct {
 	AppId                *string "PB(bytes,1,req,name=app_id)"
@@ -196,9 +195,8 @@ type AppOverride struct {
 	XXX_unrecognized     []byte
 }
 
-func (this *AppOverride) Reset() {
-	*this = AppOverride{}
-}
+func (this *AppOverride) Reset()         { *this = AppOverride{} }
+func (this *AppOverride) String() string { return proto.CompactTextString(this) }
 
 type MemcacheGetRequest struct {
 	Key              [][]byte     "PB(bytes,1,rep,name=key)"
@@ -208,18 +206,16 @@ type MemcacheGetRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheGetRequest) Reset() {
-	*this = MemcacheGetRequest{}
-}
+func (this *MemcacheGetRequest) Reset()         { *this = MemcacheGetRequest{} }
+func (this *MemcacheGetRequest) String() string { return proto.CompactTextString(this) }
 
 type MemcacheGetResponse struct {
-	Item             []*MemcacheGetResponse_Item "PB(group,1,rep,name=Item)"
+	Item             []*MemcacheGetResponse_Item "PB(group,1,rep)"
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheGetResponse) Reset() {
-	*this = MemcacheGetResponse{}
-}
+func (this *MemcacheGetResponse) Reset()         { *this = MemcacheGetResponse{} }
+func (this *MemcacheGetResponse) String() string { return proto.CompactTextString(this) }
 
 type MemcacheGetResponse_Item struct {
 	Key              []byte  "PB(bytes,2,req,name=key)"
@@ -230,20 +226,18 @@ type MemcacheGetResponse_Item struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheGetResponse_Item) Reset() {
-	*this = MemcacheGetResponse_Item{}
-}
+func (this *MemcacheGetResponse_Item) Reset()         { *this = MemcacheGetResponse_Item{} }
+func (this *MemcacheGetResponse_Item) String() string { return proto.CompactTextString(this) }
 
 type MemcacheSetRequest struct {
-	Item             []*MemcacheSetRequest_Item "PB(group,1,rep,name=Item)"
+	Item             []*MemcacheSetRequest_Item "PB(group,1,rep)"
 	NameSpace        *string                    "PB(bytes,7,opt,name=name_space)"
 	Override         *AppOverride               "PB(bytes,10,opt,name=override)"
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheSetRequest) Reset() {
-	*this = MemcacheSetRequest{}
-}
+func (this *MemcacheSetRequest) Reset()         { *this = MemcacheSetRequest{} }
+func (this *MemcacheSetRequest) String() string { return proto.CompactTextString(this) }
 
 type MemcacheSetRequest_Item struct {
 	Key              []byte                        "PB(bytes,2,req,name=key)"
@@ -256,9 +250,8 @@ type MemcacheSetRequest_Item struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheSetRequest_Item) Reset() {
-	*this = MemcacheSetRequest_Item{}
-}
+func (this *MemcacheSetRequest_Item) Reset()         { *this = MemcacheSetRequest_Item{} }
+func (this *MemcacheSetRequest_Item) String() string { return proto.CompactTextString(this) }
 
 const Default_MemcacheSetRequest_Item_SetPolicy MemcacheSetRequest_SetPolicy = MemcacheSetRequest_SET
 const Default_MemcacheSetRequest_Item_ExpirationTime uint32 = 0
@@ -268,20 +261,18 @@ type MemcacheSetResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheSetResponse) Reset() {
-	*this = MemcacheSetResponse{}
-}
+func (this *MemcacheSetResponse) Reset()         { *this = MemcacheSetResponse{} }
+func (this *MemcacheSetResponse) String() string { return proto.CompactTextString(this) }
 
 type MemcacheDeleteRequest struct {
-	Item             []*MemcacheDeleteRequest_Item "PB(group,1,rep,name=Item)"
+	Item             []*MemcacheDeleteRequest_Item "PB(group,1,rep)"
 	NameSpace        *string                       "PB(bytes,4,opt,name=name_space)"
 	Override         *AppOverride                  "PB(bytes,5,opt,name=override)"
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheDeleteRequest) Reset() {
-	*this = MemcacheDeleteRequest{}
-}
+func (this *MemcacheDeleteRequest) Reset()         { *this = MemcacheDeleteRequest{} }
+func (this *MemcacheDeleteRequest) String() string { return proto.CompactTextString(this) }
 
 type MemcacheDeleteRequest_Item struct {
 	Key              []byte  "PB(bytes,2,req,name=key)"
@@ -289,9 +280,8 @@ type MemcacheDeleteRequest_Item struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheDeleteRequest_Item) Reset() {
-	*this = MemcacheDeleteRequest_Item{}
-}
+func (this *MemcacheDeleteRequest_Item) Reset()         { *this = MemcacheDeleteRequest_Item{} }
+func (this *MemcacheDeleteRequest_Item) String() string { return proto.CompactTextString(this) }
 
 const Default_MemcacheDeleteRequest_Item_DeleteTime uint32 = 0
 
@@ -300,9 +290,8 @@ type MemcacheDeleteResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheDeleteResponse) Reset() {
-	*this = MemcacheDeleteResponse{}
-}
+func (this *MemcacheDeleteResponse) Reset()         { *this = MemcacheDeleteResponse{} }
+func (this *MemcacheDeleteResponse) String() string { return proto.CompactTextString(this) }
 
 type MemcacheIncrementRequest struct {
 	Key              []byte                              "PB(bytes,1,req,name=key)"
@@ -315,9 +304,8 @@ type MemcacheIncrementRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheIncrementRequest) Reset() {
-	*this = MemcacheIncrementRequest{}
-}
+func (this *MemcacheIncrementRequest) Reset()         { *this = MemcacheIncrementRequest{} }
+func (this *MemcacheIncrementRequest) String() string { return proto.CompactTextString(this) }
 
 const Default_MemcacheIncrementRequest_Delta uint64 = 1
 const Default_MemcacheIncrementRequest_Direction MemcacheIncrementRequest_Direction = MemcacheIncrementRequest_INCREMENT
@@ -328,9 +316,8 @@ type MemcacheIncrementResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheIncrementResponse) Reset() {
-	*this = MemcacheIncrementResponse{}
-}
+func (this *MemcacheIncrementResponse) Reset()         { *this = MemcacheIncrementResponse{} }
+func (this *MemcacheIncrementResponse) String() string { return proto.CompactTextString(this) }
 
 type MemcacheBatchIncrementRequest struct {
 	NameSpace        *string                     "PB(bytes,1,opt,name=name_space)"
@@ -339,44 +326,39 @@ type MemcacheBatchIncrementRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheBatchIncrementRequest) Reset() {
-	*this = MemcacheBatchIncrementRequest{}
-}
+func (this *MemcacheBatchIncrementRequest) Reset()         { *this = MemcacheBatchIncrementRequest{} }
+func (this *MemcacheBatchIncrementRequest) String() string { return proto.CompactTextString(this) }
 
 type MemcacheBatchIncrementResponse struct {
 	Item             []*MemcacheIncrementResponse "PB(bytes,1,rep,name=item)"
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheBatchIncrementResponse) Reset() {
-	*this = MemcacheBatchIncrementResponse{}
-}
+func (this *MemcacheBatchIncrementResponse) Reset()         { *this = MemcacheBatchIncrementResponse{} }
+func (this *MemcacheBatchIncrementResponse) String() string { return proto.CompactTextString(this) }
 
 type MemcacheFlushRequest struct {
 	Override         *AppOverride "PB(bytes,1,opt,name=override)"
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheFlushRequest) Reset() {
-	*this = MemcacheFlushRequest{}
-}
+func (this *MemcacheFlushRequest) Reset()         { *this = MemcacheFlushRequest{} }
+func (this *MemcacheFlushRequest) String() string { return proto.CompactTextString(this) }
 
 type MemcacheFlushResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheFlushResponse) Reset() {
-	*this = MemcacheFlushResponse{}
-}
+func (this *MemcacheFlushResponse) Reset()         { *this = MemcacheFlushResponse{} }
+func (this *MemcacheFlushResponse) String() string { return proto.CompactTextString(this) }
 
 type MemcacheStatsRequest struct {
 	Override         *AppOverride "PB(bytes,1,opt,name=override)"
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheStatsRequest) Reset() {
-	*this = MemcacheStatsRequest{}
-}
+func (this *MemcacheStatsRequest) Reset()         { *this = MemcacheStatsRequest{} }
+func (this *MemcacheStatsRequest) String() string { return proto.CompactTextString(this) }
 
 type MergedNamespaceStats struct {
 	Hits             *uint64 "PB(varint,1,req,name=hits)"
@@ -388,18 +370,16 @@ type MergedNamespaceStats struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MergedNamespaceStats) Reset() {
-	*this = MergedNamespaceStats{}
-}
+func (this *MergedNamespaceStats) Reset()         { *this = MergedNamespaceStats{} }
+func (this *MergedNamespaceStats) String() string { return proto.CompactTextString(this) }
 
 type MemcacheStatsResponse struct {
 	Stats            *MergedNamespaceStats "PB(bytes,1,opt,name=stats)"
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheStatsResponse) Reset() {
-	*this = MemcacheStatsResponse{}
-}
+func (this *MemcacheStatsResponse) Reset()         { *this = MemcacheStatsResponse{} }
+func (this *MemcacheStatsResponse) String() string { return proto.CompactTextString(this) }
 
 type MemcacheGrabTailRequest struct {
 	ItemCount        *int32       "PB(varint,1,req,name=item_count)"
@@ -408,18 +388,16 @@ type MemcacheGrabTailRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheGrabTailRequest) Reset() {
-	*this = MemcacheGrabTailRequest{}
-}
+func (this *MemcacheGrabTailRequest) Reset()         { *this = MemcacheGrabTailRequest{} }
+func (this *MemcacheGrabTailRequest) String() string { return proto.CompactTextString(this) }
 
 type MemcacheGrabTailResponse struct {
-	Item             []*MemcacheGrabTailResponse_Item "PB(group,1,rep,name=Item)"
+	Item             []*MemcacheGrabTailResponse_Item "PB(group,1,rep)"
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheGrabTailResponse) Reset() {
-	*this = MemcacheGrabTailResponse{}
-}
+func (this *MemcacheGrabTailResponse) Reset()         { *this = MemcacheGrabTailResponse{} }
+func (this *MemcacheGrabTailResponse) String() string { return proto.CompactTextString(this) }
 
 type MemcacheGrabTailResponse_Item struct {
 	Value            []byte  "PB(bytes,2,req,name=value)"
@@ -427,9 +405,8 @@ type MemcacheGrabTailResponse_Item struct {
 	XXX_unrecognized []byte
 }
 
-func (this *MemcacheGrabTailResponse_Item) Reset() {
-	*this = MemcacheGrabTailResponse_Item{}
-}
+func (this *MemcacheGrabTailResponse_Item) Reset()         { *this = MemcacheGrabTailResponse_Item{} }
+func (this *MemcacheGrabTailResponse_Item) String() string { return proto.CompactTextString(this) }
 
 func init() {
 	proto.RegisterEnum("appengine.MemcacheServiceError_ErrorCode", MemcacheServiceError_ErrorCode_name, MemcacheServiceError_ErrorCode_value)

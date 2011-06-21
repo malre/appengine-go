@@ -19,18 +19,18 @@ type ShuffleEnums_InputFormat int32
 const (
 	ShuffleEnums_CSV_INPUT                     = 0
 	ShuffleEnums_SSTABLE_KEY_VALUE_PROTO_INPUT = 1
-	ShuffleEnums_RECORD_INPUT                  = 2
+	ShuffleEnums_RECORDS_KEY_VALUE_PROTO_INPUT = 2
 )
 
 var ShuffleEnums_InputFormat_name = map[int32]string{
 	0: "CSV_INPUT",
 	1: "SSTABLE_KEY_VALUE_PROTO_INPUT",
-	2: "RECORD_INPUT",
+	2: "RECORDS_KEY_VALUE_PROTO_INPUT",
 }
 var ShuffleEnums_InputFormat_value = map[string]int32{
 	"CSV_INPUT":                     0,
 	"SSTABLE_KEY_VALUE_PROTO_INPUT": 1,
-	"RECORD_INPUT":                  2,
+	"RECORDS_KEY_VALUE_PROTO_INPUT": 2,
 }
 
 func NewShuffleEnums_InputFormat(x int32) *ShuffleEnums_InputFormat {
@@ -44,20 +44,20 @@ func (x ShuffleEnums_InputFormat) String() string {
 type ShuffleEnums_OutputFormat int32
 
 const (
-	ShuffleEnums_CSV_OUTPUT                       = 0
-	ShuffleEnums_SSTABLE_MULTI_VALUE_PROTO_OUTPUT = 1
-	ShuffleEnums_RECORD_OUTPUT                    = 2
+	ShuffleEnums_CSV_OUTPUT                           = 0
+	ShuffleEnums_SSTABLE_MULTI_VALUE_PROTO_OUTPUT     = 1
+	ShuffleEnums_RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT = 2
 )
 
 var ShuffleEnums_OutputFormat_name = map[int32]string{
 	0: "CSV_OUTPUT",
 	1: "SSTABLE_MULTI_VALUE_PROTO_OUTPUT",
-	2: "RECORD_OUTPUT",
+	2: "RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT",
 }
 var ShuffleEnums_OutputFormat_value = map[string]int32{
-	"CSV_OUTPUT":                       0,
-	"SSTABLE_MULTI_VALUE_PROTO_OUTPUT": 1,
-	"RECORD_OUTPUT":                    2,
+	"CSV_OUTPUT":                           0,
+	"SSTABLE_MULTI_VALUE_PROTO_OUTPUT":     1,
+	"RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT": 2,
 }
 
 func NewShuffleEnums_OutputFormat(x int32) *ShuffleEnums_OutputFormat {
@@ -139,6 +139,7 @@ const (
 	FileServiceErrors_INVALID_PARAMETER                = 705
 	FileServiceErrors_SHUFFLER_INTERNAL_ERROR          = 800
 	FileServiceErrors_SHUFFLE_REQUEST_TOO_LARGE        = 801
+	FileServiceErrors_DUPLICATE_SHUFFLE_NAME           = 802
 	FileServiceErrors_SHUFFLER_TEMPORARILY_UNAVAILABLE = 900
 	FileServiceErrors_MAX_ERROR_CODE                   = 9999
 )
@@ -173,6 +174,7 @@ var FileServiceErrors_ErrorCode_name = map[int32]string{
 	705:  "INVALID_PARAMETER",
 	800:  "SHUFFLER_INTERNAL_ERROR",
 	801:  "SHUFFLE_REQUEST_TOO_LARGE",
+	802:  "DUPLICATE_SHUFFLE_NAME",
 	900:  "SHUFFLER_TEMPORARILY_UNAVAILABLE",
 	9999: "MAX_ERROR_CODE",
 }
@@ -206,6 +208,7 @@ var FileServiceErrors_ErrorCode_value = map[string]int32{
 	"INVALID_PARAMETER":                705,
 	"SHUFFLER_INTERNAL_ERROR":          800,
 	"SHUFFLE_REQUEST_TOO_LARGE":        801,
+	"DUPLICATE_SHUFFLE_NAME":           802,
 	"SHUFFLER_TEMPORARILY_UNAVAILABLE": 900,
 	"MAX_ERROR_CODE":                   9999,
 }
@@ -274,70 +277,62 @@ type StringProto struct {
 	XXX_unrecognized []byte
 }
 
-func (this *StringProto) Reset() {
-	*this = StringProto{}
-}
+func (this *StringProto) Reset()         { *this = StringProto{} }
+func (this *StringProto) String() string { return proto.CompactTextString(this) }
 
 type Integer32Proto struct {
 	Value            *int32 "PB(varint,1,req,name=value)"
 	XXX_unrecognized []byte
 }
 
-func (this *Integer32Proto) Reset() {
-	*this = Integer32Proto{}
-}
+func (this *Integer32Proto) Reset()         { *this = Integer32Proto{} }
+func (this *Integer32Proto) String() string { return proto.CompactTextString(this) }
 
 type Integer64Proto struct {
 	Value            *int64 "PB(varint,1,req,name=value)"
 	XXX_unrecognized []byte
 }
 
-func (this *Integer64Proto) Reset() {
-	*this = Integer64Proto{}
-}
+func (this *Integer64Proto) Reset()         { *this = Integer64Proto{} }
+func (this *Integer64Proto) String() string { return proto.CompactTextString(this) }
 
 type BoolProto struct {
 	Value            *bool "PB(varint,1,req,name=value)"
 	XXX_unrecognized []byte
 }
 
-func (this *BoolProto) Reset() {
-	*this = BoolProto{}
-}
+func (this *BoolProto) Reset()         { *this = BoolProto{} }
+func (this *BoolProto) String() string { return proto.CompactTextString(this) }
 
 type DoubleProto struct {
 	Value            *float64 "PB(fixed64,1,req,name=value)"
 	XXX_unrecognized []byte
 }
 
-func (this *DoubleProto) Reset() {
-	*this = DoubleProto{}
-}
+func (this *DoubleProto) Reset()         { *this = DoubleProto{} }
+func (this *DoubleProto) String() string { return proto.CompactTextString(this) }
 
 type BytesProto struct {
 	Value            []byte "PB(bytes,1,req,name=value)"
 	XXX_unrecognized []byte
 }
 
-func (this *BytesProto) Reset() {
-	*this = BytesProto{}
-}
+func (this *BytesProto) Reset()         { *this = BytesProto{} }
+func (this *BytesProto) String() string { return proto.CompactTextString(this) }
 
 type VoidProto struct {
 	XXX_unrecognized []byte
 }
 
-func (this *VoidProto) Reset() {
-	*this = VoidProto{}
-}
+func (this *VoidProto) Reset()         { *this = VoidProto{} }
+func (this *VoidProto) String() string { return proto.CompactTextString(this) }
 
 type ShuffleEnums struct {
 	XXX_unrecognized []byte
 }
 
-func (this *ShuffleEnums) Reset() {
-	*this = ShuffleEnums{}
-}
+func (this *ShuffleEnums) Reset()         { *this = ShuffleEnums{} }
+func (this *ShuffleEnums) String() string { return proto.CompactTextString(this) }
 
 type ShuffleInputSpecification struct {
 	Format           *ShuffleEnums_InputFormat "PB(varint,1,opt,name=format,enum=files.ShuffleEnums_InputFormat,def=0)"
@@ -345,9 +340,8 @@ type ShuffleInputSpecification struct {
 	XXX_unrecognized []byte
 }
 
-func (this *ShuffleInputSpecification) Reset() {
-	*this = ShuffleInputSpecification{}
-}
+func (this *ShuffleInputSpecification) Reset()         { *this = ShuffleInputSpecification{} }
+func (this *ShuffleInputSpecification) String() string { return proto.CompactTextString(this) }
 
 const Default_ShuffleInputSpecification_Format ShuffleEnums_InputFormat = ShuffleEnums_CSV_INPUT
 
@@ -357,9 +351,8 @@ type ShuffleOutputSpecification struct {
 	XXX_unrecognized []byte
 }
 
-func (this *ShuffleOutputSpecification) Reset() {
-	*this = ShuffleOutputSpecification{}
-}
+func (this *ShuffleOutputSpecification) Reset()         { *this = ShuffleOutputSpecification{} }
+func (this *ShuffleOutputSpecification) String() string { return proto.CompactTextString(this) }
 
 const Default_ShuffleOutputSpecification_Format ShuffleEnums_OutputFormat = ShuffleEnums_CSV_OUTPUT
 
@@ -367,9 +360,8 @@ type FileServiceErrors struct {
 	XXX_unrecognized []byte
 }
 
-func (this *FileServiceErrors) Reset() {
-	*this = FileServiceErrors{}
-}
+func (this *FileServiceErrors) Reset()         { *this = FileServiceErrors{} }
+func (this *FileServiceErrors) String() string { return proto.CompactTextString(this) }
 
 type KeyValue struct {
 	Key              *string "PB(bytes,1,req,name=key)"
@@ -377,9 +369,8 @@ type KeyValue struct {
 	XXX_unrecognized []byte
 }
 
-func (this *KeyValue) Reset() {
-	*this = KeyValue{}
-}
+func (this *KeyValue) Reset()         { *this = KeyValue{} }
+func (this *KeyValue) String() string { return proto.CompactTextString(this) }
 
 type KeyValues struct {
 	Key              *string  "PB(bytes,1,req,name=key)"
@@ -387,17 +378,15 @@ type KeyValues struct {
 	XXX_unrecognized []byte
 }
 
-func (this *KeyValues) Reset() {
-	*this = KeyValues{}
-}
+func (this *KeyValues) Reset()         { *this = KeyValues{} }
+func (this *KeyValues) String() string { return proto.CompactTextString(this) }
 
 type FileContentType struct {
 	XXX_unrecognized []byte
 }
 
-func (this *FileContentType) Reset() {
-	*this = FileContentType{}
-}
+func (this *FileContentType) Reset()         { *this = FileContentType{} }
+func (this *FileContentType) String() string { return proto.CompactTextString(this) }
 
 type CreateRequest struct {
 	Filesystem            *string                      "PB(bytes,1,req,name=filesystem)"
@@ -408,9 +397,8 @@ type CreateRequest struct {
 	XXX_unrecognized      []byte
 }
 
-func (this *CreateRequest) Reset() {
-	*this = CreateRequest{}
-}
+func (this *CreateRequest) Reset()         { *this = CreateRequest{} }
+func (this *CreateRequest) String() string { return proto.CompactTextString(this) }
 
 type CreateRequest_Parameter struct {
 	Name             *string "PB(bytes,1,req,name=name)"
@@ -418,18 +406,16 @@ type CreateRequest_Parameter struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CreateRequest_Parameter) Reset() {
-	*this = CreateRequest_Parameter{}
-}
+func (this *CreateRequest_Parameter) Reset()         { *this = CreateRequest_Parameter{} }
+func (this *CreateRequest_Parameter) String() string { return proto.CompactTextString(this) }
 
 type CreateResponse struct {
 	Filename         *string "PB(bytes,1,req,name=filename)"
 	XXX_unrecognized []byte
 }
 
-func (this *CreateResponse) Reset() {
-	*this = CreateResponse{}
-}
+func (this *CreateResponse) Reset()         { *this = CreateResponse{} }
+func (this *CreateResponse) String() string { return proto.CompactTextString(this) }
 
 type OpenRequest struct {
 	Filename             *string                      "PB(bytes,1,req,name=filename)"
@@ -441,9 +427,8 @@ type OpenRequest struct {
 	XXX_unrecognized     []byte
 }
 
-func (this *OpenRequest) Reset() {
-	*this = OpenRequest{}
-}
+func (this *OpenRequest) Reset()         { *this = OpenRequest{} }
+func (this *OpenRequest) String() string { return proto.CompactTextString(this) }
 
 const Default_OpenRequest_ExclusiveLock bool = false
 const Default_OpenRequest_BufferedOutput bool = false
@@ -453,9 +438,8 @@ type OpenResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *OpenResponse) Reset() {
-	*this = OpenResponse{}
-}
+func (this *OpenResponse) Reset()         { *this = OpenResponse{} }
+func (this *OpenResponse) String() string { return proto.CompactTextString(this) }
 
 type CloseRequest struct {
 	Filename         *string "PB(bytes,1,req,name=filename)"
@@ -463,9 +447,8 @@ type CloseRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CloseRequest) Reset() {
-	*this = CloseRequest{}
-}
+func (this *CloseRequest) Reset()         { *this = CloseRequest{} }
+func (this *CloseRequest) String() string { return proto.CompactTextString(this) }
 
 const Default_CloseRequest_Finalize bool = false
 
@@ -473,9 +456,8 @@ type CloseResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *CloseResponse) Reset() {
-	*this = CloseResponse{}
-}
+func (this *CloseResponse) Reset()         { *this = CloseResponse{} }
+func (this *CloseResponse) String() string { return proto.CompactTextString(this) }
 
 type FileStat struct {
 	Filename         *string                      "PB(bytes,1,req,name=filename)"
@@ -487,9 +469,8 @@ type FileStat struct {
 	XXX_unrecognized []byte
 }
 
-func (this *FileStat) Reset() {
-	*this = FileStat{}
-}
+func (this *FileStat) Reset()         { *this = FileStat{} }
+func (this *FileStat) String() string { return proto.CompactTextString(this) }
 
 type StatRequest struct {
 	Filename         *string "PB(bytes,1,opt,name=filename)"
@@ -497,9 +478,8 @@ type StatRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *StatRequest) Reset() {
-	*this = StatRequest{}
-}
+func (this *StatRequest) Reset()         { *this = StatRequest{} }
+func (this *StatRequest) String() string { return proto.CompactTextString(this) }
 
 type StatResponse struct {
 	Stat             []*FileStat "PB(bytes,1,rep,name=stat)"
@@ -507,9 +487,8 @@ type StatResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *StatResponse) Reset() {
-	*this = StatResponse{}
-}
+func (this *StatResponse) Reset()         { *this = StatResponse{} }
+func (this *StatResponse) String() string { return proto.CompactTextString(this) }
 
 const Default_StatResponse_MoreFilesFound bool = false
 
@@ -520,17 +499,15 @@ type AppendRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *AppendRequest) Reset() {
-	*this = AppendRequest{}
-}
+func (this *AppendRequest) Reset()         { *this = AppendRequest{} }
+func (this *AppendRequest) String() string { return proto.CompactTextString(this) }
 
 type AppendResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *AppendResponse) Reset() {
-	*this = AppendResponse{}
-}
+func (this *AppendResponse) Reset()         { *this = AppendResponse{} }
+func (this *AppendResponse) String() string { return proto.CompactTextString(this) }
 
 type AppendKeyValueRequest struct {
 	Filename         *string "PB(bytes,1,req,name=filename)"
@@ -539,34 +516,30 @@ type AppendKeyValueRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *AppendKeyValueRequest) Reset() {
-	*this = AppendKeyValueRequest{}
-}
+func (this *AppendKeyValueRequest) Reset()         { *this = AppendKeyValueRequest{} }
+func (this *AppendKeyValueRequest) String() string { return proto.CompactTextString(this) }
 
 type AppendKeyValueResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *AppendKeyValueResponse) Reset() {
-	*this = AppendKeyValueResponse{}
-}
+func (this *AppendKeyValueResponse) Reset()         { *this = AppendKeyValueResponse{} }
+func (this *AppendKeyValueResponse) String() string { return proto.CompactTextString(this) }
 
 type DeleteRequest struct {
 	Filename         *string "PB(bytes,1,req,name=filename)"
 	XXX_unrecognized []byte
 }
 
-func (this *DeleteRequest) Reset() {
-	*this = DeleteRequest{}
-}
+func (this *DeleteRequest) Reset()         { *this = DeleteRequest{} }
+func (this *DeleteRequest) String() string { return proto.CompactTextString(this) }
 
 type DeleteResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *DeleteResponse) Reset() {
-	*this = DeleteResponse{}
-}
+func (this *DeleteResponse) Reset()         { *this = DeleteResponse{} }
+func (this *DeleteResponse) String() string { return proto.CompactTextString(this) }
 
 type ReadRequest struct {
 	Filename         *string "PB(bytes,1,req,name=filename)"
@@ -575,18 +548,16 @@ type ReadRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *ReadRequest) Reset() {
-	*this = ReadRequest{}
-}
+func (this *ReadRequest) Reset()         { *this = ReadRequest{} }
+func (this *ReadRequest) String() string { return proto.CompactTextString(this) }
 
 type ReadResponse struct {
 	Data             []byte "PB(bytes,1,req,name=data)"
 	XXX_unrecognized []byte
 }
 
-func (this *ReadResponse) Reset() {
-	*this = ReadResponse{}
-}
+func (this *ReadResponse) Reset()         { *this = ReadResponse{} }
+func (this *ReadResponse) String() string { return proto.CompactTextString(this) }
 
 type ReadKeyValueRequest struct {
 	Filename         *string "PB(bytes,1,req,name=filename)"
@@ -596,9 +567,8 @@ type ReadKeyValueRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *ReadKeyValueRequest) Reset() {
-	*this = ReadKeyValueRequest{}
-}
+func (this *ReadKeyValueRequest) Reset()         { *this = ReadKeyValueRequest{} }
+func (this *ReadKeyValueRequest) String() string { return proto.CompactTextString(this) }
 
 type ReadKeyValueResponse struct {
 	Data             []*ReadKeyValueResponse_KeyValue "PB(bytes,1,rep,name=data)"
@@ -607,9 +577,8 @@ type ReadKeyValueResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *ReadKeyValueResponse) Reset() {
-	*this = ReadKeyValueResponse{}
-}
+func (this *ReadKeyValueResponse) Reset()         { *this = ReadKeyValueResponse{} }
+func (this *ReadKeyValueResponse) String() string { return proto.CompactTextString(this) }
 
 type ReadKeyValueResponse_KeyValue struct {
 	Key              []byte "PB(bytes,1,req,name=key)"
@@ -617,9 +586,8 @@ type ReadKeyValueResponse_KeyValue struct {
 	XXX_unrecognized []byte
 }
 
-func (this *ReadKeyValueResponse_KeyValue) Reset() {
-	*this = ReadKeyValueResponse_KeyValue{}
-}
+func (this *ReadKeyValueResponse_KeyValue) Reset()         { *this = ReadKeyValueResponse_KeyValue{} }
+func (this *ReadKeyValueResponse_KeyValue) String() string { return proto.CompactTextString(this) }
 
 type ShuffleRequest struct {
 	ShuffleName      *string                      "PB(bytes,1,req,name=shuffle_name)"
@@ -629,26 +597,23 @@ type ShuffleRequest struct {
 	XXX_unrecognized []byte
 }
 
-func (this *ShuffleRequest) Reset() {
-	*this = ShuffleRequest{}
-}
+func (this *ShuffleRequest) Reset()         { *this = ShuffleRequest{} }
+func (this *ShuffleRequest) String() string { return proto.CompactTextString(this) }
 
 type ShuffleResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *ShuffleResponse) Reset() {
-	*this = ShuffleResponse{}
-}
+func (this *ShuffleResponse) Reset()         { *this = ShuffleResponse{} }
+func (this *ShuffleResponse) String() string { return proto.CompactTextString(this) }
 
 type GetShuffleStatusRequest struct {
 	ShuffleName      *string "PB(bytes,1,req,name=shuffle_name)"
 	XXX_unrecognized []byte
 }
 
-func (this *GetShuffleStatusRequest) Reset() {
-	*this = GetShuffleStatusRequest{}
-}
+func (this *GetShuffleStatusRequest) Reset()         { *this = GetShuffleStatusRequest{} }
+func (this *GetShuffleStatusRequest) String() string { return proto.CompactTextString(this) }
 
 type GetShuffleStatusResponse struct {
 	Status           *ShuffleEnums_Status "PB(varint,1,req,name=status,enum=files.ShuffleEnums_Status)"
@@ -656,9 +621,8 @@ type GetShuffleStatusResponse struct {
 	XXX_unrecognized []byte
 }
 
-func (this *GetShuffleStatusResponse) Reset() {
-	*this = GetShuffleStatusResponse{}
-}
+func (this *GetShuffleStatusResponse) Reset()         { *this = GetShuffleStatusResponse{} }
+func (this *GetShuffleStatusResponse) String() string { return proto.CompactTextString(this) }
 
 func init() {
 	proto.RegisterEnum("files.ShuffleEnums_InputFormat", ShuffleEnums_InputFormat_name, ShuffleEnums_InputFormat_value)

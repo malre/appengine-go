@@ -33,7 +33,7 @@ func serveHTTP(netw, addr string) {
 	if err != nil {
 		log.Fatal("appengine: ", err)
 	}
-	err = http.Serve(l, nil)
+	err = http.Serve(l, http.HandlerFunc(handleFilteredHTTP))
 	if err != nil {
 		log.Fatal("appengine: ", err)
 	}
@@ -41,6 +41,21 @@ func serveHTTP(netw, addr string) {
 
 func init() {
 	RegisterHTTPFunc(serveHTTP)
+}
+
+func handleFilteredHTTP(w http.ResponseWriter, r *http.Request) {
+	// Patch up RemoteAddr so it looks reasonable.
+	const remoteAddrHeader = "X-AppEngine-Remote-Addr"
+	if addr := r.Header.Get(remoteAddrHeader); addr != "" {
+		r.RemoteAddr = addr
+		r.Header.Del(remoteAddrHeader)
+	} else {
+		// Should not normally reach here, but pick
+		// a sensible default anyway.
+		r.RemoteAddr = "127.0.0.1"
+	}
+
+	http.DefaultServeMux.ServeHTTP(w, r)
 }
 
 // read and write speak a custom protocol with the appserver. Specifically, an
@@ -157,10 +172,23 @@ func (c *context) Request() interface{} {
 	return c.RequestHeader
 }
 
-func (c *context) Logf(format string, args ...interface{}) {
-	log.Printf(format, args...)
+func (c *context) logf(level, format string, args ...interface{}) {
+	log.Printf(level+": "+format, args...)
+}
+
+func (c *context) Debugf(format string, args ...interface{})    { c.logf("DEBUG", format, args...) }
+func (c *context) Infof(format string, args ...interface{})     { c.logf("INFO", format, args...) }
+func (c *context) Warningf(format string, args ...interface{})  { c.logf("WARNING", format, args...) }
+func (c *context) Errorf(format string, args ...interface{})    { c.logf("ERROR", format, args...) }
+func (c *context) Criticalf(format string, args ...interface{}) { c.logf("CRITICAL", format, args...) }
+
+// FullAppID returns the fully-qualified application ID.
+// This may contain a partition prefix (e.g. "s~" for High Replication apps),
+// or a domain prefix (e.g. "example.com:").
+func (c *context) FullAppID() string {
+	return c.RequestHeader.Get("X-AppEngine-Inbound-AppId")
 }
 
 func (c *context) AppID() string {
-	return c.RequestHeader.Get("X-Appengine-Inbound-Appid")
+	return appID(c.FullAppID())
 }

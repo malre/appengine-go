@@ -10,6 +10,7 @@ import (
 	"http"
 	"image"
 	"image/png"
+	"os"
 	"strconv"
 	"template"
 
@@ -30,28 +31,21 @@ func init() {
 		}
 	}
 
-	tmpl := template.New(nil)
-	tmpl.SetDelims("{{", "}}")
-	if err := tmpl.ParseFile("map.html"); err != nil {
-		frontPage = []byte("tmpl.ParseFile failed: " + err.String())
+	frontPageTmpl = template.New(nil)
+	frontPageTmpl.SetDelims("{{", "}}")
+	if err := frontPageTmpl.ParseFile("map.html"); err != nil {
+		frontPageTmplErr = fmt.Errorf("tmpl.ParseFile failed: %v", err)
 		return
 	}
-	b := new(bytes.Buffer)
-	data := map[string]interface{}{
-		"InProd": !appengine.IsDevAppServer(),
-	}
-	if err := tmpl.Execute(b, data); err != nil {
-		frontPage = []byte("tmpl.Execute failed: " + err.String())
-		return
-	}
-	frontPage = b.Bytes()
+
 }
 
 var (
 	// color is the mapping of intensity to color.
 	color [256]image.Color
 
-	frontPage []byte
+	frontPageTmpl    *template.Template
+	frontPageTmplErr os.Error
 )
 
 const (
@@ -61,11 +55,38 @@ const (
 	// Each tile is 256 pixels wide and 256 pixels high.
 	tileSize = 256
 	// The maximum zoom level at which to use memcache.
-	maxMemcacheLevel = 6
+	maxMemcacheLevel = 8
 )
 
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write(frontPage)
+	c := appengine.NewContext(r)
+
+	if frontPageTmplErr != nil {
+		w.WriteHeader(http.StatusInternalServerError) // 500
+		fmt.Fprintf(w, "Page template is bad: %v", frontPageTmplErr)
+		return
+	}
+
+	stats, err := memcache.Stats(c)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError) // 500
+		fmt.Fprintf(w, "memcache.Stats failed: %v", err)
+		return
+	}
+
+	b := new(bytes.Buffer)
+	data := map[string]interface{}{
+		"InProd":        !appengine.IsDevAppServer(),
+		"MemcacheStats": fmt.Sprintf("%+v", *stats),
+	}
+	if err := frontPageTmpl.Execute(b, data); err != nil {
+		w.WriteHeader(http.StatusInternalServerError) // 500
+		fmt.Fprintf(w, "tmpl.Execute failed: %v", err)
+		return
+	}
+
+	w.Header().Set("Content-Length", strconv.Itoa(b.Len()))
+	b.WriteTo(w)
 }
 
 // tileHandler implements a tile renderer for use with the Google Maps JavaScript API.
@@ -96,6 +117,8 @@ func tileHandler(w http.ResponseWriter, r *http.Request) {
 			Expiration: 3600, // TTL = 1 hour
 		})
 	}
+
+	w.Header().Set("Content-Length", strconv.Itoa(len(b)))
 	w.Write(b)
 }
 

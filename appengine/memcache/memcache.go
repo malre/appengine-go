@@ -2,8 +2,8 @@
 // Use of this source code is governed by the Apache 2.0
 // license that can be found in the LICENSE file.
 
-// The memcache package provides a client for App Engine's distributed in-
-// memory key-value store for small chunks of arbitrary data.
+// Package memcache provides a client for App Engine's distributed in-memory
+// key-value store for small chunks of arbitrary data.
 //
 // The fundamental operations get and set items, keyed by a string.
 //
@@ -54,6 +54,8 @@ var (
 	ErrNotStored = os.NewError("memcache: item not stored")
 	// ErrServer means that a server error occurred.
 	ErrServerError = os.NewError("memcache: server error")
+	// ErrNoStats means that no statistics were available.
+	ErrNoStats = os.NewError("memcache: no statistics available")
 )
 
 // Item is the unit of memcache gets and sets.
@@ -277,6 +279,38 @@ func gobMarshal(v interface{}) ([]byte, os.Error) {
 
 func gobUnmarshal(data []byte, v interface{}) os.Error {
 	return gob.NewDecoder(bytes.NewBuffer(data)).Decode(v)
+}
+
+// Statistics represents a set of statistics about the memcache cache.
+type Statistics struct {
+	Hits     uint64 // Counter of cache hits
+	Misses   uint64 // Counter of cache misses
+	ByteHits uint64 // Counter of bytes transferred for gets
+
+	Items uint64 // Items currently in the cache
+	Bytes uint64 // Size of all items currently in the cache
+
+	Oldest int64 // Age of access of the oldest item, in seconds
+}
+
+// Stats retrieves the current memcache statistics.
+func Stats(c appengine.Context) (*Statistics, os.Error) {
+	req := &pb.MemcacheStatsRequest{}
+	res := &pb.MemcacheStatsResponse{}
+	if err := c.Call("memcache", "Stats", req, res); err != nil {
+		return nil, err
+	}
+	if res.Stats == nil {
+		return nil, ErrNoStats
+	}
+	return &Statistics{
+		Hits:     *res.Stats.Hits,
+		Misses:   *res.Stats.Misses,
+		ByteHits: *res.Stats.ByteHits,
+		Items:    *res.Stats.Items,
+		Bytes:    *res.Stats.Bytes,
+		Oldest:   int64(*res.Stats.OldestItemAge),
+	}, nil
 }
 
 func init() {
