@@ -182,13 +182,13 @@ func (c *context) Warningf(format string, args ...interface{})  { c.logf("WARNIN
 func (c *context) Errorf(format string, args ...interface{})    { c.logf("ERROR", format, args...) }
 func (c *context) Criticalf(format string, args ...interface{}) { c.logf("CRITICAL", format, args...) }
 
-// FullAppID returns the fully-qualified application ID.
+// FullyQualifiedAppID returns the fully-qualified application ID.
 // This may contain a partition prefix (e.g. "s~" for High Replication apps),
 // or a domain prefix (e.g. "example.com:").
-func (c *context) FullAppID() string {
+func (c *context) FullyQualifiedAppID() string {
 	return c.RequestHeader.Get("X-AppEngine-Inbound-AppId")
 }
 
 func (c *context) AppID() string {
-	return appID(c.FullAppID())
+	return appID(c.FullyQualifiedAppID())
 }

@@ -6,7 +6,15 @@ package datastore
 
 import (
 	"bytes"
+	"encoding/base64"
+	"gob"
+	"os"
 	"strconv"
+	"strings"
+
+	"goprotobuf.googlecode.com/hg/proto"
+
+	pb "appengine_internal/datastore"
 )
 
 // Key represents the datastore key for a stored entity, and is immutable.
@@ -117,6 +125,108 @@ func (k *Key) String() string {
 	b := bytes.NewBuffer(make([]byte, 0, 512))
 	k.marshal(b)
 	return b.String()
+}
+
+type gobKey struct {
+	Kind     string
+	StringID string
+	IntID    int64
+	Parent   *gobKey
+	AppID    string
+}
+
+func keyToGobKey(k *Key) *gobKey {
+	if k == nil {
+		return nil
+	}
+	return &gobKey{
+		Kind:     k.kind,
+		StringID: k.stringID,
+		IntID:    k.intID,
+		Parent:   keyToGobKey(k.parent),
+		AppID:    k.appID,
+	}
+}
+
+func gobKeyToKey(gk *gobKey) *Key {
+	if gk == nil {
+		return nil
+	}
+	return &Key{
+		kind:     gk.Kind,
+		stringID: gk.StringID,
+		intID:    gk.IntID,
+		parent:   gobKeyToKey(gk.Parent),
+		appID:    gk.AppID,
+	}
+}
+
+func (k *Key) GobEncode() ([]byte, os.Error) {
+	buf := new(bytes.Buffer)
+	if err := gob.NewEncoder(buf).Encode(keyToGobKey(k)); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+func (k *Key) GobDecode(buf []byte) os.Error {
+	gk := new(gobKey)
+	if err := gob.NewDecoder(bytes.NewBuffer(buf)).Decode(gk); err != nil {
+		return err
+	}
+	*k = *gobKeyToKey(gk)
+	return nil
+}
+
+func (k *Key) MarshalJSON() ([]byte, os.Error) {
+	return []byte(`"` + k.Encode() + `"`), nil
+}
+
+func (k *Key) UnmarshalJSON(buf []byte) os.Error {
+	if len(buf) < 2 || buf[0] != '"' || buf[len(buf)-1] != '"' {
+		return os.NewError("datastore: bad JSON key")
+	}
+	k2, err := DecodeKey(string(buf[1 : len(buf)-1]))
+	if err != nil {
+		return err
+	}
+	*k = *k2
+	return nil
+}
+
+// Encode returns an opaque representation of the key
+// suitable for use in HTML and URLs.
+// This is compatible with the Python and Java runtimes.
+func (k *Key) Encode() string {
+	ref := keyToProto("", k)
+
+	b, err := proto.Marshal(ref)
+	if err != nil {
+		panic(err)
+	}
+
+	// Trailing padding is stripped.
+	return strings.TrimRight(base64.URLEncoding.EncodeToString(b), "=")
+}
+
+// DecodeKey decodes a key from the opaque representation returned by Encode.
+func DecodeKey(encoded string) (*Key, os.Error) {
+	// Re-add padding.
+	if m := len(encoded) % 4; m != 0 {
+		encoded += strings.Repeat("=", 4-m)
+	}
+
+	b, err := base64.URLEncoding.DecodeString(encoded)
+	if err != nil {
+		return nil, err
+	}
+
+	ref := new(pb.Reference)
+	if err := proto.Unmarshal(b, ref); err != nil {
+		return nil, err
+	}
+
+	return protoToKey(ref)
 }
 
 // NewIncompleteKey creates a new incomplete key.

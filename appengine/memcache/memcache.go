@@ -42,20 +42,21 @@ import (
 )
 
 var (
-	// ErrCacheMiss means that a Get failed because the item wasn't present.
+	// ErrCacheMiss means that an operation failed
+	// because the item wasn't present.
 	ErrCacheMiss = os.NewError("memcache: cache miss")
 	// ErrCASConflict means that a CompareAndSwap call failed due to the
 	// cached value being modified between the Get and the CompareAndSwap.
 	// If the cached value was simply evicted rather than replaced,
 	// ErrNotStored will be returned instead.
 	ErrCASConflict = os.NewError("memcache: compare-and-swap conflict")
+	// ErrNoStats means that no statistics were available.
+	ErrNoStats = os.NewError("memcache: no statistics available")
 	// ErrNotStored means that a conditional write operation (i.e. Add or
 	// CompareAndSwap) failed because the condition was not satisfied.
 	ErrNotStored = os.NewError("memcache: item not stored")
-	// ErrServer means that a server error occurred.
+	// ErrServerError means that a server error occurred.
 	ErrServerError = os.NewError("memcache: server error")
-	// ErrNoStats means that no statistics were available.
-	ErrNoStats = os.NewError("memcache: no statistics available")
 )
 
 // Item is the unit of memcache gets and sets.
@@ -126,6 +127,51 @@ func GetMulti(c appengine.Context, key []string) (map[string]*Item, os.Error) {
 	return m, nil
 }
 
+// Delete deletes the item for the given key.
+// ErrCacheMiss is returned if the specified item can not be found.
+// The key must be at most 250 bytes in length.
+func Delete(c appengine.Context, key string) os.Error {
+	e := DeleteMulti(c, []string{key})
+	return e[0]
+}
+
+// DeleteMulti is a batch version of Delete.
+// The returned slice will have the same length as the input slice.
+// If a given key cannot be found, its corresponding value in the
+// returned error slice is set to ErrCacheMiss.
+// Each key must be at most 250 bytes in length.
+func DeleteMulti(c appengine.Context, key []string) []os.Error {
+	req := &pb.MemcacheDeleteRequest{
+		Item: make([]*pb.MemcacheDeleteRequest_Item, len(key)),
+	}
+	for i, k := range key {
+		req.Item[i] = &pb.MemcacheDeleteRequest_Item{Key: []byte(k)}
+	}
+	res := &pb.MemcacheDeleteResponse{}
+	e := make([]os.Error, len(key))
+	err := c.Call("memcache", "Delete", req, res)
+	if err == nil && len(e) != len(res.DeleteStatus) {
+		err = ErrServerError
+	}
+	if err != nil {
+		for i := range e {
+			e[i] = err
+		}
+		return e
+	}
+	for i, s := range res.DeleteStatus {
+		switch s {
+		case pb.MemcacheDeleteResponse_DELETED:
+			e[i] = nil
+		case pb.MemcacheDeleteResponse_NOT_FOUND:
+			e[i] = ErrCacheMiss
+		default:
+			e[i] = ErrServerError
+		}
+	}
+	return e
+}
+
 // set sets the given items using the given conflict resolution policy.
 // The returned slice will have the same length as the input slice.
 // If value is not nil, each element should correspond to an item.
@@ -160,15 +206,13 @@ func set(c appengine.Context, item []*Item, value [][]byte, policy int32) []os.E
 	}
 	res := &pb.MemcacheSetResponse{}
 	e := make([]os.Error, len(item))
-	if err := c.Call("memcache", "Set", req, res); err != nil {
+	err := c.Call("memcache", "Set", req, res)
+	if err == nil && len(e) != len(res.SetStatus) {
+		err = ErrServerError
+	}
+	if err != nil {
 		for i := range e {
 			e[i] = err
-		}
-		return e
-	}
-	if len(e) != len(res.SetStatus) {
-		for i := range e {
-			e[i] = ErrServerError
 		}
 		return e
 	}

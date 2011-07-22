@@ -135,12 +135,12 @@ func ParseUpload(req *http.Request) (blobs map[string][]*BlobInfo, other map[str
 	mreader := multipart.NewReader(io.MultiReader(req.Body, strings.NewReader("\r\n\r\n")), boundary)
 	for {
 		part, perr := mreader.NextPart()
+		if perr == os.EOF {
+			break
+		}
 		if perr != nil {
 			return nil, nil, errorf("error reading next mime part with boundary %q (len=%d): %v",
 				boundary, len(boundary), perr)
-		}
-		if part == nil {
-			break
 		}
 
 		bi := &BlobInfo{}
@@ -149,7 +149,8 @@ func ParseUpload(req *http.Request) (blobs map[string][]*BlobInfo, other map[str
 		formKey := params["name"]
 
 		ctype, params = mime.ParseMediaType(part.Header.Get("Content-Type"))
-		if ctype != "message/external-body" || params["access-type"] != "X-AppEngine-BlobKey" {
+		bi.BlobKey = appengine.BlobKey(params["blob-key"])
+		if ctype != "message/external-body" || bi.BlobKey == "" {
 			if formKey != "" {
 				slurp, serr := ioutil.ReadAll(part)
 				if serr != nil {
@@ -159,7 +160,6 @@ func ParseUpload(req *http.Request) (blobs map[string][]*BlobInfo, other map[str
 			}
 			continue
 		}
-		bi.BlobKey = appengine.BlobKey(params["blob-key"])
 
 		// App Engine sends a MIME header as the body of each MIME part.
 		tp := textproto.NewReader(bufio.NewReader(part))

@@ -4,6 +4,8 @@
 
 package datastore
 
+// TODO: Merge this file into query.go.
+
 import (
 	"os"
 
@@ -13,11 +15,20 @@ import (
 
 // Count returns the number of results for the query.
 func (q *Query) Count(c appengine.Context) (int, os.Error) {
-	// TODO: Drop this and just use the implementation in count_prod.go
-	// once the dev_appserver implements the datastore_v3.Count RPC method.
 	if q.err != nil {
 		return 0, q.err
 	}
+
+	if !q.keysOnly {
+		// Duplicate the query, set keysOnly.
+		newQ := new(Query)
+		*newQ = *q
+		newQ.keysOnly = true
+		q = newQ
+	}
+
+	// TODO: This is inefficient. There's no need to
+	// fetch results to do a count.
 	i := 0
 	for t := q.Run(c); ; {
 		_, _, err := t.next()

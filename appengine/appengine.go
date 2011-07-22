@@ -13,7 +13,7 @@ import (
 	"appengine_internal"
 )
 
-// IsDevAppServer returns whether the App Engine app is running in the
+// IsDevAppServer reports whether the App Engine app is running in the
 // development App Server.
 func IsDevAppServer() bool {
 	return appengine_internal.IsDevAppServer()
@@ -21,13 +21,6 @@ func IsDevAppServer() bool {
 
 // Context represents the context of an in-flight HTTP request.
 type Context interface {
-	// Call implements App Engine API calls.
-	// Developer-facing APIs wrap Call to provide a more friendly API.
-	Call(service, method string, in, out interface{}) os.Error
-
-	// Request returns environment-dependent request information.
-	Request() interface{}
-
 	// Debugf formats its arguments according to the format, analogous to fmt.Printf,
 	// and records the text as a log message at Debug level.
 	Debugf(format string, args ...interface{})
@@ -48,6 +41,13 @@ type Context interface {
 	// The string will be a plain application ID (e.g. "appid"),
 	// with a domain prefix for custom domain deployments (e.g. "example.com:appid").
 	AppID() string
+
+	// The remaining methods are for internal use only.
+	// Developer-facing APIs wrap these methods to provide a more friendly API.
+
+	Call(service, method string, in, out interface{}) os.Error
+	FullyQualifiedAppID() string
+	Request() interface{}
 }
 
 // NewContext returns a new context for an in-flight HTTP request.

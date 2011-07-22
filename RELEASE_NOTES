@@ -4,6 +4,19 @@ Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
 
+Version 1.5.2 - 18 July 2011
+============================
+This release changes to api_version 2.
+
+appengine/datastore:
+  - Add Python-compatible key encoding/decoding.
+  - Add ancestor queries.
+  - Allow GetAll to take a slice of Maps.
+  - Fix handling of incomplete keys with parents during Put and PutMulti.
+  - Make Key work with the gob and json packages.
+appengine/memcache:
+  - Add Delete and DeleteMulti functions.
+
 Version 1.5.1 - 20 June 2011
 ============================
 appengine:

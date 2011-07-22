@@ -72,15 +72,27 @@ func NewQuery(kind string) *Query {
 
 // Query represents a datastore query.
 type Query struct {
-	kind   string
-	filter []filter
-	order  []order
+	kind     string
+	ancestor *Key
+	filter   []filter
+	order    []order
 
 	keysOnly bool
 	limit    int
 	offset   int
 
 	err os.Error
+}
+
+// Ancestor sets the ancestor filter for the Query.
+// The ancestor should not be nil.
+func (q *Query) Ancestor(ancestor *Key) *Query {
+	if ancestor == nil {
+		q.err = os.NewError("datastore: nil query ancestor")
+		return q
+	}
+	q.ancestor = ancestor
+	return q
 }
 
 // Filter adds a field-based filter to the Query.
@@ -184,6 +196,9 @@ func (q *Query) toProto(appID string) (*pb.Query, os.Error) {
 		App:  proto.String(appID),
 		Kind: proto.String(q.kind),
 	}
+	if q.ancestor != nil {
+		x.Ancestor = keyToProto(appID, q.ancestor)
+	}
 	if q.keysOnly {
 		x.KeysOnly = proto.Bool(true)
 		x.RequirePerfectPlan = proto.Bool(true)
@@ -232,7 +247,7 @@ func (q *Query) Run(c appengine.Context) *Iterator {
 	if q.err != nil {
 		return &Iterator{err: q.err}
 	}
-	req, err := q.toProto(fullAppID(c))
+	req, err := q.toProto(c.FullyQualifiedAppID())
 	return &Iterator{
 		c:        c,
 		keysOnly: q.keysOnly,
@@ -242,29 +257,37 @@ func (q *Query) Run(c appengine.Context) *Iterator {
 	}
 }
 
-// GetAll runs the query in the given context and appends the result to the
-// provided destination slice.
-// The dst must be a pointer to a slice of structs, struct pointers, or maps.
-// GetAll appends to that slice and returns a corresponding slice of keys.
+// GetAll runs the query in the given context and returns all keys that match
+// that query, as well as appending the values to dst.
+// The dst must be a pointer to a slice of structs, struct pointers, or Maps.
 // If q is a ``keys-only'' query, GetAll ignores dst and only returns the keys.
 func (q *Query) GetAll(c appengine.Context, dst interface{}) ([]*Key, os.Error) {
-	var ds reflect.Value
-	var et reflect.Type
-	var ptr bool
+	var (
+		dv       reflect.Value
+		et       reflect.Type
+		isMap    bool
+		isStruct bool
+	)
 	if !q.keysOnly {
-		ds = reflect.ValueOf(dst)
-		if ds.Kind() != reflect.Ptr || ds.Elem().Kind() != reflect.Slice {
-			return nil, os.NewError("datastore: GetAll destination is not pointer to slice")
+		dv = reflect.ValueOf(dst)
+		if dv.Kind() != reflect.Ptr || dv.Elem().Kind() != reflect.Slice {
+			return nil, ErrInvalidEntityType
 		}
-		if ds.IsNil() {
-			return nil, os.NewError("datastore: GetAll destination is nil pointer to slice")
+		if dv.IsNil() {
+			return nil, ErrInvalidEntityType
 		}
-		ds = ds.Elem()
+		dv = dv.Elem()
 
-		et = ds.Type().Elem()
-		if et.Kind() == reflect.Ptr {
-			ptr = true
+		et = dv.Type().Elem()
+		switch {
+		case et == reflect.TypeOf(Map(nil)):
+			isMap = true
+		case et.Kind() == reflect.Ptr && et.Elem().Kind() == reflect.Struct:
 			et = et.Elem()
+		case et.Kind() == reflect.Struct:
+			isStruct = true
+		default:
+			return nil, ErrInvalidEntityType
 		}
 	}
 
@@ -278,15 +301,19 @@ func (q *Query) GetAll(c appengine.Context, dst interface{}) ([]*Key, os.Error) 
 			return keys, err
 		}
 		if !q.keysOnly {
-			ev := reflect.New(et)
-			d := ev.Interface()
-			if _, err = loadEntity(d, k, e); err != nil {
+			var ev reflect.Value
+			if isMap {
+				ev = reflect.ValueOf(make(Map))
+			} else {
+				ev = reflect.New(et)
+			}
+			if _, err = loadEntity(ev.Interface(), k, e); err != nil {
 				return keys, err
 			}
-			if !ptr {
+			if isStruct {
 				ev = ev.Elem()
 			}
-			ds.Set(reflect.Append(ds, ev))
+			dv.Set(reflect.Append(dv, ev))
 		}
 		keys = append(keys, k)
 	}
@@ -309,7 +336,7 @@ var Done = os.NewError("datastore: query has no more results")
 // Next returns the key of the next result. When there are no more results,
 // Done is returned as the error.
 // If the query is not keys only, it also loads the entity
-// stored for that key into the struct pointer or map dst, with the same
+// stored for that key into the struct pointer or Map dst, with the same
 // semantics and possible errors as for the Get function.
 // If the query is keys only, it is valid to pass a nil interface{} for dst.
 func (t *Iterator) Next(dst interface{}) (*Key, os.Error) {
@@ -355,6 +382,8 @@ func (t *Iterator) next() (*Key, *pb.EntityProto, os.Error) {
 		}
 	}
 	if len(t.res.Result) == 0 {
+		// TODO: This code is probably broken for
+		// queries with offset > 1000.
 		t.err = Done
 		return nil, nil, t.err
 	}

@@ -64,7 +64,7 @@ func NewPOSTTask(path string, params map[string][]string) *Task {
 	h.Set("Content-Type", "application/x-www-form-urlencoded")
 	return &Task{
 		Path:    path,
-		Payload: []byte(http.EncodeQuery(params)),
+		Payload: []byte(http.Values(params).Encode()),
 		Header:  h,
 		Method:  "POST",
 	}

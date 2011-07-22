@@ -139,7 +139,7 @@ func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err os.Err
 	res.StatusCode = int(*fres.StatusCode)
 	res.Status = fmt.Sprintf("%d %s", res.StatusCode, statusCodeToText(res.StatusCode))
 	res.Header = http.Header(make(map[string][]string))
-	res.RequestMethod = req.Method
+	res.Request = req
 
 	// Faked:
 	res.ProtoMajor = 1

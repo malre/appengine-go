@@ -490,6 +490,7 @@ type TaskQueueScannerQueueInfo struct {
 	ExecutedLastHour        *int64   "PB(varint,2,req,name=executed_last_hour)"
 	SamplingDurationSeconds *float64 "PB(fixed64,3,req,name=sampling_duration_seconds)"
 	RequestsInFlight        *int32   "PB(varint,4,opt,name=requests_in_flight)"
+	EnforcedRate            *float64 "PB(fixed64,5,opt,name=enforced_rate)"
 	XXX_unrecognized        []byte
 }
 

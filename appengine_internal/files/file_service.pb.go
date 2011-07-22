@@ -129,7 +129,6 @@ const (
 	FileServiceErrors_READ_ONLY                        = 103
 	FileServiceErrors_EXCLUSIVE_LOCK_FAILED            = 104
 	FileServiceErrors_SEQUENCE_KEY_OUT_OF_ORDER        = 300
-	FileServiceErrors_WRONG_KEY_ORDER                  = 400
 	FileServiceErrors_OUT_OF_BOUNDS                    = 500
 	FileServiceErrors_GLOBS_NOT_SUPPORTED              = 600
 	FileServiceErrors_FILE_NAME_NOT_SPECIFIED          = 701
@@ -164,7 +163,6 @@ var FileServiceErrors_ErrorCode_name = map[int32]string{
 	103:  "READ_ONLY",
 	104:  "EXCLUSIVE_LOCK_FAILED",
 	300:  "SEQUENCE_KEY_OUT_OF_ORDER",
-	400:  "WRONG_KEY_ORDER",
 	500:  "OUT_OF_BOUNDS",
 	600:  "GLOBS_NOT_SUPPORTED",
 	701:  "FILE_NAME_NOT_SPECIFIED",
@@ -198,7 +196,6 @@ var FileServiceErrors_ErrorCode_value = map[string]int32{
 	"READ_ONLY":                        103,
 	"EXCLUSIVE_LOCK_FAILED":            104,
 	"SEQUENCE_KEY_OUT_OF_ORDER":        300,
-	"WRONG_KEY_ORDER":                  400,
 	"OUT_OF_BOUNDS":                    500,
 	"GLOBS_NOT_SUPPORTED":              600,
 	"FILE_NAME_NOT_SPECIFIED":          701,
@@ -224,20 +221,20 @@ func (x FileServiceErrors_ErrorCode) String() string {
 type FileContentType_ContentType int32
 
 const (
-	FileContentType_RAW               = 0
-	FileContentType_ORDERED_KEY_VALUE = 2
-	FileContentType_INVALID_TYPE      = 127
+	FileContentType_RAW          = 0
+	FileContentType_DEPRECATED_1 = 2
+	FileContentType_INVALID_TYPE = 127
 )
 
 var FileContentType_ContentType_name = map[int32]string{
 	0:   "RAW",
-	2:   "ORDERED_KEY_VALUE",
+	2:   "DEPRECATED_1",
 	127: "INVALID_TYPE",
 }
 var FileContentType_ContentType_value = map[string]int32{
-	"RAW":               0,
-	"ORDERED_KEY_VALUE": 2,
-	"INVALID_TYPE":      127,
+	"RAW":          0,
+	"DEPRECATED_1": 2,
+	"INVALID_TYPE": 127,
 }
 
 func NewFileContentType_ContentType(x int32) *FileContentType_ContentType {
@@ -508,23 +505,6 @@ type AppendResponse struct {
 
 func (this *AppendResponse) Reset()         { *this = AppendResponse{} }
 func (this *AppendResponse) String() string { return proto.CompactTextString(this) }
-
-type AppendKeyValueRequest struct {
-	Filename         *string "PB(bytes,1,req,name=filename)"
-	Key              []byte  "PB(bytes,2,req,name=key)"
-	Value            []byte  "PB(bytes,3,req,name=value)"
-	XXX_unrecognized []byte
-}
-
-func (this *AppendKeyValueRequest) Reset()         { *this = AppendKeyValueRequest{} }
-func (this *AppendKeyValueRequest) String() string { return proto.CompactTextString(this) }
-
-type AppendKeyValueResponse struct {
-	XXX_unrecognized []byte
-}
-
-func (this *AppendKeyValueResponse) Reset()         { *this = AppendKeyValueResponse{} }
-func (this *AppendKeyValueResponse) String() string { return proto.CompactTextString(this) }
 
 type DeleteRequest struct {
 	Filename         *string "PB(bytes,1,req,name=filename)"

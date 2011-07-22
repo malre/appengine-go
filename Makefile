@@ -35,5 +35,5 @@ DIRS=\
 
 install clean nuke:
 	for dir in $(DIRS); do \
-		$(MAKE) -C $$dir $@; \
+		$(MAKE) -C $$dir $@ || exit 1; \
 	done

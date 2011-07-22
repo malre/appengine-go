@@ -95,8 +95,7 @@ func nvToProto(defaultAppID string, key *Key, typeName string, nv []nameValue) (
 	e := &pb.EntityProto{
 		Key: keyToProto(defaultAppID, key),
 	}
-	if key.Incomplete() {
-		// EntityGroup is a required proto field.
+	if key.parent == nil {
 		e.EntityGroup = &pb.Path{}
 	} else {
 		e.EntityGroup = keyToProto(defaultAppID, key.root()).Path

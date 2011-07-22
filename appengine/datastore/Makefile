@@ -8,6 +8,7 @@ include $(GOROOT)/src/Make.inc
 
 TARG=appengine/datastore
 GOFILES=\
+	count.go\
 	datastore.go\
 	doc.go\
 	key.go\
@@ -15,6 +16,5 @@ GOFILES=\
 	query.go\
 	save.go\
 	transaction.go\
-	count_dev.go\
 
 include $(GOROOT)/src/Make.pkg

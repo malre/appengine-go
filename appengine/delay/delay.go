@@ -31,6 +31,11 @@ executed is preserved by combining the file name in which it is declared
 with the string key that was passed to the Func function. Updating an app
 with pending function invocations is safe as long as the relevant
 functions have the (filename, key) combination preserved.
+
+The delay package uses the Task Queue API to create tasks that call the
+reserved application path "/_ah/queue/go/delay".
+This path must not be marked as "login: required" in app.yaml;
+it must be marked as "login: admin" or have no access restriction.
 */
 package delay
 
@@ -85,11 +90,11 @@ func Func(key string, i interface{}) *Function {
 
 	t := f.fv.Type()
 	if t.Kind() != reflect.Func {
-		f.err = os.ErrorString("not a function")
+		f.err = os.NewError("not a function")
 		return f
 	}
 	if t.NumIn() == 0 || t.In(0) != contextType {
-		f.err = os.ErrorString("first argument must be appengine.Context")
+		f.err = os.NewError("first argument must be appengine.Context")
 		return f
 	}
 

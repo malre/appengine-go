@@ -199,16 +199,15 @@ func run(args []string, env []string) os.Error {
 		log.Printf("run %v", args)
 	}
 	tool := path.Base(args[0])
-	cmd, err := exec.Run(args[0], args, env, "", exec.DevNull, exec.PassThrough, exec.PassThrough)
-	if err != nil {
+	cmd := &exec.Cmd{
+		Path:   args[0],
+		Args:   args,
+		Env:    env,
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+	}
+	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed running %v: %v", tool, err)
-	}
-	w, err := cmd.Wait(0)
-	if err != nil {
-		return fmt.Errorf("failed while waiting for %v to finish: %v", tool, err)
-	}
-	if rc := w.ExitStatus(); rc != 0 {
-		return fmt.Errorf("%v exited with status %d", tool, rc)
 	}
 	return nil
 }

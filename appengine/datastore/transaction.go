@@ -25,10 +25,6 @@ type transaction struct {
 	finished    bool
 }
 
-func (t *transaction) FullAppID() string {
-	return fullAppID(t.Context)
-}
-
 var errBadTransactionField = os.NewError("datastore: Call parameter has an incompatible Transaction field")
 
 // setTransactionField performs the equivalent of "x.Transaction =
@@ -108,7 +104,7 @@ func runOnce(c appengine.Context, f func(appengine.Context) os.Error) os.Error {
 	// Begin the transaction.
 	t := &transaction{Context: c}
 	req := &pb.BeginTransactionRequest{
-		App: proto.String(fullAppID(c)),
+		App: proto.String(c.FullyQualifiedAppID()),
 	}
 	if err := t.Context.Call("datastore_v3", "BeginTransaction", req, &t.transaction); err != nil {
 		return err

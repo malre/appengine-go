@@ -40,9 +40,9 @@ func SecondsToTime(n int64) Time {
 type Map map[string]interface{}
 
 var (
-	// ErrInvalidEntityType is returned when an entity is passed that isn't
-	// a struct pointer or a Map.
-	ErrInvalidEntityType = os.NewError("datastore: invalid entity type was not a struct pointer or a Map")
+	// ErrInvalidEntityType is returned when an invalid destination entity type
+	// is passed to Get, GetAll, GetMulti or Next.
+	ErrInvalidEntityType = os.NewError("datastore: invalid entity type")
 	// ErrInvalidKey is returned when an invalid key is presented.
 	ErrInvalidKey = os.NewError("datastore: invalid key")
 	// ErrNoSuchEntity is returned when no entity was found for a given key.
@@ -93,18 +93,6 @@ func (m ErrMulti) String() string {
 	return fmt.Sprintf("%s (and %d other errors)", s, n-1)
 }
 
-type fullAppIDer interface {
-	FullAppID() string
-}
-
-// fullAppID returns the full AppID for c.
-func fullAppID(c appengine.Context) string {
-	if c, ok := c.(fullAppIDer); ok {
-		return c.FullAppID()
-	}
-	return c.AppID()
-}
-
 // protoToKey converts a Reference proto to a *Key.
 func protoToKey(r *pb.Reference) (k *Key, err os.Error) {
 	appID := proto.GetString(r.App)
@@ -139,11 +127,11 @@ func keyToProto(defaultAppID string, k *Key) *pb.Reference {
 		e[n] = &pb.Path_Element{
 			Type: &i.kind,
 		}
-		// Both Name and Id are optional proto fields, but the App Server expects
-		// that exactly one of those fields are set.
+		// At most one of {Name,Id} should be set.
+		// Neither will be set for incomplete keys.
 		if i.stringID != "" {
 			e[n].Name = &i.stringID
-		} else {
+		} else if i.intID != 0 {
 			e[n].Id = &i.intID
 		}
 	}
@@ -268,7 +256,7 @@ func GetMulti(c appengine.Context, key []*Key, dst []interface{}) os.Error {
 		return err
 	}
 	req := &pb.GetRequest{
-		Key: multiKeyToProto(fullAppID(c), key),
+		Key: multiKeyToProto(c.FullyQualifiedAppID(), key),
 	}
 	res := &pb.GetResponse{}
 	err := c.Call("datastore_v3", "Get", req, res)
@@ -327,7 +315,7 @@ func PutMulti(c appengine.Context, key []*Key, src []interface{}) ([]*Key, os.Er
 	if len(key) == 0 {
 		return nil, nil
 	}
-	appID := fullAppID(c)
+	appID := c.FullyQualifiedAppID()
 	if err := multiValid(key); err != nil {
 		return nil, err
 	}
@@ -387,7 +375,7 @@ func DeleteMulti(c appengine.Context, key []*Key) os.Error {
 		return err
 	}
 	req := &pb.DeleteRequest{
-		Key: multiKeyToProto(fullAppID(c), key),
+		Key: multiKeyToProto(c.FullyQualifiedAppID(), key),
 	}
 	res := &pb.DeleteResponse{}
 	return c.Call("datastore_v3", "Delete", req, res)
