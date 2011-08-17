@@ -217,7 +217,7 @@ func topologicalSort(p []*Package) os.Error {
 	packageLoop:
 		for i, pkg := range p {
 			for _, dep := range pkg.Dependencies {
-				if _, ok := selected[dep]; !ok {
+				if !selected[dep] {
 					continue packageLoop
 				}
 			}
@@ -227,10 +227,53 @@ func topologicalSort(p []*Package) os.Error {
 		}
 		if n == 0 {
 			// No leaves, so there must be a cycle.
-			// TODO: Return a summary of the cycle?
-			return os.NewError("parser: cyclic dependency graph")
+			cycle := findCycle(p)
+			paths := make([]string, len(cycle)+1)
+			for i, pkg := range cycle {
+				paths[i] = pkg.ImportPath
+			}
+			paths[len(cycle)] = cycle[0].ImportPath // duplicate last package
+			return fmt.Errorf("parser: cyclic dependency graph: %s", strings.Join(paths, " -> "))
 		}
 		p = p[n:]
 	}
 	return nil
+}
+
+// findCycle finds a cycle in pkgs.
+// It assumes that a cycle exists.
+func findCycle(pkgs []*Package) []*Package {
+	pkgMap := make(map[*Package]bool, len(pkgs)) // quick index of packages
+	for _, pkg := range pkgs {
+		pkgMap[pkg] = true
+	}
+
+	// Every element of pkgs is a member of a cycle,
+	// so find a cycle starting with pkgs[0].
+	cycle := []*Package{pkgs[0]}
+	seen := map[*Package]int{pkgs[0]: 0} // map of package to index in cycle
+	for {
+		last := cycle[len(cycle)-1]
+		for _, dep := range last.Dependencies {
+			if i, ok := seen[dep]; ok {
+				// Cycle found.
+				return cycle[i:]
+			}
+		}
+		// None of the dependencies of last are in cycle, so pick one of
+		// its dependencies (that we know is in a cycle) to add to cycle.
+		// We are always able to find such a dependency, because
+		// otherwise last would not be a member of a cycle.
+		var dep *Package
+		for _, d := range last.Dependencies {
+			if pkgMap[d] {
+				dep = d
+				break
+			}
+		}
+
+		seen[dep] = len(cycle)
+		cycle = append(cycle, dep)
+	}
+	panic("unreachable")
 }

@@ -75,7 +75,7 @@ func (k *Key) valid() bool {
 			if k.parent.Incomplete() {
 				return false
 			}
-			if k.parent.appID != k.appID {
+			if k.parent.appID != k.appID && k.appID != "" {
 				return false
 			}
 		}

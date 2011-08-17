@@ -37,9 +37,7 @@ type Context interface {
 	// Criticalf is like Debugf, but at Critical level.
 	Criticalf(format string, args ...interface{})
 
-	// AppID returns the application ID for the current application.
-	// The string will be a plain application ID (e.g. "appid"),
-	// with a domain prefix for custom domain deployments (e.g. "example.com:appid").
+	// AppID is deprecated. Use the AppID function instead.
 	AppID() string
 
 	// The remaining methods are for internal use only.

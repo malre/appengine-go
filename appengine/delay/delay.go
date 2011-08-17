@@ -17,7 +17,9 @@ It is also possible to use a function literal.
 
 To call a function, invoke its Call method.
 	laterFunc.Call(c, "something")
-A function may be called any number of times.
+A function may be called any number of times. If the function has any
+return arguments, and the last one is of type os.Error, the function may
+return a non-nil error to signal that the function should be retried.
 
 The arguments to functions may be of any type that is encodable by the
 gob package.
@@ -69,8 +71,12 @@ var (
 	// registry of all delayed functions
 	funcs = make(map[string]*Function)
 
-	// precomputed type
+	// precomputed types
 	contextType = reflect.TypeOf((*appengine.Context)(nil)).Elem()
+	osErrorType = reflect.TypeOf((*os.Error)(nil)).Elem()
+
+	// errors
+	errFirstArg = os.NewError("first argument must be appengine.Context")
 )
 
 // Func declares a new Function. The second argument must be a function with a
@@ -94,7 +100,7 @@ func Func(key string, i interface{}) *Function {
 		return f
 	}
 	if t.NumIn() == 0 || t.In(0) != contextType {
-		f.err = os.NewError("first argument must be appengine.Context")
+		f.err = errFirstArg
 		return f
 	}
 
@@ -130,7 +136,22 @@ func (f *Function) Call(c appengine.Context, args ...interface{}) {
 		return
 	}
 
-	// TODO: check arg types.
+	// Check arg types.
+	for i := 1; i < nArgs; i++ {
+		at := reflect.TypeOf(args[i-1])
+		var dt reflect.Type
+		if i < minArgs {
+			// not a variadic arg
+			dt = ft.In(i)
+		} else {
+			// a variadic arg
+			dt = ft.In(minArgs).Elem()
+		}
+		if !at.AssignableTo(dt) {
+			c.Errorf("delay: argument %d has wrong type: %v is not assignable to %v", i, at, dt)
+			return
+		}
+	}
 
 	inv := invocation{
 		Key:  f.key,
@@ -147,18 +168,21 @@ func (f *Function) Call(c appengine.Context, args ...interface{}) {
 		Path:    path,
 		Payload: buf.Bytes(),
 	}
-	if _, err := taskqueue.Add(c, task, queue); err != nil {
+	if _, err := taskqueueAdder(c, task, queue); err != nil {
 		c.Errorf("delay: taskqueue.Add failed: %v", err)
 		return
 	}
 }
 
+var taskqueueAdder = taskqueue.Add // for testing
+
 func init() {
-	http.HandleFunc(path, runFunc)
+	http.HandleFunc(path, func(w http.ResponseWriter, req *http.Request) {
+		runFunc(appengine.NewContext(req), w, req)
+	})
 }
 
-func runFunc(w http.ResponseWriter, req *http.Request) {
-	c := appengine.NewContext(req)
+func runFunc(c appengine.Context, w http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
 
 	var inv invocation
@@ -176,10 +200,19 @@ func runFunc(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// TODO: This is broken for variadic functions.
-	in := make([]reflect.Value, f.fv.Type().NumIn())
+	ft := f.fv.Type()
+	in := make([]reflect.Value, ft.NumIn())
 	in[0] = reflect.ValueOf(c)
 	for i := 1; i < len(in); i++ {
 		in[i] = reflect.ValueOf(inv.Args[i-1])
 	}
-	f.fv.Call(in)
+	out := f.fv.Call(in)
+
+	if n := ft.NumOut(); n > 0 && ft.Out(n-1) == osErrorType {
+		if errv := out[n-1]; !errv.IsNil() {
+			c.Errorf("delay: func failed (will retry): %v", errv.Interface())
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
 }

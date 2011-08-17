@@ -9,7 +9,9 @@ include $(GOROOT)/src/Make.inc
 TARG=appengine_internal
 GOFILES=\
 	app_id.go\
+	identity.go\
 	internal.go\
 	api_dev.go\
+	identity_dev.go\
 
 include $(GOROOT)/src/Make.pkg

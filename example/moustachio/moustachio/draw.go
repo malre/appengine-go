@@ -5,8 +5,8 @@
 package moustachio
 
 import (
-	"exp/draw"
 	"image"
+	"image/draw"
 
 	"freetype-go.googlecode.com/hg/freetype/raster"
 )

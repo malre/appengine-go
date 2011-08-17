@@ -4,9 +4,21 @@ Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
 
+Version 1.5.3 - 15 August 2011
+==============================
+appengine:
+  - Add app identity functions: AppID, VersionID, DefaultVersionHostname.
+appengine/datastore:
+  - Fix construction of incomplete keys with parents.
+appengine/delay:
+  - Check argument types at Call time.
+  - Retry delayed functions if they return a non-nil os.Error.
+Other:
+  - Report package dependency cycles in go-app-builder.
+
 Version 1.5.2 - 18 July 2011
 ============================
-This release changes to api_version 2.
+This release changed to api_version 2, based on Go release.r58.1.
 
 appengine/datastore:
   - Add Python-compatible key encoding/decoding.
@@ -42,3 +54,4 @@ Other:
 Version 1.5.0 - 11 May 2011
 ===========================
 Initial release. Viva il gopher!
+This introduced api_version 1, based on Go release.r57.2.

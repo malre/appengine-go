@@ -30,6 +30,13 @@ import (
 	pb "appengine_internal/blobstore"
 )
 
+const (
+	blobInfoKind        = "__BlobInfo__"
+	blobFileIndexKind   = "__BlobFileIndex__"
+	blobKeyPropertyName = "blob_key"
+	zeroKey             = appengine.BlobKey("")
+)
+
 // BlobInfo is the blob metadata that is stored in the datastore.
 type BlobInfo struct {
 	BlobKey      appengine.BlobKey
@@ -42,7 +49,7 @@ type BlobInfo struct {
 // Stat returns the BlobInfo for a provided blobKey. If no blob was found for
 // that key, Stat returns datastore.ErrNoSuchEntity.
 func Stat(c appengine.Context, blobKey appengine.BlobKey) (*BlobInfo, os.Error) {
-	dskey := datastore.NewKey("__BlobInfo__", string(blobKey), 0, nil)
+	dskey := datastore.NewKey(blobInfoKind, string(blobKey), 0, nil)
 	m := make(datastore.Map)
 	if err := datastore.Get(c, dskey, m); err != nil {
 		return nil, err
@@ -340,7 +347,9 @@ type Writer struct {
 	// set on Close:
 	closed   bool
 	closeErr os.Error
-	blobKey  appengine.BlobKey
+
+	// set on first Key:
+	blobKey appengine.BlobKey
 }
 
 // Verify that Writer implements the io.WriteCloser interface.
@@ -387,9 +396,10 @@ func Create(c appengine.Context, mimeType string) (*Writer, os.Error) {
 	}
 
 	oreq := &files.OpenRequest{
-		Filename:    res.Filename,
-		ContentType: files.NewFileContentType_ContentType(files.FileContentType_RAW),
-		OpenMode:    files.NewOpenRequest_OpenMode(files.OpenRequest_APPEND),
+		Filename:      res.Filename,
+		ContentType:   files.NewFileContentType_ContentType(files.FileContentType_RAW),
+		OpenMode:      files.NewOpenRequest_OpenMode(files.OpenRequest_APPEND),
+		ExclusiveLock: proto.Bool(true),
 	}
 	ores := &files.OpenResponse{}
 	if err := c.Call("file", "Open", oreq, ores); err != nil {
@@ -447,36 +457,79 @@ func (w *Writer) Close() (closeErr os.Error) {
 		Finalize: proto.Bool(true),
 	}
 	res := &files.CloseResponse{}
-	if err := w.c.Call("file", "Close", req, res); err != nil {
-		return err
+	return w.c.Call("file", "Close", req, res)
+}
+
+// Key returns the created blob key. It must be called after Close.
+// An error is returned if Close wasn't called or returned an error.
+func (w *Writer) Key() (appengine.BlobKey, os.Error) {
+	if !w.closed {
+		return "", errorf("cannot call Key before Close")
 	}
+
+	if w.blobKey != "" {
+		return w.blobKey, w.closeErr
+	}
+
 	handle := w.filename[len(blobstoreFileDirectory):]
 	if !strings.HasPrefix(handle, creationHandlePrefix) {
 		w.blobKey = appengine.BlobKey(handle)
-		return nil
+		return w.blobKey, w.closeErr
 	}
-	query := datastore.NewQuery("__BlobInfo__").
+
+	k, err := w.keyNewWay(handle)
+	if err == nil {
+		w.blobKey = k
+		return k, nil
+	}
+
+	k, err = w.keyOldWay(handle)
+	if err == nil {
+		w.blobKey = k
+	}
+
+	return k, err
+}
+
+func (w *Writer) keyNewWay(handle string) (appengine.BlobKey, os.Error) {
+	key := datastore.NewKey(blobFileIndexKind, handle, 0, nil)
+	m := make(datastore.Map)
+	err := datastore.Get(w.c, key, m)
+	if err != nil {
+		return zeroKey, err
+	}
+	blobkeyStr, ok := m[blobKeyPropertyName].(string)
+	if !ok {
+		return zeroKey, os.ENOENT
+	}
+
+	// Double-check that the BlobInfo actually exists.
+	// (Consistent with Python.)
+	key = datastore.NewKey(blobInfoKind, blobkeyStr, 0, nil)
+	err = datastore.Get(w.c, key, m)
+	if err != nil {
+		return zeroKey, err
+	}
+	return appengine.BlobKey(blobkeyStr), nil
+}
+
+// keyOldWay looks up a blobkey from its creation_handle the old way:
+// by doing an query against __BlobInfo__ entities.  This is now
+// deprecated (corollary: the other way doesn't work yet), so we try
+// this only after the new way fails, like Python does.
+func (w *Writer) keyOldWay(handle string) (appengine.BlobKey, os.Error) {
+	query := datastore.NewQuery(blobInfoKind).
 		Filter("creation_handle =", handle).
 		KeysOnly().
 		Limit(1)
 	key, err := query.Run(w.c).Next(nil)
 	if err != nil {
 		if err != datastore.Done {
-			return errorf("error looking up __BlobInfo__ entity for creation_handle %q: %v", handle, key)
+			return "", errorf("error looking up __BlobInfo__ entity for creation_handle %q: %v", handle, key)
 		}
-		return errorf("didn't find __BlobInfo__ entity for creation_handle %q", handle)
+		return "", errorf("didn't find __BlobInfo__ entity for creation_handle %q", handle)
 	}
-	w.blobKey = appengine.BlobKey(key.StringID())
-	return nil
-}
-
-// Key returns the created blob key. It must be called after Close.  An
-// error is returned if Close wasn't called or returned an error.
-func (w *Writer) Key() (appengine.BlobKey, os.Error) {
-	if !w.closed {
-		return "", errorf("cannot call Key before Close")
-	}
-	return w.blobKey, w.closeErr
+	return appengine.BlobKey(key.StringID()), w.closeErr
 }
 
 func init() {
