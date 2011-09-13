@@ -4,7 +4,16 @@ Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
 
-Version 1.5.3 - 15 August 2011
+Version 1.5.4 - September 2011
+=================================
+appengine/blobstore:
+  - Fix time units in Stat.
+appengine/mail:
+  - Support attachments.
+Other:
+  - Report duplicate package names better in go-app-builder.
+
+Version 1.5.3 - August 2011
 ==============================
 appengine:
   - Add app identity functions: AppID, VersionID, DefaultVersionHostname.
@@ -16,7 +25,7 @@ appengine/delay:
 Other:
   - Report package dependency cycles in go-app-builder.
 
-Version 1.5.2 - 18 July 2011
+Version 1.5.2 - July 2011
 ============================
 This release changed to api_version 2, based on Go release.r58.1.
 
@@ -29,7 +38,7 @@ appengine/datastore:
 appengine/memcache:
   - Add Delete and DeleteMulti functions.
 
-Version 1.5.1 - 20 June 2011
+Version 1.5.1 - June 2011
 ============================
 appengine:
   ! Replace Context's Logf method with Debugf/Infof/Warningf/Errorf/Criticalf.
@@ -51,7 +60,7 @@ appengine/urlfetch:
 Other:
   - Set the RemoteAddr field of http.Request correctly in the dev_appserver.
 
-Version 1.5.0 - 11 May 2011
+Version 1.5.0 - May 2011
 ===========================
 Initial release. Viva il gopher!
 This introduced api_version 1, based on Go release.r57.2.

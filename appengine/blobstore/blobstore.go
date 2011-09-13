@@ -66,7 +66,7 @@ func Stat(c appengine.Context, blobKey appengine.BlobKey) (*BlobInfo, os.Error) 
 		ContentType:  contentType,
 		Filename:     filename,
 		Size:         size,
-		CreationTime: time.SecondsToUTC(int64(creation)),
+		CreationTime: creation.Time(),
 	}
 	return bi, nil
 }

@@ -42,7 +42,16 @@ type Message struct {
 	Subject string
 	Body    string
 
-	// TODO: Attachments, "HTML" body.
+	Attachments []Attachment
+
+	// TODO: "HTML" body.
+}
+
+// An Attachment represents an email attachment.
+type Attachment struct {
+	// Name must be set to a valid file name.
+	Name string
+	Data []byte
 }
 
 // Send sends an email message.
@@ -57,6 +66,15 @@ func Send(c appengine.Context, msg *Message) os.Error {
 	}
 	if msg.ReplyTo != "" {
 		req.ReplyTo = &msg.ReplyTo
+	}
+	if len(msg.Attachments) > 0 {
+		req.Attachment = make([]*mail_proto.MailAttachment, len(msg.Attachments))
+		for i, att := range msg.Attachments {
+			req.Attachment[i] = &mail_proto.MailAttachment{
+				FileName: &att.Name,
+				Data:     att.Data,
+			}
+		}
 	}
 	res := &struct{}{} // VoidProto
 	if err := c.Call("mail", "Send", req, res); err != nil {

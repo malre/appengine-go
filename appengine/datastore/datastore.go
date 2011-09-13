@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"time"
 
 	"appengine"
 	"appengine_internal"
@@ -33,6 +34,13 @@ type Time int64
 // to a Time value.
 func SecondsToTime(n int64) Time {
 	return Time(n * 1e6)
+}
+
+// Time returns a *time.Time from a datastore time.
+func (t Time) Time() *time.Time {
+	// TODO: once App Engine has release.r60 or later,
+	// support subseconds here.  Currently we just drop them.
+	return time.SecondsToUTC(int64(t) / 1e6)
 }
 
 // Map is a map representation of an entity's fields. It is more flexible than

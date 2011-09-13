@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -56,9 +57,13 @@ func ParseFiles(baseDir string, filenames []string) (*App, os.Error) {
 
 	// As we parse the files, group the files by directory,
 	// and check that there is only one package per directory.
-	pkgFiles := make(map[string][]*File)
+	var (
+		pkgFiles    = make(map[string][]*File)
+		badDirname  string
+		badPackages map[string]bool
+	)
 	for i, filename := range filenames {
-		if strings.HasSuffix(filename, "_test.go") {
+		if strings.HasSuffix(filename, "_test.go") || strings.HasSuffix(filename, "_testmain.go") {
 			continue
 		}
 
@@ -73,9 +78,25 @@ func ParseFiles(baseDir string, filenames []string) (*App, os.Error) {
 		}
 		dirname = dirname[:len(dirname)-1] // strip trailing slash
 		if fs := pkgFiles[dirname]; len(fs) > 0 && fs[0].PackageName != file.PackageName {
-			return nil, os.NewError("multiple packages found in " + dirname)
+			// Accumulate the set of packages for this directory,
+			// if it is the first bad directory seen.
+			if badDirname == "" {
+				badDirname = dirname
+				badPackages = map[string]bool{fs[0].PackageName: true}
+			}
+			if badDirname == dirname {
+				badPackages[file.PackageName] = true
+			}
 		}
 		pkgFiles[dirname] = append(pkgFiles[dirname], file)
+	}
+	if badDirname != "" {
+		s := make([]string, 0, len(badPackages))
+		for p := range badPackages {
+			s = append(s, p)
+		}
+		sort.SortStrings(s)
+		return nil, fmt.Errorf("multiple packages in the %s directory: %s", badDirname, strings.Join(s, ", "))
 	}
 
 	// Create Package objects.

@@ -10,6 +10,7 @@ import (
 	"http"
 	"image"
 	"image/png"
+	"json"
 	"os"
 	"strconv"
 	"template"
@@ -21,6 +22,7 @@ import (
 func init() {
 	http.HandleFunc("/", frontPageHandler)
 	http.HandleFunc("/tiles", tileHandler)
+	http.HandleFunc("/memcache-stats", memcacheHandler)
 
 	for i := range color {
 		// Use a broader range of color for low intensities.
@@ -59,28 +61,18 @@ const (
 )
 
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-
 	if frontPageTmplErr != nil {
-		w.WriteHeader(http.StatusInternalServerError) // 500
+		w.WriteHeader(500)
 		fmt.Fprintf(w, "Page template is bad: %v", frontPageTmplErr)
-		return
-	}
-
-	stats, err := memcache.Stats(c)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError) // 500
-		fmt.Fprintf(w, "memcache.Stats failed: %v", err)
 		return
 	}
 
 	b := new(bytes.Buffer)
 	data := map[string]interface{}{
-		"InProd":        !appengine.IsDevAppServer(),
-		"MemcacheStats": fmt.Sprintf("%+v", *stats),
+		"InProd": !appengine.IsDevAppServer(),
 	}
 	if err := frontPageTmpl.Execute(b, data); err != nil {
-		w.WriteHeader(http.StatusInternalServerError) // 500
+		w.WriteHeader(500)
 		fmt.Fprintf(w, "tmpl.Execute failed: %v", err)
 		return
 	}
@@ -154,4 +146,26 @@ func mandelbrotValue(c complex128) uint8 {
 		}
 	}
 	return 0
+}
+
+func memcacheHandler(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	w.Header().Set("Content-Type", "application/json")
+
+	stats, err := memcache.Stats(c)
+	if err != nil {
+		writeJSON(w, map[string]string{"error": err.String()})
+		return
+	}
+	writeJSON(w, stats)
+}
+
+func writeJSON(w http.ResponseWriter, i interface{}) {
+	buf, err := json.Marshal(i)
+	if err != nil {
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "json.Marshal failed: %v", err)
+		return
+	}
+	w.Write(buf)
 }
