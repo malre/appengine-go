@@ -25,7 +25,7 @@ Valid value types are:
   - *Key,
   - appengine.BlobKey,
   - []byte (up to 1 megabyte in length),
-  - slices of any of the above (up to 100 elements in length).
+  - slices of any of the above.
 
 The Get and Put functions load and save an entity's contents to and from
 structs or Maps. Structs are more strongly typed, Maps are more flexible. The
@@ -46,7 +46,7 @@ Example code:
 	func handle(w http.ResponseWriter, r *http.Request) {
 		c := appengine.NewContext(r)
 
-		k := datastore.NewKey("Entity", "stringID", 0, nil)
+		k := datastore.NewKey(c, "Entity", "stringID", 0, nil)
 		e := new(Entity)
 		if err := datastore.Get(c, k, e); err != nil {
 			serveError(c, w, err)
@@ -132,9 +132,9 @@ Example code:
 		var count int
 		err := datastore.RunInTransaction(c, func(c appengine.Context) os.Error {
 			var err1 os.Error
-			count, err1 = inc(c, datastore.NewKey("Counter", "singleton", 0, nil))
+			count, err1 = inc(c, datastore.NewKey(c, "Counter", "singleton", 0, nil))
 			return err1
-		})
+		}, nil)
 		if err != nil {
 			serveError(c, w, err)
 			return

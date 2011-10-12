@@ -38,7 +38,7 @@ func Create(c appengine.Context, clientID string) (token string, err os.Error) {
 		ApplicationKey: &clientID,
 	}
 	resp := &channel_proto.CreateChannelResponse{}
-	err = c.Call(service, "CreateChannel", req, resp)
+	err = c.Call(service, "CreateChannel", req, resp, nil)
 	token = proto.GetString(resp.ClientId)
 	return
 }
@@ -50,7 +50,7 @@ func Send(c appengine.Context, clientID, message string) os.Error {
 		Message:        &message,
 	}
 	resp := &struct{}{} // VoidProto
-	return c.Call(service, "SendChannelMessage", req, resp)
+	return c.Call(service, "SendChannelMessage", req, resp, nil)
 }
 
 // SendJSON is a helper function that sends a JSON-encoded value

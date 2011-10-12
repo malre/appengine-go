@@ -35,16 +35,17 @@ func serveError(c appengine.Context, w http.ResponseWriter, err os.Error) {
 	c.Errorf("%v", err)
 }
 
-var mainPage = template.MustParse(`<html><body>
-{.repeated section @}
-{.section Author}<b>{@|html}</b>{.or}An anonymous person{.end}
-wrote <blockquote>{Content|html}</blockquote>
-{.end}
+var mainPage = template.Must(template.New("guestbook").Parse(
+	`<html><body>
+{{range .}}
+{{with .Author}}<b>{{.|html}}</b>{{else}}An anonymous person{{end}}
+wrote <blockquote>{{.Content|html}}</blockquote>
+{{end}}
 <form action="/sign" method="post">
 <div><textarea name="content" rows="3" cols="60"></textarea></div>
 <div><input type="submit" value="Sign Guestbook"></div>
-</form></body></html>`,
-	nil)
+</form></body></html>
+`))
 
 func handleMainPage(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" || r.URL.Path != "/" {
@@ -82,7 +83,7 @@ func handleSign(w http.ResponseWriter, r *http.Request) {
 	if u := user.Current(c); u != nil {
 		g.Author = u.String()
 	}
-	if _, err := datastore.Put(c, datastore.NewIncompleteKey("Greeting"), g); err != nil {
+	if _, err := datastore.Put(c, datastore.NewIncompleteKey(c, "Greeting", nil), g); err != nil {
 		serveError(c, w, err)
 		return
 	}

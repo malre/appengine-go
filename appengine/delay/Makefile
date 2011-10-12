@@ -4,8 +4,6 @@
 
 include $(GOROOT)/src/Make.inc
 
-
-
 TARG=appengine/delay
 GOFILES=\
 	delay.go\

@@ -4,8 +4,6 @@
 
 include $(GOROOT)/src/Make.inc
 
-
-
 TARG=appengine_internal/memcache
 GOFILES=\
 	memcache_service.pb.go\

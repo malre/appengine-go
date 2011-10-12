@@ -129,7 +129,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
 	// Save the image under a unique key, a hash of the image.
-	key := datastore.NewKey("Image", keyOf(buf.Bytes()), 0, nil)
+	key := datastore.NewKey(c, "Image", keyOf(buf.Bytes()), 0, nil)
 	_, err = datastore.Put(c, key, &Image{buf.Bytes()})
 	check(err)
 
@@ -153,7 +153,7 @@ func edit(w http.ResponseWriter, r *http.Request) {
 // it handles "/img".
 func img(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	key := datastore.NewKey("Image", r.FormValue("id"), 0, nil)
+	key := datastore.NewKey(c, "Image", r.FormValue("id"), 0, nil)
 	im := new(Image)
 	err := datastore.Get(c, key, im)
 	check(err)

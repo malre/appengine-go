@@ -104,9 +104,6 @@ func nvToProto(defaultAppID string, key *Key, typeName string, nv []nameValue) (
 		_, isBlob := x.value.Interface().([]byte)
 		if x.value.Kind() == reflect.Slice && !isBlob {
 			// Save each element of the field as a multiple-valued property.
-			if x.value.Len() > maxSliceFieldLen {
-				return nil, fmt.Errorf(errMsg, x.name, typeName, "slice is too long")
-			}
 			for j := 0; j < x.value.Len(); j++ {
 				elem := x.value.Index(j)
 				property, errStr := valueToProto(defaultAppID, x.name, elem, true)
@@ -131,6 +128,9 @@ func nvToProto(defaultAppID string, key *Key, typeName string, nv []nameValue) (
 			return nil, fmt.Errorf(errMsg, x.name, typeName, errStr)
 		}
 		addProperty(e, property, x.value)
+	}
+	if len(e.Property) > maxIndexedProperties {
+		return nil, fmt.Errorf("datastore: too many indexed properties")
 	}
 	return e, nil
 }

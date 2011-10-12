@@ -45,13 +45,9 @@ type BankAccount struct {
 	Balance int
 }
 
-// key is the datastore key for the unique bank account.
-// Obviously, a real application would support multiple accounts, but for this
-// example it is simpler to have a single account.
-var key = datastore.NewKey("BankAccount", "", 1, nil)
-
 func withdraw(c appengine.Context, sc chan string, id string, amount, nAttempts int) os.Error {
 	b := BankAccount{}
+	key := datastore.NewKey(c, "BankAccount", "", 1, nil)
 	if err := datastore.Get(c, key, &b); err != nil {
 		return err
 	}
@@ -77,6 +73,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 
 	c := appengine.NewContext(r)
 	b := BankAccount{4e6}
+	key := datastore.NewKey(c, "BankAccount", "", 1, nil)
 	if _, err := datastore.Put(c, key, &b); err != nil {
 		serveError(c, w, err)
 		return
@@ -94,7 +91,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 			err := datastore.RunInTransaction(c, func(c appengine.Context) os.Error {
 				nAttempts++
 				return withdraw(c, sc, id, amount, nAttempts)
-			})
+			}, nil)
 			if err != nil {
 				sc <- fmt.Sprintf("%s: error: %v\n", id, err)
 			} else {

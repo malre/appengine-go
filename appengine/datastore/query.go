@@ -78,8 +78,8 @@ type Query struct {
 	order    []order
 
 	keysOnly bool
-	limit    int
-	offset   int
+	limit    int32
+	offset   int32
 
 	err os.Error
 }
@@ -160,6 +160,7 @@ func (q *Query) KeysOnly() *Query {
 }
 
 // Limit sets the maximum number of keys/entities to return.
+// A zero value means unlimited. A negative value is invalid.
 func (q *Query) Limit(limit int) *Query {
 	if limit < 0 {
 		q.err = os.NewError("datastore: negative query limit")
@@ -169,11 +170,12 @@ func (q *Query) Limit(limit int) *Query {
 		q.err = os.NewError("datastore: query limit overflow")
 		return q
 	}
-	q.limit = limit
+	q.limit = int32(limit)
 	return q
 }
 
 // Offset sets how many keys to skip over before returning results.
+// A negative value is invalid.
 func (q *Query) Offset(offset int) *Query {
 	if offset < 0 {
 		q.err = os.NewError("datastore: negative query offset")
@@ -183,78 +185,165 @@ func (q *Query) Offset(offset int) *Query {
 		q.err = os.NewError("datastore: query offset overflow")
 		return q
 	}
-	q.offset = offset
+	q.offset = int32(offset)
 	return q
 }
 
+// zeroLimitPolicy defines how to interpret a zero query/cursor limit. In some
+// contexts, it means an unlimited query (to follow Go's idiom of a zero value
+// being a useful default value). In other contexts, it means a literal zero,
+// such as when issuing a query count, no actual entity data is wanted, only
+// the number of skipped results.
+type zeroLimitPolicy int
+
+const (
+	zeroLimitMeansUnlimited zeroLimitPolicy = iota
+	zeroLimitMeansZero
+)
+
 // toProto converts the query to a protocol buffer.
-func (q *Query) toProto(appID string) (*pb.Query, os.Error) {
+func (q *Query) toProto(dst *pb.Query, appID string, zlp zeroLimitPolicy) os.Error {
 	if q.kind == "" {
-		return nil, os.NewError("datastore: empty query kind")
+		return os.NewError("datastore: empty query kind")
 	}
-	x := &pb.Query{
-		App:  proto.String(appID),
-		Kind: proto.String(q.kind),
-	}
+	dst.Reset()
+	dst.App = proto.String(appID)
+	dst.Kind = proto.String(q.kind)
 	if q.ancestor != nil {
-		x.Ancestor = keyToProto(appID, q.ancestor)
+		dst.Ancestor = keyToProto(appID, q.ancestor)
 	}
 	if q.keysOnly {
-		x.KeysOnly = proto.Bool(true)
-		x.RequirePerfectPlan = proto.Bool(true)
+		dst.KeysOnly = proto.Bool(true)
+		dst.RequirePerfectPlan = proto.Bool(true)
 	}
 	for _, qf := range q.filter {
 		if qf.FieldName == "" {
-			return nil, os.NewError("datastore: empty query filter field name")
+			return os.NewError("datastore: empty query filter field name")
 		}
 		p, errStr := valueToProto(appID, qf.FieldName, reflect.ValueOf(qf.Value), false)
 		if errStr != "" {
-			return nil, os.NewError("datastore: bad query filter value type: " + errStr)
+			return os.NewError("datastore: bad query filter value type: " + errStr)
 		}
 		xf := &pb.Query_Filter{
 			Op:       operatorToProto[qf.Op],
 			Property: []*pb.Property{p},
 		}
 		if xf.Op == nil {
-			return nil, os.NewError("datastore: unknown query filter operator")
+			return os.NewError("datastore: unknown query filter operator")
 		}
-		x.Filter = append(x.Filter, xf)
+		dst.Filter = append(dst.Filter, xf)
 	}
 	for _, qo := range q.order {
 		if qo.FieldName == "" {
-			return nil, os.NewError("datastore: empty query order field name")
+			return os.NewError("datastore: empty query order field name")
 		}
 		xo := &pb.Query_Order{
 			Property:  proto.String(qo.FieldName),
 			Direction: sortDirectionToProto[qo.Direction],
 		}
 		if xo.Direction == nil {
-			return nil, os.NewError("datastore: unknown query order direction")
+			return os.NewError("datastore: unknown query order direction")
 		}
-		x.Order = append(x.Order, xo)
+		dst.Order = append(dst.Order, xo)
 	}
-	if q.limit != 0 {
-		x.Limit = proto.Int(q.limit)
+	if q.limit != 0 || zlp == zeroLimitMeansZero {
+		dst.Limit = proto.Int32(q.limit)
 	}
 	if q.offset != 0 {
-		x.Offset = proto.Int(q.offset)
+		dst.Offset = proto.Int32(q.offset)
 	}
-	return x, nil
+	return nil
 }
 
-// Run runs the query in the given context.
-func (q *Query) Run(c appengine.Context) *Iterator {
+// Count returns the number of results for the query.
+func (q *Query) Count(c appengine.Context) (int, os.Error) {
+	// Check that the query is well-formed.
 	if q.err != nil {
-		return &Iterator{err: q.err}
+		return 0, q.err
 	}
-	req, err := q.toProto(c.FullyQualifiedAppID())
-	return &Iterator{
-		c:        c,
-		keysOnly: q.keysOnly,
-		offset:   q.offset,
-		req:      req,
-		err:      err,
+
+	// Run a copy of the query, with keysOnly true, and an adjusted offset.
+	// We also set the limit to zero, as we don't want any actual entity data,
+	// just the number of skipped results.
+	newQ := *q
+	newQ.keysOnly = true
+	newQ.limit = 0
+	if q.limit == 0 {
+		// If the original query was unlimited, set the new query's offset to maximum.
+		newQ.offset = math.MaxInt32
+	} else {
+		newQ.offset = q.offset + q.limit
+		if newQ.offset < 0 {
+			// Do the best we can, in the presence of overflow.
+			newQ.offset = math.MaxInt32
+		}
 	}
+	req := &pb.Query{}
+	if err := newQ.toProto(req, c.FullyQualifiedAppID(), zeroLimitMeansZero); err != nil {
+		return 0, err
+	}
+	res := &pb.QueryResult{}
+	if err := c.Call("datastore_v3", "RunQuery", req, res, nil); err != nil {
+		return 0, err
+	}
+
+	// n is the count we will return. For example, suppose that our original
+	// query had an offset of 4 and a limit of 2008: the count will be 2008,
+	// provided that there are at least 2012 matching entities. However, the
+	// RPCs will only skip 1000 results at a time. The RPC sequence is:
+	//   call RunQuery with (offset, limit) = (2012, 0)  // 2012 == newQ.offset
+	//   response has (skippedResults, moreResults) = (1000, true)
+	//   n += 1000  // n == 1000
+	//   call Next     with (offset, limit) = (1012, 0)  // 1012 == newQ.offset - n
+	//   response has (skippedResults, moreResults) = (1000, true)
+	//   n += 1000  // n == 2000
+	//   call Next     with (offset, limit) = (12, 0)    // 12 == newQ.offset - n
+	//   response has (skippedResults, moreResults) = (12, false)
+	//   n += 12    // n == 2012
+	//   // exit the loop
+	//   n -= 4     // n == 2008
+	var n int32
+	for {
+		// The QueryResult should have no actual entity data, just skipped results.
+		if len(res.Result) != 0 {
+			return 0, os.NewError("datastore: internal error: Count request returned too much data")
+		}
+		n += proto.GetInt32(res.SkippedResults)
+		if !proto.GetBool(res.MoreResults) {
+			break
+		}
+		if err := callNext(c, res, newQ.offset-n, 0, zeroLimitMeansZero); err != nil {
+			return 0, err
+		}
+	}
+	n -= q.offset
+	if n < 0 {
+		// If the offset was greater than the number of matching entities,
+		// return 0 instead of negative.
+		n = 0
+	}
+	return int(n), nil
+}
+
+// callNext issues a datastore_v3/Next RPC to advance a cursor, such as that
+// returned by a query with more results.
+func callNext(c appengine.Context, res *pb.QueryResult, offset, limit int32, zlp zeroLimitPolicy) os.Error {
+	if res.Cursor == nil {
+		return os.NewError("datastore: internal error: server did not return a cursor")
+	}
+	// TODO: should I eventually call datastore_v3/DeleteCursor on the cursor?
+	req := &pb.NextRequest{
+		Cursor: res.Cursor,
+		Offset: proto.Int32(offset),
+	}
+	if limit != 0 || zlp == zeroLimitMeansZero {
+		req.Count = proto.Int32(limit)
+	}
+	if res.CompiledCursor != nil {
+		req.Compile = proto.Bool(true)
+	}
+	res.Reset()
+	return c.Call("datastore_v3", "Next", req, res, nil)
 }
 
 // GetAll runs the query in the given context and returns all keys that match
@@ -320,14 +409,35 @@ func (q *Query) GetAll(c appengine.Context, dst interface{}) ([]*Key, os.Error) 
 	return keys, nil
 }
 
+// Run runs the query in the given context.
+func (q *Query) Run(c appengine.Context) *Iterator {
+	if q.err != nil {
+		return &Iterator{err: q.err}
+	}
+	t := &Iterator{
+		c:      c,
+		offset: q.offset,
+		limit:  q.limit,
+	}
+	var req pb.Query
+	if err := q.toProto(&req, c.FullyQualifiedAppID(), zeroLimitMeansUnlimited); err != nil {
+		t.err = err
+		return t
+	}
+	if err := c.Call("datastore_v3", "RunQuery", &req, &t.res, nil); err != nil {
+		t.err = err
+		return t
+	}
+	return t
+}
+
 // Iterator is the result of running a query.
 type Iterator struct {
-	c        appengine.Context
-	keysOnly bool
-	offset   int
-	req      *pb.Query
-	res      *pb.QueryResult
-	err      os.Error
+	c      appengine.Context
+	offset int32
+	limit  int32
+	res    pb.QueryResult
+	err    os.Error
 }
 
 // Done is returned when a query iteration has completed.
@@ -341,7 +451,7 @@ var Done = os.NewError("datastore: query has no more results")
 // If the query is keys only, it is valid to pass a nil interface{} for dst.
 func (t *Iterator) Next(dst interface{}) (*Key, os.Error) {
 	k, e, err := t.next()
-	if err != nil || t.keysOnly {
+	if err != nil || e == nil {
 		return k, err
 	}
 	return loadEntity(dst, k, e)
@@ -352,42 +462,34 @@ func (t *Iterator) next() (*Key, *pb.EntityProto, os.Error) {
 		return nil, nil, t.err
 	}
 
-	// Issue an RPC if necessary.
-	call := false
-	if t.res == nil {
-		call = true
-		t.res = &pb.QueryResult{}
-	} else if len(t.res.Result) == 0 {
+	// Issue datastore_v3/Next RPCs as necessary.
+	for len(t.res.Result) == 0 {
 		if !proto.GetBool(t.res.MoreResults) {
 			t.err = Done
 			return nil, nil, t.err
 		}
-		call = true
-		t.res.Reset()
-	}
-	if call {
-		if t.offset != 0 {
-			if t.offset < 0 || t.offset > math.MaxInt32 {
-				t.err = os.NewError("datastore: query offset overflow")
-				return nil, nil, t.err
-			}
-			if t.req.Offset == nil {
-				t.req.Offset = new(int32)
-			}
-			*t.req.Offset = int32(t.offset)
+		t.offset -= proto.GetInt32(t.res.SkippedResults)
+		if t.offset < 0 {
+			t.offset = 0
 		}
-		t.err = t.c.Call("datastore_v3", "RunQuery", t.req, t.res)
-		if t.err != nil {
+		if err := callNext(t.c, &t.res, t.offset, t.limit, zeroLimitMeansUnlimited); err != nil {
+			t.err = err
+			return nil, nil, t.err
+		}
+		// For an Iterator, a zero limit means unlimited.
+		if t.limit == 0 {
+			continue
+		}
+		t.limit -= int32(len(t.res.Result))
+		if t.limit > 0 {
+			continue
+		}
+		t.limit = 0
+		if proto.GetBool(t.res.MoreResults) {
+			t.err = os.NewError("datastore: internal error: limit exhausted but more_results is true")
 			return nil, nil, t.err
 		}
 	}
-	if len(t.res.Result) == 0 {
-		// TODO: This code is probably broken for
-		// queries with offset > 1000.
-		t.err = Done
-		return nil, nil, t.err
-	}
-	t.offset++
 
 	// Pop the EntityProto from the front of t.res.Result and
 	// extract its key.
@@ -400,7 +502,7 @@ func (t *Iterator) next() (*Key, *pb.EntityProto, os.Error) {
 	if err != nil || k.Incomplete() {
 		return nil, nil, os.NewError("datastore: internal error: server returned an invalid key")
 	}
-	if t.keysOnly {
+	if proto.GetBool(t.res.KeysOnly) {
 		return k, nil, nil
 	}
 	return k, e, nil

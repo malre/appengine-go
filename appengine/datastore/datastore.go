@@ -17,8 +17,8 @@ import (
 	pb "appengine_internal/datastore"
 )
 
-// Slice fields over 100 elements long will not be loaded or saved.
-const maxSliceFieldLen = 100
+// Entities with more than this many indexed properties will not be saved.
+const maxIndexedProperties = 5000
 
 // []byte fields more than 1 megabyte long will not be loaded or saved.
 const maxBlobLen = 1 << 20
@@ -267,7 +267,7 @@ func GetMulti(c appengine.Context, key []*Key, dst []interface{}) os.Error {
 		Key: multiKeyToProto(c.FullyQualifiedAppID(), key),
 	}
 	res := &pb.GetResponse{}
-	err := c.Call("datastore_v3", "Get", req, res)
+	err := c.Call("datastore_v3", "Get", req, res, nil)
 	if err != nil {
 		return err
 	}
@@ -348,7 +348,7 @@ func PutMulti(c appengine.Context, key []*Key, src []interface{}) ([]*Key, os.Er
 		}
 	}
 	res := &pb.PutResponse{}
-	err := c.Call("datastore_v3", "Put", req, res)
+	err := c.Call("datastore_v3", "Put", req, res, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -386,7 +386,7 @@ func DeleteMulti(c appengine.Context, key []*Key) os.Error {
 		Key: multiKeyToProto(c.FullyQualifiedAppID(), key),
 	}
 	res := &pb.DeleteResponse{}
-	return c.Call("datastore_v3", "Delete", req, res)
+	return c.Call("datastore_v3", "Delete", req, res, nil)
 }
 
 func init() {

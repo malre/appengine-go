@@ -11,7 +11,6 @@ import (
 	"image"
 	"image/png"
 	"json"
-	"os"
 	"strconv"
 	"template"
 
@@ -32,22 +31,13 @@ func init() {
 			color[i] = image.RGBAColor{0xFF, 0, uint8(i - 255/10), 0xFF}
 		}
 	}
-
-	frontPageTmpl = template.New(nil)
-	frontPageTmpl.SetDelims("{{", "}}")
-	if err := frontPageTmpl.ParseFile("map.html"); err != nil {
-		frontPageTmplErr = fmt.Errorf("tmpl.ParseFile failed: %v", err)
-		return
-	}
-
 }
 
 var (
 	// color is the mapping of intensity to color.
 	color [256]image.Color
 
-	frontPageTmpl    *template.Template
-	frontPageTmplErr os.Error
+	frontPageTmpl = template.Must(template.ParseFile("map.html"))
 )
 
 const (
@@ -61,12 +51,6 @@ const (
 )
 
 func frontPageHandler(w http.ResponseWriter, r *http.Request) {
-	if frontPageTmplErr != nil {
-		w.WriteHeader(500)
-		fmt.Fprintf(w, "Page template is bad: %v", frontPageTmplErr)
-		return
-	}
-
 	b := new(bytes.Buffer)
 	data := map[string]interface{}{
 		"InProd": !appengine.IsDevAppServer(),

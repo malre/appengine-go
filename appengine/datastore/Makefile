@@ -4,11 +4,8 @@
 
 include $(GOROOT)/src/Make.inc
 
-
-
 TARG=appengine/datastore
 GOFILES=\
-	count.go\
 	datastore.go\
 	doc.go\
 	key.go\

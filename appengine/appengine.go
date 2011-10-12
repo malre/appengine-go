@@ -43,7 +43,7 @@ type Context interface {
 	// The remaining methods are for internal use only.
 	// Developer-facing APIs wrap these methods to provide a more friendly API.
 
-	Call(service, method string, in, out interface{}) os.Error
+	Call(service, method string, in, out interface{}, opts *appengine_internal.CallOptions) os.Error
 	FullyQualifiedAppID() string
 	Request() interface{}
 }

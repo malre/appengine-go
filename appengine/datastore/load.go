@@ -64,9 +64,6 @@ func loadStructField(sv reflect.Value, p *pb.Property) string {
 		if v.Kind() != reflect.Slice {
 			return "multiple-valued property requires a slice field type"
 		}
-		if v.Len() > maxSliceFieldLen-1 {
-			return "slice is too long"
-		}
 		slice = v
 		v = reflect.New(v.Type().Elem()).Elem()
 	}

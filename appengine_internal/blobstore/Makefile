@@ -4,8 +4,6 @@
 
 include $(GOROOT)/src/Make.inc
 
-
-
 TARG=appengine_internal/blobstore
 GOFILES=\
 	blobstore_service.pb.go\

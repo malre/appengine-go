@@ -4,8 +4,6 @@
 
 include $(GOROOT)/src/Make.inc
 
-
-
 TARG=appengine_internal/capability
 GOFILES=\
 	capability_service.pb.go\

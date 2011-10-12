@@ -95,7 +95,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, os.Error) {
 		for p := range badPackages {
 			s = append(s, p)
 		}
-		sort.SortStrings(s)
+		sort.Strings(s)
 		return nil, fmt.Errorf("multiple packages in the %s directory: %s", badDirname, strings.Join(s, ", "))
 	}
 

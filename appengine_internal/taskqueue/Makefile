@@ -4,8 +4,6 @@
 
 include $(GOROOT)/src/Make.inc
 
-
-
 TARG=appengine_internal/taskqueue
 GOFILES=\
 	taskqueue_service.pb.go\

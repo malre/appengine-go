@@ -14,7 +14,7 @@
         return '';
       }
       var url = '/tiles?z=' + zoom + '&x=' + nc.x + '&y=' + nc.y;
-      if ({{InProd}}) {
+      if ({{.InProd}}) {
         // Shard across multiple domains so that browsers that are limited in
         // the number of in-flight requests per domain will load more quickly.
         // Compute the shard deterministically to be cache-friendly.

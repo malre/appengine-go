@@ -76,7 +76,7 @@ func (t *transaction) setTransactionField(x interface{}) (err os.Error) {
 	return nil
 }
 
-func (t *transaction) Call(service, method string, in, out interface{}) os.Error {
+func (t *transaction) Call(service, method string, in, out interface{}, opts *appengine_internal.CallOptions) os.Error {
 	if t.finished {
 		return os.NewError("datastore: transaction context has expired")
 	}
@@ -97,16 +97,19 @@ func (t *transaction) Call(service, method string, in, out interface{}) os.Error
 			return err
 		}
 	}
-	return t.Context.Call(service, method, in, out)
+	return t.Context.Call(service, method, in, out, opts)
 }
 
-func runOnce(c appengine.Context, f func(appengine.Context) os.Error) os.Error {
+func runOnce(c appengine.Context, f func(appengine.Context) os.Error, opts *TransactionOptions) os.Error {
 	// Begin the transaction.
 	t := &transaction{Context: c}
 	req := &pb.BeginTransactionRequest{
 		App: proto.String(c.FullyQualifiedAppID()),
 	}
-	if err := t.Context.Call("datastore_v3", "BeginTransaction", req, &t.transaction); err != nil {
+	if opts != nil && opts.XG {
+		req.AllowMultipleEg = proto.Bool(true)
+	}
+	if err := t.Context.Call("datastore_v3", "BeginTransaction", req, &t.transaction, nil); err != nil {
 		return err
 	}
 
@@ -119,7 +122,7 @@ func runOnce(c appengine.Context, f func(appengine.Context) os.Error) os.Error {
 		t.finished = true
 		// Ignore the error return value, since we are already returning a non-nil
 		// error (or we're panicking).
-		c.Call("datastore_v3", "Rollback", &t.transaction, &pb.VoidProto{})
+		c.Call("datastore_v3", "Rollback", &t.transaction, &pb.VoidProto{}, nil)
 	}()
 	if err := f(t); err != nil {
 		return err
@@ -128,16 +131,16 @@ func runOnce(c appengine.Context, f func(appengine.Context) os.Error) os.Error {
 
 	// Commit the transaction.
 	res := &pb.CommitResponse{}
-	err := c.Call("datastore_v3", "Commit", &t.transaction, res)
+	err := c.Call("datastore_v3", "Commit", &t.transaction, res, nil)
 	if ae, ok := err.(*appengine_internal.APIError); ok {
 		if appengine.IsDevAppServer() {
 			// The Python Dev AppServer raises an ApplicationError with error code 2 (which is
 			// Error.CONCURRENT_TRANSACTION) and message "Concurrency exception.".
-			if ae.Code == pb.Error_BAD_REQUEST && ae.Detail == "ApplicationError: 2 Concurrency exception." {
+			if ae.Code == int32(pb.Error_BAD_REQUEST) && ae.Detail == "ApplicationError: 2 Concurrency exception." {
 				return ErrConcurrentTransaction
 			}
 		}
-		if ae.Code == pb.Error_CONCURRENT_TRANSACTION {
+		if ae.Code == int32(pb.Error_CONCURRENT_TRANSACTION) {
 			return ErrConcurrentTransaction
 		}
 	}
@@ -160,18 +163,28 @@ func runOnce(c appengine.Context, f func(appengine.Context) os.Error) os.Error {
 // must be careful not to assume that any of f's changes have been committed
 // until RunInTransaction returns nil.
 //
-// All datastore keys used inside a transaction must belong to the same entity
-// group; that is, they must all have the same root key.
-//
 // Nested transactions are not supported; c may not be a transaction context.
-func RunInTransaction(c appengine.Context, f func(tc appengine.Context) os.Error) os.Error {
+func RunInTransaction(c appengine.Context, f func(tc appengine.Context) os.Error, opts *TransactionOptions) os.Error {
 	if _, ok := c.(*transaction); ok {
 		return os.NewError("datastore: nested transactions are not supported")
 	}
 	for i := 0; i < 3; i++ {
-		if err := runOnce(c, f); err != ErrConcurrentTransaction {
+		if err := runOnce(c, f, opts); err != ErrConcurrentTransaction {
 			return err
 		}
 	}
 	return ErrConcurrentTransaction
+}
+
+// TransactionOptions are the options for running a transaction.
+type TransactionOptions struct {
+	// XG is whether the transaction can cross multiple entity groups. In
+	// comparison, a single group transaction is one where all datastore keys
+	// used have the same root key. Note that cross group transactions do not
+	// have the same behavior as single group transactions. In particular, it
+	// is much more likely to see partially applied transactions in different
+	// entity groups, in global queries.
+	// It is valid to set XG to true even if the transaction is within a
+	// single entity group.
+	XG bool
 }

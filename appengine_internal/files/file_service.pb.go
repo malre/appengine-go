@@ -7,140 +7,49 @@ import proto "goprotobuf.googlecode.com/hg/proto"
 import "math"
 import "os"
 
-
 // Reference proto, math & os imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
 var _ os.Error
 
-
-type ShuffleEnums_InputFormat int32
-
-const (
-	ShuffleEnums_CSV_INPUT                     = 0
-	ShuffleEnums_SSTABLE_KEY_VALUE_PROTO_INPUT = 1
-	ShuffleEnums_RECORDS_KEY_VALUE_PROTO_INPUT = 2
-)
-
-var ShuffleEnums_InputFormat_name = map[int32]string{
-	0: "CSV_INPUT",
-	1: "SSTABLE_KEY_VALUE_PROTO_INPUT",
-	2: "RECORDS_KEY_VALUE_PROTO_INPUT",
-}
-var ShuffleEnums_InputFormat_value = map[string]int32{
-	"CSV_INPUT":                     0,
-	"SSTABLE_KEY_VALUE_PROTO_INPUT": 1,
-	"RECORDS_KEY_VALUE_PROTO_INPUT": 2,
-}
-
-func NewShuffleEnums_InputFormat(x int32) *ShuffleEnums_InputFormat {
-	e := ShuffleEnums_InputFormat(x)
-	return &e
-}
-func (x ShuffleEnums_InputFormat) String() string {
-	return proto.EnumName(ShuffleEnums_InputFormat_name, int32(x))
-}
-
-type ShuffleEnums_OutputFormat int32
-
-const (
-	ShuffleEnums_CSV_OUTPUT                           = 0
-	ShuffleEnums_SSTABLE_MULTI_VALUE_PROTO_OUTPUT     = 1
-	ShuffleEnums_RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT = 2
-)
-
-var ShuffleEnums_OutputFormat_name = map[int32]string{
-	0: "CSV_OUTPUT",
-	1: "SSTABLE_MULTI_VALUE_PROTO_OUTPUT",
-	2: "RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT",
-}
-var ShuffleEnums_OutputFormat_value = map[string]int32{
-	"CSV_OUTPUT":                           0,
-	"SSTABLE_MULTI_VALUE_PROTO_OUTPUT":     1,
-	"RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT": 2,
-}
-
-func NewShuffleEnums_OutputFormat(x int32) *ShuffleEnums_OutputFormat {
-	e := ShuffleEnums_OutputFormat(x)
-	return &e
-}
-func (x ShuffleEnums_OutputFormat) String() string {
-	return proto.EnumName(ShuffleEnums_OutputFormat_name, int32(x))
-}
-
-type ShuffleEnums_Status int32
-
-const (
-	ShuffleEnums_UNKNOWN                      = 1
-	ShuffleEnums_RUNNING                      = 2
-	ShuffleEnums_SUCCESS                      = 3
-	ShuffleEnums_FAILURE                      = 4
-	ShuffleEnums_INVALID_INPUT                = 5
-	ShuffleEnums_OUTPUT_ALREADY_EXISTS        = 6
-	ShuffleEnums_INCORRECT_SHUFFLE_SIZE_BYTES = 7
-)
-
-var ShuffleEnums_Status_name = map[int32]string{
-	1: "UNKNOWN",
-	2: "RUNNING",
-	3: "SUCCESS",
-	4: "FAILURE",
-	5: "INVALID_INPUT",
-	6: "OUTPUT_ALREADY_EXISTS",
-	7: "INCORRECT_SHUFFLE_SIZE_BYTES",
-}
-var ShuffleEnums_Status_value = map[string]int32{
-	"UNKNOWN":                      1,
-	"RUNNING":                      2,
-	"SUCCESS":                      3,
-	"FAILURE":                      4,
-	"INVALID_INPUT":                5,
-	"OUTPUT_ALREADY_EXISTS":        6,
-	"INCORRECT_SHUFFLE_SIZE_BYTES": 7,
-}
-
-func NewShuffleEnums_Status(x int32) *ShuffleEnums_Status {
-	e := ShuffleEnums_Status(x)
-	return &e
-}
-func (x ShuffleEnums_Status) String() string {
-	return proto.EnumName(ShuffleEnums_Status_name, int32(x))
-}
-
 type FileServiceErrors_ErrorCode int32
 
 const (
-	FileServiceErrors_OK                               = 0
-	FileServiceErrors_API_TEMPORARILY_UNAVAILABLE      = 1
-	FileServiceErrors_REQUEST_TOO_LARGE                = 3
-	FileServiceErrors_RESPONSE_TOO_LARGE               = 4
-	FileServiceErrors_INVALID_FILE_NAME                = 5
-	FileServiceErrors_OPERATION_NOT_SUPPORTED          = 6
-	FileServiceErrors_IO_ERROR                         = 7
-	FileServiceErrors_PERMISSION_DENIED                = 8
-	FileServiceErrors_WRONG_CONTENT_TYPE               = 9
-	FileServiceErrors_FILE_NOT_OPENED                  = 10
-	FileServiceErrors_WRONG_OPEN_MODE                  = 11
-	FileServiceErrors_EXCLUSIVE_LOCK_REQUIRED          = 12
-	FileServiceErrors_FILE_TEMPORARILY_UNAVAILABLE     = 13
-	FileServiceErrors_EXISTENCE_ERROR                  = 100
-	FileServiceErrors_FINALIZATION_ERROR               = 101
-	FileServiceErrors_UNSUPPORTED_CONTENT_TYPE         = 102
-	FileServiceErrors_READ_ONLY                        = 103
-	FileServiceErrors_EXCLUSIVE_LOCK_FAILED            = 104
-	FileServiceErrors_SEQUENCE_KEY_OUT_OF_ORDER        = 300
-	FileServiceErrors_OUT_OF_BOUNDS                    = 500
-	FileServiceErrors_GLOBS_NOT_SUPPORTED              = 600
-	FileServiceErrors_FILE_NAME_NOT_SPECIFIED          = 701
-	FileServiceErrors_FILE_NAME_SPECIFIED              = 702
-	FileServiceErrors_FILE_ALREADY_EXISTS              = 703
-	FileServiceErrors_UNSUPPORTED_FILE_SYSTEM          = 704
-	FileServiceErrors_INVALID_PARAMETER                = 705
-	FileServiceErrors_SHUFFLER_INTERNAL_ERROR          = 800
-	FileServiceErrors_SHUFFLE_REQUEST_TOO_LARGE        = 801
-	FileServiceErrors_DUPLICATE_SHUFFLE_NAME           = 802
-	FileServiceErrors_SHUFFLER_TEMPORARILY_UNAVAILABLE = 900
-	FileServiceErrors_MAX_ERROR_CODE                   = 9999
+	FileServiceErrors_OK                                 FileServiceErrors_ErrorCode = 0
+	FileServiceErrors_API_TEMPORARILY_UNAVAILABLE        FileServiceErrors_ErrorCode = 1
+	FileServiceErrors_REQUEST_TOO_LARGE                  FileServiceErrors_ErrorCode = 3
+	FileServiceErrors_RESPONSE_TOO_LARGE                 FileServiceErrors_ErrorCode = 4
+	FileServiceErrors_INVALID_FILE_NAME                  FileServiceErrors_ErrorCode = 5
+	FileServiceErrors_OPERATION_NOT_SUPPORTED            FileServiceErrors_ErrorCode = 6
+	FileServiceErrors_IO_ERROR                           FileServiceErrors_ErrorCode = 7
+	FileServiceErrors_PERMISSION_DENIED                  FileServiceErrors_ErrorCode = 8
+	FileServiceErrors_WRONG_CONTENT_TYPE                 FileServiceErrors_ErrorCode = 9
+	FileServiceErrors_FILE_NOT_OPENED                    FileServiceErrors_ErrorCode = 10
+	FileServiceErrors_WRONG_OPEN_MODE                    FileServiceErrors_ErrorCode = 11
+	FileServiceErrors_EXCLUSIVE_LOCK_REQUIRED            FileServiceErrors_ErrorCode = 12
+	FileServiceErrors_FILE_TEMPORARILY_UNAVAILABLE       FileServiceErrors_ErrorCode = 13
+	FileServiceErrors_EXISTENCE_ERROR                    FileServiceErrors_ErrorCode = 100
+	FileServiceErrors_FINALIZATION_ERROR                 FileServiceErrors_ErrorCode = 101
+	FileServiceErrors_UNSUPPORTED_CONTENT_TYPE           FileServiceErrors_ErrorCode = 102
+	FileServiceErrors_READ_ONLY                          FileServiceErrors_ErrorCode = 103
+	FileServiceErrors_EXCLUSIVE_LOCK_FAILED              FileServiceErrors_ErrorCode = 104
+	FileServiceErrors_EXISTENCE_ERROR_METADATA_NOT_FOUND FileServiceErrors_ErrorCode = 105
+	FileServiceErrors_EXISTENCE_ERROR_METADATA_FOUND     FileServiceErrors_ErrorCode = 106
+	FileServiceErrors_EXISTENCE_ERROR_SHARDING_MISMATCH  FileServiceErrors_ErrorCode = 107
+	FileServiceErrors_SEQUENCE_KEY_OUT_OF_ORDER          FileServiceErrors_ErrorCode = 300
+	FileServiceErrors_OUT_OF_BOUNDS                      FileServiceErrors_ErrorCode = 500
+	FileServiceErrors_GLOBS_NOT_SUPPORTED                FileServiceErrors_ErrorCode = 600
+	FileServiceErrors_FILE_NAME_NOT_SPECIFIED            FileServiceErrors_ErrorCode = 701
+	FileServiceErrors_FILE_NAME_SPECIFIED                FileServiceErrors_ErrorCode = 702
+	FileServiceErrors_FILE_ALREADY_EXISTS                FileServiceErrors_ErrorCode = 703
+	FileServiceErrors_UNSUPPORTED_FILE_SYSTEM            FileServiceErrors_ErrorCode = 704
+	FileServiceErrors_INVALID_PARAMETER                  FileServiceErrors_ErrorCode = 705
+	FileServiceErrors_SHUFFLER_INTERNAL_ERROR            FileServiceErrors_ErrorCode = 800
+	FileServiceErrors_SHUFFLE_REQUEST_TOO_LARGE          FileServiceErrors_ErrorCode = 801
+	FileServiceErrors_DUPLICATE_SHUFFLE_NAME             FileServiceErrors_ErrorCode = 802
+	FileServiceErrors_SHUFFLE_NOT_AVAILABLE              FileServiceErrors_ErrorCode = 803
+	FileServiceErrors_SHUFFLER_TEMPORARILY_UNAVAILABLE   FileServiceErrors_ErrorCode = 900
+	FileServiceErrors_MAX_ERROR_CODE                     FileServiceErrors_ErrorCode = 9999
 )
 
 var FileServiceErrors_ErrorCode_name = map[int32]string{
@@ -162,6 +71,9 @@ var FileServiceErrors_ErrorCode_name = map[int32]string{
 	102:  "UNSUPPORTED_CONTENT_TYPE",
 	103:  "READ_ONLY",
 	104:  "EXCLUSIVE_LOCK_FAILED",
+	105:  "EXISTENCE_ERROR_METADATA_NOT_FOUND",
+	106:  "EXISTENCE_ERROR_METADATA_FOUND",
+	107:  "EXISTENCE_ERROR_SHARDING_MISMATCH",
 	300:  "SEQUENCE_KEY_OUT_OF_ORDER",
 	500:  "OUT_OF_BOUNDS",
 	600:  "GLOBS_NOT_SUPPORTED",
@@ -173,44 +85,49 @@ var FileServiceErrors_ErrorCode_name = map[int32]string{
 	800:  "SHUFFLER_INTERNAL_ERROR",
 	801:  "SHUFFLE_REQUEST_TOO_LARGE",
 	802:  "DUPLICATE_SHUFFLE_NAME",
+	803:  "SHUFFLE_NOT_AVAILABLE",
 	900:  "SHUFFLER_TEMPORARILY_UNAVAILABLE",
 	9999: "MAX_ERROR_CODE",
 }
 var FileServiceErrors_ErrorCode_value = map[string]int32{
 	"OK": 0,
-	"API_TEMPORARILY_UNAVAILABLE":      1,
-	"REQUEST_TOO_LARGE":                3,
-	"RESPONSE_TOO_LARGE":               4,
-	"INVALID_FILE_NAME":                5,
-	"OPERATION_NOT_SUPPORTED":          6,
-	"IO_ERROR":                         7,
-	"PERMISSION_DENIED":                8,
-	"WRONG_CONTENT_TYPE":               9,
-	"FILE_NOT_OPENED":                  10,
-	"WRONG_OPEN_MODE":                  11,
-	"EXCLUSIVE_LOCK_REQUIRED":          12,
-	"FILE_TEMPORARILY_UNAVAILABLE":     13,
-	"EXISTENCE_ERROR":                  100,
-	"FINALIZATION_ERROR":               101,
-	"UNSUPPORTED_CONTENT_TYPE":         102,
-	"READ_ONLY":                        103,
-	"EXCLUSIVE_LOCK_FAILED":            104,
-	"SEQUENCE_KEY_OUT_OF_ORDER":        300,
-	"OUT_OF_BOUNDS":                    500,
-	"GLOBS_NOT_SUPPORTED":              600,
-	"FILE_NAME_NOT_SPECIFIED":          701,
-	"FILE_NAME_SPECIFIED":              702,
-	"FILE_ALREADY_EXISTS":              703,
-	"UNSUPPORTED_FILE_SYSTEM":          704,
-	"INVALID_PARAMETER":                705,
-	"SHUFFLER_INTERNAL_ERROR":          800,
-	"SHUFFLE_REQUEST_TOO_LARGE":        801,
-	"DUPLICATE_SHUFFLE_NAME":           802,
-	"SHUFFLER_TEMPORARILY_UNAVAILABLE": 900,
-	"MAX_ERROR_CODE":                   9999,
+	"API_TEMPORARILY_UNAVAILABLE":        1,
+	"REQUEST_TOO_LARGE":                  3,
+	"RESPONSE_TOO_LARGE":                 4,
+	"INVALID_FILE_NAME":                  5,
+	"OPERATION_NOT_SUPPORTED":            6,
+	"IO_ERROR":                           7,
+	"PERMISSION_DENIED":                  8,
+	"WRONG_CONTENT_TYPE":                 9,
+	"FILE_NOT_OPENED":                    10,
+	"WRONG_OPEN_MODE":                    11,
+	"EXCLUSIVE_LOCK_REQUIRED":            12,
+	"FILE_TEMPORARILY_UNAVAILABLE":       13,
+	"EXISTENCE_ERROR":                    100,
+	"FINALIZATION_ERROR":                 101,
+	"UNSUPPORTED_CONTENT_TYPE":           102,
+	"READ_ONLY":                          103,
+	"EXCLUSIVE_LOCK_FAILED":              104,
+	"EXISTENCE_ERROR_METADATA_NOT_FOUND": 105,
+	"EXISTENCE_ERROR_METADATA_FOUND":     106,
+	"EXISTENCE_ERROR_SHARDING_MISMATCH":  107,
+	"SEQUENCE_KEY_OUT_OF_ORDER":          300,
+	"OUT_OF_BOUNDS":                      500,
+	"GLOBS_NOT_SUPPORTED":                600,
+	"FILE_NAME_NOT_SPECIFIED":            701,
+	"FILE_NAME_SPECIFIED":                702,
+	"FILE_ALREADY_EXISTS":                703,
+	"UNSUPPORTED_FILE_SYSTEM":            704,
+	"INVALID_PARAMETER":                  705,
+	"SHUFFLER_INTERNAL_ERROR":            800,
+	"SHUFFLE_REQUEST_TOO_LARGE":          801,
+	"DUPLICATE_SHUFFLE_NAME":             802,
+	"SHUFFLE_NOT_AVAILABLE":              803,
+	"SHUFFLER_TEMPORARILY_UNAVAILABLE":   900,
+	"MAX_ERROR_CODE":                     9999,
 }
 
-func NewFileServiceErrors_ErrorCode(x int32) *FileServiceErrors_ErrorCode {
+func NewFileServiceErrors_ErrorCode(x FileServiceErrors_ErrorCode) *FileServiceErrors_ErrorCode {
 	e := FileServiceErrors_ErrorCode(x)
 	return &e
 }
@@ -221,9 +138,9 @@ func (x FileServiceErrors_ErrorCode) String() string {
 type FileContentType_ContentType int32
 
 const (
-	FileContentType_RAW          = 0
-	FileContentType_DEPRECATED_1 = 2
-	FileContentType_INVALID_TYPE = 127
+	FileContentType_RAW          FileContentType_ContentType = 0
+	FileContentType_DEPRECATED_1 FileContentType_ContentType = 2
+	FileContentType_INVALID_TYPE FileContentType_ContentType = 127
 )
 
 var FileContentType_ContentType_name = map[int32]string{
@@ -237,7 +154,7 @@ var FileContentType_ContentType_value = map[string]int32{
 	"INVALID_TYPE": 127,
 }
 
-func NewFileContentType_ContentType(x int32) *FileContentType_ContentType {
+func NewFileContentType_ContentType(x FileContentType_ContentType) *FileContentType_ContentType {
 	e := FileContentType_ContentType(x)
 	return &e
 }
@@ -248,8 +165,8 @@ func (x FileContentType_ContentType) String() string {
 type OpenRequest_OpenMode int32
 
 const (
-	OpenRequest_APPEND = 1
-	OpenRequest_READ   = 2
+	OpenRequest_APPEND OpenRequest_OpenMode = 1
+	OpenRequest_READ   OpenRequest_OpenMode = 2
 )
 
 var OpenRequest_OpenMode_name = map[int32]string{
@@ -261,7 +178,7 @@ var OpenRequest_OpenMode_value = map[string]int32{
 	"READ":   2,
 }
 
-func NewOpenRequest_OpenMode(x int32) *OpenRequest_OpenMode {
+func NewOpenRequest_OpenMode(x OpenRequest_OpenMode) *OpenRequest_OpenMode {
 	e := OpenRequest_OpenMode(x)
 	return &e
 }
@@ -269,159 +186,217 @@ func (x OpenRequest_OpenMode) String() string {
 	return proto.EnumName(OpenRequest_OpenMode_name, int32(x))
 }
 
+type ShuffleEnums_InputFormat int32
+
+const (
+	ShuffleEnums_CSV_INPUT                     ShuffleEnums_InputFormat = 0
+	ShuffleEnums_RECORDS_KEY_VALUE_PROTO_INPUT ShuffleEnums_InputFormat = 1
+)
+
+var ShuffleEnums_InputFormat_name = map[int32]string{
+	0: "CSV_INPUT",
+	1: "RECORDS_KEY_VALUE_PROTO_INPUT",
+}
+var ShuffleEnums_InputFormat_value = map[string]int32{
+	"CSV_INPUT":                     0,
+	"RECORDS_KEY_VALUE_PROTO_INPUT": 1,
+}
+
+func NewShuffleEnums_InputFormat(x ShuffleEnums_InputFormat) *ShuffleEnums_InputFormat {
+	e := ShuffleEnums_InputFormat(x)
+	return &e
+}
+func (x ShuffleEnums_InputFormat) String() string {
+	return proto.EnumName(ShuffleEnums_InputFormat_name, int32(x))
+}
+
+type ShuffleEnums_OutputFormat int32
+
+const (
+	ShuffleEnums_CSV_OUTPUT                           ShuffleEnums_OutputFormat = 0
+	ShuffleEnums_RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT ShuffleEnums_OutputFormat = 1
+)
+
+var ShuffleEnums_OutputFormat_name = map[int32]string{
+	0: "CSV_OUTPUT",
+	1: "RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT",
+}
+var ShuffleEnums_OutputFormat_value = map[string]int32{
+	"CSV_OUTPUT":                           0,
+	"RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT": 1,
+}
+
+func NewShuffleEnums_OutputFormat(x ShuffleEnums_OutputFormat) *ShuffleEnums_OutputFormat {
+	e := ShuffleEnums_OutputFormat(x)
+	return &e
+}
+func (x ShuffleEnums_OutputFormat) String() string {
+	return proto.EnumName(ShuffleEnums_OutputFormat_name, int32(x))
+}
+
+type ShuffleEnums_Status int32
+
+const (
+	ShuffleEnums_UNKNOWN                      ShuffleEnums_Status = 1
+	ShuffleEnums_RUNNING                      ShuffleEnums_Status = 2
+	ShuffleEnums_SUCCESS                      ShuffleEnums_Status = 3
+	ShuffleEnums_FAILURE                      ShuffleEnums_Status = 4
+	ShuffleEnums_INVALID_INPUT                ShuffleEnums_Status = 5
+	ShuffleEnums_OUTPUT_ALREADY_EXISTS        ShuffleEnums_Status = 6
+	ShuffleEnums_INCORRECT_SHUFFLE_SIZE_BYTES ShuffleEnums_Status = 7
+)
+
+var ShuffleEnums_Status_name = map[int32]string{
+	1: "UNKNOWN",
+	2: "RUNNING",
+	3: "SUCCESS",
+	4: "FAILURE",
+	5: "INVALID_INPUT",
+	6: "OUTPUT_ALREADY_EXISTS",
+	7: "INCORRECT_SHUFFLE_SIZE_BYTES",
+}
+var ShuffleEnums_Status_value = map[string]int32{
+	"UNKNOWN":                      1,
+	"RUNNING":                      2,
+	"SUCCESS":                      3,
+	"FAILURE":                      4,
+	"INVALID_INPUT":                5,
+	"OUTPUT_ALREADY_EXISTS":        6,
+	"INCORRECT_SHUFFLE_SIZE_BYTES": 7,
+}
+
+func NewShuffleEnums_Status(x ShuffleEnums_Status) *ShuffleEnums_Status {
+	e := ShuffleEnums_Status(x)
+	return &e
+}
+func (x ShuffleEnums_Status) String() string {
+	return proto.EnumName(ShuffleEnums_Status_name, int32(x))
+}
+
 type StringProto struct {
-	Value            *string "PB(bytes,1,req,name=value)"
-	XXX_unrecognized []byte
+	Value            *string `protobuf:"bytes,1,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *StringProto) Reset()         { *this = StringProto{} }
 func (this *StringProto) String() string { return proto.CompactTextString(this) }
 
 type Integer32Proto struct {
-	Value            *int32 "PB(varint,1,req,name=value)"
-	XXX_unrecognized []byte
+	Value            *int32 `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *Integer32Proto) Reset()         { *this = Integer32Proto{} }
 func (this *Integer32Proto) String() string { return proto.CompactTextString(this) }
 
 type Integer64Proto struct {
-	Value            *int64 "PB(varint,1,req,name=value)"
-	XXX_unrecognized []byte
+	Value            *int64 `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *Integer64Proto) Reset()         { *this = Integer64Proto{} }
 func (this *Integer64Proto) String() string { return proto.CompactTextString(this) }
 
 type BoolProto struct {
-	Value            *bool "PB(varint,1,req,name=value)"
-	XXX_unrecognized []byte
+	Value            *bool  `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *BoolProto) Reset()         { *this = BoolProto{} }
 func (this *BoolProto) String() string { return proto.CompactTextString(this) }
 
 type DoubleProto struct {
-	Value            *float64 "PB(fixed64,1,req,name=value)"
-	XXX_unrecognized []byte
+	Value            *float64 `protobuf:"fixed64,1,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte   `json:",omitempty"`
 }
 
 func (this *DoubleProto) Reset()         { *this = DoubleProto{} }
 func (this *DoubleProto) String() string { return proto.CompactTextString(this) }
 
 type BytesProto struct {
-	Value            []byte "PB(bytes,1,req,name=value)"
-	XXX_unrecognized []byte
+	Value            []byte `protobuf:"bytes,1,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *BytesProto) Reset()         { *this = BytesProto{} }
 func (this *BytesProto) String() string { return proto.CompactTextString(this) }
 
 type VoidProto struct {
-	XXX_unrecognized []byte
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *VoidProto) Reset()         { *this = VoidProto{} }
 func (this *VoidProto) String() string { return proto.CompactTextString(this) }
 
-type ShuffleEnums struct {
-	XXX_unrecognized []byte
-}
-
-func (this *ShuffleEnums) Reset()         { *this = ShuffleEnums{} }
-func (this *ShuffleEnums) String() string { return proto.CompactTextString(this) }
-
-type ShuffleInputSpecification struct {
-	Format           *ShuffleEnums_InputFormat "PB(varint,1,opt,name=format,enum=files.ShuffleEnums_InputFormat,def=0)"
-	Path             *string                   "PB(bytes,2,req,name=path)"
-	XXX_unrecognized []byte
-}
-
-func (this *ShuffleInputSpecification) Reset()         { *this = ShuffleInputSpecification{} }
-func (this *ShuffleInputSpecification) String() string { return proto.CompactTextString(this) }
-
-const Default_ShuffleInputSpecification_Format ShuffleEnums_InputFormat = ShuffleEnums_CSV_INPUT
-
-type ShuffleOutputSpecification struct {
-	Format           *ShuffleEnums_OutputFormat "PB(varint,1,opt,name=format,enum=files.ShuffleEnums_OutputFormat,def=0)"
-	PathBase         *string                    "PB(bytes,2,req,name=path_base)"
-	XXX_unrecognized []byte
-}
-
-func (this *ShuffleOutputSpecification) Reset()         { *this = ShuffleOutputSpecification{} }
-func (this *ShuffleOutputSpecification) String() string { return proto.CompactTextString(this) }
-
-const Default_ShuffleOutputSpecification_Format ShuffleEnums_OutputFormat = ShuffleEnums_CSV_OUTPUT
-
 type FileServiceErrors struct {
-	XXX_unrecognized []byte
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *FileServiceErrors) Reset()         { *this = FileServiceErrors{} }
 func (this *FileServiceErrors) String() string { return proto.CompactTextString(this) }
 
 type KeyValue struct {
-	Key              *string "PB(bytes,1,req,name=key)"
-	Value            *string "PB(bytes,2,req,name=value)"
-	XXX_unrecognized []byte
+	Key              *string `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
+	Value            *string `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *KeyValue) Reset()         { *this = KeyValue{} }
 func (this *KeyValue) String() string { return proto.CompactTextString(this) }
 
 type KeyValues struct {
-	Key              *string  "PB(bytes,1,req,name=key)"
-	Value            []string "PB(bytes,2,rep,name=value)"
-	XXX_unrecognized []byte
+	Key              *string  `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
+	Value            []string `protobuf:"bytes,2,rep,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte   `json:",omitempty"`
 }
 
 func (this *KeyValues) Reset()         { *this = KeyValues{} }
 func (this *KeyValues) String() string { return proto.CompactTextString(this) }
 
 type FileContentType struct {
-	XXX_unrecognized []byte
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *FileContentType) Reset()         { *this = FileContentType{} }
 func (this *FileContentType) String() string { return proto.CompactTextString(this) }
 
 type CreateRequest struct {
-	Filesystem            *string                      "PB(bytes,1,req,name=filesystem)"
-	ContentType           *FileContentType_ContentType "PB(varint,2,req,name=content_type,enum=files.FileContentType_ContentType)"
-	Filename              *string                      "PB(bytes,3,opt,name=filename)"
-	Parameters            []*CreateRequest_Parameter   "PB(bytes,4,rep,name=parameters)"
-	ExpirationTimeSeconds *int64                       "PB(varint,5,opt,name=expiration_time_seconds)"
-	XXX_unrecognized      []byte
+	Filesystem            *string                      `protobuf:"bytes,1,req,name=filesystem" json:"filesystem,omitempty"`
+	ContentType           *FileContentType_ContentType `protobuf:"varint,2,req,name=content_type,enum=files.FileContentType_ContentType" json:"content_type,omitempty"`
+	Filename              *string                      `protobuf:"bytes,3,opt,name=filename" json:"filename,omitempty"`
+	Parameters            []*CreateRequest_Parameter   `protobuf:"bytes,4,rep,name=parameters" json:"parameters,omitempty"`
+	ExpirationTimeSeconds *int64                       `protobuf:"varint,5,opt,name=expiration_time_seconds" json:"expiration_time_seconds,omitempty"`
+	XXX_unrecognized      []byte                       `json:",omitempty"`
 }
 
 func (this *CreateRequest) Reset()         { *this = CreateRequest{} }
 func (this *CreateRequest) String() string { return proto.CompactTextString(this) }
 
 type CreateRequest_Parameter struct {
-	Name             *string "PB(bytes,1,req,name=name)"
-	Value            *string "PB(bytes,2,req,name=value)"
-	XXX_unrecognized []byte
+	Name             *string `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Value            *string `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *CreateRequest_Parameter) Reset()         { *this = CreateRequest_Parameter{} }
 func (this *CreateRequest_Parameter) String() string { return proto.CompactTextString(this) }
 
 type CreateResponse struct {
-	Filename         *string "PB(bytes,1,req,name=filename)"
-	XXX_unrecognized []byte
+	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *CreateResponse) Reset()         { *this = CreateResponse{} }
 func (this *CreateResponse) String() string { return proto.CompactTextString(this) }
 
 type OpenRequest struct {
-	Filename             *string                      "PB(bytes,1,req,name=filename)"
-	ContentType          *FileContentType_ContentType "PB(varint,2,req,name=content_type,enum=files.FileContentType_ContentType)"
-	OpenMode             *OpenRequest_OpenMode        "PB(varint,3,req,name=open_mode,enum=files.OpenRequest_OpenMode)"
-	ExclusiveLock        *bool                        "PB(varint,4,opt,name=exclusive_lock,def=0)"
-	BufferedOutput       *bool                        "PB(varint,5,opt,name=buffered_output,def=0)"
-	OpenLeaseTimeSeconds *int32                       "PB(varint,6,opt,name=open_lease_time_seconds,def=30)"
-	XXX_unrecognized     []byte
+	Filename             *string                      `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
+	ContentType          *FileContentType_ContentType `protobuf:"varint,2,req,name=content_type,enum=files.FileContentType_ContentType" json:"content_type,omitempty"`
+	OpenMode             *OpenRequest_OpenMode        `protobuf:"varint,3,req,name=open_mode,enum=files.OpenRequest_OpenMode" json:"open_mode,omitempty"`
+	ExclusiveLock        *bool                        `protobuf:"varint,4,opt,name=exclusive_lock,def=0" json:"exclusive_lock,omitempty"`
+	BufferedOutput       *bool                        `protobuf:"varint,5,opt,name=buffered_output,def=0" json:"buffered_output,omitempty"`
+	OpenLeaseTimeSeconds *int32                       `protobuf:"varint,6,opt,name=open_lease_time_seconds,def=30" json:"open_lease_time_seconds,omitempty"`
+	XXX_unrecognized     []byte                       `json:",omitempty"`
 }
 
 func (this *OpenRequest) Reset()         { *this = OpenRequest{} }
@@ -432,16 +407,16 @@ const Default_OpenRequest_BufferedOutput bool = false
 const Default_OpenRequest_OpenLeaseTimeSeconds int32 = 30
 
 type OpenResponse struct {
-	XXX_unrecognized []byte
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *OpenResponse) Reset()         { *this = OpenResponse{} }
 func (this *OpenResponse) String() string { return proto.CompactTextString(this) }
 
 type CloseRequest struct {
-	Filename         *string "PB(bytes,1,req,name=filename)"
-	Finalize         *bool   "PB(varint,2,opt,name=finalize,def=0)"
-	XXX_unrecognized []byte
+	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
+	Finalize         *bool   `protobuf:"varint,2,opt,name=finalize,def=0" json:"finalize,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *CloseRequest) Reset()         { *this = CloseRequest{} }
@@ -450,38 +425,38 @@ func (this *CloseRequest) String() string { return proto.CompactTextString(this)
 const Default_CloseRequest_Finalize bool = false
 
 type CloseResponse struct {
-	XXX_unrecognized []byte
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *CloseResponse) Reset()         { *this = CloseResponse{} }
 func (this *CloseResponse) String() string { return proto.CompactTextString(this) }
 
 type FileStat struct {
-	Filename         *string                      "PB(bytes,1,req,name=filename)"
-	ContentType      *FileContentType_ContentType "PB(varint,2,req,name=content_type,enum=files.FileContentType_ContentType)"
-	Finalized        *bool                        "PB(varint,3,req,name=finalized)"
-	Length           *int64                       "PB(varint,4,opt,name=length)"
-	Ctime            *int64                       "PB(varint,5,opt,name=ctime)"
-	Mtime            *int64                       "PB(varint,6,opt,name=mtime)"
-	XXX_unrecognized []byte
+	Filename         *string                      `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
+	ContentType      *FileContentType_ContentType `protobuf:"varint,2,req,name=content_type,enum=files.FileContentType_ContentType" json:"content_type,omitempty"`
+	Finalized        *bool                        `protobuf:"varint,3,req,name=finalized" json:"finalized,omitempty"`
+	Length           *int64                       `protobuf:"varint,4,opt,name=length" json:"length,omitempty"`
+	Ctime            *int64                       `protobuf:"varint,5,opt,name=ctime" json:"ctime,omitempty"`
+	Mtime            *int64                       `protobuf:"varint,6,opt,name=mtime" json:"mtime,omitempty"`
+	XXX_unrecognized []byte                       `json:",omitempty"`
 }
 
 func (this *FileStat) Reset()         { *this = FileStat{} }
 func (this *FileStat) String() string { return proto.CompactTextString(this) }
 
 type StatRequest struct {
-	Filename         *string "PB(bytes,1,opt,name=filename)"
-	FileGlob         *string "PB(bytes,2,opt,name=file_glob)"
-	XXX_unrecognized []byte
+	Filename         *string `protobuf:"bytes,1,opt,name=filename" json:"filename,omitempty"`
+	FileGlob         *string `protobuf:"bytes,2,opt,name=file_glob" json:"file_glob,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *StatRequest) Reset()         { *this = StatRequest{} }
 func (this *StatRequest) String() string { return proto.CompactTextString(this) }
 
 type StatResponse struct {
-	Stat             []*FileStat "PB(bytes,1,rep,name=stat)"
-	MoreFilesFound   *bool       "PB(varint,2,req,name=more_files_found,def=0)"
-	XXX_unrecognized []byte
+	Stat             []*FileStat `protobuf:"bytes,1,rep,name=stat" json:"stat,omitempty"`
+	MoreFilesFound   *bool       `protobuf:"varint,2,req,name=more_files_found,def=0" json:"more_files_found,omitempty"`
+	XXX_unrecognized []byte      `json:",omitempty"`
 }
 
 func (this *StatResponse) Reset()         { *this = StatResponse{} }
@@ -490,125 +465,185 @@ func (this *StatResponse) String() string { return proto.CompactTextString(this)
 const Default_StatResponse_MoreFilesFound bool = false
 
 type AppendRequest struct {
-	Filename         *string "PB(bytes,1,req,name=filename)"
-	Data             []byte  "PB(bytes,2,req,name=data)"
-	SequenceKey      *string "PB(bytes,3,opt,name=sequence_key)"
-	XXX_unrecognized []byte
+	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
+	Data             []byte  `protobuf:"bytes,2,req,name=data" json:"data,omitempty"`
+	SequenceKey      *string `protobuf:"bytes,3,opt,name=sequence_key" json:"sequence_key,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *AppendRequest) Reset()         { *this = AppendRequest{} }
 func (this *AppendRequest) String() string { return proto.CompactTextString(this) }
 
 type AppendResponse struct {
-	XXX_unrecognized []byte
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *AppendResponse) Reset()         { *this = AppendResponse{} }
 func (this *AppendResponse) String() string { return proto.CompactTextString(this) }
 
 type DeleteRequest struct {
-	Filename         *string "PB(bytes,1,req,name=filename)"
-	XXX_unrecognized []byte
+	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *DeleteRequest) Reset()         { *this = DeleteRequest{} }
 func (this *DeleteRequest) String() string { return proto.CompactTextString(this) }
 
 type DeleteResponse struct {
-	XXX_unrecognized []byte
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *DeleteResponse) Reset()         { *this = DeleteResponse{} }
 func (this *DeleteResponse) String() string { return proto.CompactTextString(this) }
 
 type ReadRequest struct {
-	Filename         *string "PB(bytes,1,req,name=filename)"
-	Pos              *int64  "PB(varint,2,req,name=pos)"
-	MaxBytes         *int64  "PB(varint,3,req,name=max_bytes)"
-	XXX_unrecognized []byte
+	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
+	Pos              *int64  `protobuf:"varint,2,req,name=pos" json:"pos,omitempty"`
+	MaxBytes         *int64  `protobuf:"varint,3,req,name=max_bytes" json:"max_bytes,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *ReadRequest) Reset()         { *this = ReadRequest{} }
 func (this *ReadRequest) String() string { return proto.CompactTextString(this) }
 
 type ReadResponse struct {
-	Data             []byte "PB(bytes,1,req,name=data)"
-	XXX_unrecognized []byte
+	Data             []byte `protobuf:"bytes,1,req,name=data" json:"data,omitempty"`
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *ReadResponse) Reset()         { *this = ReadResponse{} }
 func (this *ReadResponse) String() string { return proto.CompactTextString(this) }
 
 type ReadKeyValueRequest struct {
-	Filename         *string "PB(bytes,1,req,name=filename)"
-	StartKey         []byte  "PB(bytes,2,req,name=start_key)"
-	MaxBytes         *int64  "PB(varint,3,req,name=max_bytes)"
-	ValuePos         *int64  "PB(varint,4,opt,name=value_pos)"
-	XXX_unrecognized []byte
+	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
+	StartKey         []byte  `protobuf:"bytes,2,req,name=start_key" json:"start_key,omitempty"`
+	MaxBytes         *int64  `protobuf:"varint,3,req,name=max_bytes" json:"max_bytes,omitempty"`
+	ValuePos         *int64  `protobuf:"varint,4,opt,name=value_pos" json:"value_pos,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *ReadKeyValueRequest) Reset()         { *this = ReadKeyValueRequest{} }
 func (this *ReadKeyValueRequest) String() string { return proto.CompactTextString(this) }
 
 type ReadKeyValueResponse struct {
-	Data             []*ReadKeyValueResponse_KeyValue "PB(bytes,1,rep,name=data)"
-	NextKey          []byte                           "PB(bytes,2,opt,name=next_key)"
-	TruncatedValue   *bool                            "PB(varint,3,opt,name=truncated_value)"
-	XXX_unrecognized []byte
+	Data             []*ReadKeyValueResponse_KeyValue `protobuf:"bytes,1,rep,name=data" json:"data,omitempty"`
+	NextKey          []byte                           `protobuf:"bytes,2,opt,name=next_key" json:"next_key,omitempty"`
+	TruncatedValue   *bool                            `protobuf:"varint,3,opt,name=truncated_value" json:"truncated_value,omitempty"`
+	XXX_unrecognized []byte                           `json:",omitempty"`
 }
 
 func (this *ReadKeyValueResponse) Reset()         { *this = ReadKeyValueResponse{} }
 func (this *ReadKeyValueResponse) String() string { return proto.CompactTextString(this) }
 
 type ReadKeyValueResponse_KeyValue struct {
-	Key              []byte "PB(bytes,1,req,name=key)"
-	Value            []byte "PB(bytes,2,req,name=value)"
-	XXX_unrecognized []byte
+	Key              []byte `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
+	Value            []byte `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *ReadKeyValueResponse_KeyValue) Reset()         { *this = ReadKeyValueResponse_KeyValue{} }
 func (this *ReadKeyValueResponse_KeyValue) String() string { return proto.CompactTextString(this) }
 
+type ShuffleEnums struct {
+	XXX_unrecognized []byte `json:",omitempty"`
+}
+
+func (this *ShuffleEnums) Reset()         { *this = ShuffleEnums{} }
+func (this *ShuffleEnums) String() string { return proto.CompactTextString(this) }
+
+type ShuffleInputSpecification struct {
+	Format           *ShuffleEnums_InputFormat `protobuf:"varint,1,opt,name=format,enum=files.ShuffleEnums_InputFormat,def=0" json:"format,omitempty"`
+	Path             *string                   `protobuf:"bytes,2,req,name=path" json:"path,omitempty"`
+	XXX_unrecognized []byte                    `json:",omitempty"`
+}
+
+func (this *ShuffleInputSpecification) Reset()         { *this = ShuffleInputSpecification{} }
+func (this *ShuffleInputSpecification) String() string { return proto.CompactTextString(this) }
+
+const Default_ShuffleInputSpecification_Format ShuffleEnums_InputFormat = ShuffleEnums_CSV_INPUT
+
+type ShuffleOutputSpecification struct {
+	Format           *ShuffleEnums_OutputFormat `protobuf:"varint,1,opt,name=format,enum=files.ShuffleEnums_OutputFormat,def=0" json:"format,omitempty"`
+	Path             []string                   `protobuf:"bytes,2,rep,name=path" json:"path,omitempty"`
+	XXX_unrecognized []byte                     `json:",omitempty"`
+}
+
+func (this *ShuffleOutputSpecification) Reset()         { *this = ShuffleOutputSpecification{} }
+func (this *ShuffleOutputSpecification) String() string { return proto.CompactTextString(this) }
+
+const Default_ShuffleOutputSpecification_Format ShuffleEnums_OutputFormat = ShuffleEnums_CSV_OUTPUT
+
 type ShuffleRequest struct {
-	ShuffleName      *string                      "PB(bytes,1,req,name=shuffle_name)"
-	Input            []*ShuffleInputSpecification "PB(bytes,2,rep,name=input)"
-	Output           *ShuffleOutputSpecification  "PB(bytes,3,req,name=output)"
-	ShuffleSizeBytes *int64                       "PB(varint,4,req,name=shuffle_size_bytes)"
-	XXX_unrecognized []byte
+	ShuffleName      *string                      `protobuf:"bytes,1,req,name=shuffle_name" json:"shuffle_name,omitempty"`
+	Input            []*ShuffleInputSpecification `protobuf:"bytes,2,rep,name=input" json:"input,omitempty"`
+	Output           *ShuffleOutputSpecification  `protobuf:"bytes,3,req,name=output" json:"output,omitempty"`
+	ShuffleSizeBytes *int64                       `protobuf:"varint,4,req,name=shuffle_size_bytes" json:"shuffle_size_bytes,omitempty"`
+	Callback         *ShuffleRequest_Callback     `protobuf:"bytes,5,req,name=callback" json:"callback,omitempty"`
+	XXX_unrecognized []byte                       `json:",omitempty"`
 }
 
 func (this *ShuffleRequest) Reset()         { *this = ShuffleRequest{} }
 func (this *ShuffleRequest) String() string { return proto.CompactTextString(this) }
 
+type ShuffleRequest_Callback struct {
+	Url              *string `protobuf:"bytes,1,req,name=url" json:"url,omitempty"`
+	AppVersionId     *string `protobuf:"bytes,2,opt,name=app_version_id" json:"app_version_id,omitempty"`
+	Method           *string `protobuf:"bytes,3,opt,name=method,def=POST" json:"method,omitempty"`
+	Queue            *string `protobuf:"bytes,4,opt,name=queue,def=default" json:"queue,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
+}
+
+func (this *ShuffleRequest_Callback) Reset()         { *this = ShuffleRequest_Callback{} }
+func (this *ShuffleRequest_Callback) String() string { return proto.CompactTextString(this) }
+
+const Default_ShuffleRequest_Callback_Method string = "POST"
+const Default_ShuffleRequest_Callback_Queue string = "default"
+
 type ShuffleResponse struct {
-	XXX_unrecognized []byte
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *ShuffleResponse) Reset()         { *this = ShuffleResponse{} }
 func (this *ShuffleResponse) String() string { return proto.CompactTextString(this) }
 
 type GetShuffleStatusRequest struct {
-	ShuffleName      *string "PB(bytes,1,req,name=shuffle_name)"
-	XXX_unrecognized []byte
+	ShuffleName      *string `protobuf:"bytes,1,req,name=shuffle_name" json:"shuffle_name,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *GetShuffleStatusRequest) Reset()         { *this = GetShuffleStatusRequest{} }
 func (this *GetShuffleStatusRequest) String() string { return proto.CompactTextString(this) }
 
 type GetShuffleStatusResponse struct {
-	Status           *ShuffleEnums_Status "PB(varint,1,req,name=status,enum=files.ShuffleEnums_Status)"
-	Description      *string              "PB(bytes,2,opt,name=description)"
-	XXX_unrecognized []byte
+	Status           *ShuffleEnums_Status `protobuf:"varint,1,req,name=status,enum=files.ShuffleEnums_Status" json:"status,omitempty"`
+	Description      *string              `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
+	XXX_unrecognized []byte               `json:",omitempty"`
 }
 
 func (this *GetShuffleStatusResponse) Reset()         { *this = GetShuffleStatusResponse{} }
 func (this *GetShuffleStatusResponse) String() string { return proto.CompactTextString(this) }
 
+type GetCapabilitiesRequest struct {
+	XXX_unrecognized []byte `json:",omitempty"`
+}
+
+func (this *GetCapabilitiesRequest) Reset()         { *this = GetCapabilitiesRequest{} }
+func (this *GetCapabilitiesRequest) String() string { return proto.CompactTextString(this) }
+
+type GetCapabilitiesResponse struct {
+	Filesystem       []string `protobuf:"bytes,1,rep,name=filesystem" json:"filesystem,omitempty"`
+	ShuffleAvailable *bool    `protobuf:"varint,2,req,name=shuffle_available" json:"shuffle_available,omitempty"`
+	XXX_unrecognized []byte   `json:",omitempty"`
+}
+
+func (this *GetCapabilitiesResponse) Reset()         { *this = GetCapabilitiesResponse{} }
+func (this *GetCapabilitiesResponse) String() string { return proto.CompactTextString(this) }
+
 func init() {
-	proto.RegisterEnum("files.ShuffleEnums_InputFormat", ShuffleEnums_InputFormat_name, ShuffleEnums_InputFormat_value)
-	proto.RegisterEnum("files.ShuffleEnums_OutputFormat", ShuffleEnums_OutputFormat_name, ShuffleEnums_OutputFormat_value)
-	proto.RegisterEnum("files.ShuffleEnums_Status", ShuffleEnums_Status_name, ShuffleEnums_Status_value)
 	proto.RegisterEnum("files.FileServiceErrors_ErrorCode", FileServiceErrors_ErrorCode_name, FileServiceErrors_ErrorCode_value)
 	proto.RegisterEnum("files.FileContentType_ContentType", FileContentType_ContentType_name, FileContentType_ContentType_value)
 	proto.RegisterEnum("files.OpenRequest_OpenMode", OpenRequest_OpenMode_name, OpenRequest_OpenMode_value)
+	proto.RegisterEnum("files.ShuffleEnums_InputFormat", ShuffleEnums_InputFormat_name, ShuffleEnums_InputFormat_value)
+	proto.RegisterEnum("files.ShuffleEnums_OutputFormat", ShuffleEnums_OutputFormat_name, ShuffleEnums_OutputFormat_value)
+	proto.RegisterEnum("files.ShuffleEnums_Status", ShuffleEnums_Status_name, ShuffleEnums_Status_value)
 }

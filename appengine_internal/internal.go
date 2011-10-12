@@ -55,6 +55,10 @@ func RegisterHTTPFunc(f ServeHTTPFunc) {
 	serveHTTPFunc = f
 }
 
+type CallOptions struct {
+	Deadline float64 // in seconds; overrides RPC default
+}
+
 // errorCodeMaps is a map of service name to the error code map for the service.
 var errorCodeMaps = make(map[string]map[int32]string)
 
@@ -108,7 +112,7 @@ func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 
 // parseAddr parses a composite address of the form "net:addr".
 func parseAddr(compAddr string) (net, addr string) {
-	parts := strings.Split(compAddr, ":", 2)
+	parts := strings.SplitN(compAddr, ":", 2)
 	if len(parts) != 2 {
 		log.Fatalf("appengine: bad composite address %q", compAddr)
 	}

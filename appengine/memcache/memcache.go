@@ -116,7 +116,7 @@ func GetMulti(c appengine.Context, key []string) (map[string]*Item, os.Error) {
 		ForCas: proto.Bool(true),
 	}
 	res := &pb.MemcacheGetResponse{}
-	if err := c.Call("memcache", "Get", req, res); err != nil {
+	if err := c.Call("memcache", "Get", req, res, nil); err != nil {
 		return nil, err
 	}
 	m := make(map[string]*Item, len(res.Item))
@@ -149,7 +149,7 @@ func DeleteMulti(c appengine.Context, key []string) []os.Error {
 	}
 	res := &pb.MemcacheDeleteResponse{}
 	e := make([]os.Error, len(key))
-	err := c.Call("memcache", "Delete", req, res)
+	err := c.Call("memcache", "Delete", req, res, nil)
 	if err == nil && len(e) != len(res.DeleteStatus) {
 		err = ErrServerError
 	}
@@ -175,7 +175,7 @@ func DeleteMulti(c appengine.Context, key []string) []os.Error {
 // set sets the given items using the given conflict resolution policy.
 // The returned slice will have the same length as the input slice.
 // If value is not nil, each element should correspond to an item.
-func set(c appengine.Context, item []*Item, value [][]byte, policy int32) []os.Error {
+func set(c appengine.Context, item []*Item, value [][]byte, policy pb.MemcacheSetRequest_SetPolicy) []os.Error {
 	req := &pb.MemcacheSetRequest{
 		Item: make([]*pb.MemcacheSetRequest_Item, len(item)),
 	}
@@ -206,7 +206,7 @@ func set(c appengine.Context, item []*Item, value [][]byte, policy int32) []os.E
 	}
 	res := &pb.MemcacheSetResponse{}
 	e := make([]os.Error, len(item))
-	err := c.Call("memcache", "Set", req, res)
+	err := c.Call("memcache", "Set", req, res, nil)
 	if err == nil && len(e) != len(res.SetStatus) {
 		err = ErrServerError
 	}
@@ -289,7 +289,7 @@ func (cd Codec) Get(c appengine.Context, key string, v interface{}) (*Item, os.E
 	return i, nil
 }
 
-func (cd Codec) set(c appengine.Context, item *Item, policy int32) os.Error {
+func (cd Codec) set(c appengine.Context, item *Item, policy pb.MemcacheSetRequest_SetPolicy) os.Error {
 	value, err := cd.Marshal(item.Object)
 	if err != nil {
 		return err
@@ -341,7 +341,7 @@ type Statistics struct {
 func Stats(c appengine.Context) (*Statistics, os.Error) {
 	req := &pb.MemcacheStatsRequest{}
 	res := &pb.MemcacheStatsResponse{}
-	if err := c.Call("memcache", "Stats", req, res); err != nil {
+	if err := c.Call("memcache", "Stats", req, res, nil); err != nil {
 		return nil, err
 	}
 	if res.Stats == nil {

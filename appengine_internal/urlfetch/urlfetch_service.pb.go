@@ -7,23 +7,21 @@ import proto "goprotobuf.googlecode.com/hg/proto"
 import "math"
 import "os"
 
-
 // Reference proto, math & os imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
 var _ os.Error
 
-
 type URLFetchServiceError_ErrorCode int32
 
 const (
-	URLFetchServiceError_OK                    = 0
-	URLFetchServiceError_INVALID_URL           = 1
-	URLFetchServiceError_FETCH_ERROR           = 2
-	URLFetchServiceError_UNSPECIFIED_ERROR     = 3
-	URLFetchServiceError_RESPONSE_TOO_LARGE    = 4
-	URLFetchServiceError_DEADLINE_EXCEEDED     = 5
-	URLFetchServiceError_SSL_CERTIFICATE_ERROR = 6
+	URLFetchServiceError_OK                    URLFetchServiceError_ErrorCode = 0
+	URLFetchServiceError_INVALID_URL           URLFetchServiceError_ErrorCode = 1
+	URLFetchServiceError_FETCH_ERROR           URLFetchServiceError_ErrorCode = 2
+	URLFetchServiceError_UNSPECIFIED_ERROR     URLFetchServiceError_ErrorCode = 3
+	URLFetchServiceError_RESPONSE_TOO_LARGE    URLFetchServiceError_ErrorCode = 4
+	URLFetchServiceError_DEADLINE_EXCEEDED     URLFetchServiceError_ErrorCode = 5
+	URLFetchServiceError_SSL_CERTIFICATE_ERROR URLFetchServiceError_ErrorCode = 6
 )
 
 var URLFetchServiceError_ErrorCode_name = map[int32]string{
@@ -45,7 +43,7 @@ var URLFetchServiceError_ErrorCode_value = map[string]int32{
 	"SSL_CERTIFICATE_ERROR": 6,
 }
 
-func NewURLFetchServiceError_ErrorCode(x int32) *URLFetchServiceError_ErrorCode {
+func NewURLFetchServiceError_ErrorCode(x URLFetchServiceError_ErrorCode) *URLFetchServiceError_ErrorCode {
 	e := URLFetchServiceError_ErrorCode(x)
 	return &e
 }
@@ -56,11 +54,11 @@ func (x URLFetchServiceError_ErrorCode) String() string {
 type URLFetchRequest_RequestMethod int32
 
 const (
-	URLFetchRequest_GET    = 1
-	URLFetchRequest_POST   = 2
-	URLFetchRequest_HEAD   = 3
-	URLFetchRequest_PUT    = 4
-	URLFetchRequest_DELETE = 5
+	URLFetchRequest_GET    URLFetchRequest_RequestMethod = 1
+	URLFetchRequest_POST   URLFetchRequest_RequestMethod = 2
+	URLFetchRequest_HEAD   URLFetchRequest_RequestMethod = 3
+	URLFetchRequest_PUT    URLFetchRequest_RequestMethod = 4
+	URLFetchRequest_DELETE URLFetchRequest_RequestMethod = 5
 )
 
 var URLFetchRequest_RequestMethod_name = map[int32]string{
@@ -78,7 +76,7 @@ var URLFetchRequest_RequestMethod_value = map[string]int32{
 	"DELETE": 5,
 }
 
-func NewURLFetchRequest_RequestMethod(x int32) *URLFetchRequest_RequestMethod {
+func NewURLFetchRequest_RequestMethod(x URLFetchRequest_RequestMethod) *URLFetchRequest_RequestMethod {
 	e := URLFetchRequest_RequestMethod(x)
 	return &e
 }
@@ -87,21 +85,21 @@ func (x URLFetchRequest_RequestMethod) String() string {
 }
 
 type URLFetchServiceError struct {
-	XXX_unrecognized []byte
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *URLFetchServiceError) Reset()         { *this = URLFetchServiceError{} }
 func (this *URLFetchServiceError) String() string { return proto.CompactTextString(this) }
 
 type URLFetchRequest struct {
-	Method                        *URLFetchRequest_RequestMethod "PB(varint,1,req,enum=appengine.URLFetchRequest_RequestMethod)"
-	Url                           *string                        "PB(bytes,2,req)"
-	Header                        []*URLFetchRequest_Header      "PB(group,3,rep)"
-	Payload                       []byte                         "PB(bytes,6,opt)"
-	FollowRedirects               *bool                          "PB(varint,7,opt,def=1)"
-	Deadline                      *float64                       "PB(fixed64,8,opt)"
-	MustValidateServerCertificate *bool                          "PB(varint,9,opt,def=1)"
-	XXX_unrecognized              []byte
+	Method                        *URLFetchRequest_RequestMethod `protobuf:"varint,1,req,enum=appengine.URLFetchRequest_RequestMethod" json:"Method,omitempty"`
+	Url                           *string                        `protobuf:"bytes,2,req" json:"Url,omitempty"`
+	Header                        []*URLFetchRequest_Header      `protobuf:"group,3,rep" json:"header,omitempty"`
+	Payload                       []byte                         `protobuf:"bytes,6,opt" json:"Payload,omitempty"`
+	FollowRedirects               *bool                          `protobuf:"varint,7,opt,def=1" json:"FollowRedirects,omitempty"`
+	Deadline                      *float64                       `protobuf:"fixed64,8,opt" json:"Deadline,omitempty"`
+	MustValidateServerCertificate *bool                          `protobuf:"varint,9,opt,def=1" json:"MustValidateServerCertificate,omitempty"`
+	XXX_unrecognized              []byte                         `json:",omitempty"`
 }
 
 func (this *URLFetchRequest) Reset()         { *this = URLFetchRequest{} }
@@ -111,26 +109,26 @@ const Default_URLFetchRequest_FollowRedirects bool = true
 const Default_URLFetchRequest_MustValidateServerCertificate bool = true
 
 type URLFetchRequest_Header struct {
-	Key              *string "PB(bytes,4,req)"
-	Value            *string "PB(bytes,5,req)"
-	XXX_unrecognized []byte
+	Key              *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
+	Value            *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *URLFetchRequest_Header) Reset()         { *this = URLFetchRequest_Header{} }
 func (this *URLFetchRequest_Header) String() string { return proto.CompactTextString(this) }
 
 type URLFetchResponse struct {
-	Content               []byte                     "PB(bytes,1,opt)"
-	StatusCode            *int32                     "PB(varint,2,req)"
-	Header                []*URLFetchResponse_Header "PB(group,3,rep)"
-	ContentWasTruncated   *bool                      "PB(varint,6,opt,def=0)"
-	ExternalBytesSent     *int64                     "PB(varint,7,opt)"
-	ExternalBytesReceived *int64                     "PB(varint,8,opt)"
-	FinalUrl              *string                    "PB(bytes,9,opt)"
-	ApiCpuMilliseconds    *int64                     "PB(varint,10,opt,def=0)"
-	ApiBytesSent          *int64                     "PB(varint,11,opt,def=0)"
-	ApiBytesReceived      *int64                     "PB(varint,12,opt,def=0)"
-	XXX_unrecognized      []byte
+	Content               []byte                     `protobuf:"bytes,1,opt" json:"Content,omitempty"`
+	StatusCode            *int32                     `protobuf:"varint,2,req" json:"StatusCode,omitempty"`
+	Header                []*URLFetchResponse_Header `protobuf:"group,3,rep" json:"header,omitempty"`
+	ContentWasTruncated   *bool                      `protobuf:"varint,6,opt,def=0" json:"ContentWasTruncated,omitempty"`
+	ExternalBytesSent     *int64                     `protobuf:"varint,7,opt" json:"ExternalBytesSent,omitempty"`
+	ExternalBytesReceived *int64                     `protobuf:"varint,8,opt" json:"ExternalBytesReceived,omitempty"`
+	FinalUrl              *string                    `protobuf:"bytes,9,opt" json:"FinalUrl,omitempty"`
+	ApiCpuMilliseconds    *int64                     `protobuf:"varint,10,opt,def=0" json:"ApiCpuMilliseconds,omitempty"`
+	ApiBytesSent          *int64                     `protobuf:"varint,11,opt,def=0" json:"ApiBytesSent,omitempty"`
+	ApiBytesReceived      *int64                     `protobuf:"varint,12,opt,def=0" json:"ApiBytesReceived,omitempty"`
+	XXX_unrecognized      []byte                     `json:",omitempty"`
 }
 
 func (this *URLFetchResponse) Reset()         { *this = URLFetchResponse{} }
@@ -142,9 +140,9 @@ const Default_URLFetchResponse_ApiBytesSent int64 = 0
 const Default_URLFetchResponse_ApiBytesReceived int64 = 0
 
 type URLFetchResponse_Header struct {
-	Key              *string "PB(bytes,4,req)"
-	Value            *string "PB(bytes,5,req)"
-	XXX_unrecognized []byte
+	Key              *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
+	Value            *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *URLFetchResponse_Header) Reset()         { *this = URLFetchResponse_Header{} }

@@ -110,9 +110,11 @@ func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err os.Err
 		FollowRedirects:               proto.Bool(false), // http.Client's responsibility
 		MustValidateServerCertificate: proto.Bool(!t.AllowInvalidServerCertificate),
 	}
+	opts := &appengine_internal.CallOptions{}
 
 	if t.DeadlineSeconds != 0 {
 		freq.Deadline = proto.Float64(t.DeadlineSeconds)
+		opts.Deadline = t.DeadlineSeconds
 	}
 
 	for k, vals := range req.Header {
@@ -131,14 +133,14 @@ func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err os.Err
 	}
 
 	fres := &pb.URLFetchResponse{}
-	if err := t.Context.Call("urlfetch", "Fetch", freq, fres); err != nil {
+	if err := t.Context.Call("urlfetch", "Fetch", freq, fres, opts); err != nil {
 		return nil, err
 	}
 
 	res = &http.Response{}
 	res.StatusCode = int(*fres.StatusCode)
 	res.Status = fmt.Sprintf("%d %s", res.StatusCode, statusCodeToText(res.StatusCode))
-	res.Header = http.Header(make(map[string][]string))
+	res.Header = make(http.Header)
 	res.Request = req
 
 	// Faked:

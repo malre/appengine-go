@@ -156,7 +156,7 @@ func NewContext(req *http.Request) *context {
 	}
 }
 
-func (c *context) Call(service, method string, in, out interface{}) os.Error {
+func (c *context) Call(service, method string, in, out interface{}, _ *CallOptions) os.Error {
 	data, err := proto.Marshal(in)
 	if err != nil {
 		return err

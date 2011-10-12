@@ -9,8 +9,8 @@ Using this service, applications may perform work outside a user's request.
 A Task may be constucted manually; alternatively, since the most common
 taskqueue operation is to add a single POST task, NewPOSTTask makes it easy.
 
-	t := taskqueue.NewPOSTTask("/worker", map[string][]string{
-		"key": []string{key},
+	t := taskqueue.NewPOSTTask("/worker", url.Values{
+		"key": {key},
 	})
 	taskqueue.Add(c, t, "") // add t to the default queue
 */
@@ -19,9 +19,11 @@ package taskqueue
 // TODO: Bulk task adding/deleting, queue management.
 
 import (
+	"fmt"
 	"http"
 	"os"
 	"time"
+	"url"
 
 	"appengine"
 	"appengine_internal"
@@ -43,6 +45,8 @@ type Task struct {
 	Payload []byte
 
 	// Additional HTTP headers to pass at the task's execution time.
+	// To schedule the task to be run with an alternate app version
+	// or backend, set the "Host" header.
 	Header http.Header
 
 	// Method is the HTTP method for the task ("GET", "POST", etc.),
@@ -59,12 +63,12 @@ type Task struct {
 }
 
 // NewPOSTTask creates a Task that will POST to a path with the given form data.
-func NewPOSTTask(path string, params map[string][]string) *Task {
+func NewPOSTTask(path string, params url.Values) *Task {
 	h := make(http.Header)
 	h.Set("Content-Type", "application/x-www-form-urlencoded")
 	return &Task{
 		Path:    path,
-		Payload: []byte(http.Values(params).Encode()),
+		Payload: []byte(params.Encode()),
 		Header:  h,
 		Method:  "POST",
 	}
@@ -95,9 +99,10 @@ func Add(c appengine.Context, task *Task, queueName string) (*Task, os.Error) {
 	} else {
 		// HTTP-based task
 		if v, ok := taskqueue_proto.TaskQueueAddRequest_RequestMethod_value[method]; ok {
-			req.Method = taskqueue_proto.NewTaskQueueAddRequest_RequestMethod(v)
+			req.Method = taskqueue_proto.NewTaskQueueAddRequest_RequestMethod(
+				taskqueue_proto.TaskQueueAddRequest_RequestMethod(v))
 		} else {
-			// TODO: return error
+			return nil, fmt.Errorf("taskqueue: bad method %q", method)
 		}
 		req.Url = []byte(task.Path)
 		for k, vs := range task.Header {
@@ -113,7 +118,7 @@ func Add(c appengine.Context, task *Task, queueName string) (*Task, os.Error) {
 		}
 	}
 	res := &taskqueue_proto.TaskQueueAddResponse{}
-	if err := c.Call("taskqueue", "Add", req, res); err != nil {
+	if err := c.Call("taskqueue", "Add", req, res, nil); err != nil {
 		return nil, err
 	}
 	resultTask := *task
@@ -131,7 +136,7 @@ func Delete(c appengine.Context, task *Task, queueName string) os.Error {
 		TaskName:  [][]byte{[]byte(task.Name)},
 	}
 	res := &taskqueue_proto.TaskQueueDeleteResponse{}
-	if err := c.Call("taskqueue", "Delete", req, res); err != nil {
+	if err := c.Call("taskqueue", "Delete", req, res, nil); err != nil {
 		return err
 	}
 	for _, ec := range res.Result {
@@ -155,7 +160,7 @@ func LeaseTasks(c appengine.Context, maxTasks int, queueName string, leaseTime i
 		MaxTasks:     proto.Int64(int64(maxTasks)),
 	}
 	res := &taskqueue_proto.TaskQueueQueryAndOwnTasksResponse{}
-	if err := c.Call("taskqueue", "QueryAndOwnTasks", req, res); err != nil {
+	if err := c.Call("taskqueue", "QueryAndOwnTasks", req, res, nil); err != nil {
 		return nil, err
 	}
 	tasks := make([]*Task, len(res.Task))
@@ -176,7 +181,7 @@ func Purge(c appengine.Context, queueName string) os.Error {
 		QueueName: []byte(queueName),
 	}
 	res := &taskqueue_proto.TaskQueuePurgeQueueResponse{}
-	return c.Call("taskqueue", "PurgeQueue", req, res)
+	return c.Call("taskqueue", "PurgeQueue", req, res, nil)
 }
 
 func init() {

@@ -7,22 +7,20 @@ import proto "goprotobuf.googlecode.com/hg/proto"
 import "math"
 import "os"
 
-
 // Reference proto, math & os imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
 var _ os.Error
 
-
 type MailServiceError_ErrorCode int32
 
 const (
-	MailServiceError_OK                      = 0
-	MailServiceError_INTERNAL_ERROR          = 1
-	MailServiceError_BAD_REQUEST             = 2
-	MailServiceError_UNAUTHORIZED_SENDER     = 3
-	MailServiceError_INVALID_ATTACHMENT_TYPE = 4
-	MailServiceError_INVALID_HEADER_NAME     = 5
+	MailServiceError_OK                      MailServiceError_ErrorCode = 0
+	MailServiceError_INTERNAL_ERROR          MailServiceError_ErrorCode = 1
+	MailServiceError_BAD_REQUEST             MailServiceError_ErrorCode = 2
+	MailServiceError_UNAUTHORIZED_SENDER     MailServiceError_ErrorCode = 3
+	MailServiceError_INVALID_ATTACHMENT_TYPE MailServiceError_ErrorCode = 4
+	MailServiceError_INVALID_HEADER_NAME     MailServiceError_ErrorCode = 5
 )
 
 var MailServiceError_ErrorCode_name = map[int32]string{
@@ -42,7 +40,7 @@ var MailServiceError_ErrorCode_value = map[string]int32{
 	"INVALID_HEADER_NAME":     5,
 }
 
-func NewMailServiceError_ErrorCode(x int32) *MailServiceError_ErrorCode {
+func NewMailServiceError_ErrorCode(x MailServiceError_ErrorCode) *MailServiceError_ErrorCode {
 	e := MailServiceError_ErrorCode(x)
 	return &e
 }
@@ -51,42 +49,42 @@ func (x MailServiceError_ErrorCode) String() string {
 }
 
 type MailServiceError struct {
-	XXX_unrecognized []byte
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *MailServiceError) Reset()         { *this = MailServiceError{} }
 func (this *MailServiceError) String() string { return proto.CompactTextString(this) }
 
 type MailAttachment struct {
-	FileName         *string "PB(bytes,1,req)"
-	Data             []byte  "PB(bytes,2,req)"
-	XXX_unrecognized []byte
+	FileName         *string `protobuf:"bytes,1,req" json:"FileName,omitempty"`
+	Data             []byte  `protobuf:"bytes,2,req" json:"Data,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *MailAttachment) Reset()         { *this = MailAttachment{} }
 func (this *MailAttachment) String() string { return proto.CompactTextString(this) }
 
 type MailHeader struct {
-	Name             *string "PB(bytes,1,req,name=name)"
-	Value            *string "PB(bytes,2,req,name=value)"
-	XXX_unrecognized []byte
+	Name             *string `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Value            *string `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte  `json:",omitempty"`
 }
 
 func (this *MailHeader) Reset()         { *this = MailHeader{} }
 func (this *MailHeader) String() string { return proto.CompactTextString(this) }
 
 type MailMessage struct {
-	Sender           *string           "PB(bytes,1,req)"
-	ReplyTo          *string           "PB(bytes,2,opt)"
-	To               []string          "PB(bytes,3,rep)"
-	Cc               []string          "PB(bytes,4,rep)"
-	Bcc              []string          "PB(bytes,5,rep)"
-	Subject          *string           "PB(bytes,6,req)"
-	TextBody         *string           "PB(bytes,7,opt)"
-	HtmlBody         *string           "PB(bytes,8,opt)"
-	Attachment       []*MailAttachment "PB(bytes,9,rep)"
-	Header           []*MailHeader     "PB(bytes,10,rep)"
-	XXX_unrecognized []byte
+	Sender           *string           `protobuf:"bytes,1,req" json:"Sender,omitempty"`
+	ReplyTo          *string           `protobuf:"bytes,2,opt" json:"ReplyTo,omitempty"`
+	To               []string          `protobuf:"bytes,3,rep" json:"To,omitempty"`
+	Cc               []string          `protobuf:"bytes,4,rep" json:"Cc,omitempty"`
+	Bcc              []string          `protobuf:"bytes,5,rep" json:"Bcc,omitempty"`
+	Subject          *string           `protobuf:"bytes,6,req" json:"Subject,omitempty"`
+	TextBody         *string           `protobuf:"bytes,7,opt" json:"TextBody,omitempty"`
+	HtmlBody         *string           `protobuf:"bytes,8,opt" json:"HtmlBody,omitempty"`
+	Attachment       []*MailAttachment `protobuf:"bytes,9,rep" json:"Attachment,omitempty"`
+	Header           []*MailHeader     `protobuf:"bytes,10,rep" json:"Header,omitempty"`
+	XXX_unrecognized []byte            `json:",omitempty"`
 }
 
 func (this *MailMessage) Reset()         { *this = MailMessage{} }

@@ -73,7 +73,7 @@ func main() {
 func build(app *App) os.Error {
 	var extra []string
 	if *extraImports != "" {
-		extra = strings.Split(*extraImports, ",", -1)
+		extra = strings.Split(*extraImports, ",")
 	}
 	mainStr, err := MakeMain(app, extra)
 	if err != nil {

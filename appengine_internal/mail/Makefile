@@ -4,8 +4,6 @@
 
 include $(GOROOT)/src/Make.inc
 
-
-
 TARG=appengine_internal/mail
 GOFILES=\
 	mail_service.pb.go\

@@ -20,6 +20,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"url"
 
 	"appengine"
 	"appengine/datastore"
@@ -49,7 +50,7 @@ type BlobInfo struct {
 // Stat returns the BlobInfo for a provided blobKey. If no blob was found for
 // that key, Stat returns datastore.ErrNoSuchEntity.
 func Stat(c appengine.Context, blobKey appengine.BlobKey) (*BlobInfo, os.Error) {
-	dskey := datastore.NewKey(blobInfoKind, string(blobKey), 0, nil)
+	dskey := datastore.NewKey(c, blobInfoKind, string(blobKey), 0, nil)
 	m := make(datastore.Map)
 	if err := datastore.Get(c, dskey, m); err != nil {
 		return nil, err
@@ -86,18 +87,33 @@ func Send(response http.ResponseWriter, blobKey appengine.BlobKey) {
 	}
 }
 
-// UploadURL creates an upload URL for the form that the user will fill out,
-// passing the application path to load when the POST of the form is
-// completed. These URLs expire and should not be reused.
-func UploadURL(c appengine.Context, successPath string) (*http.URL, os.Error) {
+// UploadURL creates an upload URL for the form that the user will
+// fill out, passing the application path to load when the POST of the
+// form is completed. These URLs expire and should not be reused. The
+// opts parameter may be nil.
+func UploadURL(c appengine.Context, successPath string, opts *UploadURLOptions) (*url.URL, os.Error) {
 	req := &pb.CreateUploadURLRequest{
 		SuccessPath: proto.String(successPath),
 	}
+	if opts != nil {
+		if opts.MaxUploadBytes != 0 {
+			req.MaxUploadSizeBytes = proto.Int64(opts.MaxUploadBytes)
+		}
+		if opts.MaxUploadBytesPerBlob != 0 {
+			req.MaxUploadSizePerBlobBytes = proto.Int64(opts.MaxUploadBytesPerBlob)
+		}
+	}
 	res := &pb.CreateUploadURLResponse{}
-	if err := c.Call("blobstore", "CreateUploadURL", req, res); err != nil {
+	if err := c.Call("blobstore", "CreateUploadURL", req, res, nil); err != nil {
 		return nil, err
 	}
-	return http.ParseURL(*res.Url)
+	return url.Parse(*res.Url)
+}
+
+// UploadURLOptions are the options to create an upload URL.
+type UploadURLOptions struct {
+	MaxUploadBytes        int64 // optional
+	MaxUploadBytesPerBlob int64 // optional
 }
 
 // Delete deletes a blob.
@@ -115,7 +131,7 @@ func DeleteMulti(c appengine.Context, blobKey []appengine.BlobKey) os.Error {
 		BlobKey: s,
 	}
 	res := &struct{}{} // unused, a base.VoidProto
-	if err := c.Call("blobstore", "DeleteBlob", req, res); err != nil {
+	if err := c.Call("blobstore", "DeleteBlob", req, res, nil); err != nil {
 		return err
 	}
 	return nil
@@ -310,7 +326,7 @@ func (r *reader) fetch(off int64) os.Error {
 		EndIndex:   proto.Int64(off + readBufferSize - 1), // EndIndex is inclusive.
 	}
 	res := &pb.FetchDataResponse{}
-	if err := r.c.Call("blobstore", "FetchData", req, res); err != nil {
+	if err := r.c.Call("blobstore", "FetchData", req, res, nil); err != nil {
 		return err
 	}
 	if len(res.Data) == 0 {
@@ -383,7 +399,7 @@ func Create(c appengine.Context, mimeType string) (*Writer, os.Error) {
 			}},
 	}
 	res := &files.CreateResponse{}
-	if err := c.Call("file", "Create", req, res); err != nil {
+	if err := c.Call("file", "Create", req, res, nil); err != nil {
 		return nil, err
 	}
 
@@ -402,7 +418,7 @@ func Create(c appengine.Context, mimeType string) (*Writer, os.Error) {
 		ExclusiveLock: proto.Bool(true),
 	}
 	ores := &files.OpenResponse{}
-	if err := c.Call("file", "Open", oreq, ores); err != nil {
+	if err := c.Call("file", "Open", oreq, ores, nil); err != nil {
 		return nil, err
 	}
 	return w, nil
@@ -431,7 +447,7 @@ func (w *Writer) flush() {
 		Data:     w.buf,
 	}
 	res := &files.AppendResponse{}
-	if err := w.c.Call("file", "Append", req, res); err != nil {
+	if err := w.c.Call("file", "Append", req, res, nil); err != nil {
 		w.writeErr = err
 	}
 	w.buf = nil
@@ -457,7 +473,7 @@ func (w *Writer) Close() (closeErr os.Error) {
 		Finalize: proto.Bool(true),
 	}
 	res := &files.CloseResponse{}
-	return w.c.Call("file", "Close", req, res)
+	return w.c.Call("file", "Close", req, res, nil)
 }
 
 // Key returns the created blob key. It must be called after Close.
@@ -492,7 +508,7 @@ func (w *Writer) Key() (appengine.BlobKey, os.Error) {
 }
 
 func (w *Writer) keyNewWay(handle string) (appengine.BlobKey, os.Error) {
-	key := datastore.NewKey(blobFileIndexKind, handle, 0, nil)
+	key := datastore.NewKey(w.c, blobFileIndexKind, handle, 0, nil)
 	m := make(datastore.Map)
 	err := datastore.Get(w.c, key, m)
 	if err != nil {
@@ -505,7 +521,7 @@ func (w *Writer) keyNewWay(handle string) (appengine.BlobKey, os.Error) {
 
 	// Double-check that the BlobInfo actually exists.
 	// (Consistent with Python.)
-	key = datastore.NewKey(blobInfoKind, blobkeyStr, 0, nil)
+	key = datastore.NewKey(w.c, blobInfoKind, blobkeyStr, 0, nil)
 	err = datastore.Get(w.c, key, m)
 	if err != nil {
 		return zeroKey, err

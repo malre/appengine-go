@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 
+	"appengine"
 	"goprotobuf.googlecode.com/hg/proto"
 
 	pb "appengine_internal/datastore"
@@ -48,7 +49,6 @@ func (k *Key) Parent() *Key {
 }
 
 // AppID returns the key's application ID.
-// An empty value means the ID of the running App Engine application.
 func (k *Key) AppID() string {
 	return k.appID
 }
@@ -65,7 +65,7 @@ func (k *Key) valid() bool {
 		return false
 	}
 	for ; k != nil; k = k.parent {
-		if k.kind == "" {
+		if k.kind == "" || k.appID == "" {
 			return false
 		}
 		if k.stringID != "" && k.intID != 0 {
@@ -75,7 +75,7 @@ func (k *Key) valid() bool {
 			if k.parent.Incomplete() {
 				return false
 			}
-			if k.parent.appID != k.appID && k.appID != "" {
+			if k.parent.appID != k.appID {
 				return false
 			}
 		}
@@ -231,10 +231,8 @@ func DecodeKey(encoded string) (*Key, os.Error) {
 
 // NewIncompleteKey creates a new incomplete key.
 // kind cannot be empty.
-func NewIncompleteKey(kind string) *Key {
-	return &Key{
-		kind: kind,
-	}
+func NewIncompleteKey(c appengine.Context, kind string, parent *Key) *Key {
+	return NewKey(c, kind, "", 0, parent)
 }
 
 // NewKey creates a new key.
@@ -242,11 +240,12 @@ func NewIncompleteKey(kind string) *Key {
 // Either one or both of stringID and intID must be zero. If both are zero,
 // the key returned is incomplete.
 // parent must either be a complete key or nil.
-func NewKey(kind, stringID string, intID int64, parent *Key) *Key {
+func NewKey(c appengine.Context, kind, stringID string, intID int64, parent *Key) *Key {
 	return &Key{
 		kind:     kind,
 		stringID: stringID,
 		intID:    intID,
 		parent:   parent,
+		appID:    c.FullyQualifiedAppID(),
 	}
 }

@@ -29,7 +29,7 @@ func Enabled(c appengine.Context, api, capability string) bool {
 		Capability: []string{capability},
 	}
 	res := &capability_proto.IsEnabledResponse{}
-	if err := c.Call("capability_service", "IsEnabled", req, res); err != nil {
+	if err := c.Call("capability_service", "IsEnabled", req, res, nil); err != nil {
 		c.Warningf("capability.Enabled: RPC failed: %v", err)
 		return false
 	}
@@ -46,5 +46,3 @@ func Enabled(c appengine.Context, api, capability string) bool {
 	}
 	panic("unreachable")
 }
-
-// TODO: Batch operations, or specific methods? Does anyone care?

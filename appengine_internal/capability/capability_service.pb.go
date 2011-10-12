@@ -7,20 +7,18 @@ import proto "goprotobuf.googlecode.com/hg/proto"
 import "math"
 import "os"
 
-
 // Reference proto, math & os imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
 var _ os.Error
 
-
 type CapabilityConfig_Status int32
 
 const (
-	CapabilityConfig_ENABLED   = 1
-	CapabilityConfig_SCHEDULED = 2
-	CapabilityConfig_DISABLED  = 3
-	CapabilityConfig_UNKNOWN   = 4
+	CapabilityConfig_ENABLED   CapabilityConfig_Status = 1
+	CapabilityConfig_SCHEDULED CapabilityConfig_Status = 2
+	CapabilityConfig_DISABLED  CapabilityConfig_Status = 3
+	CapabilityConfig_UNKNOWN   CapabilityConfig_Status = 4
 )
 
 var CapabilityConfig_Status_name = map[int32]string{
@@ -36,7 +34,7 @@ var CapabilityConfig_Status_value = map[string]int32{
 	"UNKNOWN":   4,
 }
 
-func NewCapabilityConfig_Status(x int32) *CapabilityConfig_Status {
+func NewCapabilityConfig_Status(x CapabilityConfig_Status) *CapabilityConfig_Status {
 	e := CapabilityConfig_Status(x)
 	return &e
 }
@@ -47,11 +45,11 @@ func (x CapabilityConfig_Status) String() string {
 type IsEnabledResponse_SummaryStatus int32
 
 const (
-	IsEnabledResponse_ENABLED          = 1
-	IsEnabledResponse_SCHEDULED_FUTURE = 2
-	IsEnabledResponse_SCHEDULED_NOW    = 3
-	IsEnabledResponse_DISABLED         = 4
-	IsEnabledResponse_UNKNOWN          = 5
+	IsEnabledResponse_ENABLED          IsEnabledResponse_SummaryStatus = 1
+	IsEnabledResponse_SCHEDULED_FUTURE IsEnabledResponse_SummaryStatus = 2
+	IsEnabledResponse_SCHEDULED_NOW    IsEnabledResponse_SummaryStatus = 3
+	IsEnabledResponse_DISABLED         IsEnabledResponse_SummaryStatus = 4
+	IsEnabledResponse_UNKNOWN          IsEnabledResponse_SummaryStatus = 5
 )
 
 var IsEnabledResponse_SummaryStatus_name = map[int32]string{
@@ -69,7 +67,7 @@ var IsEnabledResponse_SummaryStatus_value = map[string]int32{
 	"UNKNOWN":          5,
 }
 
-func NewIsEnabledResponse_SummaryStatus(x int32) *IsEnabledResponse_SummaryStatus {
+func NewIsEnabledResponse_SummaryStatus(x IsEnabledResponse_SummaryStatus) *IsEnabledResponse_SummaryStatus {
 	e := IsEnabledResponse_SummaryStatus(x)
 	return &e
 }
@@ -78,23 +76,23 @@ func (x IsEnabledResponse_SummaryStatus) String() string {
 }
 
 type CapabilityConfigList struct {
-	Config           []*CapabilityConfig "PB(bytes,1,rep,name=config)"
-	DefaultConfig    *CapabilityConfig   "PB(bytes,2,opt,name=default_config)"
-	XXX_unrecognized []byte
+	Config           []*CapabilityConfig `protobuf:"bytes,1,rep,name=config" json:"config,omitempty"`
+	DefaultConfig    *CapabilityConfig   `protobuf:"bytes,2,opt,name=default_config" json:"default_config,omitempty"`
+	XXX_unrecognized []byte              `json:",omitempty"`
 }
 
 func (this *CapabilityConfigList) Reset()         { *this = CapabilityConfigList{} }
 func (this *CapabilityConfigList) String() string { return proto.CompactTextString(this) }
 
 type CapabilityConfig struct {
-	Package          *string                  "PB(bytes,1,req,name=package)"
-	Capability       *string                  "PB(bytes,2,req,name=capability)"
-	Status           *CapabilityConfig_Status "PB(varint,3,opt,name=status,enum=appengine.CapabilityConfig_Status,def=4)"
-	ScheduledTime    *string                  "PB(bytes,7,opt,name=scheduled_time)"
-	InternalMessage  *string                  "PB(bytes,4,opt,name=internal_message)"
-	AdminMessage     *string                  "PB(bytes,5,opt,name=admin_message)"
-	ErrorMessage     *string                  "PB(bytes,6,opt,name=error_message)"
-	XXX_unrecognized []byte
+	Package          *string                  `protobuf:"bytes,1,req,name=package" json:"package,omitempty"`
+	Capability       *string                  `protobuf:"bytes,2,req,name=capability" json:"capability,omitempty"`
+	Status           *CapabilityConfig_Status `protobuf:"varint,3,opt,name=status,enum=appengine.CapabilityConfig_Status,def=4" json:"status,omitempty"`
+	ScheduledTime    *string                  `protobuf:"bytes,7,opt,name=scheduled_time" json:"scheduled_time,omitempty"`
+	InternalMessage  *string                  `protobuf:"bytes,4,opt,name=internal_message" json:"internal_message,omitempty"`
+	AdminMessage     *string                  `protobuf:"bytes,5,opt,name=admin_message" json:"admin_message,omitempty"`
+	ErrorMessage     *string                  `protobuf:"bytes,6,opt,name=error_message" json:"error_message,omitempty"`
+	XXX_unrecognized []byte                   `json:",omitempty"`
 }
 
 func (this *CapabilityConfig) Reset()         { *this = CapabilityConfig{} }
@@ -103,20 +101,20 @@ func (this *CapabilityConfig) String() string { return proto.CompactTextString(t
 const Default_CapabilityConfig_Status CapabilityConfig_Status = CapabilityConfig_UNKNOWN
 
 type IsEnabledRequest struct {
-	Package          *string  "PB(bytes,1,req,name=package)"
-	Capability       []string "PB(bytes,2,rep,name=capability)"
-	Call             []string "PB(bytes,3,rep,name=call)"
-	XXX_unrecognized []byte
+	Package          *string  `protobuf:"bytes,1,req,name=package" json:"package,omitempty"`
+	Capability       []string `protobuf:"bytes,2,rep,name=capability" json:"capability,omitempty"`
+	Call             []string `protobuf:"bytes,3,rep,name=call" json:"call,omitempty"`
+	XXX_unrecognized []byte   `json:",omitempty"`
 }
 
 func (this *IsEnabledRequest) Reset()         { *this = IsEnabledRequest{} }
 func (this *IsEnabledRequest) String() string { return proto.CompactTextString(this) }
 
 type IsEnabledResponse struct {
-	SummaryStatus      *IsEnabledResponse_SummaryStatus "PB(varint,1,req,name=summary_status,enum=appengine.IsEnabledResponse_SummaryStatus)"
-	TimeUntilScheduled *int64                           "PB(varint,2,opt,name=time_until_scheduled)"
-	Config             []*CapabilityConfig              "PB(bytes,3,rep,name=config)"
-	XXX_unrecognized   []byte
+	SummaryStatus      *IsEnabledResponse_SummaryStatus `protobuf:"varint,1,req,name=summary_status,enum=appengine.IsEnabledResponse_SummaryStatus" json:"summary_status,omitempty"`
+	TimeUntilScheduled *int64                           `protobuf:"varint,2,opt,name=time_until_scheduled" json:"time_until_scheduled,omitempty"`
+	Config             []*CapabilityConfig              `protobuf:"bytes,3,rep,name=config" json:"config,omitempty"`
+	XXX_unrecognized   []byte                           `json:",omitempty"`
 }
 
 func (this *IsEnabledResponse) Reset()         { *this = IsEnabledResponse{} }

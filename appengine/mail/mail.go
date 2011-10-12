@@ -77,7 +77,7 @@ func Send(c appengine.Context, msg *Message) os.Error {
 		}
 	}
 	res := &struct{}{} // VoidProto
-	if err := c.Call("mail", "Send", req, res); err != nil {
+	if err := c.Call("mail", "Send", req, res, nil); err != nil {
 		return err
 	}
 	return nil

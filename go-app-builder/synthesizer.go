@@ -23,36 +23,27 @@ func MakeMain(app *App, extraImports []string) (string, os.Error) {
 	return buf.String(), nil
 }
 
-var mainTemplate *template.Template
-
-func init() {
-	mainTemplate = template.New(template.FormatterMap{})
-	mainTemplate.SetDelims("{{", "}}")
-	if err := mainTemplate.Parse(rawTemplate); err != nil {
-		panic("synthesizer: bad template: " + err.String())
-	}
-}
-
 type templateData struct {
 	App          *App
 	ExtraImports []string
 }
 
-const rawTemplate = `package main
+var mainTemplate = template.Must(template.New("main").Parse(
+	`package main
 
 import (
 	"appengine_internal"
-	{{.repeated section ExtraImports}}
-	_ "{{@}}"
-	{{.end}}
+	{{range .ExtraImports}}
+	_ "{{.}}"
+	{{end}}
 
 	// Top-level app packages
-	{{.repeated section App.RootPackages}}
-	_ "{{ImportPath}}"
-	{{.end}}
+	{{range .App.RootPackages}}
+	_ "{{.ImportPath}}"
+	{{end}}
 )
 
 func main() {
 	appengine_internal.Main()
 }
-`
+`))
