@@ -76,7 +76,7 @@ func valueToProto(defaultAppID, name string, v reflect.Value, multiple bool) (p 
 // depending on whether or not the property should be indexed.
 // In particular, []byte values are raw. All other values are indexed.
 func addProperty(e *pb.EntityProto, propProto *pb.Property, propValue reflect.Value) {
-	if _, ok := propValue.Interface().([]byte); ok {
+	if propValue.Type() == typeOfByteSlice {
 		e.RawProperty = append(e.RawProperty, propProto)
 	} else {
 		e.Property = append(e.Property, propProto)
@@ -101,7 +101,7 @@ func nvToProto(defaultAppID string, key *Key, typeName string, nv []nameValue) (
 		e.EntityGroup = keyToProto(defaultAppID, key.root()).Path
 	}
 	for _, x := range nv {
-		_, isBlob := x.value.Interface().([]byte)
+		isBlob := x.value.Type() == typeOfByteSlice
 		if x.value.Kind() == reflect.Slice && !isBlob {
 			// Save each element of the field as a multiple-valued property.
 			for j := 0; j < x.value.Len(); j++ {
@@ -135,21 +135,6 @@ func nvToProto(defaultAppID string, key *Key, typeName string, nv []nameValue) (
 	return e, nil
 }
 
-// saveStruct converts an entity struct to a newly allocated EntityProto.
-func saveStruct(defaultAppID string, key *Key, sv reflect.Value) (*pb.EntityProto, os.Error) {
-	nv := make([]nameValue, sv.NumField())
-	n, st := 0, sv.Type()
-	for i := 0; i < sv.NumField(); i++ {
-		name, value := st.Field(i).Name, sv.Field(i)
-		if unexported(name) || !value.IsValid() {
-			continue
-		}
-		nv[n] = nameValue{name, value}
-		n++
-	}
-	return nvToProto(defaultAppID, key, st.Name(), nv[:n])
-}
-
 // saveMap converts an entity Map to a newly allocated EntityProto.
 func saveMap(defaultAppID string, key *Key, m Map) (*pb.EntityProto, os.Error) {
 	nv := make([]nameValue, len(m))
@@ -159,4 +144,167 @@ func saveMap(defaultAppID string, key *Key, m Map) (*pb.EntityProto, os.Error) {
 		n++
 	}
 	return nvToProto(defaultAppID, key, "datastore.Map", nv)
+}
+
+// saveEntity saves an EntityProto into a Map, PropertyLoadSaver or struct
+// pointer.
+func saveEntity(defaultAppID string, key *Key, src interface{}) (x *pb.EntityProto, err os.Error) {
+	if m, ok := src.(Map); ok {
+		return saveMap(defaultAppID, key, m)
+	}
+
+	c := make(chan Property, 32)
+	donec := make(chan struct{})
+	go func() {
+		x, err = propertiesToProto(defaultAppID, key, c)
+		close(donec)
+	}()
+	var err1 os.Error
+	if e, ok := src.(PropertyLoadSaver); ok {
+		err1 = e.Save(c)
+	} else {
+		err1 = SaveStruct(src, c)
+	}
+	<-donec
+	if err1 != nil {
+		return nil, err1
+	}
+	return x, err
+}
+
+func saveStructProperty(c chan<- Property, name string, noIndex, multiple bool, v reflect.Value) os.Error {
+	p := Property{
+		Name:     name,
+		NoIndex:  noIndex,
+		Multiple: multiple,
+	}
+	switch x := v.Interface().(type) {
+	case *Key:
+		if x == nil {
+			return nil
+		}
+		p.Value = x
+	case Time:
+		p.Value = x
+	case appengine.BlobKey:
+		p.Value = x
+	case []byte:
+		p.NoIndex = true
+		p.Value = x
+	default:
+		switch v.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			p.Value = v.Int()
+		case reflect.Bool:
+			p.Value = v.Bool()
+		case reflect.String:
+			p.Value = v.String()
+		case reflect.Float32, reflect.Float64:
+			p.Value = v.Float()
+		}
+	}
+	if p.Value == nil {
+		return fmt.Errorf("datastore: unsupported struct field type: %v", v.Type())
+	}
+	c <- p
+	return nil
+}
+
+func (s structPLS) Save(c chan<- Property) os.Error {
+	defer close(c)
+	for i, t := range s.codec.byIndex {
+		if t.name == "-" {
+			continue
+		}
+		v := s.v.Field(i)
+		if !v.IsValid() || !v.CanSet() {
+			continue
+		}
+		// For slice fields that aren't []byte, save each element.
+		if v.Kind() == reflect.Slice && v.Type() != typeOfByteSlice {
+			for j := 0; j < v.Len(); j++ {
+				if err := saveStructProperty(c, t.name, t.noIndex, true, v.Index(j)); err != nil {
+					return err
+				}
+			}
+			continue
+		}
+		// Otherwise, save the field itself.
+		if err := saveStructProperty(c, t.name, t.noIndex, false, v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func propertiesToProto(defaultAppID string, key *Key, src <-chan Property) (*pb.EntityProto, os.Error) {
+	defer func() {
+		for _ = range src {
+			// Drain the src channel, if we exit early.
+		}
+	}()
+	e := &pb.EntityProto{
+		Key: keyToProto(defaultAppID, key),
+	}
+	if key.parent == nil {
+		e.EntityGroup = &pb.Path{}
+	} else {
+		e.EntityGroup = keyToProto(defaultAppID, key.root()).Path
+	}
+	prevMultiple := make(map[string]bool)
+
+	for p := range src {
+		if pm, ok := prevMultiple[p.Name]; ok {
+			if !pm || !p.Multiple {
+				return nil, fmt.Errorf("datastore: multiple Properties with Name %q, but Multiple is false", p.Name)
+			}
+		} else {
+			prevMultiple[p.Name] = p.Multiple
+		}
+
+		x := &pb.Property{
+			Name:     proto.String(p.Name),
+			Value:    new(pb.PropertyValue),
+			Multiple: proto.Bool(p.Multiple),
+		}
+		switch v := p.Value.(type) {
+		case int64:
+			x.Value.Int64Value = proto.Int64(v)
+		case bool:
+			x.Value.BooleanValue = proto.Bool(v)
+		case string:
+			x.Value.StringValue = proto.String(v)
+		case float64:
+			x.Value.DoubleValue = proto.Float64(v)
+		case *Key:
+			if v == nil {
+				continue
+			}
+			x.Value.Referencevalue = keyToReferenceValue(defaultAppID, v)
+		case Time:
+			x.Value.Int64Value = proto.Int64(int64(v))
+			x.Meaning = pb.NewProperty_Meaning(pb.Property_GD_WHEN)
+		case appengine.BlobKey:
+			x.Value.StringValue = proto.String(string(v))
+			x.Meaning = pb.NewProperty_Meaning(pb.Property_BLOBKEY)
+		case []byte:
+			x.Value.StringValue = proto.String(string(v))
+			x.Meaning = pb.NewProperty_Meaning(pb.Property_BLOB)
+			if !p.NoIndex {
+				return nil, fmt.Errorf("datastore: cannot index a []byte valued Property with Name %q", p.Name)
+			}
+		default:
+			return nil, fmt.Errorf("datastore: invalid Value type for a Property with Name %q", p.Name)
+		}
+
+		if p.NoIndex {
+			e.RawProperty = append(e.RawProperty, x)
+		} else {
+			e.Property = append(e.Property, x)
+			if len(e.Property) > maxIndexedProperties {
+				return nil, os.NewError("datastore: too many indexed properties")
+			}
+		}
+	}
+	return e, nil
 }

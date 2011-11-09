@@ -396,7 +396,7 @@ func (q *Query) GetAll(c appengine.Context, dst interface{}) ([]*Key, os.Error) 
 			} else {
 				ev = reflect.New(et)
 			}
-			if _, err = loadEntity(ev.Interface(), k, e); err != nil {
+			if err = loadEntity(ev.Interface(), e); err != nil {
 				return keys, err
 			}
 			if isStruct {
@@ -454,7 +454,7 @@ func (t *Iterator) Next(dst interface{}) (*Key, os.Error) {
 	if err != nil || e == nil {
 		return k, err
 	}
-	return loadEntity(dst, k, e)
+	return k, loadEntity(dst, e)
 }
 
 func (t *Iterator) next() (*Key, *pb.EntityProto, os.Error) {
@@ -506,16 +506,4 @@ func (t *Iterator) next() (*Key, *pb.EntityProto, os.Error) {
 		return k, nil, nil
 	}
 	return k, e, nil
-}
-
-// loadEntity loads an EntityProto into a Map or struct.
-func loadEntity(dst interface{}, k *Key, e *pb.EntityProto) (*Key, os.Error) {
-	if m, ok := dst.(Map); ok {
-		return k, loadMap(m, k, e)
-	}
-	sv, err := asStructValue(dst)
-	if err != nil {
-		return nil, err
-	}
-	return k, loadStruct(sv, k, e)
 }

@@ -21,8 +21,10 @@ A function may be called any number of times. If the function has any
 return arguments, and the last one is of type os.Error, the function may
 return a non-nil error to signal that the function should be retried.
 
-The arguments to functions may be of any type that is encodable by the
-gob package.
+The arguments to functions may be of any type that is encodable by the gob
+package. If an argument is of interface type, it is the client's responsibility
+to register with the gob package whatever concrete type may be passed for that
+argument; see http://golang.org/pkg/gob/#Register for details.
 
 Any errors during initialization or execution of a function will be
 logged to the application logs. Error logs that occur during initialization will
@@ -102,6 +104,21 @@ func Func(key string, i interface{}) *Function {
 	if t.NumIn() == 0 || t.In(0) != contextType {
 		f.err = errFirstArg
 		return f
+	}
+
+	// Register the function's arguments with the gob package.
+	// This is required because they are marshaled inside a []interface{}.
+	// gob.Register only expects to be called during initialization;
+	// that's fine because this function expects the same.
+	for i := 0; i < t.NumIn(); i++ {
+		// Only concrete types may be registered. If the argument has
+		// interface type, the client is resposible for registering the
+		// concrete types it will hold.
+		if t.In(i).Kind() == reflect.Interface {
+			continue
+		}
+		// TODO: Re-enable this when the gob package is fixed.
+		//gob.Register(reflect.Zero(t.In(i)).Interface())
 	}
 
 	funcs[f.key] = f

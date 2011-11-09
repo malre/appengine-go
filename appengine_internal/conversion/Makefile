@@ -4,15 +4,8 @@
 
 include $(GOROOT)/src/Make.inc
 
-TARG=appengine/datastore
+TARG=appengine_internal/conversion
 GOFILES=\
-	datastore.go\
-	doc.go\
-	key.go\
-	load.go\
-	prop.go\
-	query.go\
-	save.go\
-	transaction.go\
+	conversion_service.pb.go\
 
 include $(GOROOT)/src/Make.pkg

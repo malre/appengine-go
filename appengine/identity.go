@@ -5,6 +5,8 @@
 package appengine
 
 import (
+	"strings"
+
 	"appengine_internal"
 )
 
@@ -12,6 +14,27 @@ import (
 // The string will be a plain application ID (e.g. "appid"), with a
 // domain prefix for custom domain deployments (e.g. "example.com:appid").
 func AppID(c Context) string { return appengine_internal.AppID(c.FullyQualifiedAppID()) }
+
+// BackendInstance returns the name and index of the current backend instance,
+// or "", -1 if this is not a backend instance.
+func BackendInstance(c Context) (name string, index int) {
+	index = appengine_internal.Instance()
+	if index == -1 {
+		return
+	}
+	name = VersionID(c)
+	if i := strings.Index(name, "."); i > -1 {
+		name = name[:i]
+	}
+	return
+}
+
+// BackendHostname returns the standard hostname of the specified backend.
+// If index is -1, BackendHostname returns the load-balancing hostname for
+// the backend.
+func BackendHostname(c Context, name string, index int) string {
+	return appengine_internal.BackendHostname(c.Request(), name, index)
+}
 
 // DefaultVersionHostname returns the standard hostname of the default version
 // of the current application (e.g. "my-app.appspot.com"). This is suitable for
@@ -22,5 +45,5 @@ func DefaultVersionHostname(c Context) string {
 
 // VersionID returns the version ID for the current application.
 // It will be of the form "X.Y", where X is specified in app.yaml,
-// and Y is a generated number when each version of the app is uploaded.
+// and Y is a number generated when each version of the app is uploaded.
 func VersionID(c Context) string { return appengine_internal.VersionID(c.Request()) }

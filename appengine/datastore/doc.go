@@ -5,6 +5,9 @@
 /*
 Package datastore provides a client for App Engine's datastore service.
 
+
+Basic Operations
+
 Entities are the unit of storage and are associated with a key. A key
 consists of an optional parent key, a string application ID, a string kind
 (also known as an entity type), and either a StringID or an IntID. A
@@ -23,19 +26,13 @@ Valid value types are:
   - float32 and float64,
   - any type whose underlying type is one of the above predeclared types,
   - *Key,
+  - Time,
   - appengine.BlobKey,
   - []byte (up to 1 megabyte in length),
   - slices of any of the above.
 
-The Get and Put functions load and save an entity's contents to and from
-structs or Maps. Structs are more strongly typed, Maps are more flexible. The
-actual types passed do not have to match between calls or even across different
-App Engine requests. It is valid to put a Map and get that same entity as a
-struct, or put a struct of type T0 and get a struct of type T1. Conceptually,
-an entity is saved from a struct as a map and is loaded into a struct or Map on
-a field-by-field basis. When loading into a struct, an entity that cannot be
-completely represented (such as a missing field) will result in an error but it
-is up to the caller whether this error is fatal, recoverable or ignorable.
+The Get and Put functions load and save an entity's contents. An entity's
+contents are typically represented by a struct pointer.
 
 Example code:
 
@@ -65,18 +62,111 @@ Example code:
 		fmt.Fprintf(w, "old=%q\nnew=%q\n", old, e.Value)
 	}
 
-To derive example code that saves and loads a Map instead of a struct, replace
-e := new(Entity) and e.Value with e := make(datastore.Map) and e["Value"].
-
 GetMulti, PutMulti and DeleteMulti are batch versions of the Get, Put and
 Delete functions. They take a []*Key instead of a *Key, and may return an
 ErrMulti when encountering partial failure.
 
-Queries are created using datastore.NewQuery and are configured
-by calling its methods. Running a query yields an iterator of
-results: either an iterator of keys or of (key, entity) pairs. Once
-initialized, query values can be re-used, and it is safe to call
-Query.Run from concurrent goroutines.
+
+Properties
+
+An entity's contents can be represented by a variety of types. These are
+typically struct pointers, but can also be any type that implements the
+PropertyLoadSaver interface, or a Map (although Maps are deprecated). If using
+a struct pointer, you do not have to explicitly implement the PropertyLoadSaver
+interface; the datastore will automatically convert via reflection. Struct
+pointers are more strongly typed and are easier to use; PropertyLoadSavers and
+Maps are more flexible.
+
+The actual types passed do not have to match between Get and Put calls or even
+across different App Engine requests. It is valid to put a *PropertyList and
+get that same entity as a *myStruct, or put a *myStruct0 and get a *myStruct1.
+Conceptually, any entity is saved as a sequence of properties, and is loaded
+into the destination value on a property-by-property basis. When loading into
+a struct pointer, an entity that cannot be completely represented (such as a
+missing field) will result in an error but it is up to the caller whether this
+error is fatal, recoverable or ignorable.
+
+By default, for struct pointers, all properties are potentially indexed, and
+the property name is the same as the field name (and hence must start with an
+upper case letter). Fields may have a `datastore:"name,options"` tag. The tag
+name is the property name, which may start with a lower case letter. An empty
+tag name means to just use the field name. A "-" tag name means that the
+datastore will ignore that field. If options is "noindex" then the field will
+not be indexed. If the options is "" then the comma may be omitted. There are
+no other recognized options.
+
+Example code:
+
+	// A and B are renamed to a and b.
+	// A, C and J are not indexed.
+	// D's tag is equivalent to having no tag at all (E).
+	// I is ignored entirely by the datastore.
+	// J has tag information for both the datastore and json packages.
+	type TaggedStructExample struct {
+		A int `datastore:"a,noindex"`
+		B int `datastore:"b"`
+		C int `datastore:",noindex"`
+		D int `datastore:""`
+		E int
+		I int `datastore:"-"`
+		J int `datastore:",noindex" json:"j"`
+	}
+
+An entity's contents can also be represented by any type that implements the
+PropertyLoadSaver interface. This type may be a struct pointer, but it does
+not have to be. The datastore package will call LoadProperties when getting
+the entity's contents, and SaveProperties when putting the entity's contents.
+Possible uses include deriving non-stored fields, verifying fields, or indexing
+a field only if its value is positive.
+
+Example code:
+
+	type CustomPropsExample struct {
+		I, J int
+		// Sum is not stored, but should always be equal to I + J.
+		Sum int `datastore:"-"`
+	}
+
+	func (x *CustomPropsExample) Load(c <-chan Property) os.Error {
+		// Load I and J as usual.
+		if err := datastore.LoadStruct(x, c); err != nil {
+			return err
+		}
+		// Derive the Sum field.
+		x.Sum = x.I + x.J
+		return nil
+	}
+
+	func (x *CustomPropsExample) Save(c chan<- Property) os.Error {
+		// Validate the Sum field.
+		if x.Sum != x.I + x.J {
+			return os.NewError("CustomPropsExample has inconsistent sum")
+		}
+		// Save I and J as usual. The code below is equivalent to calling
+		// "return datastore.SaveStruct(x, c)", but is done manually for
+		// demonstration purposes.
+		c <- datastore.Property{
+			Name:  "I",
+			Value: int64(x.I),
+		}
+		c <- datastore.Property{
+			Name:  "J",
+			Value: int64(x.J),
+		}
+		close(c)
+		return nil
+	}
+
+The *PropertyList type implements PropertyLoadSaver, and can therefore hold an
+arbitrary entity's contents.
+
+
+Queries
+
+A query is created using datastore.NewQuery and is configured by calling its
+methods. Running a query yields an iterator of results: either an iterator of
+keys or of (key, entity) pairs. Once initialized, a query can be re-used, and
+it is safe to call Query.Run from concurrent goroutines.
 
 Example code:
 
@@ -106,6 +196,9 @@ Example code:
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		io.Copy(w, b)
 	}
+
+
+Transactions
 
 RunInTransaction runs a function in a transaction.
 

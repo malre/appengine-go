@@ -172,6 +172,48 @@ func DeleteMulti(c appengine.Context, key []string) []os.Error {
 	return e
 }
 
+// Increment atomically increments the decimal value in the given key
+// by delta and returns the new value. The value must fit in a uint64.
+// Overflow wraps around, and underflow is capped to zero. The
+// provided delta may be negative. If the key doesn't exist in
+// memcacheg, the provided initial value is used to atomically
+// populate it before the delta is applied.
+// The key must be at most 250 bytes in length.
+func Increment(c appengine.Context, key string, delta int64, initialValue uint64) (newValue uint64, err os.Error) {
+	return incr(c, key, delta, &initialValue)
+}
+
+// IncrementExisting works like Increment but assumes that the key
+// already exists in memcache and doesn't take an initial value.
+// IncrementExisting can save work if calculating the initial value is
+// expensive.
+// ErrCacheMiss is returned if the specified item can not be found.
+func IncrementExisting(c appengine.Context, key string, delta int64) (newValue uint64, err os.Error) {
+	return incr(c, key, delta, nil)
+}
+
+func incr(c appengine.Context, key string, delta int64, initialValue *uint64) (newValue uint64, err os.Error) {
+	req := &pb.MemcacheIncrementRequest{
+		Key:          []byte(key),
+		InitialValue: initialValue,
+	}
+	if delta >= 0 {
+		req.Delta = proto.Uint64(uint64(delta))
+	} else {
+		req.Delta = proto.Uint64(uint64(-delta))
+		req.Direction = pb.NewMemcacheIncrementRequest_Direction(pb.MemcacheIncrementRequest_DECREMENT)
+	}
+	res := &pb.MemcacheIncrementResponse{}
+	err = c.Call("memcache", "Increment", req, res, nil)
+	if err != nil {
+		return
+	}
+	if res.NewValue == nil {
+		return 0, ErrCacheMiss
+	}
+	return *res.NewValue, nil
+}
+
 // set sets the given items using the given conflict resolution policy.
 // The returned slice will have the same length as the input slice.
 // If value is not nil, each element should correspond to an item.

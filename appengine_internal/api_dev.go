@@ -147,13 +147,11 @@ func call(service, method string, data []byte) ([]byte, os.Error) {
 // context represents the context of an in-flight HTTP request.
 // It implements the appengine.Context interface.
 type context struct {
-	RequestHeader http.Header
+	req *http.Request
 }
 
 func NewContext(req *http.Request) *context {
-	return &context{
-		RequestHeader: req.Header,
-	}
+	return &context{req}
 }
 
 func (c *context) Call(service, method string, in, out interface{}, _ *CallOptions) os.Error {
@@ -169,7 +167,7 @@ func (c *context) Call(service, method string, in, out interface{}, _ *CallOptio
 }
 
 func (c *context) Request() interface{} {
-	return c.RequestHeader
+	return c.req
 }
 
 func (c *context) logf(level, format string, args ...interface{}) {
@@ -186,7 +184,7 @@ func (c *context) Criticalf(format string, args ...interface{}) { c.logf("CRITIC
 // This may contain a partition prefix (e.g. "s~" for High Replication apps),
 // or a domain prefix (e.g. "example.com:").
 func (c *context) FullyQualifiedAppID() string {
-	return c.RequestHeader.Get("X-AppEngine-Inbound-AppId")
+	return c.req.Header.Get("X-AppEngine-Inbound-AppId")
 }
 
 func (c *context) AppID() string {

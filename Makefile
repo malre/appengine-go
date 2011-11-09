@@ -13,24 +13,30 @@ DIRS=\
 	appengine_internal/blobstore\
 	appengine_internal/capability\
 	appengine_internal/channel\
+	appengine_internal/conversion\
 	appengine_internal/datastore\
 	appengine_internal/files\
 	appengine_internal/log\
 	appengine_internal/mail\
 	appengine_internal/memcache\
+	appengine_internal/system\
 	appengine_internal/taskqueue\
 	appengine_internal/urlfetch\
 	appengine_internal/user\
+	appengine_internal/xmpp\
 	appengine\
 	appengine/capability\
 	appengine/channel\
+	appengine/conversion\
 	appengine/datastore\
 	appengine/log\
 	appengine/mail\
 	appengine/memcache\
+	appengine/runtime\
 	appengine/taskqueue\
 	appengine/urlfetch\
 	appengine/user\
+	appengine/xmpp\
 	appengine/blobstore\
 	appengine/delay\
 	go-app-builder\

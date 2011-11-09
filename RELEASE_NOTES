@@ -3,8 +3,30 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.6.0 - November 2011
+=============================
+This release is based on Go release.r60.3.
+
+appengine:
+  - Add backend identity functions: BackendInstance, BackendHostname.
+appengine/blobstore:
+  ! Make ParseURL return url.Values instead of map[string][]string.
+appengine/datastore:
+  - Add `datastore:"name,options"` struct field tags.
+  - Add Property, PropertyList and PropertyLoadSaver types.
+  - Deprecate Map. Use a PropertyList instead.
+  ! Remove the Key field from ErrFieldMismatch.
+appengine/memcache:
+  - Add Increment and IncrementExisting functions.
+appengine/runtime:
+  - New package.
+appengine/xmpp:
+  - New package.
+Other:
+  - Support backends.
+
 Version 1.5.5 - October 2011
-==============================
+============================
 This release changed to api_version 3, based on Go release.r60.2.
 
 appengine/blobstore:
@@ -21,7 +43,7 @@ appengine/urlfetch:
   - Respect fetch deadline.
 
 Version 1.5.4 - September 2011
-=================================
+==============================
 appengine/blobstore:
   - Fix time units in Stat.
 appengine/mail:
@@ -30,7 +52,7 @@ Other:
   - Report duplicate package names better in go-app-builder.
 
 Version 1.5.3 - August 2011
-==============================
+===========================
 appengine:
   - Add app identity functions: AppID, VersionID, DefaultVersionHostname.
 appengine/datastore:
@@ -42,7 +64,7 @@ Other:
   - Report package dependency cycles in go-app-builder.
 
 Version 1.5.2 - July 2011
-============================
+=========================
 This release changed to api_version 2, based on Go release.r58.1.
 
 appengine/datastore:
@@ -55,7 +77,7 @@ appengine/memcache:
   - Add Delete and DeleteMulti functions.
 
 Version 1.5.1 - June 2011
-============================
+=========================
 appengine:
   ! Replace Context's Logf method with Debugf/Infof/Warningf/Errorf/Criticalf.
 appengine/capability:
@@ -77,6 +99,6 @@ Other:
   - Set the RemoteAddr field of http.Request correctly in the dev_appserver.
 
 Version 1.5.0 - May 2011
-===========================
+========================
 Initial release. Viva il gopher!
 This introduced api_version 1, based on Go release.r57.2.

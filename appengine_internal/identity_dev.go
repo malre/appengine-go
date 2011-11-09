@@ -4,20 +4,41 @@
 
 package appengine_internal
 
-import "http"
+import (
+	"http"
+	"net"
+	"os"
+	"strconv"
+)
 
 // These functions are the dev implementations of the wrapper functions
 // in ../appengine/identity.go. See that file for commentary.
 
 const (
-	hDefaultHost = "X-AppEngine-Default-Version-Hostname"
-	hVersionId   = "X-AppEngine-Inbound-Version-Id"
+	hVersionId = "X-AppEngine-Inbound-Version-Id"
 )
 
+func BackendHostname(req interface{}, name string, index int) string {
+	ev := "BACKEND_PORT." + name
+	if index != -1 {
+		ev += "." + strconv.Itoa(index)
+	}
+	host, _, _ := net.SplitHostPort(DefaultVersionHostname(req))
+	return host + ":" + os.Getenv(ev)
+}
+
 func DefaultVersionHostname(req interface{}) string {
-	return req.(http.Header).Get(hDefaultHost)
+	return req.(*http.Request).Host
+}
+
+func Instance() int {
+	i, err := strconv.Atoi(os.Getenv("INSTANCE_ID"))
+	if err != nil {
+		return -1
+	}
+	return i
 }
 
 func VersionID(req interface{}) string {
-	return req.(http.Header).Get(hVersionId)
+	return req.(*http.Request).Header.Get(hVersionId)
 }

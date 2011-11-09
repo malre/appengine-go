@@ -145,7 +145,7 @@ func errorf(format string, args ...interface{}) os.Error {
 // App Engine after a user's successful upload of blobs. Given the request,
 // ParseUpload returns a map of the blobs received (keyed by HTML form
 // element name) and other non-blob POST parameters.
-func ParseUpload(req *http.Request) (blobs map[string][]*BlobInfo, other map[string][]string, err os.Error) {
+func ParseUpload(req *http.Request) (blobs map[string][]*BlobInfo, other url.Values, err os.Error) {
 	_, params := mime.ParseMediaType(req.Header.Get("Content-Type"))
 	boundary := params["boundary"]
 	if boundary == "" {
@@ -153,7 +153,7 @@ func ParseUpload(req *http.Request) (blobs map[string][]*BlobInfo, other map[str
 	}
 
 	blobs = make(map[string][]*BlobInfo)
-	other = make(map[string][]string)
+	other = make(url.Values)
 
 	mreader := multipart.NewReader(io.MultiReader(req.Body, strings.NewReader("\r\n\r\n")), boundary)
 	for {
@@ -541,7 +541,7 @@ func (w *Writer) keyOldWay(handle string) (appengine.BlobKey, os.Error) {
 	key, err := query.Run(w.c).Next(nil)
 	if err != nil {
 		if err != datastore.Done {
-			return "", errorf("error looking up __BlobInfo__ entity for creation_handle %q: %v", handle, key)
+			return "", errorf("error looking up __BlobInfo__ entity for creation_handle %q: %v", handle, err)
 		}
 		return "", errorf("didn't find __BlobInfo__ entity for creation_handle %q", handle)
 	}

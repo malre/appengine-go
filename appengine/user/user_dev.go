@@ -19,7 +19,7 @@ const (
 )
 
 func current(c appengine.Context) *User {
-	hdr := c.Request().(http.Header)
+	hdr := c.Request().(*http.Request).Header
 	return &User{
 		Email:             hdr.Get(hEmail),
 		Id:                hdr.Get(hId),
@@ -29,5 +29,5 @@ func current(c appengine.Context) *User {
 }
 
 func isAdmin(c appengine.Context) bool {
-	return c.Request().(http.Header).Get(hIsAdmin) == "1"
+	return c.Request().(*http.Request).Header.Get(hIsAdmin) == "1"
 }
