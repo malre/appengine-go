@@ -81,8 +81,8 @@ func (this *SetStatusRequest) Reset()         { *this = SetStatusRequest{} }
 func (this *SetStatusRequest) String() string { return proto.CompactTextString(this) }
 
 type LogOffset struct {
-	RequestId        *string `protobuf:"bytes,1,opt,name=request_id" json:"request_id,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	RequestId        []byte `protobuf:"bytes,1,opt,name=request_id" json:"request_id,omitempty"`
+	XXX_unrecognized []byte `json:",omitempty"`
 }
 
 func (this *LogOffset) Reset()         { *this = LogOffset{} }
@@ -101,7 +101,8 @@ func (this *LogLine) String() string { return proto.CompactTextString(this) }
 type RequestLog struct {
 	AppId                   *string    `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
 	VersionId               *string    `protobuf:"bytes,2,req,name=version_id" json:"version_id,omitempty"`
-	RequestId               *string    `protobuf:"bytes,3,req,name=request_id" json:"request_id,omitempty"`
+	RequestId               []byte     `protobuf:"bytes,3,req,name=request_id" json:"request_id,omitempty"`
+	Offset                  *LogOffset `protobuf:"bytes,35,opt,name=offset" json:"offset,omitempty"`
 	Ip                      *string    `protobuf:"bytes,4,req,name=ip" json:"ip,omitempty"`
 	Nickname                *string    `protobuf:"bytes,5,opt,name=nickname" json:"nickname,omitempty"`
 	StartTime               *int64     `protobuf:"varint,6,req,name=start_time" json:"start_time,omitempty"`
@@ -128,6 +129,7 @@ type RequestLog struct {
 	Finished                *bool      `protobuf:"varint,27,opt,name=finished,def=1" json:"finished,omitempty"`
 	CloneKey                []byte     `protobuf:"bytes,28,opt,name=clone_key" json:"clone_key,omitempty"`
 	Line                    []*LogLine `protobuf:"bytes,29,rep,name=line" json:"line,omitempty"`
+	LinesIncomplete         *bool      `protobuf:"varint,36,opt,name=lines_incomplete" json:"lines_incomplete,omitempty"`
 	ExitReason              *int32     `protobuf:"varint,30,opt,name=exit_reason" json:"exit_reason,omitempty"`
 	WasThrottledForTime     *bool      `protobuf:"varint,31,opt,name=was_throttled_for_time" json:"was_throttled_for_time,omitempty"`
 	WasThrottledForRequests *bool      `protobuf:"varint,32,opt,name=was_throttled_for_requests" json:"was_throttled_for_requests,omitempty"`
@@ -148,11 +150,15 @@ type LogReadRequest struct {
 	StartTime         *int64     `protobuf:"varint,3,opt,name=start_time" json:"start_time,omitempty"`
 	EndTime           *int64     `protobuf:"varint,4,opt,name=end_time" json:"end_time,omitempty"`
 	Offset            *LogOffset `protobuf:"bytes,5,opt,name=offset" json:"offset,omitempty"`
-	RequestId         []string   `protobuf:"bytes,6,rep,name=request_id" json:"request_id,omitempty"`
+	RequestId         [][]byte   `protobuf:"bytes,6,rep,name=request_id" json:"request_id,omitempty"`
 	MinimumLogLevel   *int32     `protobuf:"varint,7,opt,name=minimum_log_level" json:"minimum_log_level,omitempty"`
 	IncludeIncomplete *bool      `protobuf:"varint,8,opt,name=include_incomplete" json:"include_incomplete,omitempty"`
 	Count             *int64     `protobuf:"varint,9,opt,name=count" json:"count,omitempty"`
+	CombinedLogRegex  *string    `protobuf:"bytes,14,opt,name=combined_log_regex" json:"combined_log_regex,omitempty"`
+	HostRegex         *string    `protobuf:"bytes,15,opt,name=host_regex" json:"host_regex,omitempty"`
+	ReplicaIndex      *int32     `protobuf:"varint,16,opt,name=replica_index" json:"replica_index,omitempty"`
 	IncludeAppLogs    *bool      `protobuf:"varint,10,opt,name=include_app_logs" json:"include_app_logs,omitempty"`
+	AppLogsPerRequest *int32     `protobuf:"varint,17,opt,name=app_logs_per_request" json:"app_logs_per_request,omitempty"`
 	IncludeHost       *bool      `protobuf:"varint,11,opt,name=include_host" json:"include_host,omitempty"`
 	IncludeAll        *bool      `protobuf:"varint,12,opt,name=include_all" json:"include_all,omitempty"`
 	CacheIterator     *bool      `protobuf:"varint,13,opt,name=cache_iterator" json:"cache_iterator,omitempty"`

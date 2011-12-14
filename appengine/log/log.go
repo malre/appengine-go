@@ -77,7 +77,7 @@ type AppLog struct {
 type Record struct {
 	AppID     string
 	VersionID string
-	RequestID string
+	RequestID []byte
 	IP        string
 	Nickname  string
 
@@ -169,7 +169,7 @@ func protoToRecord(rl *log_proto.RequestLog) *Record {
 	return &Record{
 		AppID:             *rl.AppId,
 		VersionID:         *rl.VersionId,
-		RequestID:         *rl.RequestId,
+		RequestID:         rl.RequestId,
 		IP:                *rl.Ip,
 		Nickname:          proto.GetString(rl.Nickname),
 		StartTime:         *rl.StartTime,

@@ -3,6 +3,15 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.6.1 - December 2011
+=============================
+appengine/conversion:
+  - New package.
+appengine/delay:
+  - Fix calling delayed variadic functions.
+Other:
+  - Explicitly break http.DefaultClient to make dev and prod consistent.
+
 Version 1.6.0 - November 2011
 =============================
 This release is based on Go release.r60.3.

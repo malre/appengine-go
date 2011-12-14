@@ -216,12 +216,10 @@ func runFunc(c appengine.Context, w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// TODO: This is broken for variadic functions.
 	ft := f.fv.Type()
-	in := make([]reflect.Value, ft.NumIn())
-	in[0] = reflect.ValueOf(c)
-	for i := 1; i < len(in); i++ {
-		in[i] = reflect.ValueOf(inv.Args[i-1])
+	in := []reflect.Value{reflect.ValueOf(c)}
+	for _, arg := range inv.Args {
+		in = append(in, reflect.ValueOf(arg))
 	}
 	out := f.fv.Call(in)
 

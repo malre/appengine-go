@@ -39,6 +39,7 @@ import (
 	"http"
 	"io"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -79,6 +80,9 @@ type APIError struct {
 
 func (e *APIError) String() string {
 	if e.Code == 0 {
+		if e.Detail == "" {
+			return "APIError <empty>"
+		}
 		return e.Detail
 	}
 	s := fmt.Sprintf("API error %d", e.Code)
@@ -117,6 +121,20 @@ func parseAddr(compAddr string) (net, addr string) {
 		log.Fatalf("appengine: bad composite address %q", compAddr)
 	}
 	return parts[0], parts[1]
+}
+
+type failingTransport struct{}
+
+func (failingTransport) RoundTrip(*http.Request) (*http.Response, os.Error) {
+	return nil, os.NewError("http.DefaultClient is not available in App Engine. " +
+		"See http://code.google.com/appengine/docs/go/urlfetch/overview.html")
+}
+
+func init() {
+	// http.DefaultClient doesn't work in production so break it
+	// explicitly so it fails the same way in both dev and prod
+	// (and with a useful error message)
+	http.DefaultClient = &http.Client{Transport: failingTransport{}}
 }
 
 // Main is designed so that the complete generated main.main package is:
