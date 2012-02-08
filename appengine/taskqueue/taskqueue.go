@@ -16,7 +16,7 @@ taskqueue operation is to add a single POST task, NewPOSTTask makes it easy.
 */
 package taskqueue
 
-// TODO: Bulk task adding/deleting, queue management.
+// TODO: Bulk task deleting, queue management.
 
 import (
 	"fmt"
@@ -62,6 +62,13 @@ type Task struct {
 	Delay int64
 }
 
+func (t *Task) method() string {
+	if t.Method == "" {
+		return "POST"
+	}
+	return t.Method
+}
+
 // NewPOSTTask creates a Task that will POST to a path with the given form data.
 func NewPOSTTask(path string, params url.Values) *Task {
 	h := make(http.Header)
@@ -74,11 +81,7 @@ func NewPOSTTask(path string, params url.Values) *Task {
 	}
 }
 
-// Add adds the task to a named queue.
-// An empty queue name means that the default queue will be used.
-// Add returns an equivalent Task with defaults filled in, including setting
-// the task's Name field to the chosen name if the original was empty.
-func Add(c appengine.Context, task *Task, queueName string) (*Task, os.Error) {
+func newAddReq(task *Task, queueName string) (*taskqueue_proto.TaskQueueAddRequest, os.Error) {
 	if queueName == "" {
 		queueName = "default"
 	}
@@ -87,10 +90,7 @@ func Add(c appengine.Context, task *Task, queueName string) (*Task, os.Error) {
 		TaskName:  []byte(task.Name),
 		EtaUsec:   proto.Int64(time.Nanoseconds()/1e3 + task.Delay),
 	}
-	method := task.Method
-	if method == "" {
-		method = "POST"
-	}
+	method := task.method()
 	if method == "PULL" {
 		// Pull-based task
 		req.Body = task.Payload
@@ -117,16 +117,80 @@ func Add(c appengine.Context, task *Task, queueName string) (*Task, os.Error) {
 			req.Body = task.Payload
 		}
 	}
+
+	return req, nil
+}
+
+// Add adds the task to a named queue.
+// An empty queue name means that the default queue will be used.
+// Add returns an equivalent Task with defaults filled in, including setting
+// the task's Name field to the chosen name if the original was empty.
+func Add(c appengine.Context, task *Task, queueName string) (*Task, os.Error) {
+	req, err := newAddReq(task, queueName)
+	if err != nil {
+		return nil, err
+	}
 	res := &taskqueue_proto.TaskQueueAddResponse{}
 	if err := c.Call("taskqueue", "Add", req, res, nil); err != nil {
 		return nil, err
 	}
 	resultTask := *task
-	resultTask.Method = method
+	resultTask.Method = task.method()
 	if task.Name == "" {
 		resultTask.Name = string(res.ChosenTaskName)
 	}
 	return &resultTask, nil
+}
+
+// AddMulti adds multiple tasks to a named queue.
+// An empty queue name means that the default queue will be used.
+// AddMulti returns a slice of equivalent tasks with defaults filled in, including setting
+// each task's Name field to the chosen name if the original was empty.
+// If a given task is badly formed or could not be added, its corresponding value in
+// the returned error slice is set. If the entire operation is successful, the error slice is nil.
+func AddMulti(c appengine.Context, tasks []*Task, queueName string) ([]*Task, []os.Error) {
+	req := &taskqueue_proto.TaskQueueBulkAddRequest{
+		AddRequest: make([]*taskqueue_proto.TaskQueueAddRequest, len(tasks)),
+	}
+	e := make([]os.Error, len(tasks))
+	for i, t := range tasks {
+		req.AddRequest[i], e[i] = newAddReq(t, queueName)
+		if e[i] != nil {
+			return nil, e
+		}
+	}
+	res := &taskqueue_proto.TaskQueueBulkAddResponse{}
+	err := c.Call("taskqueue", "BulkAdd", req, res, nil)
+	if err == nil && len(res.Taskresult) != len(tasks) {
+		err = os.NewError("taskqueue: server error")
+	}
+	if err != nil {
+		for i := range e {
+			e[i] = err
+		}
+		return nil, e
+	}
+	tasksOut := make([]*Task, len(tasks))
+	ok := true
+	for i, tr := range res.Taskresult {
+		tasksOut[i] = new(Task)
+		*tasksOut[i] = *tasks[i]
+		tasksOut[i].Method = tasksOut[i].method()
+		if tasksOut[i].Name == "" {
+			tasksOut[i].Name = string(tr.ChosenTaskName)
+		}
+		if *tr.Result != taskqueue_proto.TaskQueueServiceError_OK {
+			e[i] = &appengine_internal.APIError{
+				Service: "taskqueue",
+				Code:    int32(*tr.Result),
+			}
+			ok = false
+		}
+	}
+	if ok {
+		e = nil
+	}
+	return tasksOut, e
 }
 
 // Delete deletes a task from a named queue.

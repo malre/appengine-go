@@ -237,6 +237,7 @@ func (this *TaskPayload) Marshal() ([]byte, os.Error) {
 func (this *TaskPayload) Unmarshal(buf []byte) os.Error {
 	return proto.UnmarshalMessageSet(buf, this.ExtensionMap())
 }
+
 // ensure TaskPayload satisfies proto.Marshaler and proto.Unmarshaler
 var _ proto.Marshaler = (*TaskPayload)(nil)
 var _ proto.Unmarshaler = (*TaskPayload)(nil)
