@@ -3,14 +3,12 @@
 
 package appengine
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type LogServiceError_ErrorCode int32
 
@@ -40,7 +38,7 @@ func (x LogServiceError_ErrorCode) String() string {
 }
 
 type LogServiceError struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *LogServiceError) Reset()         { *this = LogServiceError{} }
@@ -50,7 +48,7 @@ type UserAppLogLine struct {
 	TimestampUsec    *int64  `protobuf:"varint,1,req,name=timestamp_usec" json:"timestamp_usec,omitempty"`
 	Level            *int64  `protobuf:"varint,2,req,name=level" json:"level,omitempty"`
 	Message          *string `protobuf:"bytes,3,req,name=message" json:"message,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *UserAppLogLine) Reset()         { *this = UserAppLogLine{} }
@@ -58,7 +56,7 @@ func (this *UserAppLogLine) String() string { return proto.CompactTextString(thi
 
 type UserAppLogGroup struct {
 	LogLine          []*UserAppLogLine `protobuf:"bytes,2,rep,name=log_line" json:"log_line,omitempty"`
-	XXX_unrecognized []byte            `json:",omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (this *UserAppLogGroup) Reset()         { *this = UserAppLogGroup{} }
@@ -66,7 +64,7 @@ func (this *UserAppLogGroup) String() string { return proto.CompactTextString(th
 
 type FlushRequest struct {
 	Logs             []byte `protobuf:"bytes,1,opt,name=logs" json:"logs,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *FlushRequest) Reset()         { *this = FlushRequest{} }
@@ -74,7 +72,7 @@ func (this *FlushRequest) String() string { return proto.CompactTextString(this)
 
 type SetStatusRequest struct {
 	Status           *string `protobuf:"bytes,1,req,name=status" json:"status,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *SetStatusRequest) Reset()         { *this = SetStatusRequest{} }
@@ -82,7 +80,7 @@ func (this *SetStatusRequest) String() string { return proto.CompactTextString(t
 
 type LogOffset struct {
 	RequestId        []byte `protobuf:"bytes,1,opt,name=request_id" json:"request_id,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *LogOffset) Reset()         { *this = LogOffset{} }
@@ -92,7 +90,7 @@ type LogLine struct {
 	Time             *int64  `protobuf:"varint,1,req,name=time" json:"time,omitempty"`
 	Level            *int32  `protobuf:"varint,2,req,name=level" json:"level,omitempty"`
 	LogMessage       *string `protobuf:"bytes,3,req,name=log_message" json:"log_message,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *LogLine) Reset()         { *this = LogLine{} }
@@ -135,7 +133,7 @@ type RequestLog struct {
 	WasThrottledForRequests *bool      `protobuf:"varint,32,opt,name=was_throttled_for_requests" json:"was_throttled_for_requests,omitempty"`
 	ThrottledTime           *int64     `protobuf:"varint,33,opt,name=throttled_time" json:"throttled_time,omitempty"`
 	ServerName              []byte     `protobuf:"bytes,34,opt,name=server_name" json:"server_name,omitempty"`
-	XXX_unrecognized        []byte     `json:",omitempty"`
+	XXX_unrecognized        []byte     `json:"-"`
 }
 
 func (this *RequestLog) Reset()         { *this = RequestLog{} }
@@ -162,7 +160,8 @@ type LogReadRequest struct {
 	IncludeHost       *bool      `protobuf:"varint,11,opt,name=include_host" json:"include_host,omitempty"`
 	IncludeAll        *bool      `protobuf:"varint,12,opt,name=include_all" json:"include_all,omitempty"`
 	CacheIterator     *bool      `protobuf:"varint,13,opt,name=cache_iterator" json:"cache_iterator,omitempty"`
-	XXX_unrecognized  []byte     `json:",omitempty"`
+	NumShards         *int32     `protobuf:"varint,18,opt,name=num_shards" json:"num_shards,omitempty"`
+	XXX_unrecognized  []byte     `json:"-"`
 }
 
 func (this *LogReadRequest) Reset()         { *this = LogReadRequest{} }
@@ -171,11 +170,51 @@ func (this *LogReadRequest) String() string { return proto.CompactTextString(thi
 type LogReadResponse struct {
 	Log              []*RequestLog `protobuf:"bytes,1,rep,name=log" json:"log,omitempty"`
 	Offset           *LogOffset    `protobuf:"bytes,2,opt,name=offset" json:"offset,omitempty"`
-	XXX_unrecognized []byte        `json:",omitempty"`
+	XXX_unrecognized []byte        `json:"-"`
 }
 
 func (this *LogReadResponse) Reset()         { *this = LogReadResponse{} }
 func (this *LogReadResponse) String() string { return proto.CompactTextString(this) }
+
+type LogUsageRecord struct {
+	VersionId        *string `protobuf:"bytes,1,opt,name=version_id" json:"version_id,omitempty"`
+	StartTime        *int32  `protobuf:"varint,2,opt,name=start_time" json:"start_time,omitempty"`
+	EndTime          *int32  `protobuf:"varint,3,opt,name=end_time" json:"end_time,omitempty"`
+	Count            *int64  `protobuf:"varint,4,opt,name=count" json:"count,omitempty"`
+	TotalSize        *int64  `protobuf:"varint,5,opt,name=total_size" json:"total_size,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (this *LogUsageRecord) Reset()         { *this = LogUsageRecord{} }
+func (this *LogUsageRecord) String() string { return proto.CompactTextString(this) }
+
+type LogUsageRequest struct {
+	AppId            *string  `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
+	VersionId        []string `protobuf:"bytes,2,rep,name=version_id" json:"version_id,omitempty"`
+	StartTime        *int32   `protobuf:"varint,3,opt,name=start_time" json:"start_time,omitempty"`
+	EndTime          *int32   `protobuf:"varint,4,opt,name=end_time" json:"end_time,omitempty"`
+	ResolutionHours  *uint32  `protobuf:"varint,5,opt,name=resolution_hours,def=1" json:"resolution_hours,omitempty"`
+	CombineVersions  *bool    `protobuf:"varint,6,opt,name=combine_versions" json:"combine_versions,omitempty"`
+	UsageVersion     *int32   `protobuf:"varint,7,opt,name=usage_version" json:"usage_version,omitempty"`
+	VersionsOnly     *bool    `protobuf:"varint,8,opt,name=versions_only" json:"versions_only,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (this *LogUsageRequest) Reset()         { *this = LogUsageRequest{} }
+func (this *LogUsageRequest) String() string { return proto.CompactTextString(this) }
+
+const Default_LogUsageRequest_ResolutionHours uint32 = 1
+
+type LogUsageResponse struct {
+	Usage            []*LogUsageRecord `protobuf:"bytes,1,rep,name=usage" json:"usage,omitempty"`
+	Summary          *LogUsageRecord   `protobuf:"bytes,2,opt,name=summary" json:"summary,omitempty"`
+	LimitedUsage     []*LogUsageRecord `protobuf:"bytes,4,rep,name=limited_usage" json:"limited_usage,omitempty"`
+	LimitedSummary   *LogUsageRecord   `protobuf:"bytes,5,opt,name=limited_summary" json:"limited_summary,omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
+}
+
+func (this *LogUsageResponse) Reset()         { *this = LogUsageResponse{} }
+func (this *LogUsageResponse) String() string { return proto.CompactTextString(this) }
 
 func init() {
 	proto.RegisterEnum("appengine.LogServiceError_ErrorCode", LogServiceError_ErrorCode_name, LogServiceError_ErrorCode_value)

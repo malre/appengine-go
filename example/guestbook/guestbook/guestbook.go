@@ -5,10 +5,9 @@
 package guestbook
 
 import (
-	"http"
 	"io"
-	"os"
-	"template"
+	"net/http"
+	"text/template"
 	"time"
 
 	"appengine"
@@ -19,7 +18,7 @@ import (
 type Greeting struct {
 	Author  string
 	Content string
-	Date    datastore.Time
+	Date    time.Time
 }
 
 func serve404(w http.ResponseWriter) {
@@ -28,7 +27,7 @@ func serve404(w http.ResponseWriter) {
 	io.WriteString(w, "Not Found")
 }
 
-func serveError(c appengine.Context, w http.ResponseWriter, err os.Error) {
+func serveError(c appengine.Context, w http.ResponseWriter, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	io.WriteString(w, "Internal Server Error")
@@ -39,6 +38,7 @@ var mainPage = template.Must(template.New("guestbook").Parse(
 	`<html><body>
 {{range .}}
 {{with .Author}}<b>{{.|html}}</b>{{else}}An anonymous person{{end}}
+on <em>{{.Date.Format "3:04pm, Mon 2 Jan"}}</em>
 wrote <blockquote>{{.Content|html}}</blockquote>
 {{end}}
 <form action="/sign" method="post">
@@ -78,7 +78,7 @@ func handleSign(w http.ResponseWriter, r *http.Request) {
 	}
 	g := &Greeting{
 		Content: r.FormValue("content"),
-		Date:    datastore.SecondsToTime(time.Seconds()),
+		Date:    time.Now(),
 	}
 	if u := user.Current(c); u != nil {
 		g.Author = u.String()

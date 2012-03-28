@@ -12,13 +12,8 @@ This is so that these packages can be imported by Moustachio:
 
 You can do this by running these commands:
 	
-	mkdir -p freetype-go.googlecode.com/hg
-	hg clone -u 96d0c07904d1 https://freetype-go.googlecode.com/hg \
-		freetype-go.googlecode.com/hg
-	rm -r freetype-go.googlecode.com/hg/example
+	hg clone http://code.google.com/p/freetype-go code.google.com/p/freetype-go
+        # Remove the example code that doesn't work as-is on App Engine.
+	rm -r code.google.com/p/freetype-go/example
 
-	mkdir -p goauth2.googlecode.com/hg
-	hg clone https://goauth2.googlecode.com/hg \
-		goauth2.googlecode.com/hg
-	rm -r goauth2.googlecode.com/hg/oauth/example
-
+	hg clone http://code.google.com/p/goauth2 code.google.com/p/goauth2

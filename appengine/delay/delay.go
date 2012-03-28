@@ -18,7 +18,7 @@ It is also possible to use a function literal.
 To call a function, invoke its Call method.
 	laterFunc.Call(c, "something")
 A function may be called any number of times. If the function has any
-return arguments, and the last one is of type os.Error, the function may
+return arguments, and the last one is of type error, the function may
 return a non-nil error to signal that the function should be retried.
 
 The arguments to functions may be of any type that is encodable by the gob
@@ -45,9 +45,9 @@ package delay
 
 import (
 	"bytes"
-	"gob"
-	"http"
-	"os"
+	"encoding/gob"
+	"errors"
+	"net/http"
 	"reflect"
 	"runtime"
 
@@ -59,7 +59,7 @@ import (
 type Function struct {
 	fv  reflect.Value // Kind() == reflect.Func
 	key string
-	err os.Error // any error during initialization
+	err error // any error during initialization
 }
 
 const (
@@ -75,10 +75,10 @@ var (
 
 	// precomputed types
 	contextType = reflect.TypeOf((*appengine.Context)(nil)).Elem()
-	osErrorType = reflect.TypeOf((*os.Error)(nil)).Elem()
+	osErrorType = reflect.TypeOf((*error)(nil)).Elem()
 
 	// errors
-	errFirstArg = os.NewError("first argument must be appengine.Context")
+	errFirstArg = errors.New("first argument must be appengine.Context")
 )
 
 // Func declares a new Function. The second argument must be a function with a
@@ -98,7 +98,7 @@ func Func(key string, i interface{}) *Function {
 
 	t := f.fv.Type()
 	if t.Kind() != reflect.Func {
-		f.err = os.NewError("not a function")
+		f.err = errors.New("not a function")
 		return f
 	}
 	if t.NumIn() == 0 || t.In(0) != contextType {
@@ -117,8 +117,7 @@ func Func(key string, i interface{}) *Function {
 		if t.In(i).Kind() == reflect.Interface {
 			continue
 		}
-		// TODO: Re-enable this when the gob package is fixed.
-		//gob.Register(reflect.Zero(t.In(i)).Interface())
+		gob.Register(reflect.Zero(t.In(i)).Interface())
 	}
 
 	funcs[f.key] = f

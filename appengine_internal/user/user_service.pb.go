@@ -3,14 +3,12 @@
 
 package appengine
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type UserServiceError_ErrorCode int32
 
@@ -49,7 +47,7 @@ func (x UserServiceError_ErrorCode) String() string {
 }
 
 type UserServiceError struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *UserServiceError) Reset()         { *this = UserServiceError{} }
@@ -59,7 +57,7 @@ type CreateLoginURLRequest struct {
 	DestinationUrl    *string `protobuf:"bytes,1,req,name=destination_url" json:"destination_url,omitempty"`
 	AuthDomain        *string `protobuf:"bytes,2,opt,name=auth_domain" json:"auth_domain,omitempty"`
 	FederatedIdentity *string `protobuf:"bytes,3,opt,name=federated_identity" json:"federated_identity,omitempty"`
-	XXX_unrecognized  []byte  `json:",omitempty"`
+	XXX_unrecognized  []byte  `json:"-"`
 }
 
 func (this *CreateLoginURLRequest) Reset()         { *this = CreateLoginURLRequest{} }
@@ -67,7 +65,7 @@ func (this *CreateLoginURLRequest) String() string { return proto.CompactTextStr
 
 type CreateLoginURLResponse struct {
 	LoginUrl         *string `protobuf:"bytes,1,req,name=login_url" json:"login_url,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateLoginURLResponse) Reset()         { *this = CreateLoginURLResponse{} }
@@ -76,7 +74,7 @@ func (this *CreateLoginURLResponse) String() string { return proto.CompactTextSt
 type CreateLogoutURLRequest struct {
 	DestinationUrl   *string `protobuf:"bytes,1,req,name=destination_url" json:"destination_url,omitempty"`
 	AuthDomain       *string `protobuf:"bytes,2,opt,name=auth_domain" json:"auth_domain,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateLogoutURLRequest) Reset()         { *this = CreateLogoutURLRequest{} }
@@ -84,7 +82,7 @@ func (this *CreateLogoutURLRequest) String() string { return proto.CompactTextSt
 
 type CreateLogoutURLResponse struct {
 	LogoutUrl        *string `protobuf:"bytes,1,req,name=logout_url" json:"logout_url,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateLogoutURLResponse) Reset()         { *this = CreateLogoutURLResponse{} }
@@ -92,7 +90,7 @@ func (this *CreateLogoutURLResponse) String() string { return proto.CompactTextS
 
 type GetOAuthUserRequest struct {
 	Scope            *string `protobuf:"bytes,1,opt,name=scope" json:"scope,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *GetOAuthUserRequest) Reset()         { *this = GetOAuthUserRequest{} }
@@ -104,7 +102,7 @@ type GetOAuthUserResponse struct {
 	AuthDomain       *string `protobuf:"bytes,3,req,name=auth_domain" json:"auth_domain,omitempty"`
 	UserOrganization *string `protobuf:"bytes,4,opt,name=user_organization" json:"user_organization,omitempty"`
 	IsAdmin          *bool   `protobuf:"varint,5,opt,name=is_admin,def=0" json:"is_admin,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *GetOAuthUserResponse) Reset()         { *this = GetOAuthUserResponse{} }
@@ -113,7 +111,7 @@ func (this *GetOAuthUserResponse) String() string { return proto.CompactTextStri
 const Default_GetOAuthUserResponse_IsAdmin bool = false
 
 type CheckOAuthSignatureRequest struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *CheckOAuthSignatureRequest) Reset()         { *this = CheckOAuthSignatureRequest{} }
@@ -121,7 +119,7 @@ func (this *CheckOAuthSignatureRequest) String() string { return proto.CompactTe
 
 type CheckOAuthSignatureResponse struct {
 	OauthConsumerKey *string `protobuf:"bytes,1,req,name=oauth_consumer_key" json:"oauth_consumer_key,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CheckOAuthSignatureResponse) Reset()         { *this = CheckOAuthSignatureResponse{} }
@@ -131,7 +129,7 @@ type CreateFederatedLoginRequest struct {
 	ClaimedId        *string `protobuf:"bytes,1,req,name=claimed_id" json:"claimed_id,omitempty"`
 	ContinueUrl      *string `protobuf:"bytes,2,req,name=continue_url" json:"continue_url,omitempty"`
 	Authority        *string `protobuf:"bytes,3,opt,name=authority" json:"authority,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateFederatedLoginRequest) Reset()         { *this = CreateFederatedLoginRequest{} }
@@ -139,7 +137,7 @@ func (this *CreateFederatedLoginRequest) String() string { return proto.CompactT
 
 type CreateFederatedLoginResponse struct {
 	RedirectedUrl    *string `protobuf:"bytes,1,req,name=redirected_url" json:"redirected_url,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateFederatedLoginResponse) Reset()         { *this = CreateFederatedLoginResponse{} }
@@ -147,7 +145,7 @@ func (this *CreateFederatedLoginResponse) String() string { return proto.Compact
 
 type CreateFederatedLogoutRequest struct {
 	DestinationUrl   *string `protobuf:"bytes,1,req,name=destination_url" json:"destination_url,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateFederatedLogoutRequest) Reset()         { *this = CreateFederatedLogoutRequest{} }
@@ -155,7 +153,7 @@ func (this *CreateFederatedLogoutRequest) String() string { return proto.Compact
 
 type CreateFederatedLogoutResponse struct {
 	LogoutUrl        *string `protobuf:"bytes,1,req,name=logout_url" json:"logout_url,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateFederatedLogoutResponse) Reset()         { *this = CreateFederatedLogoutResponse{} }

@@ -7,18 +7,18 @@ package moustachio
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
-	"http"
 	"image"
 	"image/jpeg"
 	_ "image/png" // import so we can read PNG files.
 	"io"
-	"json"
-	"os"
+	"net/http"
 	"strconv"
-	"template"
+	"text/template"
 
-	"goauth2.googlecode.com/hg/oauth"
+	"code.google.com/p/goauth2/oauth"
 )
 
 // These imports were added for deployment on App Engine.
@@ -50,10 +50,12 @@ func config(host string) *oauth.Config {
 }
 
 var (
-	uploadTemplate = template.MustParseFile("upload.html", nil)
-	editTemplate   *template.Template // set up in init()
-	postTemplate   = template.MustParseFile("post.html", nil)
-	errorTemplate  = template.MustParseFile("error.html", nil)
+	templates = template.Must(template.ParseFiles(
+		"edit.html",
+		"error.html",
+		"post.html",
+		"upload.html",
+	))
 )
 
 // Because App Engine owns main and starts the HTTP service,
@@ -64,11 +66,6 @@ func init() {
 	http.HandleFunc("/img", errorHandler(img))
 	http.HandleFunc("/share", errorHandler(share))
 	http.HandleFunc("/post", errorHandler(post))
-	editTemplate = template.New(nil)
-	editTemplate.SetDelims("{{{", "}}}")
-	if err := editTemplate.ParseFile("edit.html"); err != nil {
-		panic("can't parse edit.html: " + err.String())
-	}
 }
 
 // Image is the type used to hold the image in the datastore.
@@ -80,7 +77,7 @@ type Image struct {
 func upload(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		// No upload; show the upload form.
-		uploadTemplate.Execute(w, nil)
+		templates.ExecuteTemplate(w, "upload.html", nil)
 		return
 	}
 
@@ -141,12 +138,12 @@ func upload(w http.ResponseWriter, r *http.Request) {
 func keyOf(data []byte) string {
 	sha := sha1.New()
 	sha.Write(data)
-	return fmt.Sprintf("%x", string(sha.Sum())[0:8])
+	return fmt.Sprintf("%x", string(sha.Sum(nil))[0:8])
 }
 
 // edit is the HTTP handler for editing images; it handles "/edit".
 func edit(w http.ResponseWriter, r *http.Request) {
-	editTemplate.Execute(w, r.FormValue("id"))
+	templates.ExecuteTemplate(w, "edit.html", r.FormValue("id"))
 }
 
 // img is the HTTP handler for displaying images and painting moustaches;
@@ -202,11 +199,11 @@ func post(w http.ResponseWriter, r *http.Request) {
 	err = postPhoto(t.Client(), url)
 	check(err)
 
-	postTemplate.Execute(w, url)
+	templates.ExecuteTemplate(w, "post.html", url)
 }
 
 // postPhoto uses the Buzz API to post the image to the user's Buzz stream.
-func postPhoto(client *http.Client, photoURL string) os.Error {
+func postPhoto(client *http.Client, photoURL string) error {
 	const url = "https://www.googleapis.com/buzz/v1/activities/@me/@self"
 	const text = "Moustachio"
 
@@ -235,7 +232,7 @@ func postPhoto(client *http.Client, photoURL string) os.Error {
 		return err
 	}
 	if resp.StatusCode != 200 {
-		return os.NewError("invalid post " + resp.Status)
+		return errors.New("invalid post " + resp.Status)
 	}
 	return nil
 }
@@ -245,9 +242,9 @@ func postPhoto(client *http.Client, photoURL string) os.Error {
 func errorHandler(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
-			if err, ok := recover().(os.Error); ok {
+			if err, ok := recover().(error); ok {
 				w.WriteHeader(http.StatusInternalServerError)
-				errorTemplate.Execute(w, err)
+				templates.ExecuteTemplate(w, "error.html", err)
 			}
 		}()
 		fn(w, r)
@@ -255,7 +252,7 @@ func errorHandler(fn http.HandlerFunc) http.HandlerFunc {
 }
 
 // check aborts the current execution if err is non-nil.
-func check(err os.Error) {
+func check(err error) {
 	if err != nil {
 		panic(err)
 	}

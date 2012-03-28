@@ -8,11 +8,9 @@ Package runtime exposes information about the resource usage of the application.
 package runtime
 
 import (
-	"os"
-
 	"appengine"
 	"appengine_internal"
-	"goprotobuf.googlecode.com/hg/proto"
+	"code.google.com/p/goprotobuf/proto"
 
 	system_proto "appengine_internal/system"
 )
@@ -33,7 +31,7 @@ type Statistics struct {
 	}
 }
 
-func Stats(c appengine.Context) (*Statistics, os.Error) {
+func Stats(c appengine.Context) (*Statistics, error) {
 	req := &system_proto.GetSystemStatsRequest{}
 	res := &system_proto.GetSystemStatsResponse{}
 	if err := c.Call("system", "GetSystemStats", req, res, nil); err != nil {

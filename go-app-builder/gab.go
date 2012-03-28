@@ -17,26 +17,31 @@ Usage:
 package main
 
 import (
-	"exec"
+	"errors"
 	"flag"
 	"fmt"
+	"go/scanner"
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path"
 	"strings"
 )
 
 var (
-	appBase      = flag.String("app_base", ".", "Path to app root. Command-line filenames are relative to this.")
-	arch         = flag.String("arch", defaultArch(), `The Go architecture specifier (e.g. "5", "6", "8").`)
-	binaryName   = flag.String("binary_name", "_go_app.bin", "Name of final binary, relative to --work_dir.")
-	dynamic      = flag.Bool("dynamic", false, "Create a binary with a dynamic linking header.")
-	extraImports = flag.String("extra_imports", "", "A comma-separated list of extra packages to import.")
-	goRoot       = flag.String("goroot", os.Getenv("GOROOT"), "Root of the Go installation.")
-	unsafe       = flag.Bool("unsafe", false, "Permit unsafe packages.")
-	verbose      = flag.Bool("v", false, "Noisy output.")
-	workDir      = flag.String("work_dir", "/tmp", "Directory to use for intermediate and output files.")
+	appBase         = flag.String("app_base", ".", "Path to app root. Command-line filenames are relative to this.")
+	arch            = flag.String("arch", defaultArch(), `The Go architecture specifier (e.g. "5", "6", "8").`)
+	binaryName      = flag.String("binary_name", "_go_app.bin", "Name of final binary, relative to --work_dir.")
+	dynamic         = flag.Bool("dynamic", false, "Create a binary with a dynamic linking header.")
+	extraImports    = flag.String("extra_imports", "", "A comma-separated list of extra packages to import.")
+	goRoot          = flag.String("goroot", os.Getenv("GOROOT"), "Root of the Go installation.")
+	logFile         = flag.String("log_file", "", "If set, a file to write messages to.")
+	trampoline      = flag.String("trampoline", "", "If set, a binary to invoke tools with.")
+	trampolineFlags = flag.String("trampoline_flags", "", "Comma-separated flags to pass to trampoline.")
+	unsafe          = flag.Bool("unsafe", false, "Permit unsafe packages.")
+	verbose         = flag.Bool("v", false, "Noisy output.")
+	workDir         = flag.String("work_dir", "/tmp", "Directory to use for intermediate and output files.")
 )
 
 func defaultArch() string {
@@ -60,17 +65,40 @@ func main() {
 		os.Exit(1)
 	}
 
+	if *logFile != "" {
+		f, err := os.OpenFile(*logFile, os.O_APPEND|os.O_CREATE|os.O_SYNC, 0644)
+		if err != nil {
+			log.Fatalf("go-app-builder: Failed opening log file: %v", err)
+		}
+		defer f.Close()
+		log.SetOutput(f)
+	}
+
 	app, err := ParseFiles(*appBase, flag.Args())
 	if err != nil {
+		if errl, ok := err.(scanner.ErrorList); ok {
+			log.Printf("go-app-builder: Failed parsing input (%d error%s)", len(errl), plural(len(errl), "s"))
+			for _, err := range errl {
+				log.Println(err)
+			}
+			os.Exit(1)
+		}
 		log.Fatalf("go-app-builder: Failed parsing input: %v", err)
 	}
 
-	if err := build(app); err != nil {
+	if err := buildApp(app); err != nil {
 		log.Fatalf("go-app-builder: Failed building app: %v", err)
 	}
 }
 
-func build(app *App) os.Error {
+func plural(n int, suffix string) string {
+	if n == 1 {
+		return ""
+	}
+	return suffix
+}
+
+func buildApp(app *App) error {
 	var extra []string
 	if *extraImports != "" {
 		extra = strings.Split(*extraImports, ",")
@@ -182,8 +210,8 @@ func build(app *App) os.Error {
 	if err != nil {
 		return err
 	}
-	if fi.Size == 0 {
-		return os.NewError("created binary has zero size")
+	if fi.Size() == 0 {
+		return errors.New("created binary has zero size")
 	}
 
 	return nil
@@ -194,11 +222,20 @@ func usage() {
 	flag.PrintDefaults()
 }
 
-func run(args []string, env []string) os.Error {
+func run(args []string, env []string) error {
 	if *verbose {
 		log.Printf("run %v", args)
 	}
 	tool := path.Base(args[0])
+	if *trampoline != "" {
+		// Add trampoline binary, its flags, and -- to the start.
+		newArgs := []string{*trampoline}
+		if *trampolineFlags != "" {
+			newArgs = append(newArgs, strings.Split(*trampolineFlags, ",")...)
+		}
+		newArgs = append(newArgs, "--")
+		args = append(newArgs, args...)
+	}
 	cmd := &exec.Cmd{
 		Path:   args[0],
 		Args:   args,

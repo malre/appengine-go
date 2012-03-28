@@ -3,22 +3,21 @@
 
 package appengine
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type ChannelServiceError_ErrorCode int32
 
 const (
-	ChannelServiceError_OK                  ChannelServiceError_ErrorCode = 0
-	ChannelServiceError_INTERNAL_ERROR      ChannelServiceError_ErrorCode = 1
-	ChannelServiceError_INVALID_CHANNEL_KEY ChannelServiceError_ErrorCode = 2
-	ChannelServiceError_BAD_MESSAGE         ChannelServiceError_ErrorCode = 3
+	ChannelServiceError_OK                             ChannelServiceError_ErrorCode = 0
+	ChannelServiceError_INTERNAL_ERROR                 ChannelServiceError_ErrorCode = 1
+	ChannelServiceError_INVALID_CHANNEL_KEY            ChannelServiceError_ErrorCode = 2
+	ChannelServiceError_BAD_MESSAGE                    ChannelServiceError_ErrorCode = 3
+	ChannelServiceError_INVALID_CHANNEL_TOKEN_DURATION ChannelServiceError_ErrorCode = 4
 )
 
 var ChannelServiceError_ErrorCode_name = map[int32]string{
@@ -26,12 +25,14 @@ var ChannelServiceError_ErrorCode_name = map[int32]string{
 	1: "INTERNAL_ERROR",
 	2: "INVALID_CHANNEL_KEY",
 	3: "BAD_MESSAGE",
+	4: "INVALID_CHANNEL_TOKEN_DURATION",
 }
 var ChannelServiceError_ErrorCode_value = map[string]int32{
-	"OK":                  0,
-	"INTERNAL_ERROR":      1,
-	"INVALID_CHANNEL_KEY": 2,
-	"BAD_MESSAGE":         3,
+	"OK":                             0,
+	"INTERNAL_ERROR":                 1,
+	"INVALID_CHANNEL_KEY":            2,
+	"BAD_MESSAGE":                    3,
+	"INVALID_CHANNEL_TOKEN_DURATION": 4,
 }
 
 func NewChannelServiceError_ErrorCode(x ChannelServiceError_ErrorCode) *ChannelServiceError_ErrorCode {
@@ -43,7 +44,7 @@ func (x ChannelServiceError_ErrorCode) String() string {
 }
 
 type ChannelServiceError struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *ChannelServiceError) Reset()         { *this = ChannelServiceError{} }
@@ -51,15 +52,17 @@ func (this *ChannelServiceError) String() string { return proto.CompactTextStrin
 
 type CreateChannelRequest struct {
 	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	DurationMinutes  *int32  `protobuf:"varint,2,opt,name=duration_minutes" json:"duration_minutes,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateChannelRequest) Reset()         { *this = CreateChannelRequest{} }
 func (this *CreateChannelRequest) String() string { return proto.CompactTextString(this) }
 
 type CreateChannelResponse struct {
-	ClientId         *string `protobuf:"bytes,2,opt,name=client_id" json:"client_id,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	Token            *string `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
+	DurationMinutes  *int32  `protobuf:"varint,3,opt,name=duration_minutes" json:"duration_minutes,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateChannelResponse) Reset()         { *this = CreateChannelResponse{} }
@@ -68,7 +71,7 @@ func (this *CreateChannelResponse) String() string { return proto.CompactTextStr
 type SendMessageRequest struct {
 	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
 	Message          *string `protobuf:"bytes,2,req,name=message" json:"message,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *SendMessageRequest) Reset()         { *this = SendMessageRequest{} }

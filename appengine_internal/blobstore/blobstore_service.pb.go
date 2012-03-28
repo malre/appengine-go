@@ -3,14 +3,12 @@
 
 package appengine
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type BlobstoreServiceError_ErrorCode int32
 
@@ -55,7 +53,7 @@ func (x BlobstoreServiceError_ErrorCode) String() string {
 }
 
 type BlobstoreServiceError struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *BlobstoreServiceError) Reset()         { *this = BlobstoreServiceError{} }
@@ -65,7 +63,7 @@ type CreateUploadURLRequest struct {
 	SuccessPath               *string `protobuf:"bytes,1,req,name=success_path" json:"success_path,omitempty"`
 	MaxUploadSizeBytes        *int64  `protobuf:"varint,2,opt,name=max_upload_size_bytes" json:"max_upload_size_bytes,omitempty"`
 	MaxUploadSizePerBlobBytes *int64  `protobuf:"varint,3,opt,name=max_upload_size_per_blob_bytes" json:"max_upload_size_per_blob_bytes,omitempty"`
-	XXX_unrecognized          []byte  `json:",omitempty"`
+	XXX_unrecognized          []byte  `json:"-"`
 }
 
 func (this *CreateUploadURLRequest) Reset()         { *this = CreateUploadURLRequest{} }
@@ -73,7 +71,7 @@ func (this *CreateUploadURLRequest) String() string { return proto.CompactTextSt
 
 type CreateUploadURLResponse struct {
 	Url              *string `protobuf:"bytes,1,req,name=url" json:"url,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateUploadURLResponse) Reset()         { *this = CreateUploadURLResponse{} }
@@ -81,7 +79,7 @@ func (this *CreateUploadURLResponse) String() string { return proto.CompactTextS
 
 type DeleteBlobRequest struct {
 	BlobKey          []string `protobuf:"bytes,1,rep,name=blob_key" json:"blob_key,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *DeleteBlobRequest) Reset()         { *this = DeleteBlobRequest{} }
@@ -91,7 +89,7 @@ type FetchDataRequest struct {
 	BlobKey          *string `protobuf:"bytes,1,req,name=blob_key" json:"blob_key,omitempty"`
 	StartIndex       *int64  `protobuf:"varint,2,req,name=start_index" json:"start_index,omitempty"`
 	EndIndex         *int64  `protobuf:"varint,3,req,name=end_index" json:"end_index,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *FetchDataRequest) Reset()         { *this = FetchDataRequest{} }
@@ -99,7 +97,7 @@ func (this *FetchDataRequest) String() string { return proto.CompactTextString(t
 
 type FetchDataResponse struct {
 	Data             []byte `protobuf:"bytes,1000,req,name=data" json:"data,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *FetchDataResponse) Reset()         { *this = FetchDataResponse{} }
@@ -109,7 +107,7 @@ type CloneBlobRequest struct {
 	BlobKey          []byte `protobuf:"bytes,1,req,name=blob_key" json:"blob_key,omitempty"`
 	MimeType         []byte `protobuf:"bytes,2,req,name=mime_type" json:"mime_type,omitempty"`
 	TargetAppId      []byte `protobuf:"bytes,3,req,name=target_app_id" json:"target_app_id,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *CloneBlobRequest) Reset()         { *this = CloneBlobRequest{} }
@@ -117,7 +115,7 @@ func (this *CloneBlobRequest) String() string { return proto.CompactTextString(t
 
 type CloneBlobResponse struct {
 	BlobKey          []byte `protobuf:"bytes,1,req,name=blob_key" json:"blob_key,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *CloneBlobResponse) Reset()         { *this = CloneBlobResponse{} }
@@ -125,7 +123,7 @@ func (this *CloneBlobResponse) String() string { return proto.CompactTextString(
 
 type DecodeBlobKeyRequest struct {
 	BlobKey          []string `protobuf:"bytes,1,rep,name=blob_key" json:"blob_key,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *DecodeBlobKeyRequest) Reset()         { *this = DecodeBlobKeyRequest{} }
@@ -133,11 +131,35 @@ func (this *DecodeBlobKeyRequest) String() string { return proto.CompactTextStri
 
 type DecodeBlobKeyResponse struct {
 	Decoded          []string `protobuf:"bytes,1,rep,name=decoded" json:"decoded,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *DecodeBlobKeyResponse) Reset()         { *this = DecodeBlobKeyResponse{} }
 func (this *DecodeBlobKeyResponse) String() string { return proto.CompactTextString(this) }
+
+type CreateEncodedGoogleStorageKeyRequest struct {
+	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (this *CreateEncodedGoogleStorageKeyRequest) Reset() {
+	*this = CreateEncodedGoogleStorageKeyRequest{}
+}
+func (this *CreateEncodedGoogleStorageKeyRequest) String() string {
+	return proto.CompactTextString(this)
+}
+
+type CreateEncodedGoogleStorageKeyResponse struct {
+	BlobKey          *string `protobuf:"bytes,1,req,name=blob_key" json:"blob_key,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (this *CreateEncodedGoogleStorageKeyResponse) Reset() {
+	*this = CreateEncodedGoogleStorageKeyResponse{}
+}
+func (this *CreateEncodedGoogleStorageKeyResponse) String() string {
+	return proto.CompactTextString(this)
+}
 
 func init() {
 	proto.RegisterEnum("appengine.BlobstoreServiceError_ErrorCode", BlobstoreServiceError_ErrorCode_name, BlobstoreServiceError_ErrorCode_value)

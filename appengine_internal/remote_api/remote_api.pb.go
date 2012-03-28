@@ -3,20 +3,18 @@
 
 package remote_api
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type Request struct {
 	ServiceName      *string `protobuf:"bytes,2,req,name=service_name" json:"service_name,omitempty"`
 	Method           *string `protobuf:"bytes,3,req,name=method" json:"method,omitempty"`
 	Request          []byte  `protobuf:"bytes,4,req,name=request" json:"request,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *Request) Reset()         { *this = Request{} }
@@ -25,7 +23,7 @@ func (this *Request) String() string { return proto.CompactTextString(this) }
 type ApplicationError struct {
 	Code             *int32  `protobuf:"varint,1,req,name=code" json:"code,omitempty"`
 	Detail           *string `protobuf:"bytes,2,req,name=detail" json:"detail,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *ApplicationError) Reset()         { *this = ApplicationError{} }
@@ -36,7 +34,7 @@ type Response struct {
 	Exception        []byte            `protobuf:"bytes,2,opt,name=exception" json:"exception,omitempty"`
 	ApplicationError *ApplicationError `protobuf:"bytes,3,opt,name=application_error" json:"application_error,omitempty"`
 	JavaException    []byte            `protobuf:"bytes,4,opt,name=java_exception" json:"java_exception,omitempty"`
-	XXX_unrecognized []byte            `json:",omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (this *Response) Reset()         { *this = Response{} }

@@ -3,14 +3,12 @@
 
 package appengine
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type ConversionServiceError_ErrorCode int32
 
@@ -55,7 +53,7 @@ func (x ConversionServiceError_ErrorCode) String() string {
 }
 
 type ConversionServiceError struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *ConversionServiceError) Reset()         { *this = ConversionServiceError{} }
@@ -65,7 +63,7 @@ type AssetInfo struct {
 	Name             *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
 	Data             []byte  `protobuf:"bytes,2,opt,name=data" json:"data,omitempty"`
 	MimeType         *string `protobuf:"bytes,3,opt,name=mime_type" json:"mime_type,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *AssetInfo) Reset()         { *this = AssetInfo{} }
@@ -73,7 +71,7 @@ func (this *AssetInfo) String() string { return proto.CompactTextString(this) }
 
 type DocumentInfo struct {
 	Asset            []*AssetInfo `protobuf:"bytes,1,rep,name=asset" json:"asset,omitempty"`
-	XXX_unrecognized []byte       `json:",omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *DocumentInfo) Reset()         { *this = DocumentInfo{} }
@@ -83,7 +81,7 @@ type ConversionInput struct {
 	Input            *DocumentInfo              `protobuf:"bytes,1,req,name=input" json:"input,omitempty"`
 	OutputMimeType   *string                    `protobuf:"bytes,2,req,name=output_mime_type" json:"output_mime_type,omitempty"`
 	Flag             []*ConversionInput_AuxData `protobuf:"bytes,3,rep,name=flag" json:"flag,omitempty"`
-	XXX_unrecognized []byte                     `json:",omitempty"`
+	XXX_unrecognized []byte                     `json:"-"`
 }
 
 func (this *ConversionInput) Reset()         { *this = ConversionInput{} }
@@ -92,7 +90,7 @@ func (this *ConversionInput) String() string { return proto.CompactTextString(th
 type ConversionInput_AuxData struct {
 	Key              *string `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
 	Value            *string `protobuf:"bytes,2,opt,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *ConversionInput_AuxData) Reset()         { *this = ConversionInput_AuxData{} }
@@ -101,7 +99,7 @@ func (this *ConversionInput_AuxData) String() string { return proto.CompactTextS
 type ConversionOutput struct {
 	ErrorCode        *ConversionServiceError_ErrorCode `protobuf:"varint,1,req,name=error_code,enum=appengine.ConversionServiceError_ErrorCode" json:"error_code,omitempty"`
 	Output           *DocumentInfo                     `protobuf:"bytes,2,opt,name=output" json:"output,omitempty"`
-	XXX_unrecognized []byte                            `json:",omitempty"`
+	XXX_unrecognized []byte                            `json:"-"`
 }
 
 func (this *ConversionOutput) Reset()         { *this = ConversionOutput{} }
@@ -109,7 +107,7 @@ func (this *ConversionOutput) String() string { return proto.CompactTextString(t
 
 type ConversionRequest struct {
 	Conversion       []*ConversionInput `protobuf:"bytes,1,rep,name=conversion" json:"conversion,omitempty"`
-	XXX_unrecognized []byte             `json:",omitempty"`
+	XXX_unrecognized []byte             `json:"-"`
 }
 
 func (this *ConversionRequest) Reset()         { *this = ConversionRequest{} }
@@ -117,7 +115,7 @@ func (this *ConversionRequest) String() string { return proto.CompactTextString(
 
 type ConversionResponse struct {
 	Result           []*ConversionOutput `protobuf:"bytes,1,rep,name=result" json:"result,omitempty"`
-	XXX_unrecognized []byte              `json:",omitempty"`
+	XXX_unrecognized []byte              `json:"-"`
 }
 
 func (this *ConversionResponse) Reset()         { *this = ConversionResponse{} }

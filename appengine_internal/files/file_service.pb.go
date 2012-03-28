@@ -3,14 +3,12 @@
 
 package files
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type FileServiceErrors_ErrorCode int32
 
@@ -36,6 +34,9 @@ const (
 	FileServiceErrors_EXISTENCE_ERROR_METADATA_NOT_FOUND FileServiceErrors_ErrorCode = 105
 	FileServiceErrors_EXISTENCE_ERROR_METADATA_FOUND     FileServiceErrors_ErrorCode = 106
 	FileServiceErrors_EXISTENCE_ERROR_SHARDING_MISMATCH  FileServiceErrors_ErrorCode = 107
+	FileServiceErrors_FINALIZATION_IN_PROGRESS           FileServiceErrors_ErrorCode = 108
+	FileServiceErrors_EXISTENCE_ERROR_OBJECT_NOT_FOUND   FileServiceErrors_ErrorCode = 109
+	FileServiceErrors_EXISTENCE_ERROR_BUCKET_NOT_FOUND   FileServiceErrors_ErrorCode = 110
 	FileServiceErrors_SEQUENCE_KEY_OUT_OF_ORDER          FileServiceErrors_ErrorCode = 300
 	FileServiceErrors_OUT_OF_BOUNDS                      FileServiceErrors_ErrorCode = 500
 	FileServiceErrors_GLOBS_NOT_SUPPORTED                FileServiceErrors_ErrorCode = 600
@@ -74,6 +75,9 @@ var FileServiceErrors_ErrorCode_name = map[int32]string{
 	105:  "EXISTENCE_ERROR_METADATA_NOT_FOUND",
 	106:  "EXISTENCE_ERROR_METADATA_FOUND",
 	107:  "EXISTENCE_ERROR_SHARDING_MISMATCH",
+	108:  "FINALIZATION_IN_PROGRESS",
+	109:  "EXISTENCE_ERROR_OBJECT_NOT_FOUND",
+	110:  "EXISTENCE_ERROR_BUCKET_NOT_FOUND",
 	300:  "SEQUENCE_KEY_OUT_OF_ORDER",
 	500:  "OUT_OF_BOUNDS",
 	600:  "GLOBS_NOT_SUPPORTED",
@@ -111,6 +115,9 @@ var FileServiceErrors_ErrorCode_value = map[string]int32{
 	"EXISTENCE_ERROR_METADATA_NOT_FOUND": 105,
 	"EXISTENCE_ERROR_METADATA_FOUND":     106,
 	"EXISTENCE_ERROR_SHARDING_MISMATCH":  107,
+	"FINALIZATION_IN_PROGRESS":           108,
+	"EXISTENCE_ERROR_OBJECT_NOT_FOUND":   109,
+	"EXISTENCE_ERROR_BUCKET_NOT_FOUND":   110,
 	"SEQUENCE_KEY_OUT_OF_ORDER":          300,
 	"OUT_OF_BOUNDS":                      500,
 	"GLOBS_NOT_SUPPORTED":                600,
@@ -189,16 +196,13 @@ func (x OpenRequest_OpenMode) String() string {
 type ShuffleEnums_InputFormat int32
 
 const (
-	ShuffleEnums_CSV_INPUT                     ShuffleEnums_InputFormat = 0
 	ShuffleEnums_RECORDS_KEY_VALUE_PROTO_INPUT ShuffleEnums_InputFormat = 1
 )
 
 var ShuffleEnums_InputFormat_name = map[int32]string{
-	0: "CSV_INPUT",
 	1: "RECORDS_KEY_VALUE_PROTO_INPUT",
 }
 var ShuffleEnums_InputFormat_value = map[string]int32{
-	"CSV_INPUT":                     0,
 	"RECORDS_KEY_VALUE_PROTO_INPUT": 1,
 }
 
@@ -213,16 +217,13 @@ func (x ShuffleEnums_InputFormat) String() string {
 type ShuffleEnums_OutputFormat int32
 
 const (
-	ShuffleEnums_CSV_OUTPUT                           ShuffleEnums_OutputFormat = 0
 	ShuffleEnums_RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT ShuffleEnums_OutputFormat = 1
 )
 
 var ShuffleEnums_OutputFormat_name = map[int32]string{
-	0: "CSV_OUTPUT",
 	1: "RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT",
 }
 var ShuffleEnums_OutputFormat_value = map[string]int32{
-	"CSV_OUTPUT":                           0,
 	"RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT": 1,
 }
 
@@ -275,7 +276,7 @@ func (x ShuffleEnums_Status) String() string {
 
 type StringProto struct {
 	Value            *string `protobuf:"bytes,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *StringProto) Reset()         { *this = StringProto{} }
@@ -283,7 +284,7 @@ func (this *StringProto) String() string { return proto.CompactTextString(this) 
 
 type Integer32Proto struct {
 	Value            *int32 `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *Integer32Proto) Reset()         { *this = Integer32Proto{} }
@@ -291,7 +292,7 @@ func (this *Integer32Proto) String() string { return proto.CompactTextString(thi
 
 type Integer64Proto struct {
 	Value            *int64 `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *Integer64Proto) Reset()         { *this = Integer64Proto{} }
@@ -299,7 +300,7 @@ func (this *Integer64Proto) String() string { return proto.CompactTextString(thi
 
 type BoolProto struct {
 	Value            *bool  `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *BoolProto) Reset()         { *this = BoolProto{} }
@@ -307,7 +308,7 @@ func (this *BoolProto) String() string { return proto.CompactTextString(this) }
 
 type DoubleProto struct {
 	Value            *float64 `protobuf:"fixed64,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *DoubleProto) Reset()         { *this = DoubleProto{} }
@@ -315,46 +316,49 @@ func (this *DoubleProto) String() string { return proto.CompactTextString(this) 
 
 type BytesProto struct {
 	Value            []byte `protobuf:"bytes,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *BytesProto) Reset()         { *this = BytesProto{} }
 func (this *BytesProto) String() string { return proto.CompactTextString(this) }
 
 type VoidProto struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *VoidProto) Reset()         { *this = VoidProto{} }
 func (this *VoidProto) String() string { return proto.CompactTextString(this) }
 
 type FileServiceErrors struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *FileServiceErrors) Reset()         { *this = FileServiceErrors{} }
 func (this *FileServiceErrors) String() string { return proto.CompactTextString(this) }
 
 type KeyValue struct {
-	Key              *string `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
-	Value            *string `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	Key              []byte `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
+	Value            []byte `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *KeyValue) Reset()         { *this = KeyValue{} }
 func (this *KeyValue) String() string { return proto.CompactTextString(this) }
 
 type KeyValues struct {
-	Key              *string  `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
-	Value            []string `protobuf:"bytes,2,rep,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	Key              []byte   `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
+	Value            [][]byte `protobuf:"bytes,2,rep,name=value" json:"value,omitempty"`
+	Partial          *bool    `protobuf:"varint,3,opt,name=partial,def=0" json:"partial,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *KeyValues) Reset()         { *this = KeyValues{} }
 func (this *KeyValues) String() string { return proto.CompactTextString(this) }
 
+const Default_KeyValues_Partial bool = false
+
 type FileContentType struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *FileContentType) Reset()         { *this = FileContentType{} }
@@ -366,7 +370,7 @@ type CreateRequest struct {
 	Filename              *string                      `protobuf:"bytes,3,opt,name=filename" json:"filename,omitempty"`
 	Parameters            []*CreateRequest_Parameter   `protobuf:"bytes,4,rep,name=parameters" json:"parameters,omitempty"`
 	ExpirationTimeSeconds *int64                       `protobuf:"varint,5,opt,name=expiration_time_seconds" json:"expiration_time_seconds,omitempty"`
-	XXX_unrecognized      []byte                       `json:",omitempty"`
+	XXX_unrecognized      []byte                       `json:"-"`
 }
 
 func (this *CreateRequest) Reset()         { *this = CreateRequest{} }
@@ -375,7 +379,7 @@ func (this *CreateRequest) String() string { return proto.CompactTextString(this
 type CreateRequest_Parameter struct {
 	Name             *string `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
 	Value            *string `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateRequest_Parameter) Reset()         { *this = CreateRequest_Parameter{} }
@@ -383,7 +387,7 @@ func (this *CreateRequest_Parameter) String() string { return proto.CompactTextS
 
 type CreateResponse struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateResponse) Reset()         { *this = CreateResponse{} }
@@ -396,7 +400,7 @@ type OpenRequest struct {
 	ExclusiveLock        *bool                        `protobuf:"varint,4,opt,name=exclusive_lock,def=0" json:"exclusive_lock,omitempty"`
 	BufferedOutput       *bool                        `protobuf:"varint,5,opt,name=buffered_output,def=0" json:"buffered_output,omitempty"`
 	OpenLeaseTimeSeconds *int32                       `protobuf:"varint,6,opt,name=open_lease_time_seconds,def=30" json:"open_lease_time_seconds,omitempty"`
-	XXX_unrecognized     []byte                       `json:",omitempty"`
+	XXX_unrecognized     []byte                       `json:"-"`
 }
 
 func (this *OpenRequest) Reset()         { *this = OpenRequest{} }
@@ -407,7 +411,7 @@ const Default_OpenRequest_BufferedOutput bool = false
 const Default_OpenRequest_OpenLeaseTimeSeconds int32 = 30
 
 type OpenResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *OpenResponse) Reset()         { *this = OpenResponse{} }
@@ -416,7 +420,7 @@ func (this *OpenResponse) String() string { return proto.CompactTextString(this)
 type CloseRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
 	Finalize         *bool   `protobuf:"varint,2,opt,name=finalize,def=0" json:"finalize,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CloseRequest) Reset()         { *this = CloseRequest{} }
@@ -425,7 +429,7 @@ func (this *CloseRequest) String() string { return proto.CompactTextString(this)
 const Default_CloseRequest_Finalize bool = false
 
 type CloseResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *CloseResponse) Reset()         { *this = CloseResponse{} }
@@ -438,7 +442,7 @@ type FileStat struct {
 	Length           *int64                       `protobuf:"varint,4,opt,name=length" json:"length,omitempty"`
 	Ctime            *int64                       `protobuf:"varint,5,opt,name=ctime" json:"ctime,omitempty"`
 	Mtime            *int64                       `protobuf:"varint,6,opt,name=mtime" json:"mtime,omitempty"`
-	XXX_unrecognized []byte                       `json:",omitempty"`
+	XXX_unrecognized []byte                       `json:"-"`
 }
 
 func (this *FileStat) Reset()         { *this = FileStat{} }
@@ -447,7 +451,7 @@ func (this *FileStat) String() string { return proto.CompactTextString(this) }
 type StatRequest struct {
 	Filename         *string `protobuf:"bytes,1,opt,name=filename" json:"filename,omitempty"`
 	FileGlob         *string `protobuf:"bytes,2,opt,name=file_glob" json:"file_glob,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *StatRequest) Reset()         { *this = StatRequest{} }
@@ -456,7 +460,7 @@ func (this *StatRequest) String() string { return proto.CompactTextString(this) 
 type StatResponse struct {
 	Stat             []*FileStat `protobuf:"bytes,1,rep,name=stat" json:"stat,omitempty"`
 	MoreFilesFound   *bool       `protobuf:"varint,2,req,name=more_files_found,def=0" json:"more_files_found,omitempty"`
-	XXX_unrecognized []byte      `json:",omitempty"`
+	XXX_unrecognized []byte      `json:"-"`
 }
 
 func (this *StatResponse) Reset()         { *this = StatResponse{} }
@@ -468,14 +472,14 @@ type AppendRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
 	Data             []byte  `protobuf:"bytes,2,req,name=data" json:"data,omitempty"`
 	SequenceKey      *string `protobuf:"bytes,3,opt,name=sequence_key" json:"sequence_key,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *AppendRequest) Reset()         { *this = AppendRequest{} }
 func (this *AppendRequest) String() string { return proto.CompactTextString(this) }
 
 type AppendResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *AppendResponse) Reset()         { *this = AppendResponse{} }
@@ -483,14 +487,14 @@ func (this *AppendResponse) String() string { return proto.CompactTextString(thi
 
 type DeleteRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *DeleteRequest) Reset()         { *this = DeleteRequest{} }
 func (this *DeleteRequest) String() string { return proto.CompactTextString(this) }
 
 type DeleteResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *DeleteResponse) Reset()         { *this = DeleteResponse{} }
@@ -500,7 +504,7 @@ type ReadRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
 	Pos              *int64  `protobuf:"varint,2,req,name=pos" json:"pos,omitempty"`
 	MaxBytes         *int64  `protobuf:"varint,3,req,name=max_bytes" json:"max_bytes,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *ReadRequest) Reset()         { *this = ReadRequest{} }
@@ -508,7 +512,7 @@ func (this *ReadRequest) String() string { return proto.CompactTextString(this) 
 
 type ReadResponse struct {
 	Data             []byte `protobuf:"bytes,1,req,name=data" json:"data,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *ReadResponse) Reset()         { *this = ReadResponse{} }
@@ -519,7 +523,7 @@ type ReadKeyValueRequest struct {
 	StartKey         []byte  `protobuf:"bytes,2,req,name=start_key" json:"start_key,omitempty"`
 	MaxBytes         *int64  `protobuf:"varint,3,req,name=max_bytes" json:"max_bytes,omitempty"`
 	ValuePos         *int64  `protobuf:"varint,4,opt,name=value_pos" json:"value_pos,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *ReadKeyValueRequest) Reset()         { *this = ReadKeyValueRequest{} }
@@ -529,7 +533,7 @@ type ReadKeyValueResponse struct {
 	Data             []*ReadKeyValueResponse_KeyValue `protobuf:"bytes,1,rep,name=data" json:"data,omitempty"`
 	NextKey          []byte                           `protobuf:"bytes,2,opt,name=next_key" json:"next_key,omitempty"`
 	TruncatedValue   *bool                            `protobuf:"varint,3,opt,name=truncated_value" json:"truncated_value,omitempty"`
-	XXX_unrecognized []byte                           `json:",omitempty"`
+	XXX_unrecognized []byte                           `json:"-"`
 }
 
 func (this *ReadKeyValueResponse) Reset()         { *this = ReadKeyValueResponse{} }
@@ -538,40 +542,40 @@ func (this *ReadKeyValueResponse) String() string { return proto.CompactTextStri
 type ReadKeyValueResponse_KeyValue struct {
 	Key              []byte `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
 	Value            []byte `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *ReadKeyValueResponse_KeyValue) Reset()         { *this = ReadKeyValueResponse_KeyValue{} }
 func (this *ReadKeyValueResponse_KeyValue) String() string { return proto.CompactTextString(this) }
 
 type ShuffleEnums struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *ShuffleEnums) Reset()         { *this = ShuffleEnums{} }
 func (this *ShuffleEnums) String() string { return proto.CompactTextString(this) }
 
 type ShuffleInputSpecification struct {
-	Format           *ShuffleEnums_InputFormat `protobuf:"varint,1,opt,name=format,enum=files.ShuffleEnums_InputFormat,def=0" json:"format,omitempty"`
+	Format           *ShuffleEnums_InputFormat `protobuf:"varint,1,opt,name=format,enum=files.ShuffleEnums_InputFormat,def=1" json:"format,omitempty"`
 	Path             *string                   `protobuf:"bytes,2,req,name=path" json:"path,omitempty"`
-	XXX_unrecognized []byte                    `json:",omitempty"`
+	XXX_unrecognized []byte                    `json:"-"`
 }
 
 func (this *ShuffleInputSpecification) Reset()         { *this = ShuffleInputSpecification{} }
 func (this *ShuffleInputSpecification) String() string { return proto.CompactTextString(this) }
 
-const Default_ShuffleInputSpecification_Format ShuffleEnums_InputFormat = ShuffleEnums_CSV_INPUT
+const Default_ShuffleInputSpecification_Format ShuffleEnums_InputFormat = ShuffleEnums_RECORDS_KEY_VALUE_PROTO_INPUT
 
 type ShuffleOutputSpecification struct {
-	Format           *ShuffleEnums_OutputFormat `protobuf:"varint,1,opt,name=format,enum=files.ShuffleEnums_OutputFormat,def=0" json:"format,omitempty"`
+	Format           *ShuffleEnums_OutputFormat `protobuf:"varint,1,opt,name=format,enum=files.ShuffleEnums_OutputFormat,def=1" json:"format,omitempty"`
 	Path             []string                   `protobuf:"bytes,2,rep,name=path" json:"path,omitempty"`
-	XXX_unrecognized []byte                     `json:",omitempty"`
+	XXX_unrecognized []byte                     `json:"-"`
 }
 
 func (this *ShuffleOutputSpecification) Reset()         { *this = ShuffleOutputSpecification{} }
 func (this *ShuffleOutputSpecification) String() string { return proto.CompactTextString(this) }
 
-const Default_ShuffleOutputSpecification_Format ShuffleEnums_OutputFormat = ShuffleEnums_CSV_OUTPUT
+const Default_ShuffleOutputSpecification_Format ShuffleEnums_OutputFormat = ShuffleEnums_RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT
 
 type ShuffleRequest struct {
 	ShuffleName      *string                      `protobuf:"bytes,1,req,name=shuffle_name" json:"shuffle_name,omitempty"`
@@ -579,7 +583,7 @@ type ShuffleRequest struct {
 	Output           *ShuffleOutputSpecification  `protobuf:"bytes,3,req,name=output" json:"output,omitempty"`
 	ShuffleSizeBytes *int64                       `protobuf:"varint,4,req,name=shuffle_size_bytes" json:"shuffle_size_bytes,omitempty"`
 	Callback         *ShuffleRequest_Callback     `protobuf:"bytes,5,req,name=callback" json:"callback,omitempty"`
-	XXX_unrecognized []byte                       `json:",omitempty"`
+	XXX_unrecognized []byte                       `json:"-"`
 }
 
 func (this *ShuffleRequest) Reset()         { *this = ShuffleRequest{} }
@@ -590,7 +594,7 @@ type ShuffleRequest_Callback struct {
 	AppVersionId     *string `protobuf:"bytes,2,opt,name=app_version_id" json:"app_version_id,omitempty"`
 	Method           *string `protobuf:"bytes,3,opt,name=method,def=POST" json:"method,omitempty"`
 	Queue            *string `protobuf:"bytes,4,opt,name=queue,def=default" json:"queue,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *ShuffleRequest_Callback) Reset()         { *this = ShuffleRequest_Callback{} }
@@ -600,7 +604,7 @@ const Default_ShuffleRequest_Callback_Method string = "POST"
 const Default_ShuffleRequest_Callback_Queue string = "default"
 
 type ShuffleResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *ShuffleResponse) Reset()         { *this = ShuffleResponse{} }
@@ -608,7 +612,7 @@ func (this *ShuffleResponse) String() string { return proto.CompactTextString(th
 
 type GetShuffleStatusRequest struct {
 	ShuffleName      *string `protobuf:"bytes,1,req,name=shuffle_name" json:"shuffle_name,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *GetShuffleStatusRequest) Reset()         { *this = GetShuffleStatusRequest{} }
@@ -617,14 +621,14 @@ func (this *GetShuffleStatusRequest) String() string { return proto.CompactTextS
 type GetShuffleStatusResponse struct {
 	Status           *ShuffleEnums_Status `protobuf:"varint,1,req,name=status,enum=files.ShuffleEnums_Status" json:"status,omitempty"`
 	Description      *string              `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
-	XXX_unrecognized []byte               `json:",omitempty"`
+	XXX_unrecognized []byte               `json:"-"`
 }
 
 func (this *GetShuffleStatusResponse) Reset()         { *this = GetShuffleStatusResponse{} }
 func (this *GetShuffleStatusResponse) String() string { return proto.CompactTextString(this) }
 
 type GetCapabilitiesRequest struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *GetCapabilitiesRequest) Reset()         { *this = GetCapabilitiesRequest{} }
@@ -633,11 +637,41 @@ func (this *GetCapabilitiesRequest) String() string { return proto.CompactTextSt
 type GetCapabilitiesResponse struct {
 	Filesystem       []string `protobuf:"bytes,1,rep,name=filesystem" json:"filesystem,omitempty"`
 	ShuffleAvailable *bool    `protobuf:"varint,2,req,name=shuffle_available" json:"shuffle_available,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *GetCapabilitiesResponse) Reset()         { *this = GetCapabilitiesResponse{} }
 func (this *GetCapabilitiesResponse) String() string { return proto.CompactTextString(this) }
+
+type FinalizeRequest struct {
+	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (this *FinalizeRequest) Reset()         { *this = FinalizeRequest{} }
+func (this *FinalizeRequest) String() string { return proto.CompactTextString(this) }
+
+type FinalizeResponse struct {
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (this *FinalizeResponse) Reset()         { *this = FinalizeResponse{} }
+func (this *FinalizeResponse) String() string { return proto.CompactTextString(this) }
+
+type GetDefaultGsBucketNameRequest struct {
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (this *GetDefaultGsBucketNameRequest) Reset()         { *this = GetDefaultGsBucketNameRequest{} }
+func (this *GetDefaultGsBucketNameRequest) String() string { return proto.CompactTextString(this) }
+
+type GetDefaultGsBucketNameResponse struct {
+	DefaultGsBucketName *string `protobuf:"bytes,1,opt,name=default_gs_bucket_name" json:"default_gs_bucket_name,omitempty"`
+	XXX_unrecognized    []byte  `json:"-"`
+}
+
+func (this *GetDefaultGsBucketNameResponse) Reset()         { *this = GetDefaultGsBucketNameResponse{} }
+func (this *GetDefaultGsBucketNameResponse) String() string { return proto.CompactTextString(this) }
 
 func init() {
 	proto.RegisterEnum("files.FileServiceErrors_ErrorCode", FileServiceErrors_ErrorCode_name, FileServiceErrors_ErrorCode_value)

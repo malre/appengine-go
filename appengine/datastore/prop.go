@@ -6,7 +6,6 @@ package datastore
 
 import (
 	"fmt"
-	"os"
 	"reflect"
 	"strings"
 	"sync"
@@ -32,7 +31,7 @@ type Property struct {
 	//	- string
 	//	- float64
 	//	- *Key
-	//	- Time
+	//	- time.Time
 	//	- appengine.BlobKey
 	//	- []byte (up to 1 megabyte in length)
 	// This set is smaller than the set of valid struct field types that the
@@ -57,16 +56,21 @@ type Property struct {
 // Load should drain the channel until closed, even if an error occurred.
 // Save should close the channel when done, even if an error occurred.
 type PropertyLoadSaver interface {
-	Load(<-chan Property) os.Error
-	Save(chan<- Property) os.Error
+	Load(<-chan Property) error
+	Save(chan<- Property) error
 }
 
 // PropertyList converts a []Property to implement PropertyLoadSaver.
 type PropertyList []Property
 
+var (
+	typeOfPropertyLoadSaver = reflect.TypeOf((*PropertyLoadSaver)(nil)).Elem()
+	typeOfPropertyList      = reflect.TypeOf(PropertyList(nil))
+)
+
 // Load loads all of c's properties into l.
 // It does not first reset *l to an empty slice.
-func (l *PropertyList) Load(c <-chan Property) os.Error {
+func (l *PropertyList) Load(c <-chan Property) error {
 	for p := range c {
 		*l = append(*l, p)
 	}
@@ -74,7 +78,7 @@ func (l *PropertyList) Load(c <-chan Property) os.Error {
 }
 
 // Save saves all of l's properties to c.
-func (l *PropertyList) Save(c chan<- Property) os.Error {
+func (l *PropertyList) Save(c chan<- Property) error {
 	for _, p := range *l {
 		c <- p
 	}
@@ -128,7 +132,7 @@ var (
 )
 
 // getStructCodec returns the structCodec for the given struct type.
-func getStructCodec(t reflect.Type) (structCodec, os.Error) {
+func getStructCodec(t reflect.Type) (structCodec, error) {
 	structCodecsMutex.Lock()
 	defer structCodecsMutex.Unlock()
 	c, ok := structCodecs[t]
@@ -150,7 +154,8 @@ func getStructCodec(t reflect.Type) (structCodec, os.Error) {
 			continue
 		} else if !validPropertyName(name) {
 			return structCodec{}, fmt.Errorf("datastore: struct tag has invalid property name: %q", name)
-		} else if _, ok := c.byName[name]; ok {
+		}
+		if _, ok := c.byName[name]; ok {
 			return structCodec{}, fmt.Errorf("datastore: struct tag has repeated property name: %q", name)
 		}
 		c.byIndex[i] = structTag{
@@ -170,7 +175,7 @@ type structPLS struct {
 }
 
 // newStructPLS returns a PropertyLoadSaver for the struct pointer p.
-func newStructPLS(p interface{}) (PropertyLoadSaver, os.Error) {
+func newStructPLS(p interface{}) (PropertyLoadSaver, error) {
 	v := reflect.ValueOf(p)
 	if v.Kind() != reflect.Ptr || v.IsNil() || v.Elem().Kind() != reflect.Struct {
 		return nil, ErrInvalidEntityType
@@ -185,7 +190,7 @@ func newStructPLS(p interface{}) (PropertyLoadSaver, os.Error) {
 
 // LoadStruct loads the properties from c to dst, reading from c until closed.
 // dst must be a struct pointer.
-func LoadStruct(dst interface{}, c <-chan Property) os.Error {
+func LoadStruct(dst interface{}, c <-chan Property) error {
 	x, err := newStructPLS(dst)
 	if err != nil {
 		for _ = range c {
@@ -198,7 +203,7 @@ func LoadStruct(dst interface{}, c <-chan Property) os.Error {
 
 // SaveStruct saves the properties from src to c, closing c when done.
 // src must be a struct pointer.
-func SaveStruct(src interface{}, c chan<- Property) os.Error {
+func SaveStruct(src interface{}, c chan<- Property) error {
 	x, err := newStructPLS(src)
 	if err != nil {
 		close(c)
@@ -206,10 +211,3 @@ func SaveStruct(src interface{}, c chan<- Property) os.Error {
 	}
 	return x.Save(c)
 }
-
-// Map is a map representation of an entity's fields. It is more flexible than
-// but not as strongly typed as a struct representation.
-//
-// Map is deprecated. It cannot represent whether a property is indexed. Use a
-// PropertyList instead.
-type Map map[string]interface{}

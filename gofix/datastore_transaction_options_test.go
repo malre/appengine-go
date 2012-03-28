@@ -5,7 +5,7 @@
 package main
 
 func init() {
-	addTestCases(datastoreTransactionOptionsTests)
+	addTestCases(datastoreTransactionOptionsTests, datastoreTransactionOptions)
 }
 
 var datastoreTransactionOptionsTests = []testCase{
@@ -16,7 +16,7 @@ var datastoreTransactionOptionsTests = []testCase{
 import "appengine/datastore"
 
 func f() {
-	datastore.RunInTransaction(c, func(c appengine.Context) os.Error {
+	datastore.RunInTransaction(c, func(c appengine.Context) error {
 		return nil
 	})
 }
@@ -26,7 +26,7 @@ func f() {
 import "appengine/datastore"
 
 func f() {
-	datastore.RunInTransaction(c, func(c appengine.Context) os.Error {
+	datastore.RunInTransaction(c, func(c appengine.Context) error {
 		return nil
 	}, nil)
 }

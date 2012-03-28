@@ -5,8 +5,8 @@
 package appengine_internal
 
 import (
-	"http"
 	"net"
+	"net/http"
 	"os"
 	"strconv"
 )
@@ -31,7 +31,7 @@ func DefaultVersionHostname(req interface{}) string {
 	return req.(*http.Request).Host
 }
 
-func Instance() int {
+func BackendInstance() int {
 	i, err := strconv.Atoi(os.Getenv("INSTANCE_ID"))
 	if err != nil {
 		return -1
@@ -41,4 +41,17 @@ func Instance() int {
 
 func VersionID(req interface{}) string {
 	return req.(*http.Request).Header.Get(hVersionId)
+}
+
+func InstanceID() string {
+	// No instance ID in dev.
+	return ""
+}
+
+func Datacenter() string {
+	return "dc1"
+}
+
+func ServerSoftware() string {
+	return os.Getenv("SERVER_SOFTWARE")
 }

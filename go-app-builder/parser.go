@@ -2,17 +2,21 @@
 // Use of this source code is governed by the Apache 2.0
 // license that can be found in the LICENSE file.
 
+// TODO: Use path/filepath throughout gab.
+
 package main
 
 import (
+	"errors"
 	"fmt"
 	"go/ast"
+	"go/build"
 	"go/parser"
+	"go/scanner"
 	"go/token"
 	"os"
 	"path"
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -47,56 +51,87 @@ func (f *File) String() string {
 	return fmt.Sprintf("%+v", *f)
 }
 
+// vfs is a tiny VFS overlay that exposes a subset of files in a tree.
+type vfs struct {
+	baseDir   string
+	filenames []string
+}
+
+func (v vfs) readDir(dir string) (fis []os.FileInfo, err error) {
+	dir = path.Clean(dir)
+	for _, f := range v.filenames {
+		f = path.Join(v.baseDir, f)
+		if path.Dir(f) == dir {
+			fi, err := os.Stat(f)
+			if err != nil {
+				return nil, err
+			}
+			fis = append(fis, fi)
+		}
+	}
+	return fis, nil
+}
+
 // ParseFiles parses the named files, deduces their package structure,
 // and returns the dependency DAG as an App.
 // Elements of filenames are considered relative to baseDir.
-func ParseFiles(baseDir string, filenames []string) (*App, os.Error) {
-	app := &App{
-		Files: make([]*File, len(filenames)),
+func ParseFiles(baseDir string, filenames []string) (*App, error) {
+	app := new(App)
+	pkgFiles := make(map[string][]*File) // app package name => its files
+
+	vfs := vfs{baseDir, filenames}
+	ctxt := &build.Context{
+		GOARCH:    build.Default.GOARCH,
+		GOOS:      build.Default.GOOS,
+		GOROOT:    *goRoot,
+		GOPATH:    baseDir,
+		BuildTags: []string{"appengine"},
+		Compiler:  "gc",
+		HasSubdir: func(root, dir string) (rel string, ok bool) {
+			// Override the default HasSubdir, which evaluates symlinks.
+			const sep = "/"
+			root = path.Clean(root)
+			if !strings.HasSuffix(root, sep) {
+				root += sep
+			}
+			dir = path.Clean(dir)
+			if !strings.HasPrefix(dir, root) {
+				return "", false
+			}
+			return dir[len(root):], true
+		},
+		ReadDir: func(dir string) ([]os.FileInfo, error) {
+			return vfs.readDir(dir)
+		},
 	}
 
-	// As we parse the files, group the files by directory,
-	// and check that there is only one package per directory.
-	var (
-		pkgFiles    = make(map[string][]*File)
-		badDirname  string
-		badPackages map[string]bool
-	)
-	for i, filename := range filenames {
-		if strings.HasSuffix(filename, "_test.go") || strings.HasSuffix(filename, "_testmain.go") {
+	dirs := make(map[string]bool)
+	for _, f := range filenames {
+		dir := path.Dir(f)
+		if dir == "" || dir == "/" || dir == "." {
+			return nil, errors.New("go files must be in a subdirectory of the app root")
+		}
+		dirs[dir] = true
+	}
+	for dir := range dirs {
+		pkg, err := ctxt.ImportDir(path.Join(baseDir, dir), 0)
+		if _, ok := err.(*build.NoGoError); ok {
+			// There were .go files, but they were all excluded (e.g. by "// +build ignore").
 			continue
 		}
-
-		file, err := parseFile(baseDir, filename)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed parsing dir %v: %v", dir, err)
 		}
-		app.Files[i] = file
-		dirname, _ := path.Split(filename)
-		if dirname == "" || dirname == "/" {
-			return nil, os.NewError("go files must be in a subdirectory of the app root")
-		}
-		dirname = dirname[:len(dirname)-1] // strip trailing slash
-		if fs := pkgFiles[dirname]; len(fs) > 0 && fs[0].PackageName != file.PackageName {
-			// Accumulate the set of packages for this directory,
-			// if it is the first bad directory seen.
-			if badDirname == "" {
-				badDirname = dirname
-				badPackages = map[string]bool{fs[0].PackageName: true}
+
+		for _, f := range pkg.GoFiles {
+			filename := path.Join(dir, f)
+			file, err := parseFile(baseDir, filename)
+			if err != nil {
+				return nil, err
 			}
-			if badDirname == dirname {
-				badPackages[file.PackageName] = true
-			}
+			app.Files = append(app.Files, file)
+			pkgFiles[dir] = append(pkgFiles[dir], file)
 		}
-		pkgFiles[dirname] = append(pkgFiles[dirname], file)
-	}
-	if badDirname != "" {
-		s := make([]string, 0, len(badPackages))
-		for p := range badPackages {
-			s = append(s, p)
-		}
-		sort.Strings(s)
-		return nil, fmt.Errorf("multiple packages in the %s directory: %s", badDirname, strings.Join(s, ", "))
 	}
 
 	// Create Package objects.
@@ -107,7 +142,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, os.Error) {
 			Files:      files,
 		}
 		if p.ImportPath == "main" {
-			return nil, os.NewError("top-level main package is forbidden")
+			return nil, errors.New("top-level main package is forbidden")
 		}
 		for _, f := range files {
 			if f.HasInit {
@@ -158,8 +193,9 @@ func isInit(f *ast.FuncDecl) bool {
 }
 
 // parseFile parses a single Go source file into a *File.
-func parseFile(baseDir, filename string) (*File, os.Error) {
-	file, err := parser.ParseFile(token.NewFileSet(), path.Join(baseDir, filename), nil, 0)
+func parseFile(baseDir, filename string) (*File, error) {
+	var fset token.FileSet
+	file, err := parser.ParseFile(&fset, path.Join(baseDir, filename), nil, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -190,12 +226,19 @@ func parseFile(baseDir, filename string) (*File, os.Error) {
 		}
 	}
 
+	// Check for untagged struct literals from the standard package library.
+	ch := newCompLitChecker(&fset)
+	ast.Walk(ch, file)
+	if len(ch.errors) > 0 {
+		return nil, ch.errors
+	}
+
 	return &File{
-		Name:        filename,
-		PackageName: file.Name.Name,
-		ImportPaths: imports,
-		HasInit:     hasInit,
-	},
+			Name:        filename,
+			PackageName: file.Name.Name,
+			ImportPaths: imports,
+			HasInit:     hasInit,
+		},
 		nil
 }
 
@@ -222,10 +265,95 @@ func checkImport(path string) bool {
 	return true
 }
 
+type compLitChecker struct {
+	fset    *token.FileSet
+	imports map[string]string // Local name => import path; only standard packages.
+	errors  scanner.ErrorList // accumulated errors
+}
+
+func newCompLitChecker(fset *token.FileSet) *compLitChecker {
+	return &compLitChecker{
+		fset:    fset,
+		imports: make(map[string]string),
+	}
+}
+
+func (c *compLitChecker) errorf(node ast.Node, format string, a ...interface{}) {
+	c.errors = append(c.errors, &scanner.Error{
+		Pos: c.fset.Position(node.Pos()),
+		Msg: fmt.Sprintf(format, a...),
+	})
+}
+
+func (c *compLitChecker) Visit(node ast.Node) ast.Visitor {
+	if imp, ok := node.(*ast.ImportSpec); ok {
+		pth, _ := strconv.Unquote(imp.Path.Value)
+		if !isStandardPackage(pth) {
+			return c
+		}
+		if imp.Name != nil {
+			id := imp.Name.Name
+			if id == "." {
+				return c
+			}
+			c.imports[id] = pth
+		} else {
+			// All standard packages have their last path component as their package name.
+			c.imports[path.Base(pth)] = pth
+		}
+		return c
+	}
+
+	lit, ok := node.(*ast.CompositeLit)
+	if !ok {
+		return c
+	}
+	sel, ok := lit.Type.(*ast.SelectorExpr)
+	if !ok {
+		return c
+	}
+	id, ok := sel.X.(*ast.Ident)
+	if !ok {
+		return c
+	}
+	pth, ok := c.imports[id.Name]
+	if !ok {
+		// This must be pkg.T for a package in the app.
+		return c
+	}
+
+	// Check exception list.
+	if untaggedLiteralWhitelist[pth+"."+sel.Sel.Name] {
+		return c
+	}
+
+	allTags := true
+	for _, elt := range lit.Elts {
+		_, ok := elt.(*ast.KeyValueExpr)
+		allTags = allTags && ok
+	}
+	if !allTags {
+		c.errorf(lit, "composite struct literal %v.%v with untagged fields", pth, sel.Sel)
+	}
+
+	return c
+}
+
+// isStandardPackage reports whether import path s is a standard package.
+func isStandardPackage(s string) bool {
+	ctxt := build.Default
+	ctxt.GOROOT = *goRoot
+	pkg, err := ctxt.Import(s, "/nowhere", build.FindOnly|build.AllowBinary)
+	if err != nil {
+		return false
+	}
+	return pkg.ImportPath != ""
+}
+
 // topologicalSort sorts the given slice of *Package in topological order.
 // The ordering is such that X comes before Y if X is a dependency of Y.
 // A cyclic dependency graph is signalled by an error being returned.
-func topologicalSort(p []*Package) os.Error {
+func topologicalSort(p []*Package) error {
 	selected := make(map[*Package]bool, len(p))
 	for len(p) > 0 {
 		// Sweep the working list and move the packages with no
@@ -297,4 +425,10 @@ func findCycle(pkgs []*Package) []*Package {
 		cycle = append(cycle, dep)
 	}
 	panic("unreachable")
+}
+
+func init() {
+	// Add some App Engine-specific entries to the untagged literal whitelist.
+	untaggedLiteralWhitelist["appengine/datastore.PropertyList"] = true
+	untaggedLiteralWhitelist["appengine.MultiError"] = true
 }

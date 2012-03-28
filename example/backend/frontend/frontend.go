@@ -7,11 +7,10 @@
 package frontend
 
 import (
-	"http"
 	"io/ioutil"
-	"os"
-	"template"
-	"url"
+	"net/http"
+	"net/url"
+	"text/template"
 
 	"appengine"
 	"appengine/urlfetch"
@@ -25,7 +24,11 @@ func handleFront(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
 	key, value := r.FormValue("key"), r.FormValue("value")
-	m := map[string]interface{}{"Key": key, "Value": value}
+	m := map[string]interface{}{
+		"Key":            key,
+		"Value":          value,
+		"BackendAddress": backend(c),
+	}
 
 	switch r.Method {
 	case "GET":
@@ -44,7 +47,7 @@ func backend(c appengine.Context) string {
 	return "http://" + appengine.BackendHostname(c, "memcache", -1)
 }
 
-func get(c appengine.Context, key string) ([]byte, os.Error) {
+func get(c appengine.Context, key string) ([]byte, error) {
 	u := backend(c) + "/memcache/get?key=" + url.QueryEscape(key)
 	resp, err := urlfetch.Client(c).Get(u)
 	if err != nil {
@@ -54,7 +57,7 @@ func get(c appengine.Context, key string) ([]byte, os.Error) {
 	return ioutil.ReadAll(resp.Body)
 }
 
-func set(c appengine.Context, key, value string) (string, os.Error) {
+func set(c appengine.Context, key, value string) (string, error) {
 	u := backend(c) + "/memcache/set"
 	resp, err := urlfetch.Client(c).PostForm(u, url.Values{
 		"key":   {key},
@@ -112,6 +115,8 @@ var page = template.Must(template.New("front").Parse(`
 		{{end}}
 	</form>
 	</div>
+
+	<p>Backend addresss: <code>{{.BackendAddress|html}}</code></p>
 </body>
 </html>
 `))

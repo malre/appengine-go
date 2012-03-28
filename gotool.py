@@ -16,4 +16,7 @@ if __name__ == '__main__':
   tool = os.path.basename(__file__)
   bin = os.path.join(GOROOT, 'bin', tool)
   os.environ['GOROOT'] = GOROOT
+  for key in ('GOBIN', 'GOPATH'):
+    if key in os.environ:
+      del os.environ[key]
   os.execve(bin, sys.argv, os.environ)

@@ -6,11 +6,11 @@ package datastore
 
 import (
 	"fmt"
-	"os"
 	"reflect"
+	"time"
 
 	"appengine"
-	"goprotobuf.googlecode.com/hg/proto"
+	"code.google.com/p/goprotobuf/proto"
 
 	pb "appengine_internal/datastore"
 )
@@ -32,8 +32,8 @@ func typeMismatchReason(p Property, v reflect.Value) string {
 		entityType = "float"
 	case *Key:
 		entityType = "*datastore.Key"
-	case Time:
-		entityType = "datastore.Time"
+	case time.Time:
+		entityType = "time.Time"
 	case appengine.BlobKey:
 		entityType = "appengine.BlobKey"
 	case []byte:
@@ -62,13 +62,7 @@ func loadProperty(codec *structCodec, structValue reflect.Value, p Property, req
 		return "multiple-valued property requires a slice field type"
 	}
 	switch v.Kind() {
-	case reflect.Int64:
-		if x, ok := p.Value.(Time); ok {
-			v.SetInt(int64(x))
-			break
-		}
-		fallthrough
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		x, ok := p.Value.(int64)
 		if !ok {
 			return typeMismatchReason(p, v)
@@ -104,10 +98,19 @@ func loadProperty(codec *structCodec, structValue reflect.Value, p Property, req
 		v.SetFloat(x)
 	case reflect.Ptr:
 		x, ok := p.Value.(*Key)
-		if !ok {
+		if p.Value != nil && !ok {
 			return typeMismatchReason(p, v)
 		}
 		if _, ok := v.Interface().(*Key); !ok {
+			return typeMismatchReason(p, v)
+		}
+		v.Set(reflect.ValueOf(x))
+	case reflect.Struct:
+		x, ok := p.Value.(time.Time)
+		if !ok {
+			return typeMismatchReason(p, v)
+		}
+		if _, ok := v.Interface().(time.Time); !ok {
 			return typeMismatchReason(p, v)
 		}
 		v.Set(reflect.ValueOf(x))
@@ -129,89 +132,10 @@ func loadProperty(codec *structCodec, structValue reflect.Value, p Property, req
 	return ""
 }
 
-// loadMapEntry converts a Property into an entry of an existing Map,
-// or into an element of a slice-valued Map entry.
-func loadMapEntry(m Map, p *pb.Property) os.Error {
-	var (
-		result    interface{}
-		sliceType reflect.Type
-	)
-	switch {
-	case p.Value.Int64Value != nil:
-		if p.Meaning != nil && *p.Meaning == pb.Property_GD_WHEN {
-			result = Time(*p.Value.Int64Value)
-			sliceType = reflect.TypeOf([]Time(nil))
-		} else {
-			result = *p.Value.Int64Value
-			sliceType = reflect.TypeOf([]int64(nil))
-		}
-	case p.Value.BooleanValue != nil:
-		result = *p.Value.BooleanValue
-		sliceType = reflect.TypeOf([]bool(nil))
-	case p.Value.StringValue != nil:
-		if p.Meaning != nil && *p.Meaning == pb.Property_BLOB {
-			result = []byte(*p.Value.StringValue)
-			sliceType = reflect.TypeOf([][]byte(nil))
-		} else if p.Meaning != nil && *p.Meaning == pb.Property_BLOBKEY {
-			result = appengine.BlobKey(*p.Value.StringValue)
-			sliceType = reflect.TypeOf([]appengine.BlobKey(nil))
-		} else {
-			result = *p.Value.StringValue
-			sliceType = reflect.TypeOf([]string(nil))
-		}
-	case p.Value.DoubleValue != nil:
-		result = *p.Value.DoubleValue
-		sliceType = reflect.TypeOf([]float64(nil))
-	case p.Value.Referencevalue != nil:
-		key, err := referenceValueToKey(p.Value.Referencevalue)
-		if err != nil {
-			return err
-		}
-		result = key
-		sliceType = reflect.TypeOf([]*Key(nil))
-	default:
-		return nil
-	}
-	name := proto.GetString(p.Name)
-	if proto.GetBool(p.Multiple) {
-		var s reflect.Value
-		if x := m[name]; x != nil {
-			s = reflect.ValueOf(x)
-		} else {
-			s = reflect.MakeSlice(sliceType, 0, 0)
-		}
-		s = reflect.Append(s, reflect.ValueOf(result))
-		m[name] = s.Interface()
-	} else {
-		m[name] = result
-	}
-	return nil
-}
-
-// loadMap converts an EntityProto into an existing Map.
-func loadMap(m Map, e *pb.EntityProto) (err os.Error) {
-	for _, p := range e.Property {
-		if err1 := loadMapEntry(m, p); err1 != nil {
-			err = err1
-		}
-	}
-	for _, p := range e.RawProperty {
-		if err1 := loadMapEntry(m, p); err1 != nil {
-			err = err1
-		}
-	}
-	return err
-}
-
-// loadEntity loads an EntityProto into a Map, PropertyLoadSaver or struct
-// pointer.
-func loadEntity(dst interface{}, src *pb.EntityProto) (err os.Error) {
-	if m, ok := dst.(Map); ok {
-		return loadMap(m, src)
-	}
-
+// loadEntity loads an EntityProto into PropertyLoadSaver or struct pointer.
+func loadEntity(dst interface{}, src *pb.EntityProto) (err error) {
 	c := make(chan Property, 32)
-	errc := make(chan os.Error, 1)
+	errc := make(chan error, 1)
 	defer func() {
 		if err == nil {
 			err = <-errc
@@ -224,7 +148,7 @@ func loadEntity(dst interface{}, src *pb.EntityProto) (err os.Error) {
 	return LoadStruct(dst, c)
 }
 
-func (s structPLS) Load(c <-chan Property) os.Error {
+func (s structPLS) Load(c <-chan Property) error {
 	var fieldName, reason string
 	for p := range c {
 		if errStr := loadProperty(&s.codec, s.v, p, p.Multiple); errStr != "" {
@@ -244,7 +168,7 @@ func (s structPLS) Load(c <-chan Property) os.Error {
 	return nil
 }
 
-func protoToProperties(dst chan<- Property, errc chan<- os.Error, src *pb.EntityProto) {
+func protoToProperties(dst chan<- Property, errc chan<- error, src *pb.EntityProto) {
 	defer close(dst)
 	props, rawProps := src.Property, src.RawProperty
 	for {
@@ -265,7 +189,7 @@ func protoToProperties(dst chan<- Property, errc chan<- os.Error, src *pb.Entity
 		switch {
 		case x.Value.Int64Value != nil:
 			if x.Meaning != nil && *x.Meaning == pb.Property_GD_WHEN {
-				value = Time(*x.Value.Int64Value)
+				value = time.Unix(0, *x.Value.Int64Value*1e3)
 			} else {
 				value = *x.Value.Int64Value
 			}
@@ -288,9 +212,6 @@ func protoToProperties(dst chan<- Property, errc chan<- os.Error, src *pb.Entity
 				return
 			}
 			value = key
-		default:
-			errc <- os.NewError("datastore: internal error: stored property has no value")
-			return
 		}
 		dst <- Property{
 			Name:     proto.GetString(x.Name),

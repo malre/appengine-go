@@ -5,7 +5,7 @@
 package main
 
 func init() {
-	addTestCases(blobstoreUploadOptionsTests)
+	addTestCases(blobstoreUploadOptionsTests, blobstoreUploadOptions)
 }
 
 var blobstoreUploadOptionsTests = []testCase{

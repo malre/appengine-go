@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 /*
-The channel package implements the server side of App Engine's Channel API.
+Package channel implements the server side of App Engine's Channel API.
 
 Create creates a new channel associated with the given clientID,
 which must be unique to the client that will use the returned token.
@@ -21,30 +21,29 @@ Send sends a message to the client over the channel identified by clientID.
 package channel
 
 import (
-	"json"
-	"os"
+	"encoding/json"
 
 	"appengine"
 	"appengine_internal"
-	"goprotobuf.googlecode.com/hg/proto"
+	"code.google.com/p/goprotobuf/proto"
 
 	channel_proto "appengine_internal/channel"
 )
 
 // Create creates a channel and returns a token for use by the client.
 // The clientID is an appication-provided string used to identify the client.
-func Create(c appengine.Context, clientID string) (token string, err os.Error) {
+func Create(c appengine.Context, clientID string) (token string, err error) {
 	req := &channel_proto.CreateChannelRequest{
 		ApplicationKey: &clientID,
 	}
 	resp := &channel_proto.CreateChannelResponse{}
 	err = c.Call(service, "CreateChannel", req, resp, nil)
-	token = proto.GetString(resp.ClientId)
+	token = proto.GetString(resp.Token)
 	return
 }
 
 // Send sends a message on the channel associated with clientID.
-func Send(c appengine.Context, clientID, message string) os.Error {
+func Send(c appengine.Context, clientID, message string) error {
 	req := &channel_proto.SendMessageRequest{
 		ApplicationKey: &clientID,
 		Message:        &message,
@@ -55,7 +54,7 @@ func Send(c appengine.Context, clientID, message string) os.Error {
 
 // SendJSON is a helper function that sends a JSON-encoded value
 // on the channel associated with clientID.
-func SendJSON(c appengine.Context, clientID string, value interface{}) os.Error {
+func SendJSON(c appengine.Context, clientID string, value interface{}) error {
 	m, err := json.Marshal(value)
 	if err != nil {
 		return err

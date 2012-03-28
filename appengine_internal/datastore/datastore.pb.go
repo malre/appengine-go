@@ -3,14 +3,12 @@
 
 package datastore
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type Property_Meaning int32
 
@@ -32,6 +30,7 @@ const (
 	Property_GD_POSTALADDRESS Property_Meaning = 12
 	Property_GD_RATING        Property_Meaning = 13
 	Property_BLOBKEY          Property_Meaning = 17
+	Property_INDEX_VALUE      Property_Meaning = 18
 )
 
 var Property_Meaning_name = map[int32]string{
@@ -52,6 +51,7 @@ var Property_Meaning_name = map[int32]string{
 	12: "GD_POSTALADDRESS",
 	13: "GD_RATING",
 	17: "BLOBKEY",
+	18: "INDEX_VALUE",
 }
 var Property_Meaning_value = map[string]int32{
 	"BLOB":             14,
@@ -71,6 +71,7 @@ var Property_Meaning_value = map[string]int32{
 	"GD_POSTALADDRESS": 12,
 	"GD_RATING":        13,
 	"BLOBKEY":          17,
+	"INDEX_VALUE":      18,
 }
 
 func NewProperty_Meaning(x Property_Meaning) *Property_Meaning {
@@ -301,7 +302,7 @@ func (x Error_ErrorCode) String() string {
 }
 
 type Action struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *Action) Reset()         { *this = Action{} }
@@ -309,7 +310,7 @@ func (this *Action) String() string { return proto.CompactTextString(this) }
 
 type StringProto struct {
 	Value            *string `protobuf:"bytes,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *StringProto) Reset()         { *this = StringProto{} }
@@ -317,7 +318,7 @@ func (this *StringProto) String() string { return proto.CompactTextString(this) 
 
 type Integer32Proto struct {
 	Value            *int32 `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *Integer32Proto) Reset()         { *this = Integer32Proto{} }
@@ -325,7 +326,7 @@ func (this *Integer32Proto) String() string { return proto.CompactTextString(thi
 
 type Integer64Proto struct {
 	Value            *int64 `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *Integer64Proto) Reset()         { *this = Integer64Proto{} }
@@ -333,7 +334,7 @@ func (this *Integer64Proto) String() string { return proto.CompactTextString(thi
 
 type BoolProto struct {
 	Value            *bool  `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *BoolProto) Reset()         { *this = BoolProto{} }
@@ -341,7 +342,7 @@ func (this *BoolProto) String() string { return proto.CompactTextString(this) }
 
 type DoubleProto struct {
 	Value            *float64 `protobuf:"fixed64,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *DoubleProto) Reset()         { *this = DoubleProto{} }
@@ -349,14 +350,14 @@ func (this *DoubleProto) String() string { return proto.CompactTextString(this) 
 
 type BytesProto struct {
 	Value            []byte `protobuf:"bytes,1,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *BytesProto) Reset()         { *this = BytesProto{} }
 func (this *BytesProto) String() string { return proto.CompactTextString(this) }
 
 type VoidProto struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *VoidProto) Reset()         { *this = VoidProto{} }
@@ -370,7 +371,7 @@ type PropertyValue struct {
 	Pointvalue       *PropertyValue_PointValue     `protobuf:"group,5,opt,name=PointValue" json:"pointvalue,omitempty"`
 	Uservalue        *PropertyValue_UserValue      `protobuf:"group,8,opt,name=UserValue" json:"uservalue,omitempty"`
 	Referencevalue   *PropertyValue_ReferenceValue `protobuf:"group,12,opt,name=ReferenceValue" json:"referencevalue,omitempty"`
-	XXX_unrecognized []byte                        `json:",omitempty"`
+	XXX_unrecognized []byte                        `json:"-"`
 }
 
 func (this *PropertyValue) Reset()         { *this = PropertyValue{} }
@@ -379,7 +380,7 @@ func (this *PropertyValue) String() string { return proto.CompactTextString(this
 type PropertyValue_PointValue struct {
 	X                *float64 `protobuf:"fixed64,6,req,name=x" json:"x,omitempty"`
 	Y                *float64 `protobuf:"fixed64,7,req,name=y" json:"y,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *PropertyValue_PointValue) Reset()         { *this = PropertyValue_PointValue{} }
@@ -393,7 +394,7 @@ type PropertyValue_UserValue struct {
 	ObfuscatedGaiaid  *string `protobuf:"bytes,19,opt,name=obfuscated_gaiaid" json:"obfuscated_gaiaid,omitempty"`
 	FederatedIdentity *string `protobuf:"bytes,21,opt,name=federated_identity" json:"federated_identity,omitempty"`
 	FederatedProvider *string `protobuf:"bytes,22,opt,name=federated_provider" json:"federated_provider,omitempty"`
-	XXX_unrecognized  []byte  `json:",omitempty"`
+	XXX_unrecognized  []byte  `json:"-"`
 }
 
 func (this *PropertyValue_UserValue) Reset()         { *this = PropertyValue_UserValue{} }
@@ -403,7 +404,7 @@ type PropertyValue_ReferenceValue struct {
 	App              *string                                     `protobuf:"bytes,13,req,name=app" json:"app,omitempty"`
 	NameSpace        *string                                     `protobuf:"bytes,20,opt,name=name_space" json:"name_space,omitempty"`
 	Pathelement      []*PropertyValue_ReferenceValue_PathElement `protobuf:"group,14,rep,name=PathElement" json:"pathelement,omitempty"`
-	XXX_unrecognized []byte                                      `json:",omitempty"`
+	XXX_unrecognized []byte                                      `json:"-"`
 }
 
 func (this *PropertyValue_ReferenceValue) Reset()         { *this = PropertyValue_ReferenceValue{} }
@@ -413,7 +414,7 @@ type PropertyValue_ReferenceValue_PathElement struct {
 	Type             *string `protobuf:"bytes,15,req,name=type" json:"type,omitempty"`
 	Id               *int64  `protobuf:"varint,16,opt,name=id" json:"id,omitempty"`
 	Name             *string `protobuf:"bytes,17,opt,name=name" json:"name,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *PropertyValue_ReferenceValue_PathElement) Reset() {
@@ -429,7 +430,7 @@ type Property struct {
 	Name             *string           `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
 	Value            *PropertyValue    `protobuf:"bytes,5,req,name=value" json:"value,omitempty"`
 	Multiple         *bool             `protobuf:"varint,4,req,name=multiple" json:"multiple,omitempty"`
-	XXX_unrecognized []byte            `json:",omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (this *Property) Reset()         { *this = Property{} }
@@ -437,7 +438,7 @@ func (this *Property) String() string { return proto.CompactTextString(this) }
 
 type Path struct {
 	Element          []*Path_Element `protobuf:"group,1,rep" json:"element,omitempty"`
-	XXX_unrecognized []byte          `json:",omitempty"`
+	XXX_unrecognized []byte          `json:"-"`
 }
 
 func (this *Path) Reset()         { *this = Path{} }
@@ -447,7 +448,7 @@ type Path_Element struct {
 	Type             *string `protobuf:"bytes,2,req,name=type" json:"type,omitempty"`
 	Id               *int64  `protobuf:"varint,3,opt,name=id" json:"id,omitempty"`
 	Name             *string `protobuf:"bytes,4,opt,name=name" json:"name,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *Path_Element) Reset()         { *this = Path_Element{} }
@@ -457,7 +458,7 @@ type Reference struct {
 	App              *string `protobuf:"bytes,13,req,name=app" json:"app,omitempty"`
 	NameSpace        *string `protobuf:"bytes,20,opt,name=name_space" json:"name_space,omitempty"`
 	Path             *Path   `protobuf:"bytes,14,req,name=path" json:"path,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *Reference) Reset()         { *this = Reference{} }
@@ -471,7 +472,7 @@ type User struct {
 	ObfuscatedGaiaid  *string `protobuf:"bytes,5,opt,name=obfuscated_gaiaid" json:"obfuscated_gaiaid,omitempty"`
 	FederatedIdentity *string `protobuf:"bytes,6,opt,name=federated_identity" json:"federated_identity,omitempty"`
 	FederatedProvider *string `protobuf:"bytes,7,opt,name=federated_provider" json:"federated_provider,omitempty"`
-	XXX_unrecognized  []byte  `json:",omitempty"`
+	XXX_unrecognized  []byte  `json:"-"`
 }
 
 func (this *User) Reset()         { *this = User{} }
@@ -485,7 +486,7 @@ type EntityProto struct {
 	KindUri          *string           `protobuf:"bytes,5,opt,name=kind_uri" json:"kind_uri,omitempty"`
 	Property         []*Property       `protobuf:"bytes,14,rep,name=property" json:"property,omitempty"`
 	RawProperty      []*Property       `protobuf:"bytes,15,rep,name=raw_property" json:"raw_property,omitempty"`
-	XXX_unrecognized []byte            `json:",omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (this *EntityProto) Reset()         { *this = EntityProto{} }
@@ -494,7 +495,7 @@ func (this *EntityProto) String() string { return proto.CompactTextString(this) 
 type CompositeProperty struct {
 	IndexId          *int64   `protobuf:"varint,1,req,name=index_id" json:"index_id,omitempty"`
 	Value            []string `protobuf:"bytes,2,rep,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *CompositeProperty) Reset()         { *this = CompositeProperty{} }
@@ -504,7 +505,7 @@ type Index struct {
 	EntityType       *string           `protobuf:"bytes,1,req,name=entity_type" json:"entity_type,omitempty"`
 	Ancestor         *bool             `protobuf:"varint,5,req,name=ancestor" json:"ancestor,omitempty"`
 	Property         []*Index_Property `protobuf:"group,2,rep" json:"property,omitempty"`
-	XXX_unrecognized []byte            `json:",omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (this *Index) Reset()         { *this = Index{} }
@@ -513,7 +514,7 @@ func (this *Index) String() string { return proto.CompactTextString(this) }
 type Index_Property struct {
 	Name             *string                   `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
 	Direction        *Index_Property_Direction `protobuf:"varint,4,opt,name=direction,enum=datastore.Index_Property_Direction,def=1" json:"direction,omitempty"`
-	XXX_unrecognized []byte                    `json:",omitempty"`
+	XXX_unrecognized []byte                    `json:"-"`
 }
 
 func (this *Index_Property) Reset()         { *this = Index_Property{} }
@@ -526,7 +527,7 @@ type CompositeIndex struct {
 	Id               *int64                `protobuf:"varint,2,req,name=id" json:"id,omitempty"`
 	Definition       *Index                `protobuf:"bytes,3,req,name=definition" json:"definition,omitempty"`
 	State            *CompositeIndex_State `protobuf:"varint,4,req,name=state,enum=datastore.CompositeIndex_State" json:"state,omitempty"`
-	XXX_unrecognized []byte                `json:",omitempty"`
+	XXX_unrecognized []byte                `json:"-"`
 }
 
 func (this *CompositeIndex) Reset()         { *this = CompositeIndex{} }
@@ -536,7 +537,7 @@ type Transaction struct {
 	Handle           *uint64 `protobuf:"fixed64,1,req,name=handle" json:"handle,omitempty"`
 	App              *string `protobuf:"bytes,2,req,name=app" json:"app,omitempty"`
 	MarkChanges      *bool   `protobuf:"varint,3,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *Transaction) Reset()         { *this = Transaction{} }
@@ -562,11 +563,12 @@ type Query struct {
 	RequirePerfectPlan *bool             `protobuf:"varint,20,opt,name=require_perfect_plan,def=0" json:"require_perfect_plan,omitempty"`
 	KeysOnly           *bool             `protobuf:"varint,21,opt,name=keys_only,def=0" json:"keys_only,omitempty"`
 	Transaction        *Transaction      `protobuf:"bytes,22,opt,name=transaction" json:"transaction,omitempty"`
-	Distinct           *bool             `protobuf:"varint,24,opt,name=distinct" json:"distinct,omitempty"`
 	Compile            *bool             `protobuf:"varint,25,opt,name=compile,def=0" json:"compile,omitempty"`
 	FailoverMs         *int64            `protobuf:"varint,26,opt,name=failover_ms" json:"failover_ms,omitempty"`
 	Strong             *bool             `protobuf:"varint,32,opt,name=strong" json:"strong,omitempty"`
-	XXX_unrecognized   []byte            `json:",omitempty"`
+	PropertyName       []string          `protobuf:"bytes,33,rep,name=property_name" json:"property_name,omitempty"`
+	Distinct           *bool             `protobuf:"varint,24,opt,name=distinct" json:"distinct,omitempty"`
+	XXX_unrecognized   []byte            `json:"-"`
 }
 
 func (this *Query) Reset()         { *this = Query{} }
@@ -580,7 +582,7 @@ const Default_Query_Compile bool = false
 type Query_Filter struct {
 	Op               *Query_Filter_Operator `protobuf:"varint,6,req,name=op,enum=datastore.Query_Filter_Operator" json:"op,omitempty"`
 	Property         []*Property            `protobuf:"bytes,14,rep,name=property" json:"property,omitempty"`
-	XXX_unrecognized []byte                 `json:",omitempty"`
+	XXX_unrecognized []byte                 `json:"-"`
 }
 
 func (this *Query_Filter) Reset()         { *this = Query_Filter{} }
@@ -589,7 +591,7 @@ func (this *Query_Filter) String() string { return proto.CompactTextString(this)
 type Query_Order struct {
 	Property         *string                `protobuf:"bytes,10,req,name=property" json:"property,omitempty"`
 	Direction        *Query_Order_Direction `protobuf:"varint,11,opt,name=direction,enum=datastore.Query_Order_Direction,def=1" json:"direction,omitempty"`
-	XXX_unrecognized []byte                 `json:",omitempty"`
+	XXX_unrecognized []byte                 `json:"-"`
 }
 
 func (this *Query_Order) Reset()         { *this = Query_Order{} }
@@ -604,8 +606,9 @@ type CompiledQuery struct {
 	Offset           *int32                         `protobuf:"varint,10,opt,name=offset,def=0" json:"offset,omitempty"`
 	Limit            *int32                         `protobuf:"varint,11,opt,name=limit" json:"limit,omitempty"`
 	KeysOnly         *bool                          `protobuf:"varint,12,req,name=keys_only" json:"keys_only,omitempty"`
+	PropertyName     []string                       `protobuf:"bytes,24,rep,name=property_name" json:"property_name,omitempty"`
 	Entityfilter     *CompiledQuery_EntityFilter    `protobuf:"group,13,opt,name=EntityFilter" json:"entityfilter,omitempty"`
-	XXX_unrecognized []byte                         `json:",omitempty"`
+	XXX_unrecognized []byte                         `json:"-"`
 }
 
 func (this *CompiledQuery) Reset()         { *this = CompiledQuery{} }
@@ -622,7 +625,7 @@ type CompiledQuery_PrimaryScan struct {
 	StartPostfixValue          []string `protobuf:"bytes,22,rep,name=start_postfix_value" json:"start_postfix_value,omitempty"`
 	EndPostfixValue            []string `protobuf:"bytes,23,rep,name=end_postfix_value" json:"end_postfix_value,omitempty"`
 	EndUnappliedLogTimestampUs *int64   `protobuf:"varint,19,opt,name=end_unapplied_log_timestamp_us" json:"end_unapplied_log_timestamp_us,omitempty"`
-	XXX_unrecognized           []byte   `json:",omitempty"`
+	XXX_unrecognized           []byte   `json:"-"`
 }
 
 func (this *CompiledQuery_PrimaryScan) Reset()         { *this = CompiledQuery_PrimaryScan{} }
@@ -632,7 +635,7 @@ type CompiledQuery_MergeJoinScan struct {
 	IndexName        *string  `protobuf:"bytes,8,req,name=index_name" json:"index_name,omitempty"`
 	PrefixValue      []string `protobuf:"bytes,9,rep,name=prefix_value" json:"prefix_value,omitempty"`
 	ValuePrefix      *bool    `protobuf:"varint,20,opt,name=value_prefix,def=0" json:"value_prefix,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *CompiledQuery_MergeJoinScan) Reset()         { *this = CompiledQuery_MergeJoinScan{} }
@@ -644,7 +647,7 @@ type CompiledQuery_EntityFilter struct {
 	Distinct         *bool      `protobuf:"varint,14,opt,name=distinct,def=0" json:"distinct,omitempty"`
 	Kind             *string    `protobuf:"bytes,17,opt,name=kind" json:"kind,omitempty"`
 	Ancestor         *Reference `protobuf:"bytes,18,opt,name=ancestor" json:"ancestor,omitempty"`
-	XXX_unrecognized []byte     `json:",omitempty"`
+	XXX_unrecognized []byte     `json:"-"`
 }
 
 func (this *CompiledQuery_EntityFilter) Reset()         { *this = CompiledQuery_EntityFilter{} }
@@ -655,7 +658,7 @@ const Default_CompiledQuery_EntityFilter_Distinct bool = false
 type CompiledCursor struct {
 	MultiqueryIndex  *int32                     `protobuf:"varint,1,opt,name=multiquery_index" json:"multiquery_index,omitempty"`
 	Position         []*CompiledCursor_Position `protobuf:"group,2,rep" json:"position,omitempty"`
-	XXX_unrecognized []byte                     `json:",omitempty"`
+	XXX_unrecognized []byte                     `json:"-"`
 }
 
 func (this *CompiledCursor) Reset()         { *this = CompiledCursor{} }
@@ -666,7 +669,7 @@ type CompiledCursor_Position struct {
 	Indexvalue       []*CompiledCursor_Position_IndexValue `protobuf:"group,29,rep,name=IndexValue" json:"indexvalue,omitempty"`
 	Key              *Reference                            `protobuf:"bytes,32,opt,name=key" json:"key,omitempty"`
 	StartInclusive   *bool                                 `protobuf:"varint,28,opt,name=start_inclusive,def=1" json:"start_inclusive,omitempty"`
-	XXX_unrecognized []byte                                `json:",omitempty"`
+	XXX_unrecognized []byte                                `json:"-"`
 }
 
 func (this *CompiledCursor_Position) Reset()         { *this = CompiledCursor_Position{} }
@@ -677,7 +680,7 @@ const Default_CompiledCursor_Position_StartInclusive bool = true
 type CompiledCursor_Position_IndexValue struct {
 	Property         *string        `protobuf:"bytes,30,opt,name=property" json:"property,omitempty"`
 	Value            *PropertyValue `protobuf:"bytes,31,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte         `json:",omitempty"`
+	XXX_unrecognized []byte         `json:"-"`
 }
 
 func (this *CompiledCursor_Position_IndexValue) Reset()         { *this = CompiledCursor_Position_IndexValue{} }
@@ -690,7 +693,7 @@ type RunCompiledQueryRequest struct {
 	OriginalQuery    *Query         `protobuf:"bytes,2,opt,name=original_query" json:"original_query,omitempty"`
 	Count            *int32         `protobuf:"varint,3,opt,name=count" json:"count,omitempty"`
 	FailoverMs       *int64         `protobuf:"varint,4,opt,name=failover_ms" json:"failover_ms,omitempty"`
-	XXX_unrecognized []byte         `json:",omitempty"`
+	XXX_unrecognized []byte         `json:"-"`
 }
 
 func (this *RunCompiledQueryRequest) Reset()         { *this = RunCompiledQueryRequest{} }
@@ -699,14 +702,14 @@ func (this *RunCompiledQueryRequest) String() string { return proto.CompactTextS
 type Cursor struct {
 	Cursor           *uint64 `protobuf:"fixed64,1,req,name=cursor" json:"cursor,omitempty"`
 	App              *string `protobuf:"bytes,2,opt,name=app" json:"app,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *Cursor) Reset()         { *this = Cursor{} }
 func (this *Cursor) String() string { return proto.CompactTextString(this) }
 
 type Error struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *Error) Reset()         { *this = Error{} }
@@ -718,7 +721,7 @@ type Cost struct {
 	EntityWrites     *int32           `protobuf:"varint,3,opt,name=entity_writes" json:"entity_writes,omitempty"`
 	EntityWriteBytes *int32           `protobuf:"varint,4,opt,name=entity_write_bytes" json:"entity_write_bytes,omitempty"`
 	Commitcost       *Cost_CommitCost `protobuf:"group,5,opt,name=CommitCost" json:"commitcost,omitempty"`
-	XXX_unrecognized []byte           `json:",omitempty"`
+	XXX_unrecognized []byte           `json:"-"`
 }
 
 func (this *Cost) Reset()         { *this = Cost{} }
@@ -727,7 +730,7 @@ func (this *Cost) String() string { return proto.CompactTextString(this) }
 type Cost_CommitCost struct {
 	RequestedEntityPuts    *int32 `protobuf:"varint,6,opt,name=requested_entity_puts" json:"requested_entity_puts,omitempty"`
 	RequestedEntityDeletes *int32 `protobuf:"varint,7,opt,name=requested_entity_deletes" json:"requested_entity_deletes,omitempty"`
-	XXX_unrecognized       []byte `json:",omitempty"`
+	XXX_unrecognized       []byte `json:"-"`
 }
 
 func (this *Cost_CommitCost) Reset()         { *this = Cost_CommitCost{} }
@@ -738,7 +741,7 @@ type GetRequest struct {
 	Transaction      *Transaction `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
 	FailoverMs       *int64       `protobuf:"varint,3,opt,name=failover_ms" json:"failover_ms,omitempty"`
 	Strong           *bool        `protobuf:"varint,4,opt,name=strong" json:"strong,omitempty"`
-	XXX_unrecognized []byte       `json:",omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *GetRequest) Reset()         { *this = GetRequest{} }
@@ -746,7 +749,7 @@ func (this *GetRequest) String() string { return proto.CompactTextString(this) }
 
 type GetResponse struct {
 	Entity           []*GetResponse_Entity `protobuf:"group,1,rep" json:"entity,omitempty"`
-	XXX_unrecognized []byte                `json:",omitempty"`
+	XXX_unrecognized []byte                `json:"-"`
 }
 
 func (this *GetResponse) Reset()         { *this = GetResponse{} }
@@ -754,7 +757,7 @@ func (this *GetResponse) String() string { return proto.CompactTextString(this) 
 
 type GetResponse_Entity struct {
 	Entity           *EntityProto `protobuf:"bytes,2,opt,name=entity" json:"entity,omitempty"`
-	XXX_unrecognized []byte       `json:",omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *GetResponse_Entity) Reset()         { *this = GetResponse_Entity{} }
@@ -767,7 +770,7 @@ type PutRequest struct {
 	Trusted          *bool             `protobuf:"varint,4,opt,name=trusted,def=0" json:"trusted,omitempty"`
 	Force            *bool             `protobuf:"varint,7,opt,name=force,def=0" json:"force,omitempty"`
 	MarkChanges      *bool             `protobuf:"varint,8,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
-	XXX_unrecognized []byte            `json:",omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (this *PutRequest) Reset()         { *this = PutRequest{} }
@@ -780,7 +783,8 @@ const Default_PutRequest_MarkChanges bool = false
 type PutResponse struct {
 	Key              []*Reference `protobuf:"bytes,1,rep,name=key" json:"key,omitempty"`
 	Cost             *Cost        `protobuf:"bytes,2,opt,name=cost" json:"cost,omitempty"`
-	XXX_unrecognized []byte       `json:",omitempty"`
+	Version          []int64      `protobuf:"varint,3,rep,name=version" json:"version,omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *PutResponse) Reset()         { *this = PutResponse{} }
@@ -790,7 +794,7 @@ type TouchRequest struct {
 	Key              []*Reference      `protobuf:"bytes,1,rep,name=key" json:"key,omitempty"`
 	CompositeIndex   []*CompositeIndex `protobuf:"bytes,2,rep,name=composite_index" json:"composite_index,omitempty"`
 	Force            *bool             `protobuf:"varint,3,opt,name=force,def=0" json:"force,omitempty"`
-	XXX_unrecognized []byte            `json:",omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (this *TouchRequest) Reset()         { *this = TouchRequest{} }
@@ -800,7 +804,7 @@ const Default_TouchRequest_Force bool = false
 
 type TouchResponse struct {
 	Cost             *Cost  `protobuf:"bytes,1,opt,name=cost" json:"cost,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TouchResponse) Reset()         { *this = TouchResponse{} }
@@ -812,7 +816,7 @@ type DeleteRequest struct {
 	Trusted          *bool        `protobuf:"varint,4,opt,name=trusted,def=0" json:"trusted,omitempty"`
 	Force            *bool        `protobuf:"varint,7,opt,name=force,def=0" json:"force,omitempty"`
 	MarkChanges      *bool        `protobuf:"varint,8,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
-	XXX_unrecognized []byte       `json:",omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *DeleteRequest) Reset()         { *this = DeleteRequest{} }
@@ -823,8 +827,9 @@ const Default_DeleteRequest_Force bool = false
 const Default_DeleteRequest_MarkChanges bool = false
 
 type DeleteResponse struct {
-	Cost             *Cost  `protobuf:"bytes,1,opt,name=cost" json:"cost,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	Cost             *Cost   `protobuf:"bytes,1,opt,name=cost" json:"cost,omitempty"`
+	Version          []int64 `protobuf:"varint,3,rep,name=version" json:"version,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *DeleteResponse) Reset()         { *this = DeleteResponse{} }
@@ -835,7 +840,7 @@ type NextRequest struct {
 	Count            *int32  `protobuf:"varint,2,opt,name=count" json:"count,omitempty"`
 	Offset           *int32  `protobuf:"varint,4,opt,name=offset,def=0" json:"offset,omitempty"`
 	Compile          *bool   `protobuf:"varint,3,opt,name=compile,def=0" json:"compile,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *NextRequest) Reset()         { *this = NextRequest{} }
@@ -845,14 +850,15 @@ const Default_NextRequest_Offset int32 = 0
 const Default_NextRequest_Compile bool = false
 
 type QueryResult struct {
-	Cursor           *Cursor         `protobuf:"bytes,1,opt,name=cursor" json:"cursor,omitempty"`
-	Result           []*EntityProto  `protobuf:"bytes,2,rep,name=result" json:"result,omitempty"`
-	SkippedResults   *int32          `protobuf:"varint,7,opt,name=skipped_results" json:"skipped_results,omitempty"`
-	MoreResults      *bool           `protobuf:"varint,3,req,name=more_results" json:"more_results,omitempty"`
-	KeysOnly         *bool           `protobuf:"varint,4,opt,name=keys_only" json:"keys_only,omitempty"`
-	CompiledQuery    *CompiledQuery  `protobuf:"bytes,5,opt,name=compiled_query" json:"compiled_query,omitempty"`
-	CompiledCursor   *CompiledCursor `protobuf:"bytes,6,opt,name=compiled_cursor" json:"compiled_cursor,omitempty"`
-	XXX_unrecognized []byte          `json:",omitempty"`
+	Cursor           *Cursor           `protobuf:"bytes,1,opt,name=cursor" json:"cursor,omitempty"`
+	Result           []*EntityProto    `protobuf:"bytes,2,rep,name=result" json:"result,omitempty"`
+	SkippedResults   *int32            `protobuf:"varint,7,opt,name=skipped_results" json:"skipped_results,omitempty"`
+	MoreResults      *bool             `protobuf:"varint,3,req,name=more_results" json:"more_results,omitempty"`
+	KeysOnly         *bool             `protobuf:"varint,4,opt,name=keys_only" json:"keys_only,omitempty"`
+	CompiledQuery    *CompiledQuery    `protobuf:"bytes,5,opt,name=compiled_query" json:"compiled_query,omitempty"`
+	CompiledCursor   *CompiledCursor   `protobuf:"bytes,6,opt,name=compiled_cursor" json:"compiled_cursor,omitempty"`
+	Index            []*CompositeIndex `protobuf:"bytes,8,rep,name=index" json:"index,omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (this *QueryResult) Reset()         { *this = QueryResult{} }
@@ -862,7 +868,7 @@ type AllocateIdsRequest struct {
 	ModelKey         *Reference `protobuf:"bytes,1,req,name=model_key" json:"model_key,omitempty"`
 	Size             *int64     `protobuf:"varint,2,opt,name=size" json:"size,omitempty"`
 	Max              *int64     `protobuf:"varint,3,opt,name=max" json:"max,omitempty"`
-	XXX_unrecognized []byte     `json:",omitempty"`
+	XXX_unrecognized []byte     `json:"-"`
 }
 
 func (this *AllocateIdsRequest) Reset()         { *this = AllocateIdsRequest{} }
@@ -871,7 +877,7 @@ func (this *AllocateIdsRequest) String() string { return proto.CompactTextString
 type AllocateIdsResponse struct {
 	Start            *int64 `protobuf:"varint,1,req,name=start" json:"start,omitempty"`
 	End              *int64 `protobuf:"varint,2,req,name=end" json:"end,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *AllocateIdsResponse) Reset()         { *this = AllocateIdsResponse{} }
@@ -879,7 +885,7 @@ func (this *AllocateIdsResponse) String() string { return proto.CompactTextStrin
 
 type CompositeIndices struct {
 	Index            []*CompositeIndex `protobuf:"bytes,1,rep,name=index" json:"index,omitempty"`
-	XXX_unrecognized []byte            `json:",omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (this *CompositeIndices) Reset()         { *this = CompositeIndices{} }
@@ -888,14 +894,14 @@ func (this *CompositeIndices) String() string { return proto.CompactTextString(t
 type AddActionsRequest struct {
 	Transaction      *Transaction `protobuf:"bytes,1,req,name=transaction" json:"transaction,omitempty"`
 	Action           []*Action    `protobuf:"bytes,2,rep,name=action" json:"action,omitempty"`
-	XXX_unrecognized []byte       `json:",omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *AddActionsRequest) Reset()         { *this = AddActionsRequest{} }
 func (this *AddActionsRequest) String() string { return proto.CompactTextString(this) }
 
 type AddActionsResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *AddActionsResponse) Reset()         { *this = AddActionsResponse{} }
@@ -904,7 +910,7 @@ func (this *AddActionsResponse) String() string { return proto.CompactTextString
 type BeginTransactionRequest struct {
 	App              *string `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
 	AllowMultipleEg  *bool   `protobuf:"varint,2,opt,name=allow_multiple_eg,def=0" json:"allow_multiple_eg,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *BeginTransactionRequest) Reset()         { *this = BeginTransactionRequest{} }
@@ -913,12 +919,22 @@ func (this *BeginTransactionRequest) String() string { return proto.CompactTextS
 const Default_BeginTransactionRequest_AllowMultipleEg bool = false
 
 type CommitResponse struct {
-	Cost             *Cost  `protobuf:"bytes,1,opt,name=cost" json:"cost,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	Cost             *Cost                     `protobuf:"bytes,1,opt,name=cost" json:"cost,omitempty"`
+	Version          []*CommitResponse_Version `protobuf:"group,3,rep" json:"version,omitempty"`
+	XXX_unrecognized []byte                    `json:"-"`
 }
 
 func (this *CommitResponse) Reset()         { *this = CommitResponse{} }
 func (this *CommitResponse) String() string { return proto.CompactTextString(this) }
+
+type CommitResponse_Version struct {
+	RootEntityKey    *Reference `protobuf:"bytes,4,req,name=root_entity_key" json:"root_entity_key,omitempty"`
+	Version          *int64     `protobuf:"varint,5,req,name=version" json:"version,omitempty"`
+	XXX_unrecognized []byte     `json:"-"`
+}
+
+func (this *CommitResponse_Version) Reset()         { *this = CommitResponse_Version{} }
+func (this *CommitResponse_Version) String() string { return proto.CompactTextString(this) }
 
 func init() {
 	proto.RegisterEnum("datastore.Property_Meaning", Property_Meaning_name, Property_Meaning_value)

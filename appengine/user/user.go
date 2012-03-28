@@ -6,12 +6,11 @@
 package user
 
 import (
-	"os"
 	"strings"
 
 	"appengine"
 	"appengine_internal"
-	"goprotobuf.googlecode.com/hg/proto"
+	"code.google.com/p/goprotobuf/proto"
 
 	pb "appengine_internal/user"
 )
@@ -25,10 +24,10 @@ type User struct {
 	Email      string
 	AuthDomain string
 
-	// Id is the unique permanent ID of the user.
+	// ID is the unique permanent ID of the user.
 	// It is populated if the Email is associated
 	// with a Google account, or empty otherwise.
-	Id string
+	ID string
 
 	FederatedIdentity string
 	FederatedProvider string
@@ -47,12 +46,12 @@ func (u *User) String() string {
 
 // LoginURL returns a URL that, when visited, prompts the user to sign in,
 // then redirects the user to the URL specified by 'dest'.
-func LoginURL(c appengine.Context, dest string) (string, os.Error) {
+func LoginURL(c appengine.Context, dest string) (string, error) {
 	return LoginURLFederated(c, dest, "")
 }
 
 // LoginURLFederated is like LoginURL but accepts a user's OpenID identifier.
-func LoginURLFederated(c appengine.Context, dest, identity string) (string, os.Error) {
+func LoginURLFederated(c appengine.Context, dest, identity string) (string, error) {
 	req := &pb.CreateLoginURLRequest{
 		DestinationUrl: proto.String(dest),
 	}
@@ -68,7 +67,7 @@ func LoginURLFederated(c appengine.Context, dest, identity string) (string, os.E
 
 // LogoutURL returns a URL that, when visited, signs the user out,
 // then redirects the user to the URL specified by 'dest'.
-func LogoutURL(c appengine.Context, dest string) (string, os.Error) {
+func LogoutURL(c appengine.Context, dest string) (string, error) {
 	req := &pb.CreateLogoutURLRequest{
 		DestinationUrl: proto.String(dest),
 	}

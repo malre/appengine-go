@@ -20,8 +20,6 @@ Example:
 package mail
 
 import (
-	"os"
-
 	"appengine"
 	"appengine_internal"
 
@@ -40,11 +38,12 @@ type Message struct {
 	To, Cc, Bcc []string
 
 	Subject string
-	Body    string
+
+	// At least one of Body or HTMLBody must be non-empty.
+	Body     string
+	HTMLBody string
 
 	Attachments []Attachment
-
-	// TODO: "HTML" body.
 }
 
 // An Attachment represents an email attachment.
@@ -55,17 +54,22 @@ type Attachment struct {
 }
 
 // Send sends an email message.
-func Send(c appengine.Context, msg *Message) os.Error {
+func Send(c appengine.Context, msg *Message) error {
 	req := &mail_proto.MailMessage{
-		Sender:   &msg.Sender,
-		To:       msg.To,
-		Cc:       msg.Cc,
-		Bcc:      msg.Bcc,
-		Subject:  &msg.Subject,
-		TextBody: &msg.Body,
+		Sender:  &msg.Sender,
+		To:      msg.To,
+		Cc:      msg.Cc,
+		Bcc:     msg.Bcc,
+		Subject: &msg.Subject,
 	}
 	if msg.ReplyTo != "" {
 		req.ReplyTo = &msg.ReplyTo
+	}
+	if msg.Body != "" {
+		req.TextBody = &msg.Body
+	}
+	if msg.HTMLBody != "" {
+		req.HtmlBody = &msg.HTMLBody
 	}
 	if len(msg.Attachments) > 0 {
 		req.Attachment = make([]*mail_proto.MailAttachment, len(msg.Attachments))

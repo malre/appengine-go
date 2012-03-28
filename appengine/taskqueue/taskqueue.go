@@ -19,18 +19,62 @@ package taskqueue
 // TODO: Bulk task deleting, queue management.
 
 import (
+	"errors"
 	"fmt"
-	"http"
-	"os"
+	"net/http"
+	"net/url"
 	"time"
-	"url"
 
 	"appengine"
 	"appengine_internal"
-	"goprotobuf.googlecode.com/hg/proto"
-
 	taskqueue_proto "appengine_internal/taskqueue"
+	"code.google.com/p/goprotobuf/proto"
 )
+
+// RetryOptions let you control whether to retry a task and the backoff intervals between tries.
+type RetryOptions struct {
+	// Number of tries/leases after which the task fails permanently and is deleted.
+	// If AgeLimit is also set, both limits must be exceeded for the task to fail permanently.
+	RetryLimit int32
+
+	// Maximum time allowed since the task's first try before the task fails permanently and is deleted (only for push tasks).
+	// If RetryLimit is also set, both limits must be exceeded for the task to fail permanently.
+	AgeLimit time.Duration
+
+	// Minimum time between successive tries (only for push tasks).
+	MinBackoff time.Duration
+
+	// Maximum time between successive tries (only for push tasks).
+	MaxBackoff time.Duration
+
+	// Maximum number of times to double the interval between successive tries before the intervals increase linearly (only for push tasks).
+	MaxDoublings int32
+
+	// If MaxDoublings is zero, set ApplyZeroMaxDoublings to true to override the default non-zero value.
+	// Otherwise a zero MaxDoublings is ignored and the default is used.
+	ApplyZeroMaxDoublings bool
+}
+
+// toRetryParameter converts RetryOptions to taskqueue_proto.TaskQueueRetryParameters.
+func (opt *RetryOptions) toRetryParameters() *taskqueue_proto.TaskQueueRetryParameters {
+	params := &taskqueue_proto.TaskQueueRetryParameters{}
+	if opt.RetryLimit > 0 {
+		params.RetryLimit = proto.Int32(opt.RetryLimit)
+	}
+	if opt.AgeLimit > 0 {
+		params.AgeLimitSec = proto.Int64(int64(opt.AgeLimit.Seconds()))
+	}
+	if opt.MinBackoff > 0 {
+		params.MinBackoffSec = proto.Float64(opt.MinBackoff.Seconds())
+	}
+	if opt.MaxBackoff > 0 {
+		params.MaxBackoffSec = proto.Float64(opt.MaxBackoff.Seconds())
+	}
+	if opt.MaxDoublings > 0 || (opt.MaxDoublings == 0 && opt.ApplyZeroMaxDoublings) {
+		params.MaxDoublings = proto.Int32(opt.MaxDoublings)
+	}
+	return params
+}
 
 // A Task represents a task to be executed.
 type Task struct {
@@ -58,8 +102,21 @@ type Task struct {
 	// If empty, a name will be chosen.
 	Name string
 
-	// Delay is how far into the future this task should execute, in microseconds.
-	Delay int64
+	// Delay is how far into the future this task should execute.
+	Delay time.Duration
+
+	// Time before which the task may neither be executed or leased.
+	// Set on tasks returned from Lease calls.
+	ETA time.Time
+
+	// The number of times the task has been dispatched or leased.
+	RetryCount int32
+
+	// Tag for the task. Only used when Method is PULL.
+	Tag string
+
+	// Retry options for this task. May be nil.
+	RetryOptions *RetryOptions
 }
 
 func (t *Task) method() string {
@@ -81,20 +138,23 @@ func NewPOSTTask(path string, params url.Values) *Task {
 	}
 }
 
-func newAddReq(task *Task, queueName string) (*taskqueue_proto.TaskQueueAddRequest, os.Error) {
+func newAddReq(task *Task, queueName string) (*taskqueue_proto.TaskQueueAddRequest, error) {
 	if queueName == "" {
 		queueName = "default"
 	}
 	req := &taskqueue_proto.TaskQueueAddRequest{
 		QueueName: []byte(queueName),
 		TaskName:  []byte(task.Name),
-		EtaUsec:   proto.Int64(time.Nanoseconds()/1e3 + task.Delay),
+		EtaUsec:   proto.Int64(time.Now().Add(task.Delay).UnixNano() / 1e3),
 	}
 	method := task.method()
 	if method == "PULL" {
 		// Pull-based task
 		req.Body = task.Payload
 		req.Mode = taskqueue_proto.NewTaskQueueMode_Mode(taskqueue_proto.TaskQueueMode_PULL)
+		if task.Tag != "" {
+			req.Tag = []byte(task.Tag)
+		}
 		// TODO: More fields will need to be set.
 	} else {
 		// HTTP-based task
@@ -118,6 +178,10 @@ func newAddReq(task *Task, queueName string) (*taskqueue_proto.TaskQueueAddReque
 		}
 	}
 
+	if task.RetryOptions != nil {
+		req.RetryParameters = task.RetryOptions.toRetryParameters()
+	}
+
 	return req, nil
 }
 
@@ -125,7 +189,7 @@ func newAddReq(task *Task, queueName string) (*taskqueue_proto.TaskQueueAddReque
 // An empty queue name means that the default queue will be used.
 // Add returns an equivalent Task with defaults filled in, including setting
 // the task's Name field to the chosen name if the original was empty.
-func Add(c appengine.Context, task *Task, queueName string) (*Task, os.Error) {
+func Add(c appengine.Context, task *Task, queueName string) (*Task, error) {
 	req, err := newAddReq(task, queueName)
 	if err != nil {
 		return nil, err
@@ -146,32 +210,27 @@ func Add(c appengine.Context, task *Task, queueName string) (*Task, os.Error) {
 // An empty queue name means that the default queue will be used.
 // AddMulti returns a slice of equivalent tasks with defaults filled in, including setting
 // each task's Name field to the chosen name if the original was empty.
-// If a given task is badly formed or could not be added, its corresponding value in
-// the returned error slice is set. If the entire operation is successful, the error slice is nil.
-func AddMulti(c appengine.Context, tasks []*Task, queueName string) ([]*Task, []os.Error) {
+// If a given task is badly formed or could not be added, an appengine.MultiError is returned.
+func AddMulti(c appengine.Context, tasks []*Task, queueName string) ([]*Task, error) {
 	req := &taskqueue_proto.TaskQueueBulkAddRequest{
 		AddRequest: make([]*taskqueue_proto.TaskQueueAddRequest, len(tasks)),
 	}
-	e := make([]os.Error, len(tasks))
+	me, any := make(appengine.MultiError, len(tasks)), false
 	for i, t := range tasks {
-		req.AddRequest[i], e[i] = newAddReq(t, queueName)
-		if e[i] != nil {
-			return nil, e
-		}
+		req.AddRequest[i], me[i] = newAddReq(t, queueName)
+		any = any || me[i] != nil
+	}
+	if any {
+		return nil, me
 	}
 	res := &taskqueue_proto.TaskQueueBulkAddResponse{}
-	err := c.Call("taskqueue", "BulkAdd", req, res, nil)
-	if err == nil && len(res.Taskresult) != len(tasks) {
-		err = os.NewError("taskqueue: server error")
+	if err := c.Call("taskqueue", "BulkAdd", req, res, nil); err != nil {
+		return nil, err
 	}
-	if err != nil {
-		for i := range e {
-			e[i] = err
-		}
-		return nil, e
+	if len(res.Taskresult) != len(tasks) {
+		return nil, errors.New("taskqueue: server error")
 	}
 	tasksOut := make([]*Task, len(tasks))
-	ok := true
 	for i, tr := range res.Taskresult {
 		tasksOut[i] = new(Task)
 		*tasksOut[i] = *tasks[i]
@@ -180,21 +239,21 @@ func AddMulti(c appengine.Context, tasks []*Task, queueName string) ([]*Task, []
 			tasksOut[i].Name = string(tr.ChosenTaskName)
 		}
 		if *tr.Result != taskqueue_proto.TaskQueueServiceError_OK {
-			e[i] = &appengine_internal.APIError{
+			me[i] = &appengine_internal.APIError{
 				Service: "taskqueue",
 				Code:    int32(*tr.Result),
 			}
-			ok = false
+			any = true
 		}
 	}
-	if ok {
-		e = nil
+	if any {
+		return tasksOut, me
 	}
-	return tasksOut, e
+	return tasksOut, nil
 }
 
 // Delete deletes a task from a named queue.
-func Delete(c appengine.Context, task *Task, queueName string) os.Error {
+func Delete(c appengine.Context, task *Task, queueName string) error {
 	req := &taskqueue_proto.TaskQueueDeleteRequest{
 		QueueName: []byte(queueName),
 		TaskName:  [][]byte{[]byte(task.Name)},
@@ -214,14 +273,13 @@ func Delete(c appengine.Context, task *Task, queueName string) os.Error {
 	return nil
 }
 
-// LeaseTasks leases tasks from a queue.
-// leaseTime is in seconds.
-// The number of tasks fetched will be at most maxTasks.
-func LeaseTasks(c appengine.Context, maxTasks int, queueName string, leaseTime int) ([]*Task, os.Error) {
+func lease(c appengine.Context, maxTasks int, queueName string, leaseTime int, groupByTag bool, tag []byte) ([]*Task, error) {
 	req := &taskqueue_proto.TaskQueueQueryAndOwnTasksRequest{
 		QueueName:    []byte(queueName),
 		LeaseSeconds: proto.Float64(float64(leaseTime)),
 		MaxTasks:     proto.Int64(int64(maxTasks)),
+		GroupByTag:   proto.Bool(groupByTag),
+		Tag:          tag,
 	}
 	res := &taskqueue_proto.TaskQueueQueryAndOwnTasksResponse{}
 	if err := c.Call("taskqueue", "QueryAndOwnTasks", req, res, nil); err != nil {
@@ -229,23 +287,58 @@ func LeaseTasks(c appengine.Context, maxTasks int, queueName string, leaseTime i
 	}
 	tasks := make([]*Task, len(res.Task))
 	for i, t := range res.Task {
-		// TODO: Handle eta_usec, retry_count.
 		tasks[i] = &Task{
-			Payload: t.Body,
-			Name:    string(t.TaskName),
-			Method:  "PULL",
+			Payload:    t.Body,
+			Name:       string(t.TaskName),
+			Method:     "PULL",
+			ETA:        time.Unix(0, *t.EtaUsec*1e3),
+			RetryCount: *t.RetryCount,
+			Tag:        string(t.Tag),
 		}
 	}
 	return tasks, nil
 }
 
+// Lease leases tasks from a queue.
+// leaseTime is in seconds.
+// The number of tasks fetched will be at most maxTasks.
+func Lease(c appengine.Context, maxTasks int, queueName string, leaseTime int) ([]*Task, error) {
+	return lease(c, maxTasks, queueName, leaseTime, false, nil)
+}
+
+// LeaseByTag leases tasks from a queue, grouped by tag.
+// If tag is nil, then the returned tasks are grouped by the tag of the task with earliest Eta.
+// leaseTime is in seconds.
+// The number of tasks fetched will be at most maxTasks.
+func LeaseByTag(c appengine.Context, maxTasks int, queueName string, leaseTime int, tag string) ([]*Task, error) {
+	return lease(c, maxTasks, queueName, leaseTime, true, []byte(tag))
+}
+
 // Purge removes all tasks from a queue.
-func Purge(c appengine.Context, queueName string) os.Error {
+func Purge(c appengine.Context, queueName string) error {
 	req := &taskqueue_proto.TaskQueuePurgeQueueRequest{
 		QueueName: []byte(queueName),
 	}
 	res := &taskqueue_proto.TaskQueuePurgeQueueResponse{}
 	return c.Call("taskqueue", "PurgeQueue", req, res, nil)
+}
+
+// ModifyLease modifies the lease of a task.
+// Used to request more processing time, or to abandon processing.
+// leaseTime is in seconds and must not be negative.
+func ModifyLease(c appengine.Context, task *Task, queueName string, leaseTime int) error {
+	req := &taskqueue_proto.TaskQueueModifyTaskLeaseRequest{
+		QueueName:    []byte(queueName),
+		TaskName:     []byte(task.Name),
+		EtaUsec:      proto.Int64(task.ETA.UnixNano() / 1e3), // Used to verify ownership.
+		LeaseSeconds: proto.Float64(float64(leaseTime)),
+	}
+	res := &taskqueue_proto.TaskQueueModifyTaskLeaseResponse{}
+	if err := c.Call("taskqueue", "ModifyTaskLease", req, res, nil); err != nil {
+		return err
+	}
+	task.ETA = time.Unix(0, *res.UpdatedEtaUsec*1e3)
+	return nil
 }
 
 func init() {

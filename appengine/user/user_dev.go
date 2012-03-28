@@ -5,7 +5,7 @@
 package user
 
 import (
-	"http"
+	"net/http"
 
 	"appengine"
 )
@@ -14,7 +14,7 @@ const (
 	hEmail             = "X-AppEngine-Inbound-User-Email"
 	hFederatedIdentity = "X-AppEngine-Inbound-User-Federated-Identity"
 	hFederatedProvider = "X-AppEngine-Inbound-User-Federated-Provider"
-	hId                = "X-AppEngine-Inbound-User-Id"
+	hID                = "X-AppEngine-Inbound-User-Id"
 	hIsAdmin           = "X-AppEngine-Inbound-User-Is-Admin"
 )
 
@@ -22,7 +22,7 @@ func current(c appengine.Context) *User {
 	hdr := c.Request().(*http.Request).Header
 	return &User{
 		Email:             hdr.Get(hEmail),
-		Id:                hdr.Get(hId),
+		ID:                hdr.Get(hID),
 		FederatedIdentity: hdr.Get(hFederatedIdentity),
 		FederatedProvider: hdr.Get(hFederatedProvider),
 	}

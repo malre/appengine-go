@@ -11,13 +11,13 @@ Example:
 package conversion
 
 import (
+	"errors"
 	"fmt"
-	"os"
 	"strconv"
 
 	"appengine"
 	"appengine_internal"
-	"goprotobuf.googlecode.com/hg/proto"
+	"code.google.com/p/goprotobuf/proto"
 
 	conversion_proto "appengine_internal/conversion"
 )
@@ -41,7 +41,7 @@ type Options struct {
 	// TODO: FirstPage, LastPage, InputLanguage
 }
 
-func (o *Options) toFlags() (map[string]string, os.Error) {
+func (o *Options) toFlags() (map[string]string, error) {
 	// TODO: Sanity check values.
 	m := make(map[string]string)
 
@@ -54,7 +54,7 @@ func (o *Options) toFlags() (map[string]string, os.Error) {
 
 // Convert converts the document to the given MIME type.
 // opts may be nil.
-func (d *Document) Convert(c appengine.Context, mimeType string, opts *Options) (*Document, os.Error) {
+func (d *Document) Convert(c appengine.Context, mimeType string, opts *Options) (*Document, error) {
 	req := &conversion_proto.ConversionRequest{
 		Conversion: []*conversion_proto.ConversionInput{
 			&conversion_proto.ConversionInput{
@@ -100,7 +100,7 @@ func (d *Document) Convert(c appengine.Context, mimeType string, opts *Options) 
 	}
 	output := res.Result[0].Output
 	if output == nil {
-		return nil, os.NewError("conversion: output is nil")
+		return nil, errors.New("conversion: output is nil")
 	}
 	doc := &Document{}
 	for _, asset := range output.Asset {

@@ -10,6 +10,7 @@ import (
 
 var datastoreKeyFix = fix{
 	"datastore_key",
+	"2011-09-15",
 	datastoreKey,
 	`Add an appengine.Context argument to datastore.NewKey and
 datastore.NewIncompleteKey, and add a parent key argument to

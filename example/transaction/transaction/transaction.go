@@ -17,11 +17,11 @@ package transaction
 // transactions will require more than one attempt.
 
 import (
+	"errors"
 	"fmt"
-	"http"
 	"io"
-	"os"
-	"rand"
+	"math/rand"
+	"net/http"
 	"time"
 
 	"appengine"
@@ -34,7 +34,7 @@ func serve404(w http.ResponseWriter) {
 	io.WriteString(w, "Not Found\n")
 }
 
-func serveError(c appengine.Context, w http.ResponseWriter, err os.Error) {
+func serveError(c appengine.Context, w http.ResponseWriter, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	io.WriteString(w, "Internal Server Error\n")
@@ -45,7 +45,7 @@ type BankAccount struct {
 	Balance int
 }
 
-func withdraw(c appengine.Context, sc chan string, id string, amount, nAttempts int) os.Error {
+func withdraw(c appengine.Context, sc chan string, id string, amount, nAttempts int) error {
 	b := BankAccount{}
 	key := datastore.NewKey(c, "BankAccount", "", 1, nil)
 	if err := datastore.Get(c, key, &b); err != nil {
@@ -53,11 +53,11 @@ func withdraw(c appengine.Context, sc chan string, id string, amount, nAttempts 
 	}
 	sc <- fmt.Sprintf("%s: balance is $%07d  (attempt number %d)\n", id, b.Balance, nAttempts)
 
-	time.Sleep(5e6 + rand.Int63n(15e6))
+	time.Sleep(time.Duration(5+rand.Intn(15)) * time.Millisecond)
 
 	b.Balance -= amount
 	if b.Balance < 0 {
-		return os.NewError("insufficient funds")
+		return errors.New("insufficient funds")
 	}
 	if _, err := datastore.Put(c, key, &b); err != nil {
 		return err
@@ -85,10 +85,10 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < N; i++ {
 		go func(id string, amount int) {
 			// Spread out the withdrawal requests.
-			time.Sleep(rand.Int63n(50e6))
+			time.Sleep(time.Duration(rand.Intn(50)) * time.Millisecond)
 
 			var nAttempts int
-			err := datastore.RunInTransaction(c, func(c appengine.Context) os.Error {
+			err := datastore.RunInTransaction(c, func(c appengine.Context) error {
 				nAttempts++
 				return withdraw(c, sc, id, amount, nAttempts)
 			}, nil)

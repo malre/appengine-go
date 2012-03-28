@@ -57,7 +57,7 @@
   <ol>
   <li>
   <h5>
-    <span>{{usec .StartTime}}</span>
+    <span>{{.StartTime.Format "2006-01-02 15:04:05.000 MST"}}</span>
     <span class="path">{{.Resource|html}}</span>
     <span>{{.Status}}</span>
     <span>{{.Latency}}us</span>
@@ -68,7 +68,7 @@
   {{range .AppLogs}}
     <li><h5>
     <span class="severity level_{{.Level}}">{{levelInitial .Level}}</span>
-    {{usec .Timestamp}}
+    {{.Time.Format "2006-01-02 15:04:05.000 MST"}}
     <span class="snippet">{{.Message|html}}</span>
     </h5></li>
   {{end}}

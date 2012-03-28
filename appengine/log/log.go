@@ -9,8 +9,8 @@ within an App Engine application.
 Example:
 	c := appengine.NewContext(r)
 	query := &log.Query{
-		AppLogs:    true,
-		Versions:   []string{"1"},
+		AppLogs:  true,
+		Versions: []string{"1"},
 	}
 
 	for results := query.Run(c); ; {
@@ -29,25 +29,24 @@ Example:
 package log
 
 import (
-	"os"
+	"errors"
 	"strings"
+	"time"
 
 	"appengine"
 	"appengine_internal"
-	"goprotobuf.googlecode.com/hg/proto"
+	"code.google.com/p/goprotobuf/proto"
 
 	log_proto "appengine_internal/log"
 )
 
 // Query defines a logs query.
 type Query struct {
-	// Start time specifies a boundary on the earliest log to return
-	// (inclusive), in microseconds since epoch.
-	StartTime int64
+	// Start time specifies the earliest log to return (inclusive).
+	StartTime time.Time
 
-	// End time specifies a boundary on the latest log to return
-	// (exclusive), in microseconds since epoch.
-	EndTime int64
+	// End time specifies the latest log to return (exclusive).
+	EndTime time.Time
 
 	// Incomplete controls whether active (incomplete) requests should be included.
 	Incomplete bool
@@ -68,9 +67,9 @@ type Query struct {
 
 // AppLog represents a single application-level log.
 type AppLog struct {
-	Timestamp int64
-	Level     int
-	Message   string
+	Time    time.Time
+	Level   int
+	Message string
 }
 
 // Record contains all the information for a single web request.
@@ -81,14 +80,14 @@ type Record struct {
 	IP        string
 	Nickname  string
 
-	// The time when this request started, in microseconds since the Unix epoch.
-	StartTime int64
+	// The time when this request started.
+	StartTime time.Time
 
-	// The time when this request finished, in microseconds since the Unix epoch.
-	EndTime int64
+	// The time when this request finished.
+	EndTime time.Time
 
-	// The time required to process the request, in microseconds.
-	Latency     int64
+	// The time required to process the request.
+	Latency     time.Duration
 	MCycles     int64
 	Method      string
 	Resource    string
@@ -109,7 +108,7 @@ type Record struct {
 	TaskQueueName     string
 	TaskName          string
 	WasLoadingRequest bool
-	PendingTime       int64
+	PendingTime       time.Duration
 	Finished          bool
 	AppLogs           []AppLog
 }
@@ -123,7 +122,7 @@ type Result struct {
 }
 
 // Next returns the next log record,
-func (qr *Result) Next() (*Record, os.Error) {
+func (qr *Result) Next() (*Record, error) {
 	if len(qr.logs) > 0 {
 		lr := qr.logs[0]
 		qr.logs = qr.logs[1:]
@@ -142,7 +141,7 @@ func (qr *Result) Next() (*Record, os.Error) {
 }
 
 // Done is returned when a query iteration has completed.
-var Done = os.NewError("log: query has no more results")
+var Done = errors.New("log: query has no more results")
 
 // protoToAppLogs takes as input an array of pointers to LogLines, the internal
 // Protocol Buffer representation of a single application-level log,
@@ -153,9 +152,9 @@ func protoToAppLogs(logLines []*log_proto.LogLine) []AppLog {
 
 	for i, line := range logLines {
 		appLogs[i] = AppLog{
-			Timestamp: *line.Time,
-			Level:     int(*line.Level),
-			Message:   *line.LogMessage,
+			Time:    time.Unix(0, *line.Time*1e3),
+			Level:   int(*line.Level),
+			Message: *line.LogMessage,
 		}
 	}
 
@@ -166,15 +165,20 @@ func protoToAppLogs(logLines []*log_proto.LogLine) []AppLog {
 // representation of a single request-level log, to a Record, its
 // corresponding external representation.
 func protoToRecord(rl *log_proto.RequestLog) *Record {
+	finished := log_proto.Default_RequestLog_Finished
+	if rl.Finished != nil {
+		finished = *rl.Finished
+	}
+
 	return &Record{
 		AppID:             *rl.AppId,
 		VersionID:         *rl.VersionId,
 		RequestID:         rl.RequestId,
 		IP:                *rl.Ip,
 		Nickname:          proto.GetString(rl.Nickname),
-		StartTime:         *rl.StartTime,
-		EndTime:           *rl.EndTime,
-		Latency:           *rl.Latency,
+		StartTime:         time.Unix(0, *rl.StartTime*1e3),
+		EndTime:           time.Unix(0, *rl.EndTime*1e3),
+		Latency:           time.Duration(*rl.Latency) * time.Microsecond,
 		MCycles:           *rl.Mcycles,
 		Method:            *rl.Method,
 		Resource:          *rl.Resource,
@@ -191,8 +195,8 @@ func protoToRecord(rl *log_proto.RequestLog) *Record {
 		TaskQueueName:     proto.GetString(rl.TaskQueueName),
 		TaskName:          proto.GetString(rl.TaskName),
 		WasLoadingRequest: proto.GetBool(rl.WasLoadingRequest),
-		PendingTime:       proto.GetInt64(rl.PendingTime),
-		Finished:          proto.GetBool(rl.Finished),
+		PendingTime:       time.Duration(proto.GetInt64(rl.PendingTime)) * time.Microsecond,
+		Finished:          finished,
 		AppLogs:           protoToAppLogs(rl.Line),
 	}
 }
@@ -203,11 +207,11 @@ func (params *Query) Run(c appengine.Context) *Result {
 	req := &log_proto.LogReadRequest{}
 	appId := c.FullyQualifiedAppID()
 	req.AppId = &appId
-	if params.StartTime != 0 {
-		req.StartTime = &params.StartTime
+	if !params.StartTime.IsZero() {
+		req.StartTime = proto.Int64(params.StartTime.UnixNano() / 1e3)
 	}
-	if params.EndTime != 0 {
-		req.EndTime = &params.EndTime
+	if !params.EndTime.IsZero() {
+		req.EndTime = proto.Int64(params.EndTime.UnixNano() / 1e3)
 	}
 	if params.Incomplete {
 		req.IncludeIncomplete = &params.Incomplete
@@ -238,18 +242,18 @@ func (params *Query) Run(c appengine.Context) *Result {
 // offset to where more logs can be found. We also convert the items in the
 // response from their internal representations to external versions of the
 // same structs.
-func (qr *Result) run() os.Error {
+func (r *Result) run() error {
 	res := &log_proto.LogReadResponse{}
-	if err := qr.context.Call("logservice", "Read", qr.request, res, nil); err != nil {
+	if err := r.context.Call("logservice", "Read", r.request, res, nil); err != nil {
 		return err
 	}
 
-	qr.logs = make([]*Record, len(res.Log))
-	qr.request.Offset = res.Offset
-	qr.resultsSeen = true
+	r.logs = make([]*Record, len(res.Log))
+	r.request.Offset = res.Offset
+	r.resultsSeen = true
 
 	for i, log := range res.Log {
-		qr.logs[i] = protoToRecord(log)
+		r.logs[i] = protoToRecord(log)
 	}
 
 	return nil

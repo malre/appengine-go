@@ -3,14 +3,12 @@
 
 package appengine
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type MailServiceError_ErrorCode int32
 
@@ -49,7 +47,7 @@ func (x MailServiceError_ErrorCode) String() string {
 }
 
 type MailServiceError struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *MailServiceError) Reset()         { *this = MailServiceError{} }
@@ -58,7 +56,7 @@ func (this *MailServiceError) String() string { return proto.CompactTextString(t
 type MailAttachment struct {
 	FileName         *string `protobuf:"bytes,1,req" json:"FileName,omitempty"`
 	Data             []byte  `protobuf:"bytes,2,req" json:"Data,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *MailAttachment) Reset()         { *this = MailAttachment{} }
@@ -67,7 +65,7 @@ func (this *MailAttachment) String() string { return proto.CompactTextString(thi
 type MailHeader struct {
 	Name             *string `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
 	Value            *string `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *MailHeader) Reset()         { *this = MailHeader{} }
@@ -84,7 +82,7 @@ type MailMessage struct {
 	HtmlBody         *string           `protobuf:"bytes,8,opt" json:"HtmlBody,omitempty"`
 	Attachment       []*MailAttachment `protobuf:"bytes,9,rep" json:"Attachment,omitempty"`
 	Header           []*MailHeader     `protobuf:"bytes,10,rep" json:"Header,omitempty"`
-	XXX_unrecognized []byte            `json:",omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (this *MailMessage) Reset()         { *this = MailMessage{} }

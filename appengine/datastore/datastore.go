@@ -5,46 +5,25 @@
 package datastore
 
 import (
+	"errors"
 	"fmt"
-	"os"
 	"reflect"
-	"time"
 
 	"appengine"
 	"appengine_internal"
-	"goprotobuf.googlecode.com/hg/proto"
+	"code.google.com/p/goprotobuf/proto"
 
 	pb "appengine_internal/datastore"
 )
 
-// Time is the number of microseconds since the Unix epoch,
-// January 1, 1970 00:00:00 UTC.
-//
-// It is a distinct type so that loading and saving fields of type Time are
-// displayed correctly in App Engine tools like the Admin Console.
-type Time int64
-
-// SecondsToTime converts an int64 number of seconds since to Unix epoch
-// to a Time value.
-func SecondsToTime(n int64) Time {
-	return Time(n * 1e6)
-}
-
-// Time returns a *time.Time from a datastore time.
-func (t Time) Time() *time.Time {
-	// TODO: once App Engine has release.r60 or later,
-	// support subseconds here.  Currently we just drop them.
-	return time.SecondsToUTC(int64(t) / 1e6)
-}
-
 var (
-	// ErrInvalidEntityType is returned when an invalid destination entity type
-	// is passed to Get, GetAll, GetMulti or Next.
-	ErrInvalidEntityType = os.NewError("datastore: invalid entity type")
+	// ErrInvalidEntityType is returned when functions like Get or Next are
+	// passed a dst or src argument of invalid type.
+	ErrInvalidEntityType = errors.New("datastore: invalid entity type")
 	// ErrInvalidKey is returned when an invalid key is presented.
-	ErrInvalidKey = os.NewError("datastore: invalid key")
+	ErrInvalidKey = errors.New("datastore: invalid key")
 	// ErrNoSuchEntity is returned when no entity was found for a given key.
-	ErrNoSuchEntity = os.NewError("datastore: no such entity")
+	ErrNoSuchEntity = errors.New("datastore: no such entity")
 )
 
 // ErrFieldMismatch is returned when a field is to be loaded into a different
@@ -58,40 +37,13 @@ type ErrFieldMismatch struct {
 	Reason     string
 }
 
-// String returns a string representation of the error.
-func (e *ErrFieldMismatch) String() string {
+func (e *ErrFieldMismatch) Error() string {
 	return fmt.Sprintf("datastore: cannot load field %q into a %q: %s",
 		e.FieldName, e.StructType, e.Reason)
 }
 
-// ErrMulti indicates that a batch operation failed on at least one element.
-type ErrMulti []os.Error
-
-// String returns a string representation of the error.
-func (m ErrMulti) String() string {
-	s, n := "", 0
-	for _, e := range m {
-		if e == nil {
-			continue
-		}
-		if n == 0 {
-			s = e.String()
-		}
-		n++
-	}
-	switch n {
-	case 0:
-		return "(0 errors)"
-	case 1:
-		return s
-	case 2:
-		return s + " (and 1 other error)"
-	}
-	return fmt.Sprintf("%s (and %d other errors)", s, n-1)
-}
-
 // protoToKey converts a Reference proto to a *Key.
-func protoToKey(r *pb.Reference) (k *Key, err os.Error) {
+func protoToKey(r *pb.Reference) (k *Key, err error) {
 	appID := proto.GetString(r.App)
 	for _, e := range r.Path.Element {
 		k = &Key{
@@ -149,9 +101,9 @@ func multiKeyToProto(appID string, key []*Key) []*pb.Reference {
 	return ret
 }
 
-// multiValid is a batch version of Key.valid. It returns an os.Error, not a
+// multiValid is a batch version of Key.valid. It returns an error, not a
 // []bool.
-func multiValid(key []*Key) os.Error {
+func multiValid(key []*Key) error {
 	invalid := false
 	for _, k := range key {
 		if !k.valid() {
@@ -162,7 +114,7 @@ func multiValid(key []*Key) os.Error {
 	if !invalid {
 		return nil
 	}
-	err := make(ErrMulti, len(key))
+	err := make(appengine.MultiError, len(key))
 	for i, k := range key {
 		if !k.valid() {
 			err[i] = ErrInvalidKey
@@ -177,7 +129,7 @@ func multiValid(key []*Key) os.Error {
 
 // referenceValueToKey is the same as protoToKey except the input is a
 // PropertyValue_ReferenceValue instead of a Reference.
-func referenceValueToKey(r *pb.PropertyValue_ReferenceValue) (k *Key, err os.Error) {
+func referenceValueToKey(r *pb.PropertyValue_ReferenceValue) (k *Key, err error) {
 	appID := proto.GetString(r.App)
 	for _, e := range r.Pathelement {
 		k = &Key{
@@ -212,39 +164,87 @@ func keyToReferenceValue(defaultAppID string, k *Key) *pb.PropertyValue_Referenc
 	}
 }
 
-// asStructValue converts a struct pointer to a reflect.Value.
-func asStructValue(x interface{}) (reflect.Value, os.Error) {
-	pv := reflect.ValueOf(x)
-	if pv.Kind() != reflect.Ptr || pv.Elem().Kind() != reflect.Struct {
-		return reflect.Value{}, ErrInvalidEntityType
+type multiArgType int
+
+const (
+	multiArgTypeInvalid multiArgType = iota
+	multiArgTypePropertyLoadSaver
+	multiArgTypeStruct
+	multiArgTypeStructPtr
+	multiArgTypeInterface
+)
+
+// checkMultiArg checks that v has type []S, []*S, []I, or []P, for some struct
+// type S, for some interface type I, or some non-interface non-pointer type P
+// such that P or *P implements PropertyLoadSaver.
+//
+// It returns what category the slice's elements are, and the reflect.Type
+// that represents S, I or P.
+//
+// As a special case, PropertyList is an invalid type for v.
+func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
+	if v.Kind() != reflect.Slice {
+		return multiArgTypeInvalid, nil
 	}
-	return pv.Elem(), nil
+	if v.Type() == typeOfPropertyList {
+		return multiArgTypeInvalid, nil
+	}
+	elemType = v.Type().Elem()
+	if reflect.PtrTo(elemType).Implements(typeOfPropertyLoadSaver) {
+		return multiArgTypePropertyLoadSaver, elemType
+	}
+	switch elemType.Kind() {
+	case reflect.Struct:
+		return multiArgTypeStruct, elemType
+	case reflect.Interface:
+		return multiArgTypeInterface, elemType
+	case reflect.Ptr:
+		elemType = elemType.Elem()
+		if elemType.Kind() == reflect.Struct {
+			return multiArgTypeStructPtr, elemType
+		}
+	}
+	return multiArgTypeInvalid, nil
 }
 
-// Get loads the entity stored for k into dst, which may be either a struct
-// pointer, a PropertyLoadSaver or a Map (although Maps are deprecated). If
-// there is no such entity for the key, Get returns ErrNoSuchEntity.
+// Get loads the entity stored for k into dst, which must be a struct pointer
+// or implement PropertyLoadSaver. If there is no such entity for the key, Get
+// returns ErrNoSuchEntity.
 //
-// The values of dst's unmatched struct fields or Map entries are not modified.
-// In particular, it is recommended to pass either a pointer to a zero valued
-// struct or an empty Map on each Get call.
+// The values of dst's unmatched struct fields are not modified. In particular,
+// it is recommended to pass either a pointer to a zero valued struct on each
+// Get call.
 //
 // ErrFieldMismatch is returned when a field is to be loaded into a different
 // type than the one it was stored from, or when a field is missing or
 // unexported in the destination struct. ErrFieldMismatch is only returned if
 // dst is a struct pointer.
-func Get(c appengine.Context, key *Key, dst interface{}) os.Error {
+func Get(c appengine.Context, key *Key, dst interface{}) error {
 	err := GetMulti(c, []*Key{key}, []interface{}{dst})
-	if errMulti, ok := err.(ErrMulti); ok {
-		return errMulti[0]
+	if me, ok := err.(appengine.MultiError); ok {
+		return me[0]
 	}
 	return err
 }
 
 // GetMulti is a batch version of Get.
-func GetMulti(c appengine.Context, key []*Key, dst []interface{}) os.Error {
-	if len(key) != len(dst) {
-		return os.NewError("datastore: key and dst slices have different length")
+//
+// dst must be a []S, []*S, []I or []P, for some struct type S, some interface
+// type I, or some non-interface non-pointer type P such that P or *P
+// implements PropertyLoadSaver. If an []I, each element must be a valid dst
+// for Get: it must be a struct pointer or implement PropertyLoadSaver.
+//
+// As a special case, PropertyList is an invalid type for dst, even though a
+// PropertyList is a slice of structs. It is treated as invalid to avoid being
+// mistakenly passed when []PropertyList was intended.
+func GetMulti(c appengine.Context, key []*Key, dst interface{}) error {
+	v := reflect.ValueOf(dst)
+	multiArgType, _ := checkMultiArg(v)
+	if multiArgType == multiArgTypeInvalid {
+		return errors.New("datastore: dst has invalid type")
+	}
+	if len(key) != v.Len() {
+		return errors.New("datastore: key and dst slices have different length")
 	}
 	if len(key) == 0 {
 		return nil
@@ -256,39 +256,42 @@ func GetMulti(c appengine.Context, key []*Key, dst []interface{}) os.Error {
 		Key: multiKeyToProto(c.FullyQualifiedAppID(), key),
 	}
 	res := &pb.GetResponse{}
-	err := c.Call("datastore_v3", "Get", req, res, nil)
-	if err != nil {
+	if err := c.Call("datastore_v3", "Get", req, res, nil); err != nil {
 		return err
 	}
 	if len(key) != len(res.Entity) {
-		return os.NewError("datastore: internal error: server returned the wrong number of entities")
+		return errors.New("datastore: internal error: server returned the wrong number of entities")
 	}
-	errMulti := make(ErrMulti, len(key))
+	multiErr, any := make(appengine.MultiError, len(key)), false
 	for i, e := range res.Entity {
 		if e.Entity == nil {
-			errMulti[i] = ErrNoSuchEntity
-			continue
+			multiErr[i] = ErrNoSuchEntity
+		} else {
+			elem := v.Index(i)
+			if multiArgType == multiArgTypePropertyLoadSaver || multiArgType == multiArgTypeStruct {
+				elem = elem.Addr()
+			}
+			multiErr[i] = loadEntity(elem.Interface(), e.Entity)
 		}
-		errMulti[i] = loadEntity(dst[i], e.Entity)
+		if multiErr[i] != nil {
+			any = true
+		}
 	}
-	for _, e := range errMulti {
-		if e != nil {
-			return errMulti
-		}
+	if any {
+		return multiErr
 	}
 	return nil
 }
 
-// Put saves the entity src into the datastore with key k. src may be either a
-// struct pointer, a PropertyLoadSaver or a Map (although Maps are deprecated);
-// if the former then any unexported fields of that struct will be skipped.
-// If k is an incomplete key, the returned key will be a unique key
-// generated by the datastore.
-func Put(c appengine.Context, key *Key, src interface{}) (*Key, os.Error) {
+// Put saves the entity src into the datastore with key k. src must be a struct
+// pointer or implement PropertyLoadSaver; if a struct pointer then any
+// unexported fields of that struct will be skipped. If k is an incomplete key,
+// the returned key will be a unique key generated by the datastore.
+func Put(c appengine.Context, key *Key, src interface{}) (*Key, error) {
 	k, err := PutMulti(c, []*Key{key}, []interface{}{src})
 	if err != nil {
-		if errMulti, ok := err.(ErrMulti); ok {
-			return nil, errMulti[0]
+		if me, ok := err.(appengine.MultiError); ok {
+			return nil, me[0]
 		}
 		return nil, err
 	}
@@ -296,9 +299,16 @@ func Put(c appengine.Context, key *Key, src interface{}) (*Key, os.Error) {
 }
 
 // PutMulti is a batch version of Put.
-func PutMulti(c appengine.Context, key []*Key, src []interface{}) ([]*Key, os.Error) {
-	if len(key) != len(src) {
-		return nil, os.NewError("datastore: key and src slices have different length")
+//
+// src must satisfy the same conditions as the dst argument to GetMulti.
+func PutMulti(c appengine.Context, key []*Key, src interface{}) ([]*Key, error) {
+	v := reflect.ValueOf(src)
+	multiArgType, _ := checkMultiArg(v)
+	if multiArgType == multiArgTypeInvalid {
+		return nil, errors.New("datastore: src has invalid type")
+	}
+	if len(key) != v.Len() {
+		return nil, errors.New("datastore: key and src slices have different length")
 	}
 	if len(key) == 0 {
 		return nil, nil
@@ -308,42 +318,46 @@ func PutMulti(c appengine.Context, key []*Key, src []interface{}) ([]*Key, os.Er
 		return nil, err
 	}
 	req := &pb.PutRequest{}
-	for i := range src {
-		sProto, err := saveEntity(appID, key[i], src[i])
+	for i := range key {
+		elem := v.Index(i)
+		if multiArgType == multiArgTypePropertyLoadSaver || multiArgType == multiArgTypeStruct {
+			elem = elem.Addr()
+		}
+		sProto, err := saveEntity(appID, key[i], elem.Interface())
 		if err != nil {
 			return nil, err
 		}
 		req.Entity = append(req.Entity, sProto)
 	}
 	res := &pb.PutResponse{}
-	err := c.Call("datastore_v3", "Put", req, res, nil)
-	if err != nil {
+	if err := c.Call("datastore_v3", "Put", req, res, nil); err != nil {
 		return nil, err
 	}
 	if len(key) != len(res.Key) {
-		return nil, os.NewError("datastore: internal error: server returned the wrong number of keys")
+		return nil, errors.New("datastore: internal error: server returned the wrong number of keys")
 	}
 	ret := make([]*Key, len(key))
 	for i := range ret {
+		var err error
 		ret[i], err = protoToKey(res.Key[i])
 		if err != nil || ret[i].Incomplete() {
-			return nil, os.NewError("datastore: internal error: server returned an invalid key")
+			return nil, errors.New("datastore: internal error: server returned an invalid key")
 		}
 	}
 	return ret, nil
 }
 
 // Delete deletes the entity for the given key.
-func Delete(c appengine.Context, key *Key) os.Error {
+func Delete(c appengine.Context, key *Key) error {
 	err := DeleteMulti(c, []*Key{key})
-	if errMulti, ok := err.(ErrMulti); ok {
-		return errMulti[0]
+	if me, ok := err.(appengine.MultiError); ok {
+		return me[0]
 	}
 	return err
 }
 
 // DeleteMulti is a batch version of Delete.
-func DeleteMulti(c appengine.Context, key []*Key) os.Error {
+func DeleteMulti(c appengine.Context, key []*Key) error {
 	if len(key) == 0 {
 		return nil
 	}

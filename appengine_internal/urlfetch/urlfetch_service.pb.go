@@ -3,14 +3,12 @@
 
 package appengine
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type URLFetchServiceError_ErrorCode int32
 
@@ -85,7 +83,7 @@ func (x URLFetchRequest_RequestMethod) String() string {
 }
 
 type URLFetchServiceError struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *URLFetchServiceError) Reset()         { *this = URLFetchServiceError{} }
@@ -99,7 +97,7 @@ type URLFetchRequest struct {
 	FollowRedirects               *bool                          `protobuf:"varint,7,opt,def=1" json:"FollowRedirects,omitempty"`
 	Deadline                      *float64                       `protobuf:"fixed64,8,opt" json:"Deadline,omitempty"`
 	MustValidateServerCertificate *bool                          `protobuf:"varint,9,opt,def=1" json:"MustValidateServerCertificate,omitempty"`
-	XXX_unrecognized              []byte                         `json:",omitempty"`
+	XXX_unrecognized              []byte                         `json:"-"`
 }
 
 func (this *URLFetchRequest) Reset()         { *this = URLFetchRequest{} }
@@ -111,7 +109,7 @@ const Default_URLFetchRequest_MustValidateServerCertificate bool = true
 type URLFetchRequest_Header struct {
 	Key              *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
 	Value            *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *URLFetchRequest_Header) Reset()         { *this = URLFetchRequest_Header{} }
@@ -128,7 +126,7 @@ type URLFetchResponse struct {
 	ApiCpuMilliseconds    *int64                     `protobuf:"varint,10,opt,def=0" json:"ApiCpuMilliseconds,omitempty"`
 	ApiBytesSent          *int64                     `protobuf:"varint,11,opt,def=0" json:"ApiBytesSent,omitempty"`
 	ApiBytesReceived      *int64                     `protobuf:"varint,12,opt,def=0" json:"ApiBytesReceived,omitempty"`
-	XXX_unrecognized      []byte                     `json:",omitempty"`
+	XXX_unrecognized      []byte                     `json:"-"`
 }
 
 func (this *URLFetchResponse) Reset()         { *this = URLFetchResponse{} }
@@ -142,7 +140,7 @@ const Default_URLFetchResponse_ApiBytesReceived int64 = 0
 type URLFetchResponse_Header struct {
 	Key              *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
 	Value            *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *URLFetchResponse_Header) Reset()         { *this = URLFetchResponse_Header{} }

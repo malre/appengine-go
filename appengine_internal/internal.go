@@ -2,45 +2,26 @@
 // Use of this source code is governed by the Apache 2.0
 // license that can be found in the LICENSE file.
 
-/*
-The appengine_internal package supports Go programs for Google App Engine.
-
-Such programs do not call the this package directly. Instead, the program
-consists of one or more packages that register HTTP handlers in their init
-function. The App Engine framework will provide a main package that calls this
-package correctly to serve HTTP.
-
-The specifics of the generated main package and of this appengine_internal
-package will differ when running on a development App Server on a local machine
-and when running on an actual App Engine App Server in production, but this is
-a private implementation detail. The API is the same in both cases; just write
-packages that register HTTP handlers during init.
-
-	package hello
-
-	import (
-		"http"
-		"io"
-	)
-
-	func handleHello(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "Hello, App Engine")
-	}
-
-	func init() {
-		http.HandleFunc("/hello", handleHello)
-	}
-*/
+// Package appengine_internal provides support for package appengine.
+//
+// Programs should not use this package directly. Its API is not stable.
+// Use packages appengine and appengine/* instead.
 package appengine_internal
 
+// This package's implementation differs when running on a development App
+// Server on a local machine and when running on an actual App Engine App
+// Server in production, but that is a private implementation detail. The
+// exported API is the same.
+
 import (
+	"errors"
 	"flag"
 	"fmt"
-	"http"
 	"io"
 	"log"
-	"os"
+	"net/http"
 	"strings"
+	"time"
 )
 
 var (
@@ -57,7 +38,7 @@ func RegisterHTTPFunc(f ServeHTTPFunc) {
 }
 
 type CallOptions struct {
-	Deadline float64 // in seconds; overrides RPC default
+	Deadline time.Duration // if non-zero, overrides RPC default
 }
 
 // errorCodeMaps is a map of service name to the error code map for the service.
@@ -78,7 +59,7 @@ type APIError struct {
 	Code    int32 // API-specific error code
 }
 
-func (e *APIError) String() string {
+func (e *APIError) Error() string {
 	if e.Code == 0 {
 		if e.Detail == "" {
 			return "APIError <empty>"
@@ -102,11 +83,21 @@ type CallError struct {
 	Code   int32
 }
 
-func (e *CallError) String() string {
-	if e.Code == 0 {
+func (e *CallError) Error() string {
+	var msg string
+	switch e.Code {
+	case 0: // OK
 		return e.Detail
+	case 4: // OVER_QUOTA
+		msg = "Over quota"
+	case 6: // CAPABILITY_DISABLED
+		msg = "Capability disabled"
+	case 11: // CANCELLED
+		msg = "Canceled"
+	default:
+		msg = fmt.Sprintf("Call error %d", e.Code)
 	}
-	return fmt.Sprintf("Call error %d: %s", e.Code, e.Detail)
+	return msg + ": " + e.Detail
 }
 
 // handleHealthCheck handles health check HTTP requests from the App Server.
@@ -125,8 +116,8 @@ func parseAddr(compAddr string) (net, addr string) {
 
 type failingTransport struct{}
 
-func (failingTransport) RoundTrip(*http.Request) (*http.Response, os.Error) {
-	return nil, os.NewError("http.DefaultClient is not available in App Engine. " +
+func (failingTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	return nil, errors.New("http.DefaultClient is not available in App Engine. " +
 		"See http://code.google.com/appengine/docs/go/urlfetch/overview.html")
 }
 

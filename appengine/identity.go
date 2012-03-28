@@ -18,7 +18,7 @@ func AppID(c Context) string { return appengine_internal.AppID(c.FullyQualifiedA
 // BackendInstance returns the name and index of the current backend instance,
 // or "", -1 if this is not a backend instance.
 func BackendInstance(c Context) (name string, index int) {
-	index = appengine_internal.Instance()
+	index = appengine_internal.BackendInstance()
 	if index == -1 {
 		return
 	}
@@ -47,3 +47,14 @@ func DefaultVersionHostname(c Context) string {
 // It will be of the form "X.Y", where X is specified in app.yaml,
 // and Y is a number generated when each version of the app is uploaded.
 func VersionID(c Context) string { return appengine_internal.VersionID(c.Request()) }
+
+// InstanceID returns a mostly-unique identifier for this instance.
+func InstanceID() string { return appengine_internal.InstanceID() }
+
+// Datacenter returns an identifier for the datacenter that the instance is running in.
+func Datacenter() string { return appengine_internal.Datacenter() }
+
+// ServerSoftware returns the App Engine release version.
+// In production, it looks like "Google App Engine/X.Y.Z".
+// In the development appserver, it looks like "Development/X.Y".
+func ServerSoftware() string { return appengine_internal.ServerSoftware() }

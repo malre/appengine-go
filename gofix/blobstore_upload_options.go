@@ -10,6 +10,7 @@ import (
 
 var blobstoreUploadOptionsFix = fix{
 	"blobstore_upload_options",
+	"2011-09-15",
 	blobstoreUploadOptions,
 	"Add an options argument to blobstore.UploadURL.",
 }

@@ -5,12 +5,11 @@
 package logviewer
 
 import (
-	"http"
-	"os"
+	"errors"
+	"net/http"
 	"strconv"
 	"strings"
-	"template"
-	"time"
+	"text/template"
 
 	"appengine"
 	"appengine/log"
@@ -27,7 +26,6 @@ var (
 	// funcMap holds a map of functions needed in the template environment.
 	funcMap = map[string]interface{}{
 		"levelInitial": levelInitial,
-		"usec":         usec,
 	}
 	appLevels = []appLevel{
 		{0, "Debug", appengine.Context.Debugf},
@@ -36,7 +34,7 @@ var (
 		{3, "Error", appengine.Context.Errorf},
 		{4, "Critical", appengine.Context.Criticalf},
 	}
-	mainPageTmpl = template.Must(template.New("log").Funcs(funcMap).ParseFile("log.html"))
+	mainPageTmpl = template.Must(template.New("log").Funcs(funcMap).ParseFiles("log.html"))
 )
 
 func init() {
@@ -44,20 +42,13 @@ func init() {
 	http.HandleFunc("/post", post)
 }
 
-// usec converts a time in microseconds since the Unix epoch to a string
-// suitable for display to a user, in UTC.
-func usec(usec int64) string {
-	t := time.NanosecondsToUTC(usec * 1000)
-	return t.Format("2006-01-02 15:04:05.000 MST")
-}
-
 // levelInitial converts an integer application log level to a one-letter
 // string representing the level (e.g., "D" for Debug, "E" for Error).
-func levelInitial(l int) (string, os.Error) {
+func levelInitial(l int) (string, error) {
 	if l < len(appLevels) {
 		return appLevels[l].Name[:1], nil
 	}
-	return "", os.NewError("Out of range application log level")
+	return "", errors.New("Out of range application log level")
 }
 
 // query implements a basic HTML form to examine logs and format the output
@@ -97,7 +88,7 @@ func query(w http.ResponseWriter, r *http.Request) {
 		Version   string
 		Level     int
 		Count     int
-		Error     os.Error
+		Error     error
 		Logs      []*log.Record
 	}{
 		AppLevels: appLevels, // We'll build the form from appLevels as well.

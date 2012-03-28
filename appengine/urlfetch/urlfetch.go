@@ -7,15 +7,17 @@
 package urlfetch
 
 import (
+	"errors"
 	"fmt"
-	"http"
+	"io"
 	"io/ioutil"
-	"os"
+	"net/http"
 	"strconv"
+	"time"
 
 	"appengine"
 	"appengine_internal"
-	"goprotobuf.googlecode.com/hg/proto"
+	"code.google.com/p/goprotobuf/proto"
 
 	pb "appengine_internal/urlfetch"
 )
@@ -26,7 +28,7 @@ import (
 // directly.
 type Transport struct {
 	Context                       appengine.Context
-	DeadlineSeconds               float64 // zero means App Engine's default
+	Deadline                      time.Duration // zero means App Engine's default
 	AllowInvalidServerCertificate bool
 }
 
@@ -50,10 +52,7 @@ type bodyReader struct {
 
 // ErrTruncatedBody is the error returned after the final Read() from a
 // response's Body if the body has been truncated by App Engine's proxy.
-//
-// ErrTruncatedBody is only returned once. Subsequent reads will
-// return os.EOF.
-var ErrTruncatedBody = os.NewError("urlfetch: truncated body")
+var ErrTruncatedBody = errors.New("urlfetch: truncated body")
 
 func statusCodeToText(code int) string {
 	if t := http.StatusText(code); t != "" {
@@ -62,9 +61,12 @@ func statusCodeToText(code int) string {
 	return strconv.Itoa(code)
 }
 
-func (br *bodyReader) Read(p []byte) (n int, err os.Error) {
+func (br *bodyReader) Read(p []byte) (n int, err error) {
 	if br.closed {
-		return 0, os.EOF
+		if br.truncated {
+			return 0, ErrTruncatedBody
+		}
+		return 0, io.EOF
 	}
 	n = copy(p, br.content)
 	if n > 0 {
@@ -75,10 +77,10 @@ func (br *bodyReader) Read(p []byte) (n int, err os.Error) {
 		br.closed = true
 		return 0, ErrTruncatedBody
 	}
-	return 0, os.EOF
+	return 0, io.EOF
 }
 
-func (br *bodyReader) Close() os.Error {
+func (br *bodyReader) Close() error {
 	br.closed = true
 	br.content = nil
 	return nil
@@ -96,7 +98,7 @@ var methodAcceptsRequestBody = map[string]bool{
 // Note that HTTP response codes such as 5xx, 403, 404, etc are not
 // errors as far as the transport is concerned and will be returned
 // with err set to nil.
-func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err os.Error) {
+func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err error) {
 	methNum, ok := pb.URLFetchRequest_RequestMethod_value[req.Method]
 	if !ok {
 		return nil, fmt.Errorf("urlfetch: unsupported HTTP method %q", req.Method)
@@ -112,9 +114,9 @@ func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err os.Err
 	}
 	opts := &appengine_internal.CallOptions{}
 
-	if t.DeadlineSeconds != 0 {
-		freq.Deadline = proto.Float64(t.DeadlineSeconds)
-		opts.Deadline = t.DeadlineSeconds
+	if t.Deadline != 0 {
+		freq.Deadline = proto.Float64(t.Deadline.Seconds())
+		opts.Deadline = t.Deadline
 	}
 
 	for k, vals := range req.Header {
@@ -155,7 +157,7 @@ func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err os.Err
 		if hkey == "Content-Length" {
 			// Will get filled in below for all but HEAD requests.
 			if req.Method == "HEAD" {
-				res.ContentLength, _ = strconv.Atoi64(hval)
+				res.ContentLength, _ = strconv.ParseInt(hval, 10, 64)
 			}
 			continue
 		}

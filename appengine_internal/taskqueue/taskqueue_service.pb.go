@@ -3,14 +3,12 @@
 
 package appengine
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type TaskQueueServiceError_ErrorCode int32
 
@@ -42,6 +40,7 @@ const (
 	TaskQueueServiceError_INCORRECT_CREATOR_NAME          TaskQueueServiceError_ErrorCode = 24
 	TaskQueueServiceError_TASK_LEASE_EXPIRED              TaskQueueServiceError_ErrorCode = 25
 	TaskQueueServiceError_QUEUE_PAUSED                    TaskQueueServiceError_ErrorCode = 26
+	TaskQueueServiceError_INVALID_TAG                     TaskQueueServiceError_ErrorCode = 27
 	TaskQueueServiceError_DATASTORE_ERROR                 TaskQueueServiceError_ErrorCode = 10000
 )
 
@@ -73,6 +72,7 @@ var TaskQueueServiceError_ErrorCode_name = map[int32]string{
 	24:    "INCORRECT_CREATOR_NAME",
 	25:    "TASK_LEASE_EXPIRED",
 	26:    "QUEUE_PAUSED",
+	27:    "INVALID_TAG",
 	10000: "DATASTORE_ERROR",
 }
 var TaskQueueServiceError_ErrorCode_value = map[string]int32{
@@ -103,6 +103,7 @@ var TaskQueueServiceError_ErrorCode_value = map[string]int32{
 	"INCORRECT_CREATOR_NAME":          24,
 	"TASK_LEASE_EXPIRED":              25,
 	"QUEUE_PAUSED":                    26,
+	"INVALID_TAG":                     27,
 	"DATASTORE_ERROR":                 10000,
 }
 
@@ -208,7 +209,7 @@ type Transaction struct {
 	Handle           *uint64 `protobuf:"fixed64,1,req,name=handle" json:"handle,omitempty"`
 	App              *string `protobuf:"bytes,2,req,name=app" json:"app,omitempty"`
 	MarkChanges      *bool   `protobuf:"varint,3,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *Transaction) Reset()         { *this = Transaction{} }
@@ -217,24 +218,24 @@ func (this *Transaction) String() string { return proto.CompactTextString(this) 
 const Default_Transaction_MarkChanges bool = false
 
 type TaskQueueServiceError struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueServiceError) Reset()         { *this = TaskQueueServiceError{} }
 func (this *TaskQueueServiceError) String() string { return proto.CompactTextString(this) }
 
 type TaskPayload struct {
-	XXX_extensions   map[int32]proto.Extension `json:",omitempty"`
-	XXX_unrecognized []byte                    `json:",omitempty"`
+	XXX_extensions   map[int32]proto.Extension `json:"-"`
+	XXX_unrecognized []byte                    `json:"-"`
 }
 
 func (this *TaskPayload) Reset()         { *this = TaskPayload{} }
 func (this *TaskPayload) String() string { return proto.CompactTextString(this) }
 
-func (this *TaskPayload) Marshal() ([]byte, os.Error) {
+func (this *TaskPayload) Marshal() ([]byte, error) {
 	return proto.MarshalMessageSet(this.ExtensionMap())
 }
-func (this *TaskPayload) Unmarshal(buf []byte) os.Error {
+func (this *TaskPayload) Unmarshal(buf []byte) error {
 	return proto.UnmarshalMessageSet(buf, this.ExtensionMap())
 }
 
@@ -243,7 +244,7 @@ var _ proto.Marshaler = (*TaskPayload)(nil)
 var _ proto.Unmarshaler = (*TaskPayload)(nil)
 
 var extRange_TaskPayload = []proto.ExtensionRange{
-	{10, 536870911},
+	{10, 2147483646},
 }
 
 func (*TaskPayload) ExtensionRangeArray() []proto.ExtensionRange {
@@ -262,7 +263,7 @@ type TaskQueueRetryParameters struct {
 	MinBackoffSec    *float64 `protobuf:"fixed64,3,opt,name=min_backoff_sec,def=0.1" json:"min_backoff_sec,omitempty"`
 	MaxBackoffSec    *float64 `protobuf:"fixed64,4,opt,name=max_backoff_sec,def=3600" json:"max_backoff_sec,omitempty"`
 	MaxDoublings     *int32   `protobuf:"varint,5,opt,name=max_doublings,def=16" json:"max_doublings,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *TaskQueueRetryParameters) Reset()         { *this = TaskQueueRetryParameters{} }
@@ -274,7 +275,8 @@ const Default_TaskQueueRetryParameters_MaxDoublings int32 = 16
 
 type TaskQueueAcl struct {
 	UserEmail        [][]byte `protobuf:"bytes,1,rep,name=user_email" json:"user_email,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	WriterEmail      [][]byte `protobuf:"bytes,2,rep,name=writer_email" json:"writer_email,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *TaskQueueAcl) Reset()         { *this = TaskQueueAcl{} }
@@ -283,14 +285,14 @@ func (this *TaskQueueAcl) String() string { return proto.CompactTextString(this)
 type TaskQueueHttpHeader struct {
 	Key              []byte `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
 	Value            []byte `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueHttpHeader) Reset()         { *this = TaskQueueHttpHeader{} }
 func (this *TaskQueueHttpHeader) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueMode struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueMode) Reset()         { *this = TaskQueueMode{} }
@@ -311,7 +313,8 @@ type TaskQueueAddRequest struct {
 	Payload          *TaskPayload                       `protobuf:"bytes,16,opt,name=payload" json:"payload,omitempty"`
 	RetryParameters  *TaskQueueRetryParameters          `protobuf:"bytes,17,opt,name=retry_parameters" json:"retry_parameters,omitempty"`
 	Mode             *TaskQueueMode_Mode                `protobuf:"varint,18,opt,name=mode,enum=appengine.TaskQueueMode_Mode,def=0" json:"mode,omitempty"`
-	XXX_unrecognized []byte                             `json:",omitempty"`
+	Tag              []byte                             `protobuf:"bytes,19,opt,name=tag" json:"tag,omitempty"`
+	XXX_unrecognized []byte                             `json:"-"`
 }
 
 func (this *TaskQueueAddRequest) Reset()         { *this = TaskQueueAddRequest{} }
@@ -323,7 +326,7 @@ const Default_TaskQueueAddRequest_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
 type TaskQueueAddRequest_Header struct {
 	Key              []byte `protobuf:"bytes,7,req,name=key" json:"key,omitempty"`
 	Value            []byte `protobuf:"bytes,8,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueAddRequest_Header) Reset()         { *this = TaskQueueAddRequest_Header{} }
@@ -332,7 +335,7 @@ func (this *TaskQueueAddRequest_Header) String() string { return proto.CompactTe
 type TaskQueueAddRequest_CronTimetable struct {
 	Schedule         []byte `protobuf:"bytes,13,req,name=schedule" json:"schedule,omitempty"`
 	Timezone         []byte `protobuf:"bytes,14,req,name=timezone" json:"timezone,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueAddRequest_CronTimetable) Reset()         { *this = TaskQueueAddRequest_CronTimetable{} }
@@ -340,7 +343,7 @@ func (this *TaskQueueAddRequest_CronTimetable) String() string { return proto.Co
 
 type TaskQueueAddResponse struct {
 	ChosenTaskName   []byte `protobuf:"bytes,1,opt,name=chosen_task_name" json:"chosen_task_name,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueAddResponse) Reset()         { *this = TaskQueueAddResponse{} }
@@ -348,7 +351,7 @@ func (this *TaskQueueAddResponse) String() string { return proto.CompactTextStri
 
 type TaskQueueBulkAddRequest struct {
 	AddRequest       []*TaskQueueAddRequest `protobuf:"bytes,1,rep,name=add_request" json:"add_request,omitempty"`
-	XXX_unrecognized []byte                 `json:",omitempty"`
+	XXX_unrecognized []byte                 `json:"-"`
 }
 
 func (this *TaskQueueBulkAddRequest) Reset()         { *this = TaskQueueBulkAddRequest{} }
@@ -356,7 +359,7 @@ func (this *TaskQueueBulkAddRequest) String() string { return proto.CompactTextS
 
 type TaskQueueBulkAddResponse struct {
 	Taskresult       []*TaskQueueBulkAddResponse_TaskResult `protobuf:"group,1,rep,name=TaskResult" json:"taskresult,omitempty"`
-	XXX_unrecognized []byte                                 `json:",omitempty"`
+	XXX_unrecognized []byte                                 `json:"-"`
 }
 
 func (this *TaskQueueBulkAddResponse) Reset()         { *this = TaskQueueBulkAddResponse{} }
@@ -365,7 +368,7 @@ func (this *TaskQueueBulkAddResponse) String() string { return proto.CompactText
 type TaskQueueBulkAddResponse_TaskResult struct {
 	Result           *TaskQueueServiceError_ErrorCode `protobuf:"varint,2,req,name=result,enum=appengine.TaskQueueServiceError_ErrorCode" json:"result,omitempty"`
 	ChosenTaskName   []byte                           `protobuf:"bytes,3,opt,name=chosen_task_name" json:"chosen_task_name,omitempty"`
-	XXX_unrecognized []byte                           `json:",omitempty"`
+	XXX_unrecognized []byte                           `json:"-"`
 }
 
 func (this *TaskQueueBulkAddResponse_TaskResult) Reset() {
@@ -377,7 +380,7 @@ type TaskQueueDeleteRequest struct {
 	QueueName        []byte   `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
 	TaskName         [][]byte `protobuf:"bytes,2,rep,name=task_name" json:"task_name,omitempty"`
 	AppId            []byte   `protobuf:"bytes,3,opt,name=app_id" json:"app_id,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *TaskQueueDeleteRequest) Reset()         { *this = TaskQueueDeleteRequest{} }
@@ -385,7 +388,7 @@ func (this *TaskQueueDeleteRequest) String() string { return proto.CompactTextSt
 
 type TaskQueueDeleteResponse struct {
 	Result           []TaskQueueServiceError_ErrorCode `protobuf:"varint,3,rep,name=result,enum=appengine.TaskQueueServiceError_ErrorCode" json:"result,omitempty"`
-	XXX_unrecognized []byte                            `json:",omitempty"`
+	XXX_unrecognized []byte                            `json:"-"`
 }
 
 func (this *TaskQueueDeleteResponse) Reset()         { *this = TaskQueueDeleteResponse{} }
@@ -395,7 +398,7 @@ type TaskQueueForceRunRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
 	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
 	TaskName         []byte `protobuf:"bytes,3,req,name=task_name" json:"task_name,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueForceRunRequest) Reset()         { *this = TaskQueueForceRunRequest{} }
@@ -403,14 +406,14 @@ func (this *TaskQueueForceRunRequest) String() string { return proto.CompactText
 
 type TaskQueueForceRunResponse struct {
 	Result           *TaskQueueServiceError_ErrorCode `protobuf:"varint,3,req,name=result,enum=appengine.TaskQueueServiceError_ErrorCode" json:"result,omitempty"`
-	XXX_unrecognized []byte                           `json:",omitempty"`
+	XXX_unrecognized []byte                           `json:"-"`
 }
 
 func (this *TaskQueueForceRunResponse) Reset()         { *this = TaskQueueForceRunResponse{} }
 func (this *TaskQueueForceRunResponse) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueUpdateQueueRequest struct {
-	AppId                 []byte                    `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
+	AppId                 []byte                    `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
 	QueueName             []byte                    `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
 	BucketRefillPerSecond *float64                  `protobuf:"fixed64,3,req,name=bucket_refill_per_second" json:"bucket_refill_per_second,omitempty"`
 	BucketCapacity        *int32                    `protobuf:"varint,4,req,name=bucket_capacity" json:"bucket_capacity,omitempty"`
@@ -420,7 +423,7 @@ type TaskQueueUpdateQueueRequest struct {
 	Mode                  *TaskQueueMode_Mode       `protobuf:"varint,8,opt,name=mode,enum=appengine.TaskQueueMode_Mode,def=0" json:"mode,omitempty"`
 	Acl                   *TaskQueueAcl             `protobuf:"bytes,9,opt,name=acl" json:"acl,omitempty"`
 	HeaderOverride        []*TaskQueueHttpHeader    `protobuf:"bytes,10,rep,name=header_override" json:"header_override,omitempty"`
-	XXX_unrecognized      []byte                    `json:",omitempty"`
+	XXX_unrecognized      []byte                    `json:"-"`
 }
 
 func (this *TaskQueueUpdateQueueRequest) Reset()         { *this = TaskQueueUpdateQueueRequest{} }
@@ -429,7 +432,7 @@ func (this *TaskQueueUpdateQueueRequest) String() string { return proto.CompactT
 const Default_TaskQueueUpdateQueueRequest_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
 
 type TaskQueueUpdateQueueResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueUpdateQueueResponse) Reset()         { *this = TaskQueueUpdateQueueResponse{} }
@@ -438,7 +441,7 @@ func (this *TaskQueueUpdateQueueResponse) String() string { return proto.Compact
 type TaskQueueFetchQueuesRequest struct {
 	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
 	MaxRows          *int32 `protobuf:"varint,2,req,name=max_rows" json:"max_rows,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueFetchQueuesRequest) Reset()         { *this = TaskQueueFetchQueuesRequest{} }
@@ -446,7 +449,7 @@ func (this *TaskQueueFetchQueuesRequest) String() string { return proto.CompactT
 
 type TaskQueueFetchQueuesResponse struct {
 	Queue            []*TaskQueueFetchQueuesResponse_Queue `protobuf:"group,1,rep" json:"queue,omitempty"`
-	XXX_unrecognized []byte                                `json:",omitempty"`
+	XXX_unrecognized []byte                                `json:"-"`
 }
 
 func (this *TaskQueueFetchQueuesResponse) Reset()         { *this = TaskQueueFetchQueuesResponse{} }
@@ -464,7 +467,7 @@ type TaskQueueFetchQueuesResponse_Queue struct {
 	Acl                   *TaskQueueAcl             `protobuf:"bytes,10,opt,name=acl" json:"acl,omitempty"`
 	HeaderOverride        []*TaskQueueHttpHeader    `protobuf:"bytes,11,rep,name=header_override" json:"header_override,omitempty"`
 	CreatorName           *string                   `protobuf:"bytes,12,opt,name=creator_name,def=apphosting" json:"creator_name,omitempty"`
-	XXX_unrecognized      []byte                    `json:",omitempty"`
+	XXX_unrecognized      []byte                    `json:"-"`
 }
 
 func (this *TaskQueueFetchQueuesResponse_Queue) Reset()         { *this = TaskQueueFetchQueuesResponse_Queue{} }
@@ -477,12 +480,14 @@ const Default_TaskQueueFetchQueuesResponse_Queue_CreatorName string = "apphostin
 type TaskQueueFetchQueueStatsRequest struct {
 	AppId            []byte   `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
 	QueueName        [][]byte `protobuf:"bytes,2,rep,name=queue_name" json:"queue_name,omitempty"`
-	MaxNumTasks      *int32   `protobuf:"varint,3,req,name=max_num_tasks" json:"max_num_tasks,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	MaxNumTasks      *int32   `protobuf:"varint,3,opt,name=max_num_tasks,def=0" json:"max_num_tasks,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *TaskQueueFetchQueueStatsRequest) Reset()         { *this = TaskQueueFetchQueueStatsRequest{} }
 func (this *TaskQueueFetchQueueStatsRequest) String() string { return proto.CompactTextString(this) }
+
+const Default_TaskQueueFetchQueueStatsRequest_MaxNumTasks int32 = 0
 
 type TaskQueueScannerQueueInfo struct {
 	ExecutedLastMinute      *int64   `protobuf:"varint,1,req,name=executed_last_minute" json:"executed_last_minute,omitempty"`
@@ -490,7 +495,7 @@ type TaskQueueScannerQueueInfo struct {
 	SamplingDurationSeconds *float64 `protobuf:"fixed64,3,req,name=sampling_duration_seconds" json:"sampling_duration_seconds,omitempty"`
 	RequestsInFlight        *int32   `protobuf:"varint,4,opt,name=requests_in_flight" json:"requests_in_flight,omitempty"`
 	EnforcedRate            *float64 `protobuf:"fixed64,5,opt,name=enforced_rate" json:"enforced_rate,omitempty"`
-	XXX_unrecognized        []byte   `json:",omitempty"`
+	XXX_unrecognized        []byte   `json:"-"`
 }
 
 func (this *TaskQueueScannerQueueInfo) Reset()         { *this = TaskQueueScannerQueueInfo{} }
@@ -498,7 +503,7 @@ func (this *TaskQueueScannerQueueInfo) String() string { return proto.CompactTex
 
 type TaskQueueFetchQueueStatsResponse struct {
 	Queuestats       []*TaskQueueFetchQueueStatsResponse_QueueStats `protobuf:"group,1,rep,name=QueueStats" json:"queuestats,omitempty"`
-	XXX_unrecognized []byte                                         `json:",omitempty"`
+	XXX_unrecognized []byte                                         `json:"-"`
 }
 
 func (this *TaskQueueFetchQueueStatsResponse) Reset()         { *this = TaskQueueFetchQueueStatsResponse{} }
@@ -508,7 +513,7 @@ type TaskQueueFetchQueueStatsResponse_QueueStats struct {
 	NumTasks         *int32                     `protobuf:"varint,2,req,name=num_tasks" json:"num_tasks,omitempty"`
 	OldestEtaUsec    *int64                     `protobuf:"varint,3,req,name=oldest_eta_usec" json:"oldest_eta_usec,omitempty"`
 	ScannerInfo      *TaskQueueScannerQueueInfo `protobuf:"bytes,4,opt,name=scanner_info" json:"scanner_info,omitempty"`
-	XXX_unrecognized []byte                     `json:",omitempty"`
+	XXX_unrecognized []byte                     `json:"-"`
 }
 
 func (this *TaskQueueFetchQueueStatsResponse_QueueStats) Reset() {
@@ -522,14 +527,14 @@ type TaskQueuePauseQueueRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
 	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
 	Pause            *bool  `protobuf:"varint,3,req,name=pause" json:"pause,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueuePauseQueueRequest) Reset()         { *this = TaskQueuePauseQueueRequest{} }
 func (this *TaskQueuePauseQueueRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueuePauseQueueResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueuePauseQueueResponse) Reset()         { *this = TaskQueuePauseQueueResponse{} }
@@ -538,14 +543,14 @@ func (this *TaskQueuePauseQueueResponse) String() string { return proto.CompactT
 type TaskQueuePurgeQueueRequest struct {
 	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
 	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueuePurgeQueueRequest) Reset()         { *this = TaskQueuePurgeQueueRequest{} }
 func (this *TaskQueuePurgeQueueRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueuePurgeQueueResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueuePurgeQueueResponse) Reset()         { *this = TaskQueuePurgeQueueResponse{} }
@@ -554,14 +559,14 @@ func (this *TaskQueuePurgeQueueResponse) String() string { return proto.CompactT
 type TaskQueueDeleteQueueRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
 	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueDeleteQueueRequest) Reset()         { *this = TaskQueueDeleteQueueRequest{} }
 func (this *TaskQueueDeleteQueueRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueDeleteQueueResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueDeleteQueueResponse) Reset()         { *this = TaskQueueDeleteQueueResponse{} }
@@ -569,14 +574,14 @@ func (this *TaskQueueDeleteQueueResponse) String() string { return proto.Compact
 
 type TaskQueueDeleteGroupRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueDeleteGroupRequest) Reset()         { *this = TaskQueueDeleteGroupRequest{} }
 func (this *TaskQueueDeleteGroupRequest) String() string { return proto.CompactTextString(this) }
 
 type TaskQueueDeleteGroupResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueDeleteGroupResponse) Reset()         { *this = TaskQueueDeleteGroupResponse{} }
@@ -587,8 +592,9 @@ type TaskQueueQueryTasksRequest struct {
 	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
 	StartTaskName    []byte `protobuf:"bytes,3,opt,name=start_task_name" json:"start_task_name,omitempty"`
 	StartEtaUsec     *int64 `protobuf:"varint,4,opt,name=start_eta_usec" json:"start_eta_usec,omitempty"`
+	StartTag         []byte `protobuf:"bytes,6,opt,name=start_tag" json:"start_tag,omitempty"`
 	MaxRows          *int32 `protobuf:"varint,5,opt,name=max_rows,def=1" json:"max_rows,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueQueryTasksRequest) Reset()         { *this = TaskQueueQueryTasksRequest{} }
@@ -598,7 +604,7 @@ const Default_TaskQueueQueryTasksRequest_MaxRows int32 = 1
 
 type TaskQueueQueryTasksResponse struct {
 	Task             []*TaskQueueQueryTasksResponse_Task `protobuf:"group,1,rep" json:"task,omitempty"`
-	XXX_unrecognized []byte                              `json:",omitempty"`
+	XXX_unrecognized []byte                              `json:"-"`
 }
 
 func (this *TaskQueueQueryTasksResponse) Reset()         { *this = TaskQueueQueryTasksResponse{} }
@@ -620,7 +626,8 @@ type TaskQueueQueryTasksResponse_Task struct {
 	Payload          *TaskPayload                                    `protobuf:"bytes,22,opt,name=payload" json:"payload,omitempty"`
 	RetryParameters  *TaskQueueRetryParameters                       `protobuf:"bytes,23,opt,name=retry_parameters" json:"retry_parameters,omitempty"`
 	FirstTryUsec     *int64                                          `protobuf:"varint,24,opt,name=first_try_usec" json:"first_try_usec,omitempty"`
-	XXX_unrecognized []byte                                          `json:",omitempty"`
+	Tag              []byte                                          `protobuf:"bytes,25,opt,name=tag" json:"tag,omitempty"`
+	XXX_unrecognized []byte                                          `json:"-"`
 }
 
 func (this *TaskQueueQueryTasksResponse_Task) Reset()         { *this = TaskQueueQueryTasksResponse_Task{} }
@@ -631,7 +638,7 @@ const Default_TaskQueueQueryTasksResponse_Task_RetryCount int32 = 0
 type TaskQueueQueryTasksResponse_Task_Header struct {
 	Key              []byte `protobuf:"bytes,8,req,name=key" json:"key,omitempty"`
 	Value            []byte `protobuf:"bytes,9,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueQueryTasksResponse_Task_Header) Reset() {
@@ -644,7 +651,7 @@ func (this *TaskQueueQueryTasksResponse_Task_Header) String() string {
 type TaskQueueQueryTasksResponse_Task_CronTimetable struct {
 	Schedule         []byte `protobuf:"bytes,14,req,name=schedule" json:"schedule,omitempty"`
 	Timezone         []byte `protobuf:"bytes,15,req,name=timezone" json:"timezone,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueQueryTasksResponse_Task_CronTimetable) Reset() {
@@ -659,7 +666,7 @@ type TaskQueueQueryTasksResponse_Task_RunLog struct {
 	LagUsec          *int64 `protobuf:"varint,18,req,name=lag_usec" json:"lag_usec,omitempty"`
 	ElapsedUsec      *int64 `protobuf:"varint,19,req,name=elapsed_usec" json:"elapsed_usec,omitempty"`
 	ResponseCode     *int64 `protobuf:"varint,20,opt,name=response_code" json:"response_code,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueQueryTasksResponse_Task_RunLog) Reset() {
@@ -673,7 +680,7 @@ type TaskQueueFetchTaskRequest struct {
 	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
 	QueueName        []byte `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
 	TaskName         []byte `protobuf:"bytes,3,req,name=task_name" json:"task_name,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueFetchTaskRequest) Reset()         { *this = TaskQueueFetchTaskRequest{} }
@@ -681,7 +688,7 @@ func (this *TaskQueueFetchTaskRequest) String() string { return proto.CompactTex
 
 type TaskQueueFetchTaskResponse struct {
 	Task             *TaskQueueQueryTasksResponse `protobuf:"bytes,1,req,name=task" json:"task,omitempty"`
-	XXX_unrecognized []byte                       `json:",omitempty"`
+	XXX_unrecognized []byte                       `json:"-"`
 }
 
 func (this *TaskQueueFetchTaskResponse) Reset()         { *this = TaskQueueFetchTaskResponse{} }
@@ -690,7 +697,7 @@ func (this *TaskQueueFetchTaskResponse) String() string { return proto.CompactTe
 type TaskQueueUpdateStorageLimitRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
 	Limit            *int64 `protobuf:"varint,2,req,name=limit" json:"limit,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueUpdateStorageLimitRequest) Reset()         { *this = TaskQueueUpdateStorageLimitRequest{} }
@@ -698,7 +705,7 @@ func (this *TaskQueueUpdateStorageLimitRequest) String() string { return proto.C
 
 type TaskQueueUpdateStorageLimitResponse struct {
 	NewLimit         *int64 `protobuf:"varint,1,req,name=new_limit" json:"new_limit,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueUpdateStorageLimitResponse) Reset() {
@@ -710,15 +717,19 @@ type TaskQueueQueryAndOwnTasksRequest struct {
 	QueueName        []byte   `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
 	LeaseSeconds     *float64 `protobuf:"fixed64,2,req,name=lease_seconds" json:"lease_seconds,omitempty"`
 	MaxTasks         *int64   `protobuf:"varint,3,req,name=max_tasks" json:"max_tasks,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	GroupByTag       *bool    `protobuf:"varint,4,opt,name=group_by_tag,def=0" json:"group_by_tag,omitempty"`
+	Tag              []byte   `protobuf:"bytes,5,opt,name=tag" json:"tag,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *TaskQueueQueryAndOwnTasksRequest) Reset()         { *this = TaskQueueQueryAndOwnTasksRequest{} }
 func (this *TaskQueueQueryAndOwnTasksRequest) String() string { return proto.CompactTextString(this) }
 
+const Default_TaskQueueQueryAndOwnTasksRequest_GroupByTag bool = false
+
 type TaskQueueQueryAndOwnTasksResponse struct {
 	Task             []*TaskQueueQueryAndOwnTasksResponse_Task `protobuf:"group,1,rep" json:"task,omitempty"`
-	XXX_unrecognized []byte                                    `json:",omitempty"`
+	XXX_unrecognized []byte                                    `json:"-"`
 }
 
 func (this *TaskQueueQueryAndOwnTasksResponse) Reset()         { *this = TaskQueueQueryAndOwnTasksResponse{} }
@@ -729,7 +740,8 @@ type TaskQueueQueryAndOwnTasksResponse_Task struct {
 	EtaUsec          *int64 `protobuf:"varint,3,req,name=eta_usec" json:"eta_usec,omitempty"`
 	RetryCount       *int32 `protobuf:"varint,4,opt,name=retry_count,def=0" json:"retry_count,omitempty"`
 	Body             []byte `protobuf:"bytes,5,opt,name=body" json:"body,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	Tag              []byte `protobuf:"bytes,6,opt,name=tag" json:"tag,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueQueryAndOwnTasksResponse_Task) Reset() {
@@ -746,7 +758,7 @@ type TaskQueueModifyTaskLeaseRequest struct {
 	TaskName         []byte   `protobuf:"bytes,2,req,name=task_name" json:"task_name,omitempty"`
 	EtaUsec          *int64   `protobuf:"varint,3,req,name=eta_usec" json:"eta_usec,omitempty"`
 	LeaseSeconds     *float64 `protobuf:"fixed64,4,req,name=lease_seconds" json:"lease_seconds,omitempty"`
-	XXX_unrecognized []byte   `json:",omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *TaskQueueModifyTaskLeaseRequest) Reset()         { *this = TaskQueueModifyTaskLeaseRequest{} }
@@ -754,7 +766,7 @@ func (this *TaskQueueModifyTaskLeaseRequest) String() string { return proto.Comp
 
 type TaskQueueModifyTaskLeaseResponse struct {
 	UpdatedEtaUsec   *int64 `protobuf:"varint,1,req,name=updated_eta_usec" json:"updated_eta_usec,omitempty"`
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *TaskQueueModifyTaskLeaseResponse) Reset()         { *this = TaskQueueModifyTaskLeaseResponse{} }

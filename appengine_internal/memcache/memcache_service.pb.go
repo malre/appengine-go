@@ -3,23 +3,22 @@
 
 package appengine
 
-import proto "goprotobuf.googlecode.com/hg/proto"
+import proto "code.google.com/p/goprotobuf/proto"
 import "math"
-import "os"
 
-// Reference proto, math & os imports to suppress error if they are not otherwise used.
+// Reference proto and math imports to suppress error if they are not otherwise used.
 var _ = proto.GetString
 var _ = math.Inf
-var _ os.Error
 
 type MemcacheServiceError_ErrorCode int32
 
 const (
-	MemcacheServiceError_OK                       MemcacheServiceError_ErrorCode = 0
-	MemcacheServiceError_UNSPECIFIED_ERROR        MemcacheServiceError_ErrorCode = 1
-	MemcacheServiceError_NAMESPACE_NOT_SET        MemcacheServiceError_ErrorCode = 2
-	MemcacheServiceError_PERMISSION_DENIED        MemcacheServiceError_ErrorCode = 3
-	MemcacheServiceError_NUM_BACKENDS_UNSPECIFIED MemcacheServiceError_ErrorCode = 4
+	MemcacheServiceError_OK                             MemcacheServiceError_ErrorCode = 0
+	MemcacheServiceError_UNSPECIFIED_ERROR              MemcacheServiceError_ErrorCode = 1
+	MemcacheServiceError_NAMESPACE_NOT_SET              MemcacheServiceError_ErrorCode = 2
+	MemcacheServiceError_PERMISSION_DENIED              MemcacheServiceError_ErrorCode = 3
+	MemcacheServiceError_NUM_BACKENDS_UNSPECIFIED       MemcacheServiceError_ErrorCode = 4
+	MemcacheServiceError_MEMCACHE_POOL_HINT_UNSPECIFIED MemcacheServiceError_ErrorCode = 5
 )
 
 var MemcacheServiceError_ErrorCode_name = map[int32]string{
@@ -28,13 +27,15 @@ var MemcacheServiceError_ErrorCode_name = map[int32]string{
 	2: "NAMESPACE_NOT_SET",
 	3: "PERMISSION_DENIED",
 	4: "NUM_BACKENDS_UNSPECIFIED",
+	5: "MEMCACHE_POOL_HINT_UNSPECIFIED",
 }
 var MemcacheServiceError_ErrorCode_value = map[string]int32{
-	"OK":                       0,
-	"UNSPECIFIED_ERROR":        1,
-	"NAMESPACE_NOT_SET":        2,
-	"PERMISSION_DENIED":        3,
-	"NUM_BACKENDS_UNSPECIFIED": 4,
+	"OK":                             0,
+	"UNSPECIFIED_ERROR":              1,
+	"NAMESPACE_NOT_SET":              2,
+	"PERMISSION_DENIED":              3,
+	"NUM_BACKENDS_UNSPECIFIED":       4,
+	"MEMCACHE_POOL_HINT_UNSPECIFIED": 5,
 }
 
 func NewMemcacheServiceError_ErrorCode(x MemcacheServiceError_ErrorCode) *MemcacheServiceError_ErrorCode {
@@ -181,7 +182,7 @@ func (x MemcacheIncrementResponse_IncrementStatusCode) String() string {
 }
 
 type MemcacheServiceError struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *MemcacheServiceError) Reset()         { *this = MemcacheServiceError{} }
@@ -190,7 +191,9 @@ func (this *MemcacheServiceError) String() string { return proto.CompactTextStri
 type AppOverride struct {
 	AppId                *string `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
 	NumMemcachegBackends *int32  `protobuf:"varint,2,req,name=num_memcacheg_backends" json:"num_memcacheg_backends,omitempty"`
-	XXX_unrecognized     []byte  `json:",omitempty"`
+	IgnoreShardlock      *bool   `protobuf:"varint,3,opt,name=ignore_shardlock" json:"ignore_shardlock,omitempty"`
+	MemcachePoolHint     *string `protobuf:"bytes,4,opt,name=memcache_pool_hint" json:"memcache_pool_hint,omitempty"`
+	XXX_unrecognized     []byte  `json:"-"`
 }
 
 func (this *AppOverride) Reset()         { *this = AppOverride{} }
@@ -201,7 +204,7 @@ type MemcacheGetRequest struct {
 	NameSpace        *string      `protobuf:"bytes,2,opt,name=name_space" json:"name_space,omitempty"`
 	ForCas           *bool        `protobuf:"varint,4,opt,name=for_cas" json:"for_cas,omitempty"`
 	Override         *AppOverride `protobuf:"bytes,5,opt,name=override" json:"override,omitempty"`
-	XXX_unrecognized []byte       `json:",omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *MemcacheGetRequest) Reset()         { *this = MemcacheGetRequest{} }
@@ -209,7 +212,7 @@ func (this *MemcacheGetRequest) String() string { return proto.CompactTextString
 
 type MemcacheGetResponse struct {
 	Item             []*MemcacheGetResponse_Item `protobuf:"group,1,rep" json:"item,omitempty"`
-	XXX_unrecognized []byte                      `json:",omitempty"`
+	XXX_unrecognized []byte                      `json:"-"`
 }
 
 func (this *MemcacheGetResponse) Reset()         { *this = MemcacheGetResponse{} }
@@ -221,7 +224,7 @@ type MemcacheGetResponse_Item struct {
 	Flags            *uint32 `protobuf:"fixed32,4,opt,name=flags" json:"flags,omitempty"`
 	CasId            *uint64 `protobuf:"fixed64,5,opt,name=cas_id" json:"cas_id,omitempty"`
 	ExpiresInSeconds *int32  `protobuf:"varint,6,opt,name=expires_in_seconds" json:"expires_in_seconds,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *MemcacheGetResponse_Item) Reset()         { *this = MemcacheGetResponse_Item{} }
@@ -231,7 +234,7 @@ type MemcacheSetRequest struct {
 	Item             []*MemcacheSetRequest_Item `protobuf:"group,1,rep" json:"item,omitempty"`
 	NameSpace        *string                    `protobuf:"bytes,7,opt,name=name_space" json:"name_space,omitempty"`
 	Override         *AppOverride               `protobuf:"bytes,10,opt,name=override" json:"override,omitempty"`
-	XXX_unrecognized []byte                     `json:",omitempty"`
+	XXX_unrecognized []byte                     `json:"-"`
 }
 
 func (this *MemcacheSetRequest) Reset()         { *this = MemcacheSetRequest{} }
@@ -245,7 +248,7 @@ type MemcacheSetRequest_Item struct {
 	ExpirationTime   *uint32                       `protobuf:"fixed32,6,opt,name=expiration_time,def=0" json:"expiration_time,omitempty"`
 	CasId            *uint64                       `protobuf:"fixed64,8,opt,name=cas_id" json:"cas_id,omitempty"`
 	ForCas           *bool                         `protobuf:"varint,9,opt,name=for_cas" json:"for_cas,omitempty"`
-	XXX_unrecognized []byte                        `json:",omitempty"`
+	XXX_unrecognized []byte                        `json:"-"`
 }
 
 func (this *MemcacheSetRequest_Item) Reset()         { *this = MemcacheSetRequest_Item{} }
@@ -256,7 +259,7 @@ const Default_MemcacheSetRequest_Item_ExpirationTime uint32 = 0
 
 type MemcacheSetResponse struct {
 	SetStatus        []MemcacheSetResponse_SetStatusCode `protobuf:"varint,1,rep,name=set_status,enum=appengine.MemcacheSetResponse_SetStatusCode" json:"set_status,omitempty"`
-	XXX_unrecognized []byte                              `json:",omitempty"`
+	XXX_unrecognized []byte                              `json:"-"`
 }
 
 func (this *MemcacheSetResponse) Reset()         { *this = MemcacheSetResponse{} }
@@ -266,7 +269,7 @@ type MemcacheDeleteRequest struct {
 	Item             []*MemcacheDeleteRequest_Item `protobuf:"group,1,rep" json:"item,omitempty"`
 	NameSpace        *string                       `protobuf:"bytes,4,opt,name=name_space" json:"name_space,omitempty"`
 	Override         *AppOverride                  `protobuf:"bytes,5,opt,name=override" json:"override,omitempty"`
-	XXX_unrecognized []byte                        `json:",omitempty"`
+	XXX_unrecognized []byte                        `json:"-"`
 }
 
 func (this *MemcacheDeleteRequest) Reset()         { *this = MemcacheDeleteRequest{} }
@@ -275,7 +278,7 @@ func (this *MemcacheDeleteRequest) String() string { return proto.CompactTextStr
 type MemcacheDeleteRequest_Item struct {
 	Key              []byte  `protobuf:"bytes,2,req,name=key" json:"key,omitempty"`
 	DeleteTime       *uint32 `protobuf:"fixed32,3,opt,name=delete_time,def=0" json:"delete_time,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *MemcacheDeleteRequest_Item) Reset()         { *this = MemcacheDeleteRequest_Item{} }
@@ -285,7 +288,7 @@ const Default_MemcacheDeleteRequest_Item_DeleteTime uint32 = 0
 
 type MemcacheDeleteResponse struct {
 	DeleteStatus     []MemcacheDeleteResponse_DeleteStatusCode `protobuf:"varint,1,rep,name=delete_status,enum=appengine.MemcacheDeleteResponse_DeleteStatusCode" json:"delete_status,omitempty"`
-	XXX_unrecognized []byte                                    `json:",omitempty"`
+	XXX_unrecognized []byte                                    `json:"-"`
 }
 
 func (this *MemcacheDeleteResponse) Reset()         { *this = MemcacheDeleteResponse{} }
@@ -299,7 +302,7 @@ type MemcacheIncrementRequest struct {
 	InitialValue     *uint64                             `protobuf:"varint,5,opt,name=initial_value" json:"initial_value,omitempty"`
 	InitialFlags     *uint32                             `protobuf:"fixed32,6,opt,name=initial_flags" json:"initial_flags,omitempty"`
 	Override         *AppOverride                        `protobuf:"bytes,7,opt,name=override" json:"override,omitempty"`
-	XXX_unrecognized []byte                              `json:",omitempty"`
+	XXX_unrecognized []byte                              `json:"-"`
 }
 
 func (this *MemcacheIncrementRequest) Reset()         { *this = MemcacheIncrementRequest{} }
@@ -311,7 +314,7 @@ const Default_MemcacheIncrementRequest_Direction MemcacheIncrementRequest_Direct
 type MemcacheIncrementResponse struct {
 	NewValue         *uint64                                        `protobuf:"varint,1,opt,name=new_value" json:"new_value,omitempty"`
 	IncrementStatus  *MemcacheIncrementResponse_IncrementStatusCode `protobuf:"varint,2,opt,name=increment_status,enum=appengine.MemcacheIncrementResponse_IncrementStatusCode" json:"increment_status,omitempty"`
-	XXX_unrecognized []byte                                         `json:",omitempty"`
+	XXX_unrecognized []byte                                         `json:"-"`
 }
 
 func (this *MemcacheIncrementResponse) Reset()         { *this = MemcacheIncrementResponse{} }
@@ -321,7 +324,7 @@ type MemcacheBatchIncrementRequest struct {
 	NameSpace        *string                     `protobuf:"bytes,1,opt,name=name_space" json:"name_space,omitempty"`
 	Item             []*MemcacheIncrementRequest `protobuf:"bytes,2,rep,name=item" json:"item,omitempty"`
 	Override         *AppOverride                `protobuf:"bytes,3,opt,name=override" json:"override,omitempty"`
-	XXX_unrecognized []byte                      `json:",omitempty"`
+	XXX_unrecognized []byte                      `json:"-"`
 }
 
 func (this *MemcacheBatchIncrementRequest) Reset()         { *this = MemcacheBatchIncrementRequest{} }
@@ -329,7 +332,7 @@ func (this *MemcacheBatchIncrementRequest) String() string { return proto.Compac
 
 type MemcacheBatchIncrementResponse struct {
 	Item             []*MemcacheIncrementResponse `protobuf:"bytes,1,rep,name=item" json:"item,omitempty"`
-	XXX_unrecognized []byte                       `json:",omitempty"`
+	XXX_unrecognized []byte                       `json:"-"`
 }
 
 func (this *MemcacheBatchIncrementResponse) Reset()         { *this = MemcacheBatchIncrementResponse{} }
@@ -337,14 +340,14 @@ func (this *MemcacheBatchIncrementResponse) String() string { return proto.Compa
 
 type MemcacheFlushRequest struct {
 	Override         *AppOverride `protobuf:"bytes,1,opt,name=override" json:"override,omitempty"`
-	XXX_unrecognized []byte       `json:",omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *MemcacheFlushRequest) Reset()         { *this = MemcacheFlushRequest{} }
 func (this *MemcacheFlushRequest) String() string { return proto.CompactTextString(this) }
 
 type MemcacheFlushResponse struct {
-	XXX_unrecognized []byte `json:",omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (this *MemcacheFlushResponse) Reset()         { *this = MemcacheFlushResponse{} }
@@ -352,7 +355,7 @@ func (this *MemcacheFlushResponse) String() string { return proto.CompactTextStr
 
 type MemcacheStatsRequest struct {
 	Override         *AppOverride `protobuf:"bytes,1,opt,name=override" json:"override,omitempty"`
-	XXX_unrecognized []byte       `json:",omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *MemcacheStatsRequest) Reset()         { *this = MemcacheStatsRequest{} }
@@ -365,7 +368,7 @@ type MergedNamespaceStats struct {
 	Items            *uint64 `protobuf:"varint,4,req,name=items" json:"items,omitempty"`
 	Bytes            *uint64 `protobuf:"varint,5,req,name=bytes" json:"bytes,omitempty"`
 	OldestItemAge    *uint32 `protobuf:"fixed32,6,req,name=oldest_item_age" json:"oldest_item_age,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *MergedNamespaceStats) Reset()         { *this = MergedNamespaceStats{} }
@@ -373,7 +376,7 @@ func (this *MergedNamespaceStats) String() string { return proto.CompactTextStri
 
 type MemcacheStatsResponse struct {
 	Stats            *MergedNamespaceStats `protobuf:"bytes,1,opt,name=stats" json:"stats,omitempty"`
-	XXX_unrecognized []byte                `json:",omitempty"`
+	XXX_unrecognized []byte                `json:"-"`
 }
 
 func (this *MemcacheStatsResponse) Reset()         { *this = MemcacheStatsResponse{} }
@@ -383,7 +386,7 @@ type MemcacheGrabTailRequest struct {
 	ItemCount        *int32       `protobuf:"varint,1,req,name=item_count" json:"item_count,omitempty"`
 	NameSpace        *string      `protobuf:"bytes,2,opt,name=name_space" json:"name_space,omitempty"`
 	Override         *AppOverride `protobuf:"bytes,3,opt,name=override" json:"override,omitempty"`
-	XXX_unrecognized []byte       `json:",omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *MemcacheGrabTailRequest) Reset()         { *this = MemcacheGrabTailRequest{} }
@@ -391,7 +394,7 @@ func (this *MemcacheGrabTailRequest) String() string { return proto.CompactTextS
 
 type MemcacheGrabTailResponse struct {
 	Item             []*MemcacheGrabTailResponse_Item `protobuf:"group,1,rep" json:"item,omitempty"`
-	XXX_unrecognized []byte                           `json:",omitempty"`
+	XXX_unrecognized []byte                           `json:"-"`
 }
 
 func (this *MemcacheGrabTailResponse) Reset()         { *this = MemcacheGrabTailResponse{} }
@@ -400,7 +403,7 @@ func (this *MemcacheGrabTailResponse) String() string { return proto.CompactText
 type MemcacheGrabTailResponse_Item struct {
 	Value            []byte  `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
 	Flags            *uint32 `protobuf:"fixed32,3,opt,name=flags" json:"flags,omitempty"`
-	XXX_unrecognized []byte  `json:",omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *MemcacheGrabTailResponse_Item) Reset()         { *this = MemcacheGrabTailResponse_Item{} }

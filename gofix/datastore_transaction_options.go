@@ -10,6 +10,7 @@ import (
 
 var datastoreTransactionOptionsFix = fix{
 	"datastore_transaction_options",
+	"2011-09-22",
 	datastoreTransactionOptions,
 	"Add an options argument to datastore.RunInTransaction.",
 }

@@ -5,7 +5,7 @@
 package main
 
 func init() {
-	addTestCases(datastoreKeyTests)
+	addTestCases(datastoreKeyTests, datastoreKey)
 }
 
 var datastoreKeyTests = []testCase{

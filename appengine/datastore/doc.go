@@ -26,7 +26,7 @@ Valid value types are:
   - float32 and float64,
   - any type whose underlying type is one of the above predeclared types,
   - *Key,
-  - Time,
+  - time.Time,
   - appengine.BlobKey,
   - []byte (up to 1 megabyte in length),
   - slices of any of the above.
@@ -64,18 +64,19 @@ Example code:
 
 GetMulti, PutMulti and DeleteMulti are batch versions of the Get, Put and
 Delete functions. They take a []*Key instead of a *Key, and may return an
-ErrMulti when encountering partial failure.
+appengine.MultiError when encountering partial failure.
 
 
 Properties
 
 An entity's contents can be represented by a variety of types. These are
 typically struct pointers, but can also be any type that implements the
-PropertyLoadSaver interface, or a Map (although Maps are deprecated). If using
-a struct pointer, you do not have to explicitly implement the PropertyLoadSaver
-interface; the datastore will automatically convert via reflection. Struct
-pointers are more strongly typed and are easier to use; PropertyLoadSavers and
-Maps are more flexible.
+PropertyLoadSaver interface. If using a struct pointer, you do not have to
+explicitly implement the PropertyLoadSaver interface; the datastore will
+automatically convert via reflection. If a struct pointer does implement that
+interface then those methods will be used in preference to the default
+behavior for struct pointers. Struct pointers are more strongly typed and are
+easier to use; PropertyLoadSavers are more flexible.
 
 The actual types passed do not have to match between Get and Put calls or even
 across different App Engine requests. It is valid to put a *PropertyList and
@@ -83,8 +84,8 @@ get that same entity as a *myStruct, or put a *myStruct0 and get a *myStruct1.
 Conceptually, any entity is saved as a sequence of properties, and is loaded
 into the destination value on a property-by-property basis. When loading into
 a struct pointer, an entity that cannot be completely represented (such as a
-missing field) will result in an error but it is up to the caller whether this
-error is fatal, recoverable or ignorable.
+missing field) will result in an ErrFieldMismatch error but it is up to the
+caller whether this error is fatal, recoverable or ignorable.
 
 By default, for struct pointers, all properties are potentially indexed, and
 the property name is the same as the field name (and hence must start with an
@@ -127,7 +128,7 @@ Example code:
 		Sum int `datastore:"-"`
 	}
 
-	func (x *CustomPropsExample) Load(c <-chan Property) os.Error {
+	func (x *CustomPropsExample) Load(c <-chan Property) error {
 		// Load I and J as usual.
 		if err := datastore.LoadStruct(x, c); err != nil {
 			return err
@@ -137,7 +138,8 @@ Example code:
 		return nil
 	}
 
-	func (x *CustomPropsExample) Save(c chan<- Property) os.Error {
+	func (x *CustomPropsExample) Save(c chan<- Property) error {
+		defer close(c)
 		// Validate the Sum field.
 		if x.Sum != x.I + x.J {
 			return os.NewError("CustomPropsExample has inconsistent sum")
@@ -153,7 +155,6 @@ Example code:
 			Name:  "J",
 			Value: int64(x.J),
 		}
-		close(c)
 		return nil
 	}
 
@@ -163,10 +164,25 @@ arbitrary entity's contents.
 
 Queries
 
-A query is created using datastore.NewQuery and is configured by calling its
-methods. Running a query yields an iterator of results: either an iterator of
-keys or of (key, entity) pairs. Once initialized, a query can be re-used, and
-it is safe to call Query.Run from concurrent goroutines.
+Queries retrieve entities based on their properties or key's ancestry. Running
+a query yields an iterator of results: either keys or (key, entity) pairs.
+Queries are re-usable and it is safe to call Query.Run from concurrent
+goroutines. Iterators are not safe for concurrent use.
+
+Queries are immutable, and are either created by calling NewQuery, or derived
+from an existing query by calling a method like Filter or Order that returns a
+new query value. A query is typically constructed by calling NewQuery followed
+by a chain of zero or more such methods. These methods are:
+  - Ancestor and Filter constrain the entities returned by running a query.
+  - Order affects the order in which they are returned.
+  - KeysOnly makes the iterator return only keys, not (key, entity) pairs.
+  - Start, End, Offset and Limit define which sub-sequence of matching entities
+    to return. Start and End take cursors, Offset and Limit take integers. Start
+    and Offset affect the first result, End and Limit affect the last result.
+    If both Start and Offset are set, then the offset is relative to Start.
+    If both End and Limit are set, then the earliest constraint wins. Limit is
+    relative to Start+Offset, not relative to End. As a special case, a
+    negative limit means unlimited.
 
 Example code:
 
@@ -208,7 +224,7 @@ Example code:
 		Count int
 	}
 
-	func inc(c appengine.Context, key *datastore.Key) (int, os.Error) {
+	func inc(c appengine.Context, key *datastore.Key) (int, error) {
 		var x Counter
 		if err := datastore.Get(c, key, &x); err != nil && err != datastore.ErrNoSuchEntity {
 			return 0, err
@@ -223,8 +239,8 @@ Example code:
 	func handle(w http.ResponseWriter, r *http.Request) {
 		c := appengine.NewContext(r)
 		var count int
-		err := datastore.RunInTransaction(c, func(c appengine.Context) os.Error {
-			var err1 os.Error
+		err := datastore.RunInTransaction(c, func(c appengine.Context) error {
+			var err1 error
 			count, err1 = inc(c, datastore.NewKey(c, "Counter", "singleton", 0, nil))
 			return err1
 		}, nil)

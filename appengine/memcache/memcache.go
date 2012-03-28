@@ -30,13 +30,14 @@ package memcache
 
 import (
 	"bytes"
-	"gob"
-	"json"
-	"os"
+	"encoding/gob"
+	"encoding/json"
+	"errors"
+	"time"
 
 	"appengine"
 	"appengine_internal"
-	"goprotobuf.googlecode.com/hg/proto"
+	"code.google.com/p/goprotobuf/proto"
 
 	pb "appengine_internal/memcache"
 )
@@ -44,19 +45,19 @@ import (
 var (
 	// ErrCacheMiss means that an operation failed
 	// because the item wasn't present.
-	ErrCacheMiss = os.NewError("memcache: cache miss")
+	ErrCacheMiss = errors.New("memcache: cache miss")
 	// ErrCASConflict means that a CompareAndSwap call failed due to the
 	// cached value being modified between the Get and the CompareAndSwap.
 	// If the cached value was simply evicted rather than replaced,
 	// ErrNotStored will be returned instead.
-	ErrCASConflict = os.NewError("memcache: compare-and-swap conflict")
+	ErrCASConflict = errors.New("memcache: compare-and-swap conflict")
 	// ErrNoStats means that no statistics were available.
-	ErrNoStats = os.NewError("memcache: no statistics available")
+	ErrNoStats = errors.New("memcache: no statistics available")
 	// ErrNotStored means that a conditional write operation (i.e. Add or
 	// CompareAndSwap) failed because the condition was not satisfied.
-	ErrNotStored = os.NewError("memcache: item not stored")
+	ErrNotStored = errors.New("memcache: item not stored")
 	// ErrServerError means that a server error occurred.
-	ErrServerError = os.NewError("memcache: server error")
+	ErrServerError = errors.New("memcache: server error")
 )
 
 // Item is the unit of memcache gets and sets.
@@ -70,29 +71,48 @@ type Item struct {
 	// Flags are server-opaque flags whose semantics are entirely up to the
 	// App Engine app.
 	Flags uint32
-	// Expiration is the cache expiration time, in seconds: either a relative
-	// time from now (up to 1 month), or an absolute Unix epoch time.
-	// Zero means the Item has no expiration time.
-	Expiration int32
+	// Expiration is the maximum duration that the item will stay
+	// in the cache.
+	// The zero value means the Item has no expiration time.
+	// Subsecond precision is ignored.
+	Expiration time.Duration
 	// casID is a client-opaque value used for compare-and-swap operations.
 	// Zero means that compare-and-swap is not used.
 	casID uint64
 }
 
+const (
+	secondsIn30Years = 60 * 60 * 24 * 365 * 30 // from memcache server code
+	thirtyYears      = time.Duration(secondsIn30Years) * time.Second
+)
+
 // protoToItem converts a protocol buffer item to a Go struct.
 func protoToItem(p *pb.MemcacheGetResponse_Item) *Item {
+	var expiration time.Duration
+	sec := proto.GetInt32(p.ExpiresInSeconds)
+	if sec > 0 && sec < secondsIn30Years {
+		expiration = time.Duration(sec) * time.Second
+	}
 	return &Item{
 		Key:        string(p.Key),
 		Value:      p.Value,
 		Flags:      proto.GetUint32(p.Flags),
-		Expiration: proto.GetInt32(p.ExpiresInSeconds),
+		Expiration: expiration,
 		casID:      proto.GetUint64(p.CasId),
 	}
 }
 
+// If err is an appengine.MultiError, return its first element. Otherwise, return err.
+func singleError(err error) error {
+	if me, ok := err.(appengine.MultiError); ok {
+		return me[0]
+	}
+	return err
+}
+
 // Get gets the item for the given key. ErrCacheMiss is returned for a memcache
 // cache miss. The key must be at most 250 bytes in length.
-func Get(c appengine.Context, key string) (*Item, os.Error) {
+func Get(c appengine.Context, key string) (*Item, error) {
 	m, err := GetMulti(c, []string{key})
 	if err != nil {
 		return nil, err
@@ -106,7 +126,7 @@ func Get(c appengine.Context, key string) (*Item, os.Error) {
 // GetMulti is a batch version of Get. The returned map from keys to items may
 // have fewer elements than the input slice, due to memcache cache misses.
 // Each key must be at most 250 bytes in length.
-func GetMulti(c appengine.Context, key []string) (map[string]*Item, os.Error) {
+func GetMulti(c appengine.Context, key []string) (map[string]*Item, error) {
 	keyAsBytes := make([][]byte, len(key))
 	for i, k := range key {
 		keyAsBytes[i] = []byte(k)
@@ -130,17 +150,14 @@ func GetMulti(c appengine.Context, key []string) (map[string]*Item, os.Error) {
 // Delete deletes the item for the given key.
 // ErrCacheMiss is returned if the specified item can not be found.
 // The key must be at most 250 bytes in length.
-func Delete(c appengine.Context, key string) os.Error {
-	e := DeleteMulti(c, []string{key})
-	return e[0]
+func Delete(c appengine.Context, key string) error {
+	return singleError(DeleteMulti(c, []string{key}))
 }
 
 // DeleteMulti is a batch version of Delete.
-// The returned slice will have the same length as the input slice.
-// If a given key cannot be found, its corresponding value in the
-// returned error slice is set to ErrCacheMiss.
+// If any keys cannot be found, an appengine.MultiError is returned.
 // Each key must be at most 250 bytes in length.
-func DeleteMulti(c appengine.Context, key []string) []os.Error {
+func DeleteMulti(c appengine.Context, key []string) error {
 	req := &pb.MemcacheDeleteRequest{
 		Item: make([]*pb.MemcacheDeleteRequest_Item, len(key)),
 	}
@@ -148,28 +165,29 @@ func DeleteMulti(c appengine.Context, key []string) []os.Error {
 		req.Item[i] = &pb.MemcacheDeleteRequest_Item{Key: []byte(k)}
 	}
 	res := &pb.MemcacheDeleteResponse{}
-	e := make([]os.Error, len(key))
-	err := c.Call("memcache", "Delete", req, res, nil)
-	if err == nil && len(e) != len(res.DeleteStatus) {
-		err = ErrServerError
+	if err := c.Call("memcache", "Delete", req, res, nil); err != nil {
+		return err
 	}
-	if err != nil {
-		for i := range e {
-			e[i] = err
-		}
-		return e
+	if len(res.DeleteStatus) != len(key) {
+		return ErrServerError
 	}
+	me, any := make(appengine.MultiError, len(key)), false
 	for i, s := range res.DeleteStatus {
 		switch s {
 		case pb.MemcacheDeleteResponse_DELETED:
-			e[i] = nil
+			// OK
 		case pb.MemcacheDeleteResponse_NOT_FOUND:
-			e[i] = ErrCacheMiss
+			me[i] = ErrCacheMiss
+			any = true
 		default:
-			e[i] = ErrServerError
+			me[i] = ErrServerError
+			any = true
 		}
 	}
-	return e
+	if any {
+		return me
+	}
+	return nil
 }
 
 // Increment atomically increments the decimal value in the given key
@@ -179,7 +197,7 @@ func DeleteMulti(c appengine.Context, key []string) []os.Error {
 // memcacheg, the provided initial value is used to atomically
 // populate it before the delta is applied.
 // The key must be at most 250 bytes in length.
-func Increment(c appengine.Context, key string, delta int64, initialValue uint64) (newValue uint64, err os.Error) {
+func Increment(c appengine.Context, key string, delta int64, initialValue uint64) (newValue uint64, err error) {
 	return incr(c, key, delta, &initialValue)
 }
 
@@ -188,11 +206,11 @@ func Increment(c appengine.Context, key string, delta int64, initialValue uint64
 // IncrementExisting can save work if calculating the initial value is
 // expensive.
 // ErrCacheMiss is returned if the specified item can not be found.
-func IncrementExisting(c appengine.Context, key string, delta int64) (newValue uint64, err os.Error) {
+func IncrementExisting(c appengine.Context, key string, delta int64) (newValue uint64, err error) {
 	return incr(c, key, delta, nil)
 }
 
-func incr(c appengine.Context, key string, delta int64, initialValue *uint64) (newValue uint64, err os.Error) {
+func incr(c appengine.Context, key string, delta int64, initialValue *uint64) (newValue uint64, err error) {
 	req := &pb.MemcacheIncrementRequest{
 		Key:          []byte(key),
 		InitialValue: initialValue,
@@ -215,9 +233,8 @@ func incr(c appengine.Context, key string, delta int64, initialValue *uint64) (n
 }
 
 // set sets the given items using the given conflict resolution policy.
-// The returned slice will have the same length as the input slice.
-// If value is not nil, each element should correspond to an item.
-func set(c appengine.Context, item []*Item, value [][]byte, policy pb.MemcacheSetRequest_SetPolicy) []os.Error {
+// appengine.MultiError may be returned.
+func set(c appengine.Context, item []*Item, value [][]byte, policy pb.MemcacheSetRequest_SetPolicy) error {
 	req := &pb.MemcacheSetRequest{
 		Item: make([]*pb.MemcacheSetRequest_Item, len(item)),
 	}
@@ -237,7 +254,21 @@ func set(c appengine.Context, item []*Item, value [][]byte, policy pb.MemcacheSe
 			// In the .proto file, MemcacheSetRequest_Item uses a fixed32 (i.e. unsigned)
 			// for expiration time, while MemcacheGetRequest_Item uses int32 (i.e. signed).
 			// Throughout this .go file, we use int32.
-			p.ExpirationTime = proto.Uint32(uint32(t.Expiration))
+			// Also, in the proto, the expiration value is either a duration (in seconds)
+			// or an absolute Unix timestamp (in seconds), depending on whether the
+			// value is less than or greater than or equal to 30 years, respectively.
+			if t.Expiration < time.Second {
+				// Because an Expiration of 0 means no expiration, we take
+				// care here to translate an item with an expiration
+				// Duration between 0-1 seconds as immediately expiring
+				// (saying it expired a few seconds ago), rather than
+				// rounding it down to 0 and making it live forever.
+				p.ExpirationTime = proto.Uint32(uint32(time.Now().Unix()) - 5)
+			} else if t.Expiration >= thirtyYears {
+				p.ExpirationTime = proto.Uint32(uint32(time.Now().Unix()) + uint32(t.Expiration/time.Second))
+			} else {
+				p.ExpirationTime = proto.Uint32(uint32(t.Expiration / time.Second))
+			}
 		}
 		if t.casID != 0 {
 			p.CasId = proto.Uint64(t.casID)
@@ -247,52 +278,56 @@ func set(c appengine.Context, item []*Item, value [][]byte, policy pb.MemcacheSe
 		req.Item[i] = p
 	}
 	res := &pb.MemcacheSetResponse{}
-	e := make([]os.Error, len(item))
-	err := c.Call("memcache", "Set", req, res, nil)
-	if err == nil && len(e) != len(res.SetStatus) {
-		err = ErrServerError
+	if err := c.Call("memcache", "Set", req, res, nil); err != nil {
+		return err
 	}
-	if err != nil {
-		for i := range e {
-			e[i] = err
-		}
-		return e
+	if len(res.SetStatus) != len(item) {
+		return ErrServerError
 	}
-	for i := range e {
-		switch res.SetStatus[i] {
+	me, any := make(appengine.MultiError, len(item)), false
+	for i, st := range res.SetStatus {
+		var err error
+		switch st {
 		case pb.MemcacheSetResponse_STORED:
-			e[i] = nil
+			// OK
 		case pb.MemcacheSetResponse_NOT_STORED:
-			e[i] = ErrNotStored
+			err = ErrNotStored
 		case pb.MemcacheSetResponse_EXISTS:
-			e[i] = ErrCASConflict
+			err = ErrCASConflict
 		default:
-			e[i] = ErrServerError
+			err = ErrServerError
+		}
+		if err != nil {
+			me[i] = err
+			any = true
 		}
 	}
-	return e
+	if any {
+		return me
+	}
+	return nil
 }
 
 // Set writes the given item, unconditionally.
-func Set(c appengine.Context, item *Item) os.Error {
-	return set(c, []*Item{item}, nil, pb.MemcacheSetRequest_SET)[0]
+func Set(c appengine.Context, item *Item) error {
+	return singleError(set(c, []*Item{item}, nil, pb.MemcacheSetRequest_SET))
 }
 
 // SetMulti is a batch version of Set.
-// The returned slice will have the same length as the input slice.
-func SetMulti(c appengine.Context, item []*Item) []os.Error {
+// appengine.MultiError may be returned.
+func SetMulti(c appengine.Context, item []*Item) error {
 	return set(c, item, nil, pb.MemcacheSetRequest_SET)
 }
 
 // Add writes the given item, if no value already exists for its key.
 // ErrNotStored is returned if that condition is not met.
-func Add(c appengine.Context, item *Item) os.Error {
-	return set(c, []*Item{item}, nil, pb.MemcacheSetRequest_ADD)[0]
+func Add(c appengine.Context, item *Item) error {
+	return singleError(set(c, []*Item{item}, nil, pb.MemcacheSetRequest_ADD))
 }
 
 // AddMulti is a batch version of Add.
-// The returned slice will have the same length as the input slice.
-func AddMulti(c appengine.Context, item []*Item) []os.Error {
+// appengine.MultiError may be returned.
+func AddMulti(c appengine.Context, item []*Item) error {
 	return set(c, item, nil, pb.MemcacheSetRequest_ADD)
 }
 
@@ -302,13 +337,13 @@ func AddMulti(c appengine.Context, item []*Item) []os.Error {
 // all other item fields may differ.
 // ErrCASConflict is returned if the value was modified in between the calls.
 // ErrNotStored is returned if the value was evicted in between the calls.
-func CompareAndSwap(c appengine.Context, item *Item) os.Error {
-	return set(c, []*Item{item}, nil, pb.MemcacheSetRequest_CAS)[0]
+func CompareAndSwap(c appengine.Context, item *Item) error {
+	return singleError(set(c, []*Item{item}, nil, pb.MemcacheSetRequest_CAS))
 }
 
 // CompareAndSwapMulti is a batch version of CompareAndSwap.
-// The returned slice will have the same length as the input slice.
-func CompareAndSwapMulti(c appengine.Context, item []*Item) []os.Error {
+// appengine.MultiError may be returned.
+func CompareAndSwapMulti(c appengine.Context, item []*Item) error {
 	return set(c, item, nil, pb.MemcacheSetRequest_CAS)
 }
 
@@ -316,11 +351,11 @@ func CompareAndSwapMulti(c appengine.Context, item []*Item) []os.Error {
 // Items stored into or retrieved from memcache using a Codec have their
 // values marshaled or unmarshaled.
 type Codec struct {
-	Marshal   func(interface{}) ([]byte, os.Error)
-	Unmarshal func([]byte, interface{}) os.Error
+	Marshal   func(interface{}) ([]byte, error)
+	Unmarshal func([]byte, interface{}) error
 }
 
-func (cd Codec) Get(c appengine.Context, key string, v interface{}) (*Item, os.Error) {
+func (cd Codec) Get(c appengine.Context, key string, v interface{}) (*Item, error) {
 	i, err := Get(c, key)
 	if err != nil {
 		return nil, err
@@ -331,20 +366,20 @@ func (cd Codec) Get(c appengine.Context, key string, v interface{}) (*Item, os.E
 	return i, nil
 }
 
-func (cd Codec) set(c appengine.Context, item *Item, policy pb.MemcacheSetRequest_SetPolicy) os.Error {
+func (cd Codec) set(c appengine.Context, item *Item, policy pb.MemcacheSetRequest_SetPolicy) error {
 	value, err := cd.Marshal(item.Object)
 	if err != nil {
 		return err
 	}
 
-	return set(c, []*Item{item}, [][]byte{value}, policy)[0]
+	return singleError(set(c, []*Item{item}, [][]byte{value}, policy))
 }
 
-func (cd Codec) Set(c appengine.Context, item *Item) os.Error {
+func (cd Codec) Set(c appengine.Context, item *Item) error {
 	return cd.set(c, item, pb.MemcacheSetRequest_SET)
 }
 
-func (cd Codec) Add(c appengine.Context, item *Item) os.Error {
+func (cd Codec) Add(c appengine.Context, item *Item) error {
 	return cd.set(c, item, pb.MemcacheSetRequest_ADD)
 }
 
@@ -355,7 +390,7 @@ var (
 	JSON = Codec{json.Marshal, json.Unmarshal}
 )
 
-func gobMarshal(v interface{}) ([]byte, os.Error) {
+func gobMarshal(v interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	if err := gob.NewEncoder(&buf).Encode(v); err != nil {
 		return nil, err
@@ -363,7 +398,7 @@ func gobMarshal(v interface{}) ([]byte, os.Error) {
 	return buf.Bytes(), nil
 }
 
-func gobUnmarshal(data []byte, v interface{}) os.Error {
+func gobUnmarshal(data []byte, v interface{}) error {
 	return gob.NewDecoder(bytes.NewBuffer(data)).Decode(v)
 }
 
@@ -380,7 +415,7 @@ type Statistics struct {
 }
 
 // Stats retrieves the current memcache statistics.
-func Stats(c appengine.Context) (*Statistics, os.Error) {
+func Stats(c appengine.Context) (*Statistics, error) {
 	req := &pb.MemcacheStatsRequest{}
 	res := &pb.MemcacheStatsResponse{}
 	if err := c.Call("memcache", "Stats", req, res, nil); err != nil {

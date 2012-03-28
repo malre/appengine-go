@@ -2,13 +2,14 @@
 // Use of this source code is governed by the Apache 2.0
 // license that can be found in the LICENSE file.
 
-// Package appengine provides functionality that is common across
-// App Engine APIs.
+// Package appengine provides basic functionality for Google App Engine.
+//
+// For more information on how to write Go apps for Google App Engine, see:
+// https://developers.google.com/appengine/docs/go/
 package appengine
 
 import (
-	"http"
-	"os"
+	"net/http"
 
 	"appengine_internal"
 )
@@ -37,14 +38,14 @@ type Context interface {
 	// Criticalf is like Debugf, but at Critical level.
 	Criticalf(format string, args ...interface{})
 
-	// AppID is deprecated. Use the AppID function instead.
-	AppID() string
-
 	// The remaining methods are for internal use only.
 	// Developer-facing APIs wrap these methods to provide a more friendly API.
 
-	Call(service, method string, in, out interface{}, opts *appengine_internal.CallOptions) os.Error
+	// Internal use only.
+	Call(service, method string, in, out interface{}, opts *appengine_internal.CallOptions) error
+	// Internal use only. Use AppID instead.
 	FullyQualifiedAppID() string
+	// Internal use only.
 	Request() interface{}
 }
 

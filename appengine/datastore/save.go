@@ -5,17 +5,22 @@
 package datastore
 
 import (
+	"errors"
 	"fmt"
-	"os"
+	"math"
 	"reflect"
+	"time"
 
 	"appengine"
-	"goprotobuf.googlecode.com/hg/proto"
+	"code.google.com/p/goprotobuf/proto"
 
 	pb "appengine_internal/datastore"
 )
 
-const nilKeyErrStr = "nil key"
+var (
+	minTime = time.Unix(0, 0)
+	maxTime = time.Unix(int64(math.MaxInt64)/1e6, (int64(math.MaxInt64)%1e6)*1e3)
+)
 
 // valueToProto converts a named value to a newly allocated Property.
 // The returned error string is empty on success.
@@ -25,6 +30,8 @@ func valueToProto(defaultAppID, name string, v reflect.Value, multiple bool) (p 
 		unsupported bool
 	)
 	switch v.Kind() {
+	case reflect.Invalid:
+		// No-op.
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		pv.Int64Value = proto.Int64(v.Int())
 	case reflect.Bool:
@@ -35,10 +42,18 @@ func valueToProto(defaultAppID, name string, v reflect.Value, multiple bool) (p 
 		pv.DoubleValue = proto.Float64(v.Float())
 	case reflect.Ptr:
 		if k, ok := v.Interface().(*Key); ok {
-			if k == nil {
-				return nil, nilKeyErrStr
+			if k != nil {
+				pv.Referencevalue = keyToReferenceValue(defaultAppID, k)
 			}
-			pv.Referencevalue = keyToReferenceValue(defaultAppID, k)
+		} else {
+			unsupported = true
+		}
+	case reflect.Struct:
+		if t, ok := v.Interface().(time.Time); ok {
+			if t.Before(minTime) || t.After(maxTime) {
+				return nil, "time value out of range"
+			}
+			pv.Int64Value = proto.Int64(t.UnixNano() / 1e3)
 		} else {
 			unsupported = true
 		}
@@ -61,105 +76,28 @@ func valueToProto(defaultAppID, name string, v reflect.Value, multiple bool) (p 
 		Value:    &pv,
 		Multiple: proto.Bool(multiple),
 	}
-	switch v.Interface().(type) {
-	case []byte:
-		p.Meaning = pb.NewProperty_Meaning(pb.Property_BLOB)
-	case appengine.BlobKey:
-		p.Meaning = pb.NewProperty_Meaning(pb.Property_BLOBKEY)
-	case Time:
-		p.Meaning = pb.NewProperty_Meaning(pb.Property_GD_WHEN)
+	if v.IsValid() {
+		switch v.Interface().(type) {
+		case []byte:
+			p.Meaning = pb.NewProperty_Meaning(pb.Property_BLOB)
+		case appengine.BlobKey:
+			p.Meaning = pb.NewProperty_Meaning(pb.Property_BLOBKEY)
+		case time.Time:
+			p.Meaning = pb.NewProperty_Meaning(pb.Property_GD_WHEN)
+		}
 	}
 	return p, ""
 }
 
-// addProperty adds propProto to e, as either a Property or a RawProperty of e
-// depending on whether or not the property should be indexed.
-// In particular, []byte values are raw. All other values are indexed.
-func addProperty(e *pb.EntityProto, propProto *pb.Property, propValue reflect.Value) {
-	if propValue.Type() == typeOfByteSlice {
-		e.RawProperty = append(e.RawProperty, propProto)
-	} else {
-		e.Property = append(e.Property, propProto)
-	}
-}
-
-// nameValue holds a string name and a reflect.Value.
-type nameValue struct {
-	name  string
-	value reflect.Value
-}
-
-// nvToProto converts a slice of nameValues to a newly allocated EntityProto.
-func nvToProto(defaultAppID string, key *Key, typeName string, nv []nameValue) (*pb.EntityProto, os.Error) {
-	const errMsg = "datastore: cannot store field named %q from a %q: %s"
-	e := &pb.EntityProto{
-		Key: keyToProto(defaultAppID, key),
-	}
-	if key.parent == nil {
-		e.EntityGroup = &pb.Path{}
-	} else {
-		e.EntityGroup = keyToProto(defaultAppID, key.root()).Path
-	}
-	for _, x := range nv {
-		isBlob := x.value.Type() == typeOfByteSlice
-		if x.value.Kind() == reflect.Slice && !isBlob {
-			// Save each element of the field as a multiple-valued property.
-			for j := 0; j < x.value.Len(); j++ {
-				elem := x.value.Index(j)
-				property, errStr := valueToProto(defaultAppID, x.name, elem, true)
-				if errStr == nilKeyErrStr {
-					// Skip a nil *Key.
-					continue
-				}
-				if errStr != "" {
-					return nil, fmt.Errorf(errMsg, x.name, typeName, errStr)
-				}
-				addProperty(e, property, elem)
-			}
-			continue
-		}
-		// Save the field as a single-valued property.
-		property, errStr := valueToProto(defaultAppID, x.name, x.value, false)
-		if errStr == nilKeyErrStr {
-			// Skip a nil *Key.
-			continue
-		}
-		if errStr != "" {
-			return nil, fmt.Errorf(errMsg, x.name, typeName, errStr)
-		}
-		addProperty(e, property, x.value)
-	}
-	if len(e.Property) > maxIndexedProperties {
-		return nil, fmt.Errorf("datastore: too many indexed properties")
-	}
-	return e, nil
-}
-
-// saveMap converts an entity Map to a newly allocated EntityProto.
-func saveMap(defaultAppID string, key *Key, m Map) (*pb.EntityProto, os.Error) {
-	nv := make([]nameValue, len(m))
-	n := 0
-	for k, v := range m {
-		nv[n] = nameValue{k, reflect.ValueOf(v)}
-		n++
-	}
-	return nvToProto(defaultAppID, key, "datastore.Map", nv)
-}
-
-// saveEntity saves an EntityProto into a Map, PropertyLoadSaver or struct
-// pointer.
-func saveEntity(defaultAppID string, key *Key, src interface{}) (x *pb.EntityProto, err os.Error) {
-	if m, ok := src.(Map); ok {
-		return saveMap(defaultAppID, key, m)
-	}
-
+// saveEntity saves an EntityProto into a PropertyLoadSaver or struct pointer.
+func saveEntity(defaultAppID string, key *Key, src interface{}) (x *pb.EntityProto, err error) {
 	c := make(chan Property, 32)
 	donec := make(chan struct{})
 	go func() {
 		x, err = propertiesToProto(defaultAppID, key, c)
 		close(donec)
 	}()
-	var err1 os.Error
+	var err1 error
 	if e, ok := src.(PropertyLoadSaver); ok {
 		err1 = e.Save(c)
 	} else {
@@ -172,7 +110,7 @@ func saveEntity(defaultAppID string, key *Key, src interface{}) (x *pb.EntityPro
 	return x, err
 }
 
-func saveStructProperty(c chan<- Property, name string, noIndex, multiple bool, v reflect.Value) os.Error {
+func saveStructProperty(c chan<- Property, name string, noIndex, multiple bool, v reflect.Value) error {
 	p := Property{
 		Name:     name,
 		NoIndex:  noIndex,
@@ -180,11 +118,8 @@ func saveStructProperty(c chan<- Property, name string, noIndex, multiple bool, 
 	}
 	switch x := v.Interface().(type) {
 	case *Key:
-		if x == nil {
-			return nil
-		}
 		p.Value = x
-	case Time:
+	case time.Time:
 		p.Value = x
 	case appengine.BlobKey:
 		p.Value = x
@@ -210,7 +145,7 @@ func saveStructProperty(c chan<- Property, name string, noIndex, multiple bool, 
 	return nil
 }
 
-func (s structPLS) Save(c chan<- Property) os.Error {
+func (s structPLS) Save(c chan<- Property) error {
 	defer close(c)
 	for i, t := range s.codec.byIndex {
 		if t.name == "-" {
@@ -237,7 +172,7 @@ func (s structPLS) Save(c chan<- Property) os.Error {
 	return nil
 }
 
-func propertiesToProto(defaultAppID string, key *Key, src <-chan Property) (*pb.EntityProto, os.Error) {
+func propertiesToProto(defaultAppID string, key *Key, src <-chan Property) (*pb.EntityProto, error) {
 	defer func() {
 		for _ = range src {
 			// Drain the src channel, if we exit early.
@@ -277,12 +212,14 @@ func propertiesToProto(defaultAppID string, key *Key, src <-chan Property) (*pb.
 		case float64:
 			x.Value.DoubleValue = proto.Float64(v)
 		case *Key:
-			if v == nil {
-				continue
+			if v != nil {
+				x.Value.Referencevalue = keyToReferenceValue(defaultAppID, v)
 			}
-			x.Value.Referencevalue = keyToReferenceValue(defaultAppID, v)
-		case Time:
-			x.Value.Int64Value = proto.Int64(int64(v))
+		case time.Time:
+			if v.Before(minTime) || v.After(maxTime) {
+				return nil, fmt.Errorf("datastore: time value out of range")
+			}
+			x.Value.Int64Value = proto.Int64(v.UnixNano() / 1e3)
 			x.Meaning = pb.NewProperty_Meaning(pb.Property_GD_WHEN)
 		case appengine.BlobKey:
 			x.Value.StringValue = proto.String(string(v))
@@ -302,7 +239,7 @@ func propertiesToProto(defaultAppID string, key *Key, src <-chan Property) (*pb.
 		} else {
 			e.Property = append(e.Property, x)
 			if len(e.Property) > maxIndexedProperties {
-				return nil, os.NewError("datastore: too many indexed properties")
+				return nil, errors.New("datastore: too many indexed properties")
 			}
 		}
 	}

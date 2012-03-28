@@ -6,13 +6,14 @@ package mandelbrot
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
-	"http"
 	"image"
+	"image/color"
 	"image/png"
-	"json"
+	"net/http"
 	"strconv"
-	"template"
+	"text/template"
 
 	"appengine"
 	"appengine/memcache"
@@ -23,21 +24,21 @@ func init() {
 	http.HandleFunc("/tiles", tileHandler)
 	http.HandleFunc("/memcache-stats", memcacheHandler)
 
-	for i := range color {
+	for i := range colors {
 		// Use a broader range of color for low intensities.
 		if i < 255/10 {
-			color[i] = image.RGBAColor{uint8(i * 10), 0, 0, 0xFF}
+			colors[i] = color.RGBA{uint8(i * 10), 0, 0, 0xFF}
 		} else {
-			color[i] = image.RGBAColor{0xFF, 0, uint8(i - 255/10), 0xFF}
+			colors[i] = color.RGBA{0xFF, 0, uint8(i - 255/10), 0xFF}
 		}
 	}
 }
 
 var (
-	// color is the mapping of intensity to color.
-	color [256]image.Color
+	// colors is the mapping of intensity to color.
+	colors [256]color.Color
 
-	frontPageTmpl = template.Must(template.ParseFile("map.html"))
+	frontPageTmpl = template.Must(template.ParseFiles("map.html"))
 )
 
 const (
@@ -103,7 +104,7 @@ func render(x, y, z int) []byte {
 	tileX, tileY := x*tileSize, y*tileSize
 	scale := 1 / float64(int(1<<uint(z))*tileSize)
 
-	img := image.NewPaletted(tileSize, tileSize, image.PalettedColorModel(color[:]))
+	img := image.NewPaletted(image.Rect(0, 0, tileSize, tileSize), color.Palette(colors[:]))
 	for i := 0; i < tileSize; i++ {
 		for j := 0; j < tileSize; j++ {
 			c := complex(float64(tileX+i)*scale, float64(tileY+j)*scale)
@@ -138,7 +139,7 @@ func memcacheHandler(w http.ResponseWriter, r *http.Request) {
 
 	stats, err := memcache.Stats(c)
 	if err != nil {
-		writeJSON(w, map[string]string{"error": err.String()})
+		writeJSON(w, map[string]string{"error": err.Error()})
 		return
 	}
 	writeJSON(w, stats)
