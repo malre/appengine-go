@@ -3,6 +3,10 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.6.5 - April 2012
+==========================
+No changes.
+
 Version 1.6.4 - March 2012
 ==========================
 This release is based on Go 1.

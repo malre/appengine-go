@@ -13,6 +13,7 @@ var _ = math.Inf
 type Property_Meaning int32
 
 const (
+	Property_NO_MEANING       Property_Meaning = 0
 	Property_BLOB             Property_Meaning = 14
 	Property_TEXT             Property_Meaning = 15
 	Property_BYTESTRING       Property_Meaning = 16
@@ -30,10 +31,12 @@ const (
 	Property_GD_POSTALADDRESS Property_Meaning = 12
 	Property_GD_RATING        Property_Meaning = 13
 	Property_BLOBKEY          Property_Meaning = 17
+	Property_ENTITY_PROTO     Property_Meaning = 19
 	Property_INDEX_VALUE      Property_Meaning = 18
 )
 
 var Property_Meaning_name = map[int32]string{
+	0:  "NO_MEANING",
 	14: "BLOB",
 	15: "TEXT",
 	16: "BYTESTRING",
@@ -51,9 +54,11 @@ var Property_Meaning_name = map[int32]string{
 	12: "GD_POSTALADDRESS",
 	13: "GD_RATING",
 	17: "BLOBKEY",
+	19: "ENTITY_PROTO",
 	18: "INDEX_VALUE",
 }
 var Property_Meaning_value = map[string]int32{
+	"NO_MEANING":       0,
 	"BLOB":             14,
 	"TEXT":             15,
 	"BYTESTRING":       16,
@@ -71,6 +76,7 @@ var Property_Meaning_value = map[string]int32{
 	"GD_POSTALADDRESS": 12,
 	"GD_RATING":        13,
 	"BLOBKEY":          17,
+	"ENTITY_PROTO":     19,
 	"INDEX_VALUE":      18,
 }
 
@@ -425,7 +431,7 @@ func (this *PropertyValue_ReferenceValue_PathElement) String() string {
 }
 
 type Property struct {
-	Meaning          *Property_Meaning `protobuf:"varint,1,opt,name=meaning,enum=datastore.Property_Meaning" json:"meaning,omitempty"`
+	Meaning          *Property_Meaning `protobuf:"varint,1,opt,name=meaning,enum=datastore.Property_Meaning,def=0" json:"meaning,omitempty"`
 	MeaningUri       *string           `protobuf:"bytes,2,opt,name=meaning_uri" json:"meaning_uri,omitempty"`
 	Name             *string           `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
 	Value            *PropertyValue    `protobuf:"bytes,5,req,name=value" json:"value,omitempty"`
@@ -435,6 +441,8 @@ type Property struct {
 
 func (this *Property) Reset()         { *this = Property{} }
 func (this *Property) String() string { return proto.CompactTextString(this) }
+
+const Default_Property_Meaning Property_Meaning = Property_NO_MEANING
 
 type Path struct {
 	Element          []*Path_Element `protobuf:"group,1,rep" json:"element,omitempty"`
@@ -855,6 +863,7 @@ type QueryResult struct {
 	SkippedResults   *int32            `protobuf:"varint,7,opt,name=skipped_results" json:"skipped_results,omitempty"`
 	MoreResults      *bool             `protobuf:"varint,3,req,name=more_results" json:"more_results,omitempty"`
 	KeysOnly         *bool             `protobuf:"varint,4,opt,name=keys_only" json:"keys_only,omitempty"`
+	IndexOnly        *bool             `protobuf:"varint,9,opt,name=index_only" json:"index_only,omitempty"`
 	CompiledQuery    *CompiledQuery    `protobuf:"bytes,5,opt,name=compiled_query" json:"compiled_query,omitempty"`
 	CompiledCursor   *CompiledCursor   `protobuf:"bytes,6,opt,name=compiled_cursor" json:"compiled_cursor,omitempty"`
 	Index            []*CompositeIndex `protobuf:"bytes,8,rep,name=index" json:"index,omitempty"`

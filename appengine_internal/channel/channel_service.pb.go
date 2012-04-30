@@ -18,6 +18,7 @@ const (
 	ChannelServiceError_INVALID_CHANNEL_KEY            ChannelServiceError_ErrorCode = 2
 	ChannelServiceError_BAD_MESSAGE                    ChannelServiceError_ErrorCode = 3
 	ChannelServiceError_INVALID_CHANNEL_TOKEN_DURATION ChannelServiceError_ErrorCode = 4
+	ChannelServiceError_APPID_ALIAS_REQUIRED           ChannelServiceError_ErrorCode = 5
 )
 
 var ChannelServiceError_ErrorCode_name = map[int32]string{
@@ -26,6 +27,7 @@ var ChannelServiceError_ErrorCode_name = map[int32]string{
 	2: "INVALID_CHANNEL_KEY",
 	3: "BAD_MESSAGE",
 	4: "INVALID_CHANNEL_TOKEN_DURATION",
+	5: "APPID_ALIAS_REQUIRED",
 }
 var ChannelServiceError_ErrorCode_value = map[string]int32{
 	"OK":                             0,
@@ -33,6 +35,7 @@ var ChannelServiceError_ErrorCode_value = map[string]int32{
 	"INVALID_CHANNEL_KEY":            2,
 	"BAD_MESSAGE":                    3,
 	"INVALID_CHANNEL_TOKEN_DURATION": 4,
+	"APPID_ALIAS_REQUIRED":           5,
 }
 
 func NewChannelServiceError_ErrorCode(x ChannelServiceError_ErrorCode) *ChannelServiceError_ErrorCode {

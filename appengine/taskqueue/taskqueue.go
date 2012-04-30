@@ -85,7 +85,7 @@ type Task struct {
 	// Payload is the data for the task.
 	// This will be delivered as the HTTP request body.
 	// It is only used when Method is POST, PUT or PULL.
-	// http.EncodeQuery may be used to generate this for POST requests.
+	// url.Values' Encode method may be used to generate this for POST requests.
 	Payload []byte
 
 	// Additional HTTP headers to pass at the task's execution time.

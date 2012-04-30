@@ -127,7 +127,7 @@ func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err error)
 			})
 		}
 	}
-	if methodAcceptsRequestBody[req.Method] {
+	if methodAcceptsRequestBody[req.Method] && req.Body != nil {
 		freq.Payload, err = ioutil.ReadAll(req.Body)
 		if err != nil {
 			return nil, err

@@ -25,7 +25,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -45,7 +46,7 @@ var (
 )
 
 func defaultArch() string {
-	switch os.Getenv("GOARCH") {
+	switch runtime.GOARCH {
 	case "386":
 		return "8"
 	case "amd64":
@@ -57,6 +58,18 @@ func defaultArch() string {
 	return "6"
 }
 
+func fullArch(c string) string {
+	switch c {
+	case "5":
+		return "arm"
+	case "6":
+		return "amd64"
+	case "8":
+		return "386"
+	}
+	return "amd64"
+}
+
 func main() {
 	flag.Usage = usage
 	flag.Parse()
@@ -66,7 +79,7 @@ func main() {
 	}
 
 	if *logFile != "" {
-		f, err := os.OpenFile(*logFile, os.O_APPEND|os.O_CREATE|os.O_SYNC, 0644)
+		f, err := os.OpenFile(*logFile, os.O_WRONLY|os.O_APPEND|os.O_CREATE|os.O_SYNC, 0644)
 		if err != nil {
 			log.Fatalf("go-app-builder: Failed opening log file: %v", err)
 		}
@@ -108,7 +121,7 @@ func buildApp(app *App) error {
 		return fmt.Errorf("failed creating main: %v", err)
 	}
 	const mainName = "_go_main.go"
-	mainFile := path.Join(*workDir, mainName)
+	mainFile := filepath.Join(*workDir, mainName)
 	defer os.Remove(mainFile)
 	if err := ioutil.WriteFile(mainFile, []byte(mainStr), 0640); err != nil {
 		return fmt.Errorf("failed writing main: %v", err)
@@ -132,11 +145,11 @@ func buildApp(app *App) error {
 	}
 
 	// Compile phase.
-	compiler := path.Join(*goRoot, "bin", *arch+"g")
-	gopack := path.Join(*goRoot, "bin", "gopack")
+	compiler := toolPath(*arch + "g")
+	gopack := toolPath("pack")
 	for i, pkg := range app.Packages {
-		objectFile := path.Join(*workDir, pkg.ImportPath) + "." + *arch
-		objectDir, _ := path.Split(objectFile)
+		objectFile := filepath.Join(*workDir, pkg.ImportPath) + "." + *arch
+		objectDir, _ := filepath.Split(objectFile)
 		if err := os.MkdirAll(objectDir, 0750); err != nil {
 			return fmt.Errorf("failed creating directory %v: %v", objectDir, err)
 		}
@@ -152,7 +165,7 @@ func buildApp(app *App) error {
 		if i < len(app.Packages)-1 {
 			// regular package
 			for _, f := range pkg.Files {
-				args = append(args, path.Join(*appBase, f.Name))
+				args = append(args, filepath.Join(*appBase, f.Name))
 			}
 		} else {
 			// synthetic main package
@@ -166,7 +179,7 @@ func buildApp(app *App) error {
 		// Turn the object file into an archive file, stripped of file path information.
 		// The path we strip depends on whether this object file is based on user code
 		// or the synthetic main code.
-		archiveFile := path.Join(*workDir, pkg.ImportPath) + ".a"
+		archiveFile := filepath.Join(*workDir, pkg.ImportPath) + ".a"
 		srcDir := *appBase
 		if i == len(app.Packages)-1 {
 			srcDir = *workDir
@@ -184,9 +197,9 @@ func buildApp(app *App) error {
 	}
 
 	// Link phase.
-	linker := path.Join(*goRoot, "bin", *arch+"l")
-	archiveFile := path.Join(*workDir, app.Packages[len(app.Packages)-1].ImportPath) + ".a"
-	binaryFile := path.Join(*workDir, *binaryName)
+	linker := toolPath(*arch + "l")
+	archiveFile := filepath.Join(*workDir, app.Packages[len(app.Packages)-1].ImportPath) + ".a"
+	binaryFile := filepath.Join(*workDir, *binaryName)
 	args := []string{
 		linker,
 		"-L", *workDir,
@@ -217,6 +230,24 @@ func buildApp(app *App) error {
 	return nil
 }
 
+func toolPath(x string) string {
+	// The logic here is transitional only.
+	// Once the production and SDK toolchains all put the tools in the standard location,
+	// we can remove all but the first real line.
+
+	// Try the preferred path first.
+	f := filepath.Join(*goRoot, "pkg", "tool", runtime.GOOS+"_"+fullArch(*arch), x)
+	if _, err := os.Stat(f); err == nil {
+		return f
+	}
+
+	// The fallback location calls pack "gopack".
+	if x == "pack" {
+		x = "gopack"
+	}
+	return filepath.Join(*goRoot, "bin", x)
+}
+
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage:  %s [options] <foo.go> ...\n", os.Args[0])
 	flag.PrintDefaults()
@@ -226,7 +257,7 @@ func run(args []string, env []string) error {
 	if *verbose {
 		log.Printf("run %v", args)
 	}
-	tool := path.Base(args[0])
+	tool := filepath.Base(args[0])
 	if *trampoline != "" {
 		// Add trampoline binary, its flags, and -- to the start.
 		newArgs := []string{*trampoline}

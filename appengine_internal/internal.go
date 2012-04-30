@@ -118,7 +118,7 @@ type failingTransport struct{}
 
 func (failingTransport) RoundTrip(*http.Request) (*http.Response, error) {
 	return nil, errors.New("http.DefaultClient is not available in App Engine. " +
-		"See http://code.google.com/appengine/docs/go/urlfetch/overview.html")
+		"See https://developers.google.com/appengine/docs/go/urlfetch/overview")
 }
 
 func init() {

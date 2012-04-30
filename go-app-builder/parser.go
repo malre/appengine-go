@@ -2,8 +2,6 @@
 // Use of this source code is governed by the Apache 2.0
 // license that can be found in the LICENSE file.
 
-// TODO: Use path/filepath throughout gab.
-
 package main
 
 import (
@@ -15,7 +13,7 @@ import (
 	"go/scanner"
 	"go/token"
 	"os"
-	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -58,10 +56,10 @@ type vfs struct {
 }
 
 func (v vfs) readDir(dir string) (fis []os.FileInfo, err error) {
-	dir = path.Clean(dir)
+	dir = filepath.Clean(dir)
 	for _, f := range v.filenames {
-		f = path.Join(v.baseDir, f)
-		if path.Dir(f) == dir {
+		f = filepath.Join(v.baseDir, f)
+		if filepath.Dir(f) == dir {
 			fi, err := os.Stat(f)
 			if err != nil {
 				return nil, err
@@ -89,12 +87,12 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		Compiler:  "gc",
 		HasSubdir: func(root, dir string) (rel string, ok bool) {
 			// Override the default HasSubdir, which evaluates symlinks.
-			const sep = "/"
-			root = path.Clean(root)
+			const sep = string(filepath.Separator)
+			root = filepath.Clean(root)
 			if !strings.HasSuffix(root, sep) {
 				root += sep
 			}
-			dir = path.Clean(dir)
+			dir = filepath.Clean(dir)
 			if !strings.HasPrefix(dir, root) {
 				return "", false
 			}
@@ -107,14 +105,14 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 
 	dirs := make(map[string]bool)
 	for _, f := range filenames {
-		dir := path.Dir(f)
-		if dir == "" || dir == "/" || dir == "." {
+		dir := filepath.Dir(f)
+		if dir == "" || dir == string(filepath.Separator) || dir == "." {
 			return nil, errors.New("go files must be in a subdirectory of the app root")
 		}
 		dirs[dir] = true
 	}
 	for dir := range dirs {
-		pkg, err := ctxt.ImportDir(path.Join(baseDir, dir), 0)
+		pkg, err := ctxt.ImportDir(filepath.Join(baseDir, dir), 0)
 		if _, ok := err.(*build.NoGoError); ok {
 			// There were .go files, but they were all excluded (e.g. by "// +build ignore").
 			continue
@@ -124,7 +122,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		}
 
 		for _, f := range pkg.GoFiles {
-			filename := path.Join(dir, f)
+			filename := filepath.Join(dir, f)
 			file, err := parseFile(baseDir, filename)
 			if err != nil {
 				return nil, err
@@ -143,6 +141,9 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		}
 		if p.ImportPath == "main" {
 			return nil, errors.New("top-level main package is forbidden")
+		}
+		if isStandardPackage(p.ImportPath) {
+			return nil, fmt.Errorf("package %q has the same name as a standard package", p.ImportPath)
 		}
 		for _, f := range files {
 			if f.HasInit {
@@ -195,7 +196,7 @@ func isInit(f *ast.FuncDecl) bool {
 // parseFile parses a single Go source file into a *File.
 func parseFile(baseDir, filename string) (*File, error) {
 	var fset token.FileSet
-	file, err := parser.ParseFile(&fset, path.Join(baseDir, filename), nil, 0)
+	file, err := parser.ParseFile(&fset, filepath.Join(baseDir, filename), nil, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -243,7 +244,6 @@ func parseFile(baseDir, filename string) (*File, error) {
 }
 
 var legalImportPath = regexp.MustCompile(`^[a-zA-Z0-9_\-./]+$`)
-var doubleDot = regexp.MustCompile(`[.][.]`)
 
 // checkImport will return whether the provided import path is good.
 func checkImport(path string) bool {
@@ -253,7 +253,7 @@ func checkImport(path string) bool {
 	if len(path) > 1024 {
 		return false
 	}
-	if path[0] == '/' || doubleDot.MatchString(path) {
+	if filepath.IsAbs(path) || strings.Contains(path, "..") {
 		return false
 	}
 	if !legalImportPath.MatchString(path) {
@@ -299,7 +299,7 @@ func (c *compLitChecker) Visit(node ast.Node) ast.Visitor {
 			c.imports[id] = pth
 		} else {
 			// All standard packages have their last path component as their package name.
-			c.imports[path.Base(pth)] = pth
+			c.imports[filepath.Base(pth)] = pth
 		}
 		return c
 	}

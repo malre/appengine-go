@@ -13,13 +13,14 @@ var _ = math.Inf
 type XmppServiceError_ErrorCode int32
 
 const (
-	XmppServiceError_UNSPECIFIED_ERROR XmppServiceError_ErrorCode = 1
-	XmppServiceError_INVALID_JID       XmppServiceError_ErrorCode = 2
-	XmppServiceError_NO_BODY           XmppServiceError_ErrorCode = 3
-	XmppServiceError_INVALID_XML       XmppServiceError_ErrorCode = 4
-	XmppServiceError_INVALID_TYPE      XmppServiceError_ErrorCode = 5
-	XmppServiceError_INVALID_SHOW      XmppServiceError_ErrorCode = 6
-	XmppServiceError_EXCEEDED_MAX_SIZE XmppServiceError_ErrorCode = 7
+	XmppServiceError_UNSPECIFIED_ERROR    XmppServiceError_ErrorCode = 1
+	XmppServiceError_INVALID_JID          XmppServiceError_ErrorCode = 2
+	XmppServiceError_NO_BODY              XmppServiceError_ErrorCode = 3
+	XmppServiceError_INVALID_XML          XmppServiceError_ErrorCode = 4
+	XmppServiceError_INVALID_TYPE         XmppServiceError_ErrorCode = 5
+	XmppServiceError_INVALID_SHOW         XmppServiceError_ErrorCode = 6
+	XmppServiceError_EXCEEDED_MAX_SIZE    XmppServiceError_ErrorCode = 7
+	XmppServiceError_APPID_ALIAS_REQUIRED XmppServiceError_ErrorCode = 8
 )
 
 var XmppServiceError_ErrorCode_name = map[int32]string{
@@ -30,15 +31,17 @@ var XmppServiceError_ErrorCode_name = map[int32]string{
 	5: "INVALID_TYPE",
 	6: "INVALID_SHOW",
 	7: "EXCEEDED_MAX_SIZE",
+	8: "APPID_ALIAS_REQUIRED",
 }
 var XmppServiceError_ErrorCode_value = map[string]int32{
-	"UNSPECIFIED_ERROR": 1,
-	"INVALID_JID":       2,
-	"NO_BODY":           3,
-	"INVALID_XML":       4,
-	"INVALID_TYPE":      5,
-	"INVALID_SHOW":      6,
-	"EXCEEDED_MAX_SIZE": 7,
+	"UNSPECIFIED_ERROR":    1,
+	"INVALID_JID":          2,
+	"NO_BODY":              3,
+	"INVALID_XML":          4,
+	"INVALID_TYPE":         5,
+	"INVALID_SHOW":         6,
+	"EXCEEDED_MAX_SIZE":    7,
+	"APPID_ALIAS_REQUIRED": 8,
 }
 
 func NewXmppServiceError_ErrorCode(x XmppServiceError_ErrorCode) *XmppServiceError_ErrorCode {
