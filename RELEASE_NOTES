@@ -3,6 +3,16 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.6.6 - May 2012
+========================
+appengine/delay:
+  - Add Task method for finer control over execution.
+appengine/mail:
+  - Add support for setting mail headers.
+appengine/taskqueue:
+  - Observe Task.ETA field when adding a task to a push queue.
+  - Enforce that a Task's Delay and ETA fields are mutually exclusive.
+
 Version 1.6.5 - April 2012
 ==========================
 No changes.

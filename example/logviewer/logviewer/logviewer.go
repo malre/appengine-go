@@ -34,7 +34,7 @@ var (
 		{3, "Error", appengine.Context.Errorf},
 		{4, "Critical", appengine.Context.Criticalf},
 	}
-	mainPageTmpl = template.Must(template.New("log").Funcs(funcMap).ParseFiles("log.html"))
+	mainPageTmpl = template.Must(template.New("").Funcs(funcMap).ParseFiles("log.html"))
 )
 
 func init() {
@@ -111,7 +111,7 @@ func query(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Execute the main page template and return the response.
-	if err := mainPageTmpl.Execute(w, data); err != nil {
+	if err := mainPageTmpl.ExecuteTemplate(w, "log.html", data); err != nil {
 		c.Errorf("Failed to execute template: %v", err)
 	}
 }

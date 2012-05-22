@@ -41,9 +41,15 @@ var URLFetchServiceError_ErrorCode_value = map[string]int32{
 	"SSL_CERTIFICATE_ERROR": 6,
 }
 
+// NewURLFetchServiceError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewURLFetchServiceError_ErrorCode(x URLFetchServiceError_ErrorCode) *URLFetchServiceError_ErrorCode {
 	e := URLFetchServiceError_ErrorCode(x)
 	return &e
+}
+func (x URLFetchServiceError_ErrorCode) Enum() *URLFetchServiceError_ErrorCode {
+	p := new(URLFetchServiceError_ErrorCode)
+	*p = x
+	return p
 }
 func (x URLFetchServiceError_ErrorCode) String() string {
 	return proto.EnumName(URLFetchServiceError_ErrorCode_name, int32(x))
@@ -74,9 +80,15 @@ var URLFetchRequest_RequestMethod_value = map[string]int32{
 	"DELETE": 5,
 }
 
+// NewURLFetchRequest_RequestMethod is deprecated. Use x.Enum() instead.
 func NewURLFetchRequest_RequestMethod(x URLFetchRequest_RequestMethod) *URLFetchRequest_RequestMethod {
 	e := URLFetchRequest_RequestMethod(x)
 	return &e
+}
+func (x URLFetchRequest_RequestMethod) Enum() *URLFetchRequest_RequestMethod {
+	p := new(URLFetchRequest_RequestMethod)
+	*p = x
+	return p
 }
 func (x URLFetchRequest_RequestMethod) String() string {
 	return proto.EnumName(URLFetchRequest_RequestMethod_name, int32(x))

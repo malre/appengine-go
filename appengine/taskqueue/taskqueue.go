@@ -102,11 +102,14 @@ type Task struct {
 	// If empty, a name will be chosen.
 	Name string
 
-	// Delay is how far into the future this task should execute.
+	// Delay specifies the duration the task queue service must wait
+	// before executing the task.
+	// Either Delay or ETA may be set, but not both.
 	Delay time.Duration
 
-	// Time before which the task may neither be executed or leased.
-	// Set on tasks returned from Lease calls.
+	// ETA specifies the earliest time a task may be executed (push queues)
+	// or leased (pull queues).
+	// Either Delay or ETA may be set, but not both.
 	ETA time.Time
 
 	// The number of times the task has been dispatched or leased.
@@ -142,16 +145,22 @@ func newAddReq(task *Task, queueName string) (*taskqueue_proto.TaskQueueAddReque
 	if queueName == "" {
 		queueName = "default"
 	}
+	eta := task.ETA
+	if eta.IsZero() {
+		eta = time.Now().Add(task.Delay)
+	} else if task.Delay != 0 {
+		panic("taskqueue: both Delay and ETA are set")
+	}
 	req := &taskqueue_proto.TaskQueueAddRequest{
 		QueueName: []byte(queueName),
 		TaskName:  []byte(task.Name),
-		EtaUsec:   proto.Int64(time.Now().Add(task.Delay).UnixNano() / 1e3),
+		EtaUsec:   proto.Int64(eta.UnixNano() / 1e3),
 	}
 	method := task.method()
 	if method == "PULL" {
 		// Pull-based task
 		req.Body = task.Payload
-		req.Mode = taskqueue_proto.NewTaskQueueMode_Mode(taskqueue_proto.TaskQueueMode_PULL)
+		req.Mode = taskqueue_proto.TaskQueueMode_PULL.Enum()
 		if task.Tag != "" {
 			req.Tag = []byte(task.Tag)
 		}
@@ -159,8 +168,7 @@ func newAddReq(task *Task, queueName string) (*taskqueue_proto.TaskQueueAddReque
 	} else {
 		// HTTP-based task
 		if v, ok := taskqueue_proto.TaskQueueAddRequest_RequestMethod_value[method]; ok {
-			req.Method = taskqueue_proto.NewTaskQueueAddRequest_RequestMethod(
-				taskqueue_proto.TaskQueueAddRequest_RequestMethod(v))
+			req.Method = taskqueue_proto.TaskQueueAddRequest_RequestMethod(v).Enum()
 		} else {
 			return nil, fmt.Errorf("taskqueue: bad method %q", method)
 		}

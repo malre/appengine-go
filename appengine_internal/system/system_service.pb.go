@@ -32,9 +32,15 @@ var SystemServiceError_ErrorCode_value = map[string]int32{
 	"LIMIT_REACHED":    3,
 }
 
+// NewSystemServiceError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewSystemServiceError_ErrorCode(x SystemServiceError_ErrorCode) *SystemServiceError_ErrorCode {
 	e := SystemServiceError_ErrorCode(x)
 	return &e
+}
+func (x SystemServiceError_ErrorCode) Enum() *SystemServiceError_ErrorCode {
+	p := new(SystemServiceError_ErrorCode)
+	*p = x
+	return p
 }
 func (x SystemServiceError_ErrorCode) String() string {
 	return proto.EnumName(SystemServiceError_ErrorCode_name, int32(x))

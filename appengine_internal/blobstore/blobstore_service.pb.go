@@ -44,9 +44,15 @@ var BlobstoreServiceError_ErrorCode_value = map[string]int32{
 	"ARGUMENT_OUT_OF_RANGE":     8,
 }
 
+// NewBlobstoreServiceError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewBlobstoreServiceError_ErrorCode(x BlobstoreServiceError_ErrorCode) *BlobstoreServiceError_ErrorCode {
 	e := BlobstoreServiceError_ErrorCode(x)
 	return &e
+}
+func (x BlobstoreServiceError_ErrorCode) Enum() *BlobstoreServiceError_ErrorCode {
+	p := new(BlobstoreServiceError_ErrorCode)
+	*p = x
+	return p
 }
 func (x BlobstoreServiceError_ErrorCode) String() string {
 	return proto.EnumName(BlobstoreServiceError_ErrorCode_name, int32(x))
@@ -63,6 +69,7 @@ type CreateUploadURLRequest struct {
 	SuccessPath               *string `protobuf:"bytes,1,req,name=success_path" json:"success_path,omitempty"`
 	MaxUploadSizeBytes        *int64  `protobuf:"varint,2,opt,name=max_upload_size_bytes" json:"max_upload_size_bytes,omitempty"`
 	MaxUploadSizePerBlobBytes *int64  `protobuf:"varint,3,opt,name=max_upload_size_per_blob_bytes" json:"max_upload_size_per_blob_bytes,omitempty"`
+	GsBucketName              *string `protobuf:"bytes,4,opt,name=gs_bucket_name" json:"gs_bucket_name,omitempty"`
 	XXX_unrecognized          []byte  `json:"-"`
 }
 

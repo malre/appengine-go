@@ -219,7 +219,7 @@ func incr(c appengine.Context, key string, delta int64, initialValue *uint64) (n
 		req.Delta = proto.Uint64(uint64(delta))
 	} else {
 		req.Delta = proto.Uint64(uint64(-delta))
-		req.Direction = pb.NewMemcacheIncrementRequest_Direction(pb.MemcacheIncrementRequest_DECREMENT)
+		req.Direction = pb.MemcacheIncrementRequest_DECREMENT.Enum()
 	}
 	res := &pb.MemcacheIncrementResponse{}
 	err = c.Call("memcache", "Increment", req, res, nil)
@@ -274,7 +274,7 @@ func set(c appengine.Context, item []*Item, value [][]byte, policy pb.MemcacheSe
 			p.CasId = proto.Uint64(t.casID)
 			p.ForCas = proto.Bool(true)
 		}
-		p.SetPolicy = pb.NewMemcacheSetRequest_SetPolicy(policy)
+		p.SetPolicy = policy.Enum()
 		req.Item[i] = p
 	}
 	res := &pb.MemcacheSetResponse{}

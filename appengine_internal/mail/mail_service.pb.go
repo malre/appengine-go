@@ -38,9 +38,15 @@ var MailServiceError_ErrorCode_value = map[string]int32{
 	"INVALID_HEADER_NAME":     5,
 }
 
+// NewMailServiceError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewMailServiceError_ErrorCode(x MailServiceError_ErrorCode) *MailServiceError_ErrorCode {
 	e := MailServiceError_ErrorCode(x)
 	return &e
+}
+func (x MailServiceError_ErrorCode) Enum() *MailServiceError_ErrorCode {
+	p := new(MailServiceError_ErrorCode)
+	*p = x
+	return p
 }
 func (x MailServiceError_ErrorCode) String() string {
 	return proto.EnumName(MailServiceError_ErrorCode_name, int32(x))

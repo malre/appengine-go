@@ -80,9 +80,15 @@ var Property_Meaning_value = map[string]int32{
 	"INDEX_VALUE":      18,
 }
 
+// NewProperty_Meaning is deprecated. Use x.Enum() instead.
 func NewProperty_Meaning(x Property_Meaning) *Property_Meaning {
 	e := Property_Meaning(x)
 	return &e
+}
+func (x Property_Meaning) Enum() *Property_Meaning {
+	p := new(Property_Meaning)
+	*p = x
+	return p
 }
 func (x Property_Meaning) String() string {
 	return proto.EnumName(Property_Meaning_name, int32(x))
@@ -107,9 +113,15 @@ var EntityProto_Kind_value = map[string]int32{
 	"GD_MESSAGE": 3,
 }
 
+// NewEntityProto_Kind is deprecated. Use x.Enum() instead.
 func NewEntityProto_Kind(x EntityProto_Kind) *EntityProto_Kind {
 	e := EntityProto_Kind(x)
 	return &e
+}
+func (x EntityProto_Kind) Enum() *EntityProto_Kind {
+	p := new(EntityProto_Kind)
+	*p = x
+	return p
 }
 func (x EntityProto_Kind) String() string {
 	return proto.EnumName(EntityProto_Kind_name, int32(x))
@@ -131,9 +143,15 @@ var Index_Property_Direction_value = map[string]int32{
 	"DESCENDING": 2,
 }
 
+// NewIndex_Property_Direction is deprecated. Use x.Enum() instead.
 func NewIndex_Property_Direction(x Index_Property_Direction) *Index_Property_Direction {
 	e := Index_Property_Direction(x)
 	return &e
+}
+func (x Index_Property_Direction) Enum() *Index_Property_Direction {
+	p := new(Index_Property_Direction)
+	*p = x
+	return p
 }
 func (x Index_Property_Direction) String() string {
 	return proto.EnumName(Index_Property_Direction_name, int32(x))
@@ -161,9 +179,15 @@ var CompositeIndex_State_value = map[string]int32{
 	"ERROR":      4,
 }
 
+// NewCompositeIndex_State is deprecated. Use x.Enum() instead.
 func NewCompositeIndex_State(x CompositeIndex_State) *CompositeIndex_State {
 	e := CompositeIndex_State(x)
 	return &e
+}
+func (x CompositeIndex_State) Enum() *CompositeIndex_State {
+	p := new(CompositeIndex_State)
+	*p = x
+	return p
 }
 func (x CompositeIndex_State) String() string {
 	return proto.EnumName(CompositeIndex_State_name, int32(x))
@@ -188,9 +212,15 @@ var Query_Hint_value = map[string]int32{
 	"FILTER_FIRST":   3,
 }
 
+// NewQuery_Hint is deprecated. Use x.Enum() instead.
 func NewQuery_Hint(x Query_Hint) *Query_Hint {
 	e := Query_Hint(x)
 	return &e
+}
+func (x Query_Hint) Enum() *Query_Hint {
+	p := new(Query_Hint)
+	*p = x
+	return p
 }
 func (x Query_Hint) String() string {
 	return proto.EnumName(Query_Hint_name, int32(x))
@@ -227,9 +257,15 @@ var Query_Filter_Operator_value = map[string]int32{
 	"EXISTS":                7,
 }
 
+// NewQuery_Filter_Operator is deprecated. Use x.Enum() instead.
 func NewQuery_Filter_Operator(x Query_Filter_Operator) *Query_Filter_Operator {
 	e := Query_Filter_Operator(x)
 	return &e
+}
+func (x Query_Filter_Operator) Enum() *Query_Filter_Operator {
+	p := new(Query_Filter_Operator)
+	*p = x
+	return p
 }
 func (x Query_Filter_Operator) String() string {
 	return proto.EnumName(Query_Filter_Operator_name, int32(x))
@@ -251,9 +287,15 @@ var Query_Order_Direction_value = map[string]int32{
 	"DESCENDING": 2,
 }
 
+// NewQuery_Order_Direction is deprecated. Use x.Enum() instead.
 func NewQuery_Order_Direction(x Query_Order_Direction) *Query_Order_Direction {
 	e := Query_Order_Direction(x)
 	return &e
+}
+func (x Query_Order_Direction) Enum() *Query_Order_Direction {
+	p := new(Query_Order_Direction)
+	*p = x
+	return p
 }
 func (x Query_Order_Direction) String() string {
 	return proto.EnumName(Query_Order_Direction_name, int32(x))
@@ -299,9 +341,15 @@ var Error_ErrorCode_value = map[string]int32{
 	"TRY_ALTERNATE_BACKEND":        10,
 }
 
+// NewError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewError_ErrorCode(x Error_ErrorCode) *Error_ErrorCode {
 	e := Error_ErrorCode(x)
 	return &e
+}
+func (x Error_ErrorCode) Enum() *Error_ErrorCode {
+	p := new(Error_ErrorCode)
+	*p = x
+	return p
 }
 func (x Error_ErrorCode) String() string {
 	return proto.EnumName(Error_ErrorCode_name, int32(x))

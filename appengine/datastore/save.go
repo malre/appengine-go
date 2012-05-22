@@ -79,11 +79,11 @@ func valueToProto(defaultAppID, name string, v reflect.Value, multiple bool) (p 
 	if v.IsValid() {
 		switch v.Interface().(type) {
 		case []byte:
-			p.Meaning = pb.NewProperty_Meaning(pb.Property_BLOB)
+			p.Meaning = pb.Property_BLOB.Enum()
 		case appengine.BlobKey:
-			p.Meaning = pb.NewProperty_Meaning(pb.Property_BLOBKEY)
+			p.Meaning = pb.Property_BLOBKEY.Enum()
 		case time.Time:
-			p.Meaning = pb.NewProperty_Meaning(pb.Property_GD_WHEN)
+			p.Meaning = pb.Property_GD_WHEN.Enum()
 		}
 	}
 	return p, ""
@@ -220,13 +220,13 @@ func propertiesToProto(defaultAppID string, key *Key, src <-chan Property) (*pb.
 				return nil, fmt.Errorf("datastore: time value out of range")
 			}
 			x.Value.Int64Value = proto.Int64(v.UnixNano() / 1e3)
-			x.Meaning = pb.NewProperty_Meaning(pb.Property_GD_WHEN)
+			x.Meaning = pb.Property_GD_WHEN.Enum()
 		case appengine.BlobKey:
 			x.Value.StringValue = proto.String(string(v))
-			x.Meaning = pb.NewProperty_Meaning(pb.Property_BLOBKEY)
+			x.Meaning = pb.Property_BLOBKEY.Enum()
 		case []byte:
 			x.Value.StringValue = proto.String(string(v))
-			x.Meaning = pb.NewProperty_Meaning(pb.Property_BLOB)
+			x.Meaning = pb.Property_BLOB.Enum()
 			if !p.NoIndex {
 				return nil, fmt.Errorf("datastore: cannot index a []byte valued Property with Name %q", p.Name)
 			}

@@ -47,6 +47,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"errors"
+	"fmt"
 	"net/http"
 	"reflect"
 	"runtime"
@@ -130,11 +131,28 @@ type invocation struct {
 }
 
 // Call invokes a delayed function.
-// Note that the function will be executed later.
+//   f.Call(c, ...)
+// is equivalent to
+//   t, _ := f.Task(...)
+//   taskqueue.Add(c, t, "")
 func (f *Function) Call(c appengine.Context, args ...interface{}) {
-	if f.err != nil {
-		c.Errorf("delay: func is invalid: %v", f.err)
+	t, err := f.Task(args...)
+	if err != nil {
+		c.Errorf("%v", err)
 		return
+	}
+	if _, err := taskqueueAdder(c, t, queue); err != nil {
+		c.Errorf("delay: taskqueue.Add failed: %v", err)
+		return
+	}
+}
+
+// Task creates a Task that will invoke the function.
+// Its parameters may be tweaked before adding it to a queue.
+// Users should not modify the Path or Payload fields of the returned Task.
+func (f *Function) Task(args ...interface{}) (*taskqueue.Task, error) {
+	if f.err != nil {
+		return nil, fmt.Errorf("delay: func is invalid: %v", f.err)
 	}
 
 	nArgs := len(args) + 1 // +1 for the appengine.Context
@@ -144,12 +162,10 @@ func (f *Function) Call(c appengine.Context, args ...interface{}) {
 		minArgs--
 	}
 	if nArgs < minArgs {
-		c.Errorf("delay: too few arguments to func: %d < %d", nArgs, minArgs)
-		return
+		return nil, fmt.Errorf("delay: too few arguments to func: %d < %d", nArgs, minArgs)
 	}
 	if !ft.IsVariadic() && nArgs > minArgs {
-		c.Errorf("delay: too many arguments to func: %d > %d", nArgs, minArgs)
-		return
+		return nil, fmt.Errorf("delay: too many arguments to func: %d > %d", nArgs, minArgs)
 	}
 
 	// Check arg types.
@@ -164,8 +180,7 @@ func (f *Function) Call(c appengine.Context, args ...interface{}) {
 			dt = ft.In(minArgs).Elem()
 		}
 		if !at.AssignableTo(dt) {
-			c.Errorf("delay: argument %d has wrong type: %v is not assignable to %v", i, at, dt)
-			return
+			return nil, fmt.Errorf("delay: argument %d has wrong type: %v is not assignable to %v", i, at, dt)
 		}
 	}
 
@@ -176,18 +191,13 @@ func (f *Function) Call(c appengine.Context, args ...interface{}) {
 
 	buf := new(bytes.Buffer)
 	if err := gob.NewEncoder(buf).Encode(inv); err != nil {
-		c.Errorf("delay: gob encoding failed: %v", err)
-		return
+		return nil, fmt.Errorf("delay: gob encoding failed: %v", err)
 	}
 
-	task := &taskqueue.Task{
+	return &taskqueue.Task{
 		Path:    path,
 		Payload: buf.Bytes(),
-	}
-	if _, err := taskqueueAdder(c, task, queue); err != nil {
-		c.Errorf("delay: taskqueue.Add failed: %v", err)
-		return
-	}
+	}, nil
 }
 
 var taskqueueAdder = taskqueue.Add // for testing

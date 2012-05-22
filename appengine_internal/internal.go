@@ -142,7 +142,7 @@ func init() {
 //		appengine_internal.Main()
 //	}
 //
-// The "myapp/packageX" packages are expected to register http handlers
+// The "myapp/packageX" packages are expected to register HTTP handlers
 // in their init functions.
 func Main() {
 	// Check flags.

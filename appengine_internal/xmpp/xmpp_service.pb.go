@@ -44,9 +44,15 @@ var XmppServiceError_ErrorCode_value = map[string]int32{
 	"APPID_ALIAS_REQUIRED": 8,
 }
 
+// NewXmppServiceError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewXmppServiceError_ErrorCode(x XmppServiceError_ErrorCode) *XmppServiceError_ErrorCode {
 	e := XmppServiceError_ErrorCode(x)
 	return &e
+}
+func (x XmppServiceError_ErrorCode) Enum() *XmppServiceError_ErrorCode {
+	p := new(XmppServiceError_ErrorCode)
+	*p = x
+	return p
 }
 func (x XmppServiceError_ErrorCode) String() string {
 	return proto.EnumName(XmppServiceError_ErrorCode_name, int32(x))
@@ -77,9 +83,15 @@ var PresenceResponse_SHOW_value = map[string]int32{
 	"EXTENDED_AWAY":  4,
 }
 
+// NewPresenceResponse_SHOW is deprecated. Use x.Enum() instead.
 func NewPresenceResponse_SHOW(x PresenceResponse_SHOW) *PresenceResponse_SHOW {
 	e := PresenceResponse_SHOW(x)
 	return &e
+}
+func (x PresenceResponse_SHOW) Enum() *PresenceResponse_SHOW {
+	p := new(PresenceResponse_SHOW)
+	*p = x
+	return p
 }
 func (x PresenceResponse_SHOW) String() string {
 	return proto.EnumName(PresenceResponse_SHOW_name, int32(x))
@@ -104,9 +116,15 @@ var XmppMessageResponse_XmppMessageStatus_value = map[string]int32{
 	"OTHER_ERROR": 2,
 }
 
+// NewXmppMessageResponse_XmppMessageStatus is deprecated. Use x.Enum() instead.
 func NewXmppMessageResponse_XmppMessageStatus(x XmppMessageResponse_XmppMessageStatus) *XmppMessageResponse_XmppMessageStatus {
 	e := XmppMessageResponse_XmppMessageStatus(x)
 	return &e
+}
+func (x XmppMessageResponse_XmppMessageStatus) Enum() *XmppMessageResponse_XmppMessageStatus {
+	p := new(XmppMessageResponse_XmppMessageStatus)
+	*p = x
+	return p
 }
 func (x XmppMessageResponse_XmppMessageStatus) String() string {
 	return proto.EnumName(XmppMessageResponse_XmppMessageStatus_name, int32(x))

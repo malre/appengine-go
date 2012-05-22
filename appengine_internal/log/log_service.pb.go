@@ -29,9 +29,15 @@ var LogServiceError_ErrorCode_value = map[string]int32{
 	"STORAGE_ERROR":   2,
 }
 
+// NewLogServiceError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewLogServiceError_ErrorCode(x LogServiceError_ErrorCode) *LogServiceError_ErrorCode {
 	e := LogServiceError_ErrorCode(x)
 	return &e
+}
+func (x LogServiceError_ErrorCode) Enum() *LogServiceError_ErrorCode {
+	p := new(LogServiceError_ErrorCode)
+	*p = x
+	return p
 }
 func (x LogServiceError_ErrorCode) String() string {
 	return proto.EnumName(LogServiceError_ErrorCode_name, int32(x))
@@ -170,6 +176,7 @@ func (this *LogReadRequest) String() string { return proto.CompactTextString(thi
 type LogReadResponse struct {
 	Log              []*RequestLog `protobuf:"bytes,1,rep,name=log" json:"log,omitempty"`
 	Offset           *LogOffset    `protobuf:"bytes,2,opt,name=offset" json:"offset,omitempty"`
+	LastEndTime      *int64        `protobuf:"varint,3,opt,name=last_end_time" json:"last_end_time,omitempty"`
 	XXX_unrecognized []byte        `json:"-"`
 }
 
@@ -208,8 +215,6 @@ const Default_LogUsageRequest_ResolutionHours uint32 = 1
 type LogUsageResponse struct {
 	Usage            []*LogUsageRecord `protobuf:"bytes,1,rep,name=usage" json:"usage,omitempty"`
 	Summary          *LogUsageRecord   `protobuf:"bytes,2,opt,name=summary" json:"summary,omitempty"`
-	LimitedUsage     []*LogUsageRecord `protobuf:"bytes,4,rep,name=limited_usage" json:"limited_usage,omitempty"`
-	LimitedSummary   *LogUsageRecord   `protobuf:"bytes,5,opt,name=limited_summary" json:"limited_summary,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
 }
 

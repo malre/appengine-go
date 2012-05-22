@@ -38,9 +38,15 @@ var ChannelServiceError_ErrorCode_value = map[string]int32{
 	"APPID_ALIAS_REQUIRED":           5,
 }
 
+// NewChannelServiceError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewChannelServiceError_ErrorCode(x ChannelServiceError_ErrorCode) *ChannelServiceError_ErrorCode {
 	e := ChannelServiceError_ErrorCode(x)
 	return &e
+}
+func (x ChannelServiceError_ErrorCode) Enum() *ChannelServiceError_ErrorCode {
+	p := new(ChannelServiceError_ErrorCode)
+	*p = x
+	return p
 }
 func (x ChannelServiceError_ErrorCode) String() string {
 	return proto.EnumName(ChannelServiceError_ErrorCode_name, int32(x))

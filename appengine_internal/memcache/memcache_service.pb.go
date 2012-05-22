@@ -38,9 +38,15 @@ var MemcacheServiceError_ErrorCode_value = map[string]int32{
 	"MEMCACHE_POOL_HINT_UNSPECIFIED": 5,
 }
 
+// NewMemcacheServiceError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewMemcacheServiceError_ErrorCode(x MemcacheServiceError_ErrorCode) *MemcacheServiceError_ErrorCode {
 	e := MemcacheServiceError_ErrorCode(x)
 	return &e
+}
+func (x MemcacheServiceError_ErrorCode) Enum() *MemcacheServiceError_ErrorCode {
+	p := new(MemcacheServiceError_ErrorCode)
+	*p = x
+	return p
 }
 func (x MemcacheServiceError_ErrorCode) String() string {
 	return proto.EnumName(MemcacheServiceError_ErrorCode_name, int32(x))
@@ -68,9 +74,15 @@ var MemcacheSetRequest_SetPolicy_value = map[string]int32{
 	"CAS":     4,
 }
 
+// NewMemcacheSetRequest_SetPolicy is deprecated. Use x.Enum() instead.
 func NewMemcacheSetRequest_SetPolicy(x MemcacheSetRequest_SetPolicy) *MemcacheSetRequest_SetPolicy {
 	e := MemcacheSetRequest_SetPolicy(x)
 	return &e
+}
+func (x MemcacheSetRequest_SetPolicy) Enum() *MemcacheSetRequest_SetPolicy {
+	p := new(MemcacheSetRequest_SetPolicy)
+	*p = x
+	return p
 }
 func (x MemcacheSetRequest_SetPolicy) String() string {
 	return proto.EnumName(MemcacheSetRequest_SetPolicy_name, int32(x))
@@ -98,9 +110,15 @@ var MemcacheSetResponse_SetStatusCode_value = map[string]int32{
 	"EXISTS":     4,
 }
 
+// NewMemcacheSetResponse_SetStatusCode is deprecated. Use x.Enum() instead.
 func NewMemcacheSetResponse_SetStatusCode(x MemcacheSetResponse_SetStatusCode) *MemcacheSetResponse_SetStatusCode {
 	e := MemcacheSetResponse_SetStatusCode(x)
 	return &e
+}
+func (x MemcacheSetResponse_SetStatusCode) Enum() *MemcacheSetResponse_SetStatusCode {
+	p := new(MemcacheSetResponse_SetStatusCode)
+	*p = x
+	return p
 }
 func (x MemcacheSetResponse_SetStatusCode) String() string {
 	return proto.EnumName(MemcacheSetResponse_SetStatusCode_name, int32(x))
@@ -122,9 +140,15 @@ var MemcacheDeleteResponse_DeleteStatusCode_value = map[string]int32{
 	"NOT_FOUND": 2,
 }
 
+// NewMemcacheDeleteResponse_DeleteStatusCode is deprecated. Use x.Enum() instead.
 func NewMemcacheDeleteResponse_DeleteStatusCode(x MemcacheDeleteResponse_DeleteStatusCode) *MemcacheDeleteResponse_DeleteStatusCode {
 	e := MemcacheDeleteResponse_DeleteStatusCode(x)
 	return &e
+}
+func (x MemcacheDeleteResponse_DeleteStatusCode) Enum() *MemcacheDeleteResponse_DeleteStatusCode {
+	p := new(MemcacheDeleteResponse_DeleteStatusCode)
+	*p = x
+	return p
 }
 func (x MemcacheDeleteResponse_DeleteStatusCode) String() string {
 	return proto.EnumName(MemcacheDeleteResponse_DeleteStatusCode_name, int32(x))
@@ -146,9 +170,15 @@ var MemcacheIncrementRequest_Direction_value = map[string]int32{
 	"DECREMENT": 2,
 }
 
+// NewMemcacheIncrementRequest_Direction is deprecated. Use x.Enum() instead.
 func NewMemcacheIncrementRequest_Direction(x MemcacheIncrementRequest_Direction) *MemcacheIncrementRequest_Direction {
 	e := MemcacheIncrementRequest_Direction(x)
 	return &e
+}
+func (x MemcacheIncrementRequest_Direction) Enum() *MemcacheIncrementRequest_Direction {
+	p := new(MemcacheIncrementRequest_Direction)
+	*p = x
+	return p
 }
 func (x MemcacheIncrementRequest_Direction) String() string {
 	return proto.EnumName(MemcacheIncrementRequest_Direction_name, int32(x))
@@ -173,9 +203,15 @@ var MemcacheIncrementResponse_IncrementStatusCode_value = map[string]int32{
 	"ERROR":       3,
 }
 
+// NewMemcacheIncrementResponse_IncrementStatusCode is deprecated. Use x.Enum() instead.
 func NewMemcacheIncrementResponse_IncrementStatusCode(x MemcacheIncrementResponse_IncrementStatusCode) *MemcacheIncrementResponse_IncrementStatusCode {
 	e := MemcacheIncrementResponse_IncrementStatusCode(x)
 	return &e
+}
+func (x MemcacheIncrementResponse_IncrementStatusCode) Enum() *MemcacheIncrementResponse_IncrementStatusCode {
+	p := new(MemcacheIncrementResponse_IncrementStatusCode)
+	*p = x
+	return p
 }
 func (x MemcacheIncrementResponse_IncrementStatusCode) String() string {
 	return proto.EnumName(MemcacheIncrementResponse_IncrementStatusCode_name, int32(x))

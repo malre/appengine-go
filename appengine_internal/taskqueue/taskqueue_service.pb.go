@@ -107,9 +107,15 @@ var TaskQueueServiceError_ErrorCode_value = map[string]int32{
 	"DATASTORE_ERROR":                 10000,
 }
 
+// NewTaskQueueServiceError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewTaskQueueServiceError_ErrorCode(x TaskQueueServiceError_ErrorCode) *TaskQueueServiceError_ErrorCode {
 	e := TaskQueueServiceError_ErrorCode(x)
 	return &e
+}
+func (x TaskQueueServiceError_ErrorCode) Enum() *TaskQueueServiceError_ErrorCode {
+	p := new(TaskQueueServiceError_ErrorCode)
+	*p = x
+	return p
 }
 func (x TaskQueueServiceError_ErrorCode) String() string {
 	return proto.EnumName(TaskQueueServiceError_ErrorCode_name, int32(x))
@@ -131,9 +137,15 @@ var TaskQueueMode_Mode_value = map[string]int32{
 	"PULL": 1,
 }
 
+// NewTaskQueueMode_Mode is deprecated. Use x.Enum() instead.
 func NewTaskQueueMode_Mode(x TaskQueueMode_Mode) *TaskQueueMode_Mode {
 	e := TaskQueueMode_Mode(x)
 	return &e
+}
+func (x TaskQueueMode_Mode) Enum() *TaskQueueMode_Mode {
+	p := new(TaskQueueMode_Mode)
+	*p = x
+	return p
 }
 func (x TaskQueueMode_Mode) String() string {
 	return proto.EnumName(TaskQueueMode_Mode_name, int32(x))
@@ -164,9 +176,15 @@ var TaskQueueAddRequest_RequestMethod_value = map[string]int32{
 	"DELETE": 5,
 }
 
+// NewTaskQueueAddRequest_RequestMethod is deprecated. Use x.Enum() instead.
 func NewTaskQueueAddRequest_RequestMethod(x TaskQueueAddRequest_RequestMethod) *TaskQueueAddRequest_RequestMethod {
 	e := TaskQueueAddRequest_RequestMethod(x)
 	return &e
+}
+func (x TaskQueueAddRequest_RequestMethod) Enum() *TaskQueueAddRequest_RequestMethod {
+	p := new(TaskQueueAddRequest_RequestMethod)
+	*p = x
+	return p
 }
 func (x TaskQueueAddRequest_RequestMethod) String() string {
 	return proto.EnumName(TaskQueueAddRequest_RequestMethod_name, int32(x))
@@ -197,9 +215,15 @@ var TaskQueueQueryTasksResponse_Task_RequestMethod_value = map[string]int32{
 	"DELETE": 5,
 }
 
+// NewTaskQueueQueryTasksResponse_Task_RequestMethod is deprecated. Use x.Enum() instead.
 func NewTaskQueueQueryTasksResponse_Task_RequestMethod(x TaskQueueQueryTasksResponse_Task_RequestMethod) *TaskQueueQueryTasksResponse_Task_RequestMethod {
 	e := TaskQueueQueryTasksResponse_Task_RequestMethod(x)
 	return &e
+}
+func (x TaskQueueQueryTasksResponse_Task_RequestMethod) Enum() *TaskQueueQueryTasksResponse_Task_RequestMethod {
+	p := new(TaskQueueQueryTasksResponse_Task_RequestMethod)
+	*p = x
+	return p
 }
 func (x TaskQueueQueryTasksResponse_Task_RequestMethod) String() string {
 	return proto.EnumName(TaskQueueQueryTasksResponse_Task_RequestMethod_name, int32(x))

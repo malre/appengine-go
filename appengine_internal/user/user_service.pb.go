@@ -38,9 +38,15 @@ var UserServiceError_ErrorCode_value = map[string]int32{
 	"OAUTH_ERROR":           5,
 }
 
+// NewUserServiceError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewUserServiceError_ErrorCode(x UserServiceError_ErrorCode) *UserServiceError_ErrorCode {
 	e := UserServiceError_ErrorCode(x)
 	return &e
+}
+func (x UserServiceError_ErrorCode) Enum() *UserServiceError_ErrorCode {
+	p := new(UserServiceError_ErrorCode)
+	*p = x
+	return p
 }
 func (x UserServiceError_ErrorCode) String() string {
 	return proto.EnumName(UserServiceError_ErrorCode_name, int32(x))

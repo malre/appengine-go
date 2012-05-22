@@ -20,8 +20,11 @@ Example:
 package mail
 
 import (
+	"net/mail"
+
 	"appengine"
 	"appengine_internal"
+	"code.google.com/p/goprotobuf/proto"
 
 	mail_proto "appengine_internal/mail"
 )
@@ -44,6 +47,11 @@ type Message struct {
 	HTMLBody string
 
 	Attachments []Attachment
+
+	// Extra mail headers.
+	// See https://developers.google.com/appengine/docs/go/mail/overview
+	// for permissible headers.
+	Headers mail.Header
 }
 
 // An Attachment represents an email attachment.
@@ -78,6 +86,14 @@ func Send(c appengine.Context, msg *Message) error {
 				FileName: &att.Name,
 				Data:     att.Data,
 			}
+		}
+	}
+	for key, vs := range msg.Headers {
+		for _, v := range vs {
+			req.Header = append(req.Header, &mail_proto.MailHeader{
+				Name:  proto.String(key),
+				Value: proto.String(v),
+			})
 		}
 	}
 	res := &struct{}{} // VoidProto

@@ -134,9 +134,15 @@ var FileServiceErrors_ErrorCode_value = map[string]int32{
 	"MAX_ERROR_CODE":                     9999,
 }
 
+// NewFileServiceErrors_ErrorCode is deprecated. Use x.Enum() instead.
 func NewFileServiceErrors_ErrorCode(x FileServiceErrors_ErrorCode) *FileServiceErrors_ErrorCode {
 	e := FileServiceErrors_ErrorCode(x)
 	return &e
+}
+func (x FileServiceErrors_ErrorCode) Enum() *FileServiceErrors_ErrorCode {
+	p := new(FileServiceErrors_ErrorCode)
+	*p = x
+	return p
 }
 func (x FileServiceErrors_ErrorCode) String() string {
 	return proto.EnumName(FileServiceErrors_ErrorCode_name, int32(x))
@@ -161,9 +167,15 @@ var FileContentType_ContentType_value = map[string]int32{
 	"INVALID_TYPE": 127,
 }
 
+// NewFileContentType_ContentType is deprecated. Use x.Enum() instead.
 func NewFileContentType_ContentType(x FileContentType_ContentType) *FileContentType_ContentType {
 	e := FileContentType_ContentType(x)
 	return &e
+}
+func (x FileContentType_ContentType) Enum() *FileContentType_ContentType {
+	p := new(FileContentType_ContentType)
+	*p = x
+	return p
 }
 func (x FileContentType_ContentType) String() string {
 	return proto.EnumName(FileContentType_ContentType_name, int32(x))
@@ -185,9 +197,15 @@ var OpenRequest_OpenMode_value = map[string]int32{
 	"READ":   2,
 }
 
+// NewOpenRequest_OpenMode is deprecated. Use x.Enum() instead.
 func NewOpenRequest_OpenMode(x OpenRequest_OpenMode) *OpenRequest_OpenMode {
 	e := OpenRequest_OpenMode(x)
 	return &e
+}
+func (x OpenRequest_OpenMode) Enum() *OpenRequest_OpenMode {
+	p := new(OpenRequest_OpenMode)
+	*p = x
+	return p
 }
 func (x OpenRequest_OpenMode) String() string {
 	return proto.EnumName(OpenRequest_OpenMode_name, int32(x))
@@ -206,9 +224,15 @@ var ShuffleEnums_InputFormat_value = map[string]int32{
 	"RECORDS_KEY_VALUE_PROTO_INPUT": 1,
 }
 
+// NewShuffleEnums_InputFormat is deprecated. Use x.Enum() instead.
 func NewShuffleEnums_InputFormat(x ShuffleEnums_InputFormat) *ShuffleEnums_InputFormat {
 	e := ShuffleEnums_InputFormat(x)
 	return &e
+}
+func (x ShuffleEnums_InputFormat) Enum() *ShuffleEnums_InputFormat {
+	p := new(ShuffleEnums_InputFormat)
+	*p = x
+	return p
 }
 func (x ShuffleEnums_InputFormat) String() string {
 	return proto.EnumName(ShuffleEnums_InputFormat_name, int32(x))
@@ -227,9 +251,15 @@ var ShuffleEnums_OutputFormat_value = map[string]int32{
 	"RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT": 1,
 }
 
+// NewShuffleEnums_OutputFormat is deprecated. Use x.Enum() instead.
 func NewShuffleEnums_OutputFormat(x ShuffleEnums_OutputFormat) *ShuffleEnums_OutputFormat {
 	e := ShuffleEnums_OutputFormat(x)
 	return &e
+}
+func (x ShuffleEnums_OutputFormat) Enum() *ShuffleEnums_OutputFormat {
+	p := new(ShuffleEnums_OutputFormat)
+	*p = x
+	return p
 }
 func (x ShuffleEnums_OutputFormat) String() string {
 	return proto.EnumName(ShuffleEnums_OutputFormat_name, int32(x))
@@ -266,9 +296,15 @@ var ShuffleEnums_Status_value = map[string]int32{
 	"INCORRECT_SHUFFLE_SIZE_BYTES": 7,
 }
 
+// NewShuffleEnums_Status is deprecated. Use x.Enum() instead.
 func NewShuffleEnums_Status(x ShuffleEnums_Status) *ShuffleEnums_Status {
 	e := ShuffleEnums_Status(x)
 	return &e
+}
+func (x ShuffleEnums_Status) Enum() *ShuffleEnums_Status {
+	p := new(ShuffleEnums_Status)
+	*p = x
+	return p
 }
 func (x ShuffleEnums_Status) String() string {
 	return proto.EnumName(ShuffleEnums_Status_name, int32(x))

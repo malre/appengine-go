@@ -44,9 +44,15 @@ var ConversionServiceError_ErrorCode_value = map[string]int32{
 	"INVALID_REQUEST":        7,
 }
 
+// NewConversionServiceError_ErrorCode is deprecated. Use x.Enum() instead.
 func NewConversionServiceError_ErrorCode(x ConversionServiceError_ErrorCode) *ConversionServiceError_ErrorCode {
 	e := ConversionServiceError_ErrorCode(x)
 	return &e
+}
+func (x ConversionServiceError_ErrorCode) Enum() *ConversionServiceError_ErrorCode {
+	p := new(ConversionServiceError_ErrorCode)
+	*p = x
+	return p
 }
 func (x ConversionServiceError_ErrorCode) String() string {
 	return proto.EnumName(ConversionServiceError_ErrorCode_name, int32(x))

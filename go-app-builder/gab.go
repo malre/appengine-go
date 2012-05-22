@@ -231,21 +231,7 @@ func buildApp(app *App) error {
 }
 
 func toolPath(x string) string {
-	// The logic here is transitional only.
-	// Once the production and SDK toolchains all put the tools in the standard location,
-	// we can remove all but the first real line.
-
-	// Try the preferred path first.
-	f := filepath.Join(*goRoot, "pkg", "tool", runtime.GOOS+"_"+fullArch(*arch), x)
-	if _, err := os.Stat(f); err == nil {
-		return f
-	}
-
-	// The fallback location calls pack "gopack".
-	if x == "pack" {
-		x = "gopack"
-	}
-	return filepath.Join(*goRoot, "bin", x)
+	return filepath.Join(*goRoot, "pkg", "tool", runtime.GOOS+"_"+fullArch(*arch), x)
 }
 
 func usage() {

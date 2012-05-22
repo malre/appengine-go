@@ -29,11 +29,11 @@ const (
 )
 
 var operatorToProto = map[operator]*pb.Query_Filter_Operator{
-	lessThan:    pb.NewQuery_Filter_Operator(pb.Query_Filter_LESS_THAN),
-	lessEq:      pb.NewQuery_Filter_Operator(pb.Query_Filter_LESS_THAN_OR_EQUAL),
-	equal:       pb.NewQuery_Filter_Operator(pb.Query_Filter_EQUAL),
-	greaterEq:   pb.NewQuery_Filter_Operator(pb.Query_Filter_GREATER_THAN_OR_EQUAL),
-	greaterThan: pb.NewQuery_Filter_Operator(pb.Query_Filter_GREATER_THAN),
+	lessThan:    pb.Query_Filter_LESS_THAN.Enum(),
+	lessEq:      pb.Query_Filter_LESS_THAN_OR_EQUAL.Enum(),
+	equal:       pb.Query_Filter_EQUAL.Enum(),
+	greaterEq:   pb.Query_Filter_GREATER_THAN_OR_EQUAL.Enum(),
+	greaterThan: pb.Query_Filter_GREATER_THAN.Enum(),
 }
 
 // filter is a conditional filter on query results.
@@ -51,8 +51,8 @@ const (
 )
 
 var sortDirectionToProto = map[sortDirection]*pb.Query_Order_Direction{
-	ascending:  pb.NewQuery_Order_Direction(pb.Query_Order_ASCENDING),
-	descending: pb.NewQuery_Order_Direction(pb.Query_Order_DESCENDING),
+	ascending:  pb.Query_Order_ASCENDING.Enum(),
+	descending: pb.Query_Order_DESCENDING.Enum(),
 }
 
 // order is a sort order on query results.

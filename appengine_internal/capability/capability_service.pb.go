@@ -32,9 +32,15 @@ var CapabilityConfig_Status_value = map[string]int32{
 	"UNKNOWN":   4,
 }
 
+// NewCapabilityConfig_Status is deprecated. Use x.Enum() instead.
 func NewCapabilityConfig_Status(x CapabilityConfig_Status) *CapabilityConfig_Status {
 	e := CapabilityConfig_Status(x)
 	return &e
+}
+func (x CapabilityConfig_Status) Enum() *CapabilityConfig_Status {
+	p := new(CapabilityConfig_Status)
+	*p = x
+	return p
 }
 func (x CapabilityConfig_Status) String() string {
 	return proto.EnumName(CapabilityConfig_Status_name, int32(x))
@@ -65,9 +71,15 @@ var IsEnabledResponse_SummaryStatus_value = map[string]int32{
 	"UNKNOWN":          5,
 }
 
+// NewIsEnabledResponse_SummaryStatus is deprecated. Use x.Enum() instead.
 func NewIsEnabledResponse_SummaryStatus(x IsEnabledResponse_SummaryStatus) *IsEnabledResponse_SummaryStatus {
 	e := IsEnabledResponse_SummaryStatus(x)
 	return &e
+}
+func (x IsEnabledResponse_SummaryStatus) Enum() *IsEnabledResponse_SummaryStatus {
+	p := new(IsEnabledResponse_SummaryStatus)
+	*p = x
+	return p
 }
 func (x IsEnabledResponse_SummaryStatus) String() string {
 	return proto.EnumName(IsEnabledResponse_SummaryStatus_name, int32(x))

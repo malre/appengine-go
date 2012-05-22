@@ -395,12 +395,13 @@ func Create(c appengine.Context, mimeType string) (*Writer, error) {
 	}
 	req := &files.CreateRequest{
 		Filesystem:  proto.String("blobstore"),
-		ContentType: files.NewFileContentType_ContentType(files.FileContentType_RAW),
+		ContentType: files.FileContentType_RAW.Enum(),
 		Parameters: []*files.CreateRequest_Parameter{
-			&files.CreateRequest_Parameter{
+			{
 				Name:  proto.String("content_type"),
 				Value: proto.String(mimeType),
-			}},
+			},
+		},
 	}
 	res := &files.CreateResponse{}
 	if err := c.Call("file", "Create", req, res, nil); err != nil {
@@ -417,8 +418,8 @@ func Create(c appengine.Context, mimeType string) (*Writer, error) {
 
 	oreq := &files.OpenRequest{
 		Filename:      res.Filename,
-		ContentType:   files.NewFileContentType_ContentType(files.FileContentType_RAW),
-		OpenMode:      files.NewOpenRequest_OpenMode(files.OpenRequest_APPEND),
+		ContentType:   files.FileContentType_RAW.Enum(),
+		OpenMode:      files.OpenRequest_APPEND.Enum(),
 		ExclusiveLock: proto.Bool(true),
 	}
 	ores := &files.OpenResponse{}
@@ -561,4 +562,5 @@ func (w *Writer) keyOldWay(handle string) (appengine.BlobKey, error) {
 
 func init() {
 	appengine_internal.RegisterErrorCodeMap("blobstore", pb.BlobstoreServiceError_ErrorCode_name)
+	appengine_internal.RegisterErrorCodeMap("files", files.FileServiceErrors_ErrorCode_name)
 }
