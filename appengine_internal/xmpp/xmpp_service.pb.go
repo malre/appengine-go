@@ -136,6 +136,7 @@ type XmppServiceError struct {
 
 func (this *XmppServiceError) Reset()         { *this = XmppServiceError{} }
 func (this *XmppServiceError) String() string { return proto.CompactTextString(this) }
+func (*XmppServiceError) ProtoMessage()       {}
 
 type PresenceRequest struct {
 	Jid              *string `protobuf:"bytes,1,req,name=jid" json:"jid,omitempty"`
@@ -145,6 +146,7 @@ type PresenceRequest struct {
 
 func (this *PresenceRequest) Reset()         { *this = PresenceRequest{} }
 func (this *PresenceRequest) String() string { return proto.CompactTextString(this) }
+func (*PresenceRequest) ProtoMessage()       {}
 
 type PresenceResponse struct {
 	IsAvailable      *bool                  `protobuf:"varint,1,req,name=is_available" json:"is_available,omitempty"`
@@ -154,6 +156,7 @@ type PresenceResponse struct {
 
 func (this *PresenceResponse) Reset()         { *this = PresenceResponse{} }
 func (this *PresenceResponse) String() string { return proto.CompactTextString(this) }
+func (*PresenceResponse) ProtoMessage()       {}
 
 type XmppMessageRequest struct {
 	Jid              []string `protobuf:"bytes,1,rep,name=jid" json:"jid,omitempty"`
@@ -166,6 +169,7 @@ type XmppMessageRequest struct {
 
 func (this *XmppMessageRequest) Reset()         { *this = XmppMessageRequest{} }
 func (this *XmppMessageRequest) String() string { return proto.CompactTextString(this) }
+func (*XmppMessageRequest) ProtoMessage()       {}
 
 const Default_XmppMessageRequest_RawXml bool = false
 const Default_XmppMessageRequest_Type string = "chat"
@@ -177,6 +181,7 @@ type XmppMessageResponse struct {
 
 func (this *XmppMessageResponse) Reset()         { *this = XmppMessageResponse{} }
 func (this *XmppMessageResponse) String() string { return proto.CompactTextString(this) }
+func (*XmppMessageResponse) ProtoMessage()       {}
 
 type XmppSendPresenceRequest struct {
 	Jid              *string `protobuf:"bytes,1,req,name=jid" json:"jid,omitempty"`
@@ -189,6 +194,7 @@ type XmppSendPresenceRequest struct {
 
 func (this *XmppSendPresenceRequest) Reset()         { *this = XmppSendPresenceRequest{} }
 func (this *XmppSendPresenceRequest) String() string { return proto.CompactTextString(this) }
+func (*XmppSendPresenceRequest) ProtoMessage()       {}
 
 type XmppSendPresenceResponse struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -196,6 +202,7 @@ type XmppSendPresenceResponse struct {
 
 func (this *XmppSendPresenceResponse) Reset()         { *this = XmppSendPresenceResponse{} }
 func (this *XmppSendPresenceResponse) String() string { return proto.CompactTextString(this) }
+func (*XmppSendPresenceResponse) ProtoMessage()       {}
 
 type XmppInviteRequest struct {
 	Jid              *string `protobuf:"bytes,1,req,name=jid" json:"jid,omitempty"`
@@ -205,6 +212,7 @@ type XmppInviteRequest struct {
 
 func (this *XmppInviteRequest) Reset()         { *this = XmppInviteRequest{} }
 func (this *XmppInviteRequest) String() string { return proto.CompactTextString(this) }
+func (*XmppInviteRequest) ProtoMessage()       {}
 
 type XmppInviteResponse struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -212,6 +220,7 @@ type XmppInviteResponse struct {
 
 func (this *XmppInviteResponse) Reset()         { *this = XmppInviteResponse{} }
 func (this *XmppInviteResponse) String() string { return proto.CompactTextString(this) }
+func (*XmppInviteResponse) ProtoMessage()       {}
 
 func init() {
 	proto.RegisterEnum("appengine.XmppServiceError_ErrorCode", XmppServiceError_ErrorCode_name, XmppServiceError_ErrorCode_value)

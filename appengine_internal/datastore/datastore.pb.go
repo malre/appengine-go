@@ -361,6 +361,7 @@ type Action struct {
 
 func (this *Action) Reset()         { *this = Action{} }
 func (this *Action) String() string { return proto.CompactTextString(this) }
+func (*Action) ProtoMessage()       {}
 
 type StringProto struct {
 	Value            *string `protobuf:"bytes,1,req,name=value" json:"value,omitempty"`
@@ -369,6 +370,7 @@ type StringProto struct {
 
 func (this *StringProto) Reset()         { *this = StringProto{} }
 func (this *StringProto) String() string { return proto.CompactTextString(this) }
+func (*StringProto) ProtoMessage()       {}
 
 type Integer32Proto struct {
 	Value            *int32 `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
@@ -377,6 +379,7 @@ type Integer32Proto struct {
 
 func (this *Integer32Proto) Reset()         { *this = Integer32Proto{} }
 func (this *Integer32Proto) String() string { return proto.CompactTextString(this) }
+func (*Integer32Proto) ProtoMessage()       {}
 
 type Integer64Proto struct {
 	Value            *int64 `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
@@ -385,6 +388,7 @@ type Integer64Proto struct {
 
 func (this *Integer64Proto) Reset()         { *this = Integer64Proto{} }
 func (this *Integer64Proto) String() string { return proto.CompactTextString(this) }
+func (*Integer64Proto) ProtoMessage()       {}
 
 type BoolProto struct {
 	Value            *bool  `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
@@ -393,6 +397,7 @@ type BoolProto struct {
 
 func (this *BoolProto) Reset()         { *this = BoolProto{} }
 func (this *BoolProto) String() string { return proto.CompactTextString(this) }
+func (*BoolProto) ProtoMessage()       {}
 
 type DoubleProto struct {
 	Value            *float64 `protobuf:"fixed64,1,req,name=value" json:"value,omitempty"`
@@ -401,6 +406,7 @@ type DoubleProto struct {
 
 func (this *DoubleProto) Reset()         { *this = DoubleProto{} }
 func (this *DoubleProto) String() string { return proto.CompactTextString(this) }
+func (*DoubleProto) ProtoMessage()       {}
 
 type BytesProto struct {
 	Value            []byte `protobuf:"bytes,1,req,name=value" json:"value,omitempty"`
@@ -409,6 +415,7 @@ type BytesProto struct {
 
 func (this *BytesProto) Reset()         { *this = BytesProto{} }
 func (this *BytesProto) String() string { return proto.CompactTextString(this) }
+func (*BytesProto) ProtoMessage()       {}
 
 type VoidProto struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -416,6 +423,7 @@ type VoidProto struct {
 
 func (this *VoidProto) Reset()         { *this = VoidProto{} }
 func (this *VoidProto) String() string { return proto.CompactTextString(this) }
+func (*VoidProto) ProtoMessage()       {}
 
 type PropertyValue struct {
 	Int64Value       *int64                        `protobuf:"varint,1,opt,name=int64Value" json:"int64Value,omitempty"`
@@ -430,6 +438,7 @@ type PropertyValue struct {
 
 func (this *PropertyValue) Reset()         { *this = PropertyValue{} }
 func (this *PropertyValue) String() string { return proto.CompactTextString(this) }
+func (*PropertyValue) ProtoMessage()       {}
 
 type PropertyValue_PointValue struct {
 	X                *float64 `protobuf:"fixed64,6,req,name=x" json:"x,omitempty"`
@@ -439,6 +448,7 @@ type PropertyValue_PointValue struct {
 
 func (this *PropertyValue_PointValue) Reset()         { *this = PropertyValue_PointValue{} }
 func (this *PropertyValue_PointValue) String() string { return proto.CompactTextString(this) }
+func (*PropertyValue_PointValue) ProtoMessage()       {}
 
 type PropertyValue_UserValue struct {
 	Email             *string `protobuf:"bytes,9,req,name=email" json:"email,omitempty"`
@@ -453,6 +463,7 @@ type PropertyValue_UserValue struct {
 
 func (this *PropertyValue_UserValue) Reset()         { *this = PropertyValue_UserValue{} }
 func (this *PropertyValue_UserValue) String() string { return proto.CompactTextString(this) }
+func (*PropertyValue_UserValue) ProtoMessage()       {}
 
 type PropertyValue_ReferenceValue struct {
 	App              *string                                     `protobuf:"bytes,13,req,name=app" json:"app,omitempty"`
@@ -463,6 +474,7 @@ type PropertyValue_ReferenceValue struct {
 
 func (this *PropertyValue_ReferenceValue) Reset()         { *this = PropertyValue_ReferenceValue{} }
 func (this *PropertyValue_ReferenceValue) String() string { return proto.CompactTextString(this) }
+func (*PropertyValue_ReferenceValue) ProtoMessage()       {}
 
 type PropertyValue_ReferenceValue_PathElement struct {
 	Type             *string `protobuf:"bytes,15,req,name=type" json:"type,omitempty"`
@@ -477,6 +489,7 @@ func (this *PropertyValue_ReferenceValue_PathElement) Reset() {
 func (this *PropertyValue_ReferenceValue_PathElement) String() string {
 	return proto.CompactTextString(this)
 }
+func (*PropertyValue_ReferenceValue_PathElement) ProtoMessage() {}
 
 type Property struct {
 	Meaning          *Property_Meaning `protobuf:"varint,1,opt,name=meaning,enum=datastore.Property_Meaning,def=0" json:"meaning,omitempty"`
@@ -489,6 +502,7 @@ type Property struct {
 
 func (this *Property) Reset()         { *this = Property{} }
 func (this *Property) String() string { return proto.CompactTextString(this) }
+func (*Property) ProtoMessage()       {}
 
 const Default_Property_Meaning Property_Meaning = Property_NO_MEANING
 
@@ -499,6 +513,7 @@ type Path struct {
 
 func (this *Path) Reset()         { *this = Path{} }
 func (this *Path) String() string { return proto.CompactTextString(this) }
+func (*Path) ProtoMessage()       {}
 
 type Path_Element struct {
 	Type             *string `protobuf:"bytes,2,req,name=type" json:"type,omitempty"`
@@ -509,6 +524,7 @@ type Path_Element struct {
 
 func (this *Path_Element) Reset()         { *this = Path_Element{} }
 func (this *Path_Element) String() string { return proto.CompactTextString(this) }
+func (*Path_Element) ProtoMessage()       {}
 
 type Reference struct {
 	App              *string `protobuf:"bytes,13,req,name=app" json:"app,omitempty"`
@@ -519,6 +535,7 @@ type Reference struct {
 
 func (this *Reference) Reset()         { *this = Reference{} }
 func (this *Reference) String() string { return proto.CompactTextString(this) }
+func (*Reference) ProtoMessage()       {}
 
 type User struct {
 	Email             *string `protobuf:"bytes,1,req,name=email" json:"email,omitempty"`
@@ -533,6 +550,7 @@ type User struct {
 
 func (this *User) Reset()         { *this = User{} }
 func (this *User) String() string { return proto.CompactTextString(this) }
+func (*User) ProtoMessage()       {}
 
 type EntityProto struct {
 	Key              *Reference        `protobuf:"bytes,13,req,name=key" json:"key,omitempty"`
@@ -547,6 +565,7 @@ type EntityProto struct {
 
 func (this *EntityProto) Reset()         { *this = EntityProto{} }
 func (this *EntityProto) String() string { return proto.CompactTextString(this) }
+func (*EntityProto) ProtoMessage()       {}
 
 type CompositeProperty struct {
 	IndexId          *int64   `protobuf:"varint,1,req,name=index_id" json:"index_id,omitempty"`
@@ -556,6 +575,7 @@ type CompositeProperty struct {
 
 func (this *CompositeProperty) Reset()         { *this = CompositeProperty{} }
 func (this *CompositeProperty) String() string { return proto.CompactTextString(this) }
+func (*CompositeProperty) ProtoMessage()       {}
 
 type Index struct {
 	EntityType       *string           `protobuf:"bytes,1,req,name=entity_type" json:"entity_type,omitempty"`
@@ -566,6 +586,7 @@ type Index struct {
 
 func (this *Index) Reset()         { *this = Index{} }
 func (this *Index) String() string { return proto.CompactTextString(this) }
+func (*Index) ProtoMessage()       {}
 
 type Index_Property struct {
 	Name             *string                   `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
@@ -575,6 +596,7 @@ type Index_Property struct {
 
 func (this *Index_Property) Reset()         { *this = Index_Property{} }
 func (this *Index_Property) String() string { return proto.CompactTextString(this) }
+func (*Index_Property) ProtoMessage()       {}
 
 const Default_Index_Property_Direction Index_Property_Direction = Index_Property_ASCENDING
 
@@ -588,6 +610,7 @@ type CompositeIndex struct {
 
 func (this *CompositeIndex) Reset()         { *this = CompositeIndex{} }
 func (this *CompositeIndex) String() string { return proto.CompactTextString(this) }
+func (*CompositeIndex) ProtoMessage()       {}
 
 type Transaction struct {
 	Handle           *uint64 `protobuf:"fixed64,1,req,name=handle" json:"handle,omitempty"`
@@ -598,6 +621,7 @@ type Transaction struct {
 
 func (this *Transaction) Reset()         { *this = Transaction{} }
 func (this *Transaction) String() string { return proto.CompactTextString(this) }
+func (*Transaction) ProtoMessage()       {}
 
 const Default_Transaction_MarkChanges bool = false
 
@@ -629,6 +653,7 @@ type Query struct {
 
 func (this *Query) Reset()         { *this = Query{} }
 func (this *Query) String() string { return proto.CompactTextString(this) }
+func (*Query) ProtoMessage()       {}
 
 const Default_Query_Offset int32 = 0
 const Default_Query_RequirePerfectPlan bool = false
@@ -643,6 +668,7 @@ type Query_Filter struct {
 
 func (this *Query_Filter) Reset()         { *this = Query_Filter{} }
 func (this *Query_Filter) String() string { return proto.CompactTextString(this) }
+func (*Query_Filter) ProtoMessage()       {}
 
 type Query_Order struct {
 	Property         *string                `protobuf:"bytes,10,req,name=property" json:"property,omitempty"`
@@ -652,6 +678,7 @@ type Query_Order struct {
 
 func (this *Query_Order) Reset()         { *this = Query_Order{} }
 func (this *Query_Order) String() string { return proto.CompactTextString(this) }
+func (*Query_Order) ProtoMessage()       {}
 
 const Default_Query_Order_Direction Query_Order_Direction = Query_Order_ASCENDING
 
@@ -669,6 +696,7 @@ type CompiledQuery struct {
 
 func (this *CompiledQuery) Reset()         { *this = CompiledQuery{} }
 func (this *CompiledQuery) String() string { return proto.CompactTextString(this) }
+func (*CompiledQuery) ProtoMessage()       {}
 
 const Default_CompiledQuery_Offset int32 = 0
 
@@ -686,6 +714,7 @@ type CompiledQuery_PrimaryScan struct {
 
 func (this *CompiledQuery_PrimaryScan) Reset()         { *this = CompiledQuery_PrimaryScan{} }
 func (this *CompiledQuery_PrimaryScan) String() string { return proto.CompactTextString(this) }
+func (*CompiledQuery_PrimaryScan) ProtoMessage()       {}
 
 type CompiledQuery_MergeJoinScan struct {
 	IndexName        *string  `protobuf:"bytes,8,req,name=index_name" json:"index_name,omitempty"`
@@ -696,6 +725,7 @@ type CompiledQuery_MergeJoinScan struct {
 
 func (this *CompiledQuery_MergeJoinScan) Reset()         { *this = CompiledQuery_MergeJoinScan{} }
 func (this *CompiledQuery_MergeJoinScan) String() string { return proto.CompactTextString(this) }
+func (*CompiledQuery_MergeJoinScan) ProtoMessage()       {}
 
 const Default_CompiledQuery_MergeJoinScan_ValuePrefix bool = false
 
@@ -708,6 +738,7 @@ type CompiledQuery_EntityFilter struct {
 
 func (this *CompiledQuery_EntityFilter) Reset()         { *this = CompiledQuery_EntityFilter{} }
 func (this *CompiledQuery_EntityFilter) String() string { return proto.CompactTextString(this) }
+func (*CompiledQuery_EntityFilter) ProtoMessage()       {}
 
 const Default_CompiledQuery_EntityFilter_Distinct bool = false
 
@@ -719,6 +750,7 @@ type CompiledCursor struct {
 
 func (this *CompiledCursor) Reset()         { *this = CompiledCursor{} }
 func (this *CompiledCursor) String() string { return proto.CompactTextString(this) }
+func (*CompiledCursor) ProtoMessage()       {}
 
 type CompiledCursor_Position struct {
 	StartKey         *string                               `protobuf:"bytes,27,opt,name=start_key" json:"start_key,omitempty"`
@@ -730,6 +762,7 @@ type CompiledCursor_Position struct {
 
 func (this *CompiledCursor_Position) Reset()         { *this = CompiledCursor_Position{} }
 func (this *CompiledCursor_Position) String() string { return proto.CompactTextString(this) }
+func (*CompiledCursor_Position) ProtoMessage()       {}
 
 const Default_CompiledCursor_Position_StartInclusive bool = true
 
@@ -741,6 +774,7 @@ type CompiledCursor_Position_IndexValue struct {
 
 func (this *CompiledCursor_Position_IndexValue) Reset()         { *this = CompiledCursor_Position_IndexValue{} }
 func (this *CompiledCursor_Position_IndexValue) String() string { return proto.CompactTextString(this) }
+func (*CompiledCursor_Position_IndexValue) ProtoMessage()       {}
 
 type RunCompiledQueryRequest struct {
 	App              *string        `protobuf:"bytes,5,req,name=app" json:"app,omitempty"`
@@ -754,6 +788,7 @@ type RunCompiledQueryRequest struct {
 
 func (this *RunCompiledQueryRequest) Reset()         { *this = RunCompiledQueryRequest{} }
 func (this *RunCompiledQueryRequest) String() string { return proto.CompactTextString(this) }
+func (*RunCompiledQueryRequest) ProtoMessage()       {}
 
 type Cursor struct {
 	Cursor           *uint64 `protobuf:"fixed64,1,req,name=cursor" json:"cursor,omitempty"`
@@ -763,6 +798,7 @@ type Cursor struct {
 
 func (this *Cursor) Reset()         { *this = Cursor{} }
 func (this *Cursor) String() string { return proto.CompactTextString(this) }
+func (*Cursor) ProtoMessage()       {}
 
 type Error struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -770,6 +806,7 @@ type Error struct {
 
 func (this *Error) Reset()         { *this = Error{} }
 func (this *Error) String() string { return proto.CompactTextString(this) }
+func (*Error) ProtoMessage()       {}
 
 type Cost struct {
 	IndexWrites      *int32           `protobuf:"varint,1,opt,name=index_writes" json:"index_writes,omitempty"`
@@ -782,6 +819,7 @@ type Cost struct {
 
 func (this *Cost) Reset()         { *this = Cost{} }
 func (this *Cost) String() string { return proto.CompactTextString(this) }
+func (*Cost) ProtoMessage()       {}
 
 type Cost_CommitCost struct {
 	RequestedEntityPuts    *int32 `protobuf:"varint,6,opt,name=requested_entity_puts" json:"requested_entity_puts,omitempty"`
@@ -791,6 +829,7 @@ type Cost_CommitCost struct {
 
 func (this *Cost_CommitCost) Reset()         { *this = Cost_CommitCost{} }
 func (this *Cost_CommitCost) String() string { return proto.CompactTextString(this) }
+func (*Cost_CommitCost) ProtoMessage()       {}
 
 type GetRequest struct {
 	Key              []*Reference `protobuf:"bytes,1,rep,name=key" json:"key,omitempty"`
@@ -802,6 +841,7 @@ type GetRequest struct {
 
 func (this *GetRequest) Reset()         { *this = GetRequest{} }
 func (this *GetRequest) String() string { return proto.CompactTextString(this) }
+func (*GetRequest) ProtoMessage()       {}
 
 type GetResponse struct {
 	Entity           []*GetResponse_Entity `protobuf:"group,1,rep" json:"entity,omitempty"`
@@ -810,6 +850,7 @@ type GetResponse struct {
 
 func (this *GetResponse) Reset()         { *this = GetResponse{} }
 func (this *GetResponse) String() string { return proto.CompactTextString(this) }
+func (*GetResponse) ProtoMessage()       {}
 
 type GetResponse_Entity struct {
 	Entity           *EntityProto `protobuf:"bytes,2,opt,name=entity" json:"entity,omitempty"`
@@ -818,6 +859,7 @@ type GetResponse_Entity struct {
 
 func (this *GetResponse_Entity) Reset()         { *this = GetResponse_Entity{} }
 func (this *GetResponse_Entity) String() string { return proto.CompactTextString(this) }
+func (*GetResponse_Entity) ProtoMessage()       {}
 
 type PutRequest struct {
 	Entity           []*EntityProto    `protobuf:"bytes,1,rep,name=entity" json:"entity,omitempty"`
@@ -831,6 +873,7 @@ type PutRequest struct {
 
 func (this *PutRequest) Reset()         { *this = PutRequest{} }
 func (this *PutRequest) String() string { return proto.CompactTextString(this) }
+func (*PutRequest) ProtoMessage()       {}
 
 const Default_PutRequest_Trusted bool = false
 const Default_PutRequest_Force bool = false
@@ -845,6 +888,7 @@ type PutResponse struct {
 
 func (this *PutResponse) Reset()         { *this = PutResponse{} }
 func (this *PutResponse) String() string { return proto.CompactTextString(this) }
+func (*PutResponse) ProtoMessage()       {}
 
 type TouchRequest struct {
 	Key              []*Reference      `protobuf:"bytes,1,rep,name=key" json:"key,omitempty"`
@@ -855,6 +899,7 @@ type TouchRequest struct {
 
 func (this *TouchRequest) Reset()         { *this = TouchRequest{} }
 func (this *TouchRequest) String() string { return proto.CompactTextString(this) }
+func (*TouchRequest) ProtoMessage()       {}
 
 const Default_TouchRequest_Force bool = false
 
@@ -865,6 +910,7 @@ type TouchResponse struct {
 
 func (this *TouchResponse) Reset()         { *this = TouchResponse{} }
 func (this *TouchResponse) String() string { return proto.CompactTextString(this) }
+func (*TouchResponse) ProtoMessage()       {}
 
 type DeleteRequest struct {
 	Key              []*Reference `protobuf:"bytes,6,rep,name=key" json:"key,omitempty"`
@@ -877,6 +923,7 @@ type DeleteRequest struct {
 
 func (this *DeleteRequest) Reset()         { *this = DeleteRequest{} }
 func (this *DeleteRequest) String() string { return proto.CompactTextString(this) }
+func (*DeleteRequest) ProtoMessage()       {}
 
 const Default_DeleteRequest_Trusted bool = false
 const Default_DeleteRequest_Force bool = false
@@ -890,6 +937,7 @@ type DeleteResponse struct {
 
 func (this *DeleteResponse) Reset()         { *this = DeleteResponse{} }
 func (this *DeleteResponse) String() string { return proto.CompactTextString(this) }
+func (*DeleteResponse) ProtoMessage()       {}
 
 type NextRequest struct {
 	Cursor           *Cursor `protobuf:"bytes,1,req,name=cursor" json:"cursor,omitempty"`
@@ -901,6 +949,7 @@ type NextRequest struct {
 
 func (this *NextRequest) Reset()         { *this = NextRequest{} }
 func (this *NextRequest) String() string { return proto.CompactTextString(this) }
+func (*NextRequest) ProtoMessage()       {}
 
 const Default_NextRequest_Offset int32 = 0
 const Default_NextRequest_Compile bool = false
@@ -920,6 +969,7 @@ type QueryResult struct {
 
 func (this *QueryResult) Reset()         { *this = QueryResult{} }
 func (this *QueryResult) String() string { return proto.CompactTextString(this) }
+func (*QueryResult) ProtoMessage()       {}
 
 type AllocateIdsRequest struct {
 	ModelKey         *Reference `protobuf:"bytes,1,req,name=model_key" json:"model_key,omitempty"`
@@ -930,6 +980,7 @@ type AllocateIdsRequest struct {
 
 func (this *AllocateIdsRequest) Reset()         { *this = AllocateIdsRequest{} }
 func (this *AllocateIdsRequest) String() string { return proto.CompactTextString(this) }
+func (*AllocateIdsRequest) ProtoMessage()       {}
 
 type AllocateIdsResponse struct {
 	Start            *int64 `protobuf:"varint,1,req,name=start" json:"start,omitempty"`
@@ -939,6 +990,7 @@ type AllocateIdsResponse struct {
 
 func (this *AllocateIdsResponse) Reset()         { *this = AllocateIdsResponse{} }
 func (this *AllocateIdsResponse) String() string { return proto.CompactTextString(this) }
+func (*AllocateIdsResponse) ProtoMessage()       {}
 
 type CompositeIndices struct {
 	Index            []*CompositeIndex `protobuf:"bytes,1,rep,name=index" json:"index,omitempty"`
@@ -947,6 +999,7 @@ type CompositeIndices struct {
 
 func (this *CompositeIndices) Reset()         { *this = CompositeIndices{} }
 func (this *CompositeIndices) String() string { return proto.CompactTextString(this) }
+func (*CompositeIndices) ProtoMessage()       {}
 
 type AddActionsRequest struct {
 	Transaction      *Transaction `protobuf:"bytes,1,req,name=transaction" json:"transaction,omitempty"`
@@ -956,6 +1009,7 @@ type AddActionsRequest struct {
 
 func (this *AddActionsRequest) Reset()         { *this = AddActionsRequest{} }
 func (this *AddActionsRequest) String() string { return proto.CompactTextString(this) }
+func (*AddActionsRequest) ProtoMessage()       {}
 
 type AddActionsResponse struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -963,6 +1017,7 @@ type AddActionsResponse struct {
 
 func (this *AddActionsResponse) Reset()         { *this = AddActionsResponse{} }
 func (this *AddActionsResponse) String() string { return proto.CompactTextString(this) }
+func (*AddActionsResponse) ProtoMessage()       {}
 
 type BeginTransactionRequest struct {
 	App              *string `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
@@ -972,6 +1027,7 @@ type BeginTransactionRequest struct {
 
 func (this *BeginTransactionRequest) Reset()         { *this = BeginTransactionRequest{} }
 func (this *BeginTransactionRequest) String() string { return proto.CompactTextString(this) }
+func (*BeginTransactionRequest) ProtoMessage()       {}
 
 const Default_BeginTransactionRequest_AllowMultipleEg bool = false
 
@@ -983,6 +1039,7 @@ type CommitResponse struct {
 
 func (this *CommitResponse) Reset()         { *this = CommitResponse{} }
 func (this *CommitResponse) String() string { return proto.CompactTextString(this) }
+func (*CommitResponse) ProtoMessage()       {}
 
 type CommitResponse_Version struct {
 	RootEntityKey    *Reference `protobuf:"bytes,4,req,name=root_entity_key" json:"root_entity_key,omitempty"`
@@ -992,6 +1049,7 @@ type CommitResponse_Version struct {
 
 func (this *CommitResponse_Version) Reset()         { *this = CommitResponse_Version{} }
 func (this *CommitResponse_Version) String() string { return proto.CompactTextString(this) }
+func (*CommitResponse_Version) ProtoMessage()       {}
 
 func init() {
 	proto.RegisterEnum("datastore.Property_Meaning", Property_Meaning_name, Property_Meaning_value)

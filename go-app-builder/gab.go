@@ -38,6 +38,7 @@ var (
 	extraImports    = flag.String("extra_imports", "", "A comma-separated list of extra packages to import.")
 	goRoot          = flag.String("goroot", os.Getenv("GOROOT"), "Root of the Go installation.")
 	logFile         = flag.String("log_file", "", "If set, a file to write messages to.")
+	pkgDupes        = flag.String("pkg_dupe_whitelist", "", "Comma-separated list of packages that are okay to duplicate.")
 	trampoline      = flag.String("trampoline", "", "If set, a binary to invoke tools with.")
 	trampolineFlags = flag.String("trampoline_flags", "", "Comma-separated flags to pass to trampoline.")
 	unsafe          = flag.Bool("unsafe", false, "Permit unsafe packages.")
@@ -231,7 +232,11 @@ func buildApp(app *App) error {
 }
 
 func toolPath(x string) string {
-	return filepath.Join(*goRoot, "pkg", "tool", runtime.GOOS+"_"+fullArch(*arch), x)
+	ext := ""
+	if runtime.GOOS == "windows" {
+		ext = ".exe"
+	}
+	return filepath.Join(*goRoot, "pkg", "tool", runtime.GOOS+"_"+fullArch(*arch), x+ext)
 }
 
 func usage() {

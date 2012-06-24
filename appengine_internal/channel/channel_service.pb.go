@@ -58,15 +58,18 @@ type ChannelServiceError struct {
 
 func (this *ChannelServiceError) Reset()         { *this = ChannelServiceError{} }
 func (this *ChannelServiceError) String() string { return proto.CompactTextString(this) }
+func (*ChannelServiceError) ProtoMessage()       {}
 
 type CreateChannelRequest struct {
 	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
 	DurationMinutes  *int32  `protobuf:"varint,2,opt,name=duration_minutes" json:"duration_minutes,omitempty"`
+	Version          *string `protobuf:"bytes,3,opt,name=version" json:"version,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateChannelRequest) Reset()         { *this = CreateChannelRequest{} }
 func (this *CreateChannelRequest) String() string { return proto.CompactTextString(this) }
+func (*CreateChannelRequest) ProtoMessage()       {}
 
 type CreateChannelResponse struct {
 	Token            *string `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
@@ -76,6 +79,7 @@ type CreateChannelResponse struct {
 
 func (this *CreateChannelResponse) Reset()         { *this = CreateChannelResponse{} }
 func (this *CreateChannelResponse) String() string { return proto.CompactTextString(this) }
+func (*CreateChannelResponse) ProtoMessage()       {}
 
 type SendMessageRequest struct {
 	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
@@ -85,6 +89,7 @@ type SendMessageRequest struct {
 
 func (this *SendMessageRequest) Reset()         { *this = SendMessageRequest{} }
 func (this *SendMessageRequest) String() string { return proto.CompactTextString(this) }
+func (*SendMessageRequest) ProtoMessage()       {}
 
 func init() {
 	proto.RegisterEnum("appengine.ChannelServiceError_ErrorCode", ChannelServiceError_ErrorCode_name, ChannelServiceError_ErrorCode_value)

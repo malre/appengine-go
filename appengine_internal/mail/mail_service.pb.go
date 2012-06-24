@@ -58,6 +58,7 @@ type MailServiceError struct {
 
 func (this *MailServiceError) Reset()         { *this = MailServiceError{} }
 func (this *MailServiceError) String() string { return proto.CompactTextString(this) }
+func (*MailServiceError) ProtoMessage()       {}
 
 type MailAttachment struct {
 	FileName         *string `protobuf:"bytes,1,req" json:"FileName,omitempty"`
@@ -67,6 +68,7 @@ type MailAttachment struct {
 
 func (this *MailAttachment) Reset()         { *this = MailAttachment{} }
 func (this *MailAttachment) String() string { return proto.CompactTextString(this) }
+func (*MailAttachment) ProtoMessage()       {}
 
 type MailHeader struct {
 	Name             *string `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
@@ -76,6 +78,7 @@ type MailHeader struct {
 
 func (this *MailHeader) Reset()         { *this = MailHeader{} }
 func (this *MailHeader) String() string { return proto.CompactTextString(this) }
+func (*MailHeader) ProtoMessage()       {}
 
 type MailMessage struct {
 	Sender           *string           `protobuf:"bytes,1,req" json:"Sender,omitempty"`
@@ -93,6 +96,7 @@ type MailMessage struct {
 
 func (this *MailMessage) Reset()         { *this = MailMessage{} }
 func (this *MailMessage) String() string { return proto.CompactTextString(this) }
+func (*MailMessage) ProtoMessage()       {}
 
 func init() {
 	proto.RegisterEnum("appengine.MailServiceError_ErrorCode", MailServiceError_ErrorCode_name, MailServiceError_ErrorCode_value)

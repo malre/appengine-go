@@ -14,11 +14,13 @@ type Request struct {
 	ServiceName      *string `protobuf:"bytes,2,req,name=service_name" json:"service_name,omitempty"`
 	Method           *string `protobuf:"bytes,3,req,name=method" json:"method,omitempty"`
 	Request          []byte  `protobuf:"bytes,4,req,name=request" json:"request,omitempty"`
+	RequestId        *string `protobuf:"bytes,5,opt,name=request_id" json:"request_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *Request) Reset()         { *this = Request{} }
 func (this *Request) String() string { return proto.CompactTextString(this) }
+func (*Request) ProtoMessage()       {}
 
 type ApplicationError struct {
 	Code             *int32  `protobuf:"varint,1,req,name=code" json:"code,omitempty"`
@@ -28,6 +30,7 @@ type ApplicationError struct {
 
 func (this *ApplicationError) Reset()         { *this = ApplicationError{} }
 func (this *ApplicationError) String() string { return proto.CompactTextString(this) }
+func (*ApplicationError) ProtoMessage()       {}
 
 type Response struct {
 	Response         []byte            `protobuf:"bytes,1,opt,name=response" json:"response,omitempty"`
@@ -39,6 +42,7 @@ type Response struct {
 
 func (this *Response) Reset()         { *this = Response{} }
 func (this *Response) String() string { return proto.CompactTextString(this) }
+func (*Response) ProtoMessage()       {}
 
 func init() {
 }

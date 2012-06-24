@@ -23,7 +23,7 @@ type Statistics struct {
 		Rate1M  float64 // consumption rate over one minute
 		Rate10M float64 // consumption rate over ten minutes
 	}
-	// RAM records the memory used by the instance, in bytes.
+	// RAM records the memory used by the instance, in megabytes.
 	RAM struct {
 		Current    float64
 		Average1M  float64 // average usage over one minute

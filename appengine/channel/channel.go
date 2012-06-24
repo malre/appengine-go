@@ -27,6 +27,7 @@ import (
 	"appengine_internal"
 	"code.google.com/p/goprotobuf/proto"
 
+	base_proto "appengine_internal/base"
 	channel_proto "appengine_internal/channel"
 )
 
@@ -48,7 +49,7 @@ func Send(c appengine.Context, clientID, message string) error {
 		ApplicationKey: &clientID,
 		Message:        &message,
 	}
-	resp := &struct{}{} // VoidProto
+	resp := &base_proto.VoidProto{}
 	return c.Call(service, "SendChannelMessage", req, resp, nil)
 }
 

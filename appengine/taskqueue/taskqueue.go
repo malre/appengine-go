@@ -349,6 +349,54 @@ func ModifyLease(c appengine.Context, task *Task, queueName string, leaseTime in
 	return nil
 }
 
+// QueueStatistics represents statistics about a single task queue.
+type QueueStatistics struct {
+	Tasks     int       // may be an approximation
+	OldestETA time.Time // zero if there are no pending tasks
+
+	SamplePeriod    time.Duration
+	Executed1Minute int     // tasks executed in the last minute
+	Executed1Hour   int     // tasks executed in the last hour
+	InFlight        int     // tasks executing now
+	EnforcedRate    float64 // requests per second
+}
+
+// QueueStats retrieves statistics about queues.
+// If maxTasks is greater than zero, the number of tasks scanned will be limited;
+// if the number of tasks is greater than maxTasks, the Tasks field will be an approximation.
+func QueueStats(c appengine.Context, queueNames []string, maxTasks int) ([]QueueStatistics, error) {
+	req := &taskqueue_proto.TaskQueueFetchQueueStatsRequest{
+		QueueName: make([][]byte, len(queueNames)),
+	}
+	for i, q := range queueNames {
+		req.QueueName[i] = []byte(q)
+	}
+	if maxTasks > 0 {
+		req.MaxNumTasks = proto.Int32(int32(maxTasks))
+	}
+	res := &taskqueue_proto.TaskQueueFetchQueueStatsResponse{}
+	if err := c.Call("taskqueue", "FetchQueueStats", req, res, nil); err != nil {
+		return nil, err
+	}
+	qs := make([]QueueStatistics, len(res.Queuestats))
+	for i, qsg := range res.Queuestats {
+		qs[i] = QueueStatistics{
+			Tasks: int(*qsg.NumTasks),
+		}
+		if eta := *qsg.OldestEtaUsec; eta > -1 {
+			qs[i].OldestETA = time.Unix(0, eta*1e3)
+		}
+		if si := qsg.ScannerInfo; si != nil {
+			qs[i].SamplePeriod = time.Duration(*si.SamplingDurationSeconds*1e9) * time.Nanosecond
+			qs[i].Executed1Minute = int(*si.ExecutedLastMinute)
+			qs[i].Executed1Hour = int(*si.ExecutedLastHour)
+			qs[i].InFlight = int(proto.GetInt32(si.RequestsInFlight))
+			qs[i].EnforcedRate = proto.GetFloat64(si.EnforcedRate)
+		}
+	}
+	return qs, nil
+}
+
 func init() {
 	appengine_internal.RegisterErrorCodeMap("taskqueue", taskqueue_proto.TaskQueueServiceError_ErrorCode_name)
 }

@@ -65,7 +65,7 @@ func handleFilteredHTTP(w http.ResponseWriter, r *http.Request) {
 // For example: "53\n".
 
 // read reads a protocol buffer from the socketAPI socket.
-func read(r *bufio.Reader, pb interface{}) error {
+func read(r *bufio.Reader, pb proto.Message) error {
 	b, err := r.ReadSlice('\n')
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func read(r *bufio.Reader, pb interface{}) error {
 }
 
 // write writes a protocol buffer to the socketAPI socket.
-func write(w *bufio.Writer, pb interface{}) error {
+func write(w *bufio.Writer, pb proto.Message) error {
 	b, err := proto.Marshal(pb)
 	if err != nil {
 		return err
@@ -156,7 +156,7 @@ func NewContext(req *http.Request) *context {
 }
 
 func (c *context) Call(service, method string, in, out interface{}, _ *CallOptions) error {
-	data, err := proto.Marshal(in)
+	data, err := proto.Marshal(in.(proto.Message))
 	if err != nil {
 		return err
 	}
@@ -164,7 +164,7 @@ func (c *context) Call(service, method string, in, out interface{}, _ *CallOptio
 	if err != nil {
 		return err
 	}
-	return proto.Unmarshal(res, out)
+	return proto.Unmarshal(res, out.(proto.Message))
 }
 
 func (c *context) Request() interface{} {

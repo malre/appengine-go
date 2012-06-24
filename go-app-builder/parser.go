@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -37,6 +38,13 @@ type Package struct {
 func (p *Package) String() string {
 	return fmt.Sprintf("%+v", *p)
 }
+
+// Implement sort.Interface for []*Package.
+type byImportPath []*Package
+
+func (s byImportPath) Len() int           { return len(s) }
+func (s byImportPath) Less(i, j int) bool { return s[i].ImportPath < s[j].ImportPath }
+func (s byImportPath) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 type File struct {
 	Name        string   // the file name
@@ -132,6 +140,13 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		}
 	}
 
+	allowedDupes := make(map[string]bool)
+	if *pkgDupes != "" {
+		for _, pkg := range strings.Split(*pkgDupes, ",") {
+			allowedDupes[pkg] = true
+		}
+	}
+
 	// Create Package objects.
 	impPathPackages := make(map[string]*Package) // map import path to *Package
 	for dirname, files := range pkgFiles {
@@ -142,7 +157,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		if p.ImportPath == "main" {
 			return nil, errors.New("top-level main package is forbidden")
 		}
-		if isStandardPackage(p.ImportPath) {
+		if !allowedDupes[p.ImportPath] && isStandardPackage(p.ImportPath) {
 			return nil, fmt.Errorf("package %q has the same name as a standard package", p.ImportPath)
 		}
 		for _, f := range files {
@@ -176,6 +191,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 			}
 			p.Dependencies = append(p.Dependencies, pkg)
 		}
+		sort.Sort(byImportPath(p.Dependencies))
 	}
 
 	// Sort topologically.
@@ -343,6 +359,7 @@ func (c *compLitChecker) Visit(node ast.Node) ast.Visitor {
 func isStandardPackage(s string) bool {
 	ctxt := build.Default
 	ctxt.GOROOT = *goRoot
+	ctxt.Compiler = "gc"
 	pkg, err := ctxt.Import(s, "/nowhere", build.FindOnly|build.AllowBinary)
 	if err != nil {
 		return false
@@ -393,14 +410,18 @@ func topologicalSort(p []*Package) error {
 // It assumes that a cycle exists.
 func findCycle(pkgs []*Package) []*Package {
 	pkgMap := make(map[*Package]bool, len(pkgs)) // quick index of packages
+	var min *Package
 	for _, pkg := range pkgs {
 		pkgMap[pkg] = true
+		if min == nil || pkg.ImportPath < min.ImportPath {
+			min = pkg
+		}
 	}
 
 	// Every element of pkgs is a member of a cycle,
-	// so find a cycle starting with pkgs[0].
-	cycle := []*Package{pkgs[0]}
-	seen := map[*Package]int{pkgs[0]: 0} // map of package to index in cycle
+	// so find a cycle starting with the first one lexically.
+	cycle := []*Package{min}
+	seen := map[*Package]int{min: 0} // map of package to index in cycle
 	for {
 		last := cycle[len(cycle)-1]
 		for _, dep := range last.Dependencies {

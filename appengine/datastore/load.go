@@ -189,7 +189,7 @@ func protoToProperties(dst chan<- Property, errc chan<- error, src *pb.EntityPro
 		switch {
 		case x.Value.Int64Value != nil:
 			if x.Meaning != nil && *x.Meaning == pb.Property_GD_WHEN {
-				value = time.Unix(0, *x.Value.Int64Value*1e3)
+				value = fromUnixMicro(*x.Value.Int64Value)
 			} else {
 				value = *x.Value.Int64Value
 			}

@@ -93,6 +93,7 @@ type CapabilityConfigList struct {
 
 func (this *CapabilityConfigList) Reset()         { *this = CapabilityConfigList{} }
 func (this *CapabilityConfigList) String() string { return proto.CompactTextString(this) }
+func (*CapabilityConfigList) ProtoMessage()       {}
 
 type CapabilityConfig struct {
 	Package          *string                  `protobuf:"bytes,1,req,name=package" json:"package,omitempty"`
@@ -107,6 +108,7 @@ type CapabilityConfig struct {
 
 func (this *CapabilityConfig) Reset()         { *this = CapabilityConfig{} }
 func (this *CapabilityConfig) String() string { return proto.CompactTextString(this) }
+func (*CapabilityConfig) ProtoMessage()       {}
 
 const Default_CapabilityConfig_Status CapabilityConfig_Status = CapabilityConfig_UNKNOWN
 
@@ -119,6 +121,7 @@ type IsEnabledRequest struct {
 
 func (this *IsEnabledRequest) Reset()         { *this = IsEnabledRequest{} }
 func (this *IsEnabledRequest) String() string { return proto.CompactTextString(this) }
+func (*IsEnabledRequest) ProtoMessage()       {}
 
 type IsEnabledResponse struct {
 	SummaryStatus      *IsEnabledResponse_SummaryStatus `protobuf:"varint,1,req,name=summary_status,enum=appengine.IsEnabledResponse_SummaryStatus" json:"summary_status,omitempty"`
@@ -129,6 +132,7 @@ type IsEnabledResponse struct {
 
 func (this *IsEnabledResponse) Reset()         { *this = IsEnabledResponse{} }
 func (this *IsEnabledResponse) String() string { return proto.CompactTextString(this) }
+func (*IsEnabledResponse) ProtoMessage()       {}
 
 func init() {
 	proto.RegisterEnum("appengine.CapabilityConfig_Status", CapabilityConfig_Status_name, CapabilityConfig_Status_value)

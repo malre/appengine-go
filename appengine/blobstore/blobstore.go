@@ -16,19 +16,18 @@ import (
 	"net/http"
 	"net/textproto"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"appengine"
 	"appengine/datastore"
-	"appengine_internal"
-	"appengine_internal/files"
+	"appengine/file"
 	"code.google.com/p/goprotobuf/proto"
 
-	pb "appengine_internal/blobstore"
+	basepb "appengine_internal/base"
+	blobpb "appengine_internal/blobstore"
+	filepb "appengine_internal/files"
 )
 
 const (
@@ -91,7 +90,7 @@ func Send(response http.ResponseWriter, blobKey appengine.BlobKey) {
 // form is completed. These URLs expire and should not be reused. The
 // opts parameter may be nil.
 func UploadURL(c appengine.Context, successPath string, opts *UploadURLOptions) (*url.URL, error) {
-	req := &pb.CreateUploadURLRequest{
+	req := &blobpb.CreateUploadURLRequest{
 		SuccessPath: proto.String(successPath),
 	}
 	if opts != nil {
@@ -102,7 +101,7 @@ func UploadURL(c appengine.Context, successPath string, opts *UploadURLOptions) 
 			req.MaxUploadSizePerBlobBytes = proto.Int64(opts.MaxUploadBytesPerBlob)
 		}
 	}
-	res := &pb.CreateUploadURLResponse{}
+	res := &blobpb.CreateUploadURLResponse{}
 	if err := c.Call("blobstore", "CreateUploadURL", req, res, nil); err != nil {
 		return nil, err
 	}
@@ -126,10 +125,10 @@ func DeleteMulti(c appengine.Context, blobKey []appengine.BlobKey) error {
 	for i, b := range blobKey {
 		s[i] = string(b)
 	}
-	req := &pb.DeleteBlobRequest{
+	req := &blobpb.DeleteBlobRequest{
 		BlobKey: s,
 	}
-	res := &struct{}{} // unused, a base.VoidProto
+	res := &basepb.VoidProto{}
 	if err := c.Call("blobstore", "DeleteBlob", req, res, nil); err != nil {
 		return err
 	}
@@ -230,126 +229,7 @@ type Reader interface {
 // NewReader returns a reader for a blob. It always succeeds; if the blob does
 // not exist then an error will be reported upon first read.
 func NewReader(c appengine.Context, blobKey appengine.BlobKey) Reader {
-	return &reader{
-		c:       c,
-		blobKey: blobKey,
-	}
-}
-
-const readBufferSize = 256 * 1024
-
-// reader is a blob reader. It implements the Reader interface.
-type reader struct {
-	c       appengine.Context
-	blobKey appengine.BlobKey
-	// buf is the read buffer. r is how much of buf has been read.
-	// off is the offset of buf[0] relative to the start of the blob.
-	// An invariant is 0 <= r && r <= len(buf).
-	// Reads that don't require an RPC call will increment r but not off.
-	// Seeks may modify r without discarding the buffer, but only if the
-	// invariant can be maintained.
-	mu  sync.Mutex
-	buf []byte
-	r   int
-	off int64
-}
-
-func (r *reader) Read(p []byte) (int, error) {
-	if len(p) == 0 {
-		return 0, nil
-	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	if r.r == len(r.buf) {
-		if err := r.fetch(r.off + int64(r.r)); err != nil {
-			return 0, err
-		}
-	}
-	n := copy(p, r.buf[r.r:])
-	r.r += n
-	return n, nil
-}
-
-func (r *reader) ReadAt(p []byte, off int64) (int, error) {
-	if len(p) == 0 {
-		return 0, nil
-	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	// Convert relative offsets to absolute offsets.
-	ab0 := r.off + int64(r.r)
-	ab1 := r.off + int64(len(r.buf))
-	ap0 := off
-	ap1 := off + int64(len(p))
-	// Check if we can satisfy the read entirely out of the existing buffer.
-	if r.off <= ap0 && ap1 <= ab1 {
-		// Convert off from an absolute offset to a relative offset.
-		rp0 := int(ap0 - r.off)
-		return copy(p, r.buf[rp0:]), nil
-	}
-	// Restore the original Read/Seek offset after ReadAt completes.
-	defer r.seek(ab0)
-	// Repeatedly fetch and copy until we have filled p.
-	n := 0
-	for len(p) > 0 {
-		if err := r.fetch(off + int64(n)); err != nil {
-			return n, err
-		}
-		r.r = copy(p, r.buf)
-		n += r.r
-		p = p[r.r:]
-	}
-	return n, nil
-}
-
-func (r *reader) Seek(offset int64, whence int) (ret int64, err error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	switch whence {
-	case os.SEEK_SET:
-		ret = offset
-	case os.SEEK_CUR:
-		ret = r.off + int64(r.r) + offset
-	case os.SEEK_END:
-		return 0, errorf("seeking relative to the end of a blob isn't supported")
-	default:
-		return 0, errorf("invalid Seek whence value: %d", whence)
-	}
-	if ret < 0 {
-		return 0, errorf("negative Seek offset")
-	}
-	return r.seek(ret)
-}
-
-// fetch fetches readBufferSize bytes starting at the given offset. On success,
-// the data is saved as r.buf.
-func (r *reader) fetch(off int64) error {
-	req := &pb.FetchDataRequest{
-		BlobKey:    proto.String(string(r.blobKey)),
-		StartIndex: proto.Int64(off),
-		EndIndex:   proto.Int64(off + readBufferSize - 1), // EndIndex is inclusive.
-	}
-	res := &pb.FetchDataResponse{}
-	if err := r.c.Call("blobstore", "FetchData", req, res, nil); err != nil {
-		return err
-	}
-	if len(res.Data) == 0 {
-		return io.EOF
-	}
-	r.buf, r.r, r.off = res.Data, 0, off
-	return nil
-}
-
-// seek seeks to the given offset with an effective whence equal to SEEK_SET.
-// It discards the read buffer if the invariant cannot be maintained.
-func (r *reader) seek(off int64) (int64, error) {
-	delta := off - r.off
-	if delta >= 0 && delta < int64(len(r.buf)) {
-		r.r = int(delta)
-		return off, nil
-	}
-	r.buf, r.r, r.off = nil, 0, off
-	return off, nil
+	return file.OpenBlob(c, blobKey)
 }
 
 const writeBufferSize = 256 * 1024
@@ -393,17 +273,17 @@ func Create(c appengine.Context, mimeType string) (*Writer, error) {
 	if mimeType == "" {
 		mimeType = "application/octet-stream"
 	}
-	req := &files.CreateRequest{
+	req := &filepb.CreateRequest{
 		Filesystem:  proto.String("blobstore"),
-		ContentType: files.FileContentType_RAW.Enum(),
-		Parameters: []*files.CreateRequest_Parameter{
+		ContentType: filepb.FileContentType_RAW.Enum(),
+		Parameters: []*filepb.CreateRequest_Parameter{
 			{
 				Name:  proto.String("content_type"),
 				Value: proto.String(mimeType),
 			},
 		},
 	}
-	res := &files.CreateResponse{}
+	res := &filepb.CreateResponse{}
 	if err := c.Call("file", "Create", req, res, nil); err != nil {
 		return nil, err
 	}
@@ -413,16 +293,16 @@ func Create(c appengine.Context, mimeType string) (*Writer, error) {
 		filename: *res.Filename,
 	}
 	if !strings.HasPrefix(w.filename, blobstoreFileDirectory) {
-		return nil, errorf("unexpected filename from files service")
+		return nil, errorf("unexpected filename from files service: %q", w.filename)
 	}
 
-	oreq := &files.OpenRequest{
+	oreq := &filepb.OpenRequest{
 		Filename:      res.Filename,
-		ContentType:   files.FileContentType_RAW.Enum(),
-		OpenMode:      files.OpenRequest_APPEND.Enum(),
+		ContentType:   filepb.FileContentType_RAW.Enum(),
+		OpenMode:      filepb.OpenRequest_APPEND.Enum(),
 		ExclusiveLock: proto.Bool(true),
 	}
-	ores := &files.OpenResponse{}
+	ores := &filepb.OpenResponse{}
 	if err := c.Call("file", "Open", oreq, ores, nil); err != nil {
 		return nil, err
 	}
@@ -449,11 +329,11 @@ func (w *Writer) flush() {
 		if len(chunk) > maxWriteChunkSize {
 			chunk = chunk[:maxWriteChunkSize]
 		}
-		req := &files.AppendRequest{
+		req := &filepb.AppendRequest{
 			Filename: proto.String(w.filename),
 			Data:     chunk,
 		}
-		res := &files.AppendResponse{}
+		res := &filepb.AppendResponse{}
 		if err := w.c.Call("file", "Append", req, res, nil); err != nil {
 			w.writeErr = err
 			return
@@ -478,11 +358,11 @@ func (w *Writer) Close() (closeErr error) {
 	if w.writeErr != nil {
 		return w.writeErr
 	}
-	req := &files.CloseRequest{
+	req := &filepb.CloseRequest{
 		Filename: proto.String(w.filename),
 		Finalize: proto.Bool(true),
 	}
-	res := &files.CloseResponse{}
+	res := &filepb.CloseResponse{}
 	return w.c.Call("file", "Close", req, res, nil)
 }
 
@@ -558,9 +438,4 @@ func (w *Writer) keyOldWay(handle string) (appengine.BlobKey, error) {
 		return "", errorf("didn't find __BlobInfo__ entity for creation_handle %q", handle)
 	}
 	return appengine.BlobKey(key.StringID()), w.closeErr
-}
-
-func init() {
-	appengine_internal.RegisterErrorCodeMap("blobstore", pb.BlobstoreServiceError_ErrorCode_name)
-	appengine_internal.RegisterErrorCodeMap("files", files.FileServiceErrors_ErrorCode_name)
 }

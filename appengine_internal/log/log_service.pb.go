@@ -49,6 +49,7 @@ type LogServiceError struct {
 
 func (this *LogServiceError) Reset()         { *this = LogServiceError{} }
 func (this *LogServiceError) String() string { return proto.CompactTextString(this) }
+func (*LogServiceError) ProtoMessage()       {}
 
 type UserAppLogLine struct {
 	TimestampUsec    *int64  `protobuf:"varint,1,req,name=timestamp_usec" json:"timestamp_usec,omitempty"`
@@ -59,6 +60,7 @@ type UserAppLogLine struct {
 
 func (this *UserAppLogLine) Reset()         { *this = UserAppLogLine{} }
 func (this *UserAppLogLine) String() string { return proto.CompactTextString(this) }
+func (*UserAppLogLine) ProtoMessage()       {}
 
 type UserAppLogGroup struct {
 	LogLine          []*UserAppLogLine `protobuf:"bytes,2,rep,name=log_line" json:"log_line,omitempty"`
@@ -67,6 +69,7 @@ type UserAppLogGroup struct {
 
 func (this *UserAppLogGroup) Reset()         { *this = UserAppLogGroup{} }
 func (this *UserAppLogGroup) String() string { return proto.CompactTextString(this) }
+func (*UserAppLogGroup) ProtoMessage()       {}
 
 type FlushRequest struct {
 	Logs             []byte `protobuf:"bytes,1,opt,name=logs" json:"logs,omitempty"`
@@ -75,6 +78,7 @@ type FlushRequest struct {
 
 func (this *FlushRequest) Reset()         { *this = FlushRequest{} }
 func (this *FlushRequest) String() string { return proto.CompactTextString(this) }
+func (*FlushRequest) ProtoMessage()       {}
 
 type SetStatusRequest struct {
 	Status           *string `protobuf:"bytes,1,req,name=status" json:"status,omitempty"`
@@ -83,6 +87,7 @@ type SetStatusRequest struct {
 
 func (this *SetStatusRequest) Reset()         { *this = SetStatusRequest{} }
 func (this *SetStatusRequest) String() string { return proto.CompactTextString(this) }
+func (*SetStatusRequest) ProtoMessage()       {}
 
 type LogOffset struct {
 	RequestId        []byte `protobuf:"bytes,1,opt,name=request_id" json:"request_id,omitempty"`
@@ -91,6 +96,7 @@ type LogOffset struct {
 
 func (this *LogOffset) Reset()         { *this = LogOffset{} }
 func (this *LogOffset) String() string { return proto.CompactTextString(this) }
+func (*LogOffset) ProtoMessage()       {}
 
 type LogLine struct {
 	Time             *int64  `protobuf:"varint,1,req,name=time" json:"time,omitempty"`
@@ -101,6 +107,7 @@ type LogLine struct {
 
 func (this *LogLine) Reset()         { *this = LogLine{} }
 func (this *LogLine) String() string { return proto.CompactTextString(this) }
+func (*LogLine) ProtoMessage()       {}
 
 type RequestLog struct {
 	AppId                   *string    `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
@@ -144,6 +151,7 @@ type RequestLog struct {
 
 func (this *RequestLog) Reset()         { *this = RequestLog{} }
 func (this *RequestLog) String() string { return proto.CompactTextString(this) }
+func (*RequestLog) ProtoMessage()       {}
 
 const Default_RequestLog_ReplicaIndex int32 = -1
 const Default_RequestLog_Finished bool = true
@@ -172,6 +180,7 @@ type LogReadRequest struct {
 
 func (this *LogReadRequest) Reset()         { *this = LogReadRequest{} }
 func (this *LogReadRequest) String() string { return proto.CompactTextString(this) }
+func (*LogReadRequest) ProtoMessage()       {}
 
 type LogReadResponse struct {
 	Log              []*RequestLog `protobuf:"bytes,1,rep,name=log" json:"log,omitempty"`
@@ -182,6 +191,7 @@ type LogReadResponse struct {
 
 func (this *LogReadResponse) Reset()         { *this = LogReadResponse{} }
 func (this *LogReadResponse) String() string { return proto.CompactTextString(this) }
+func (*LogReadResponse) ProtoMessage()       {}
 
 type LogUsageRecord struct {
 	VersionId        *string `protobuf:"bytes,1,opt,name=version_id" json:"version_id,omitempty"`
@@ -194,6 +204,7 @@ type LogUsageRecord struct {
 
 func (this *LogUsageRecord) Reset()         { *this = LogUsageRecord{} }
 func (this *LogUsageRecord) String() string { return proto.CompactTextString(this) }
+func (*LogUsageRecord) ProtoMessage()       {}
 
 type LogUsageRequest struct {
 	AppId            *string  `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
@@ -209,6 +220,7 @@ type LogUsageRequest struct {
 
 func (this *LogUsageRequest) Reset()         { *this = LogUsageRequest{} }
 func (this *LogUsageRequest) String() string { return proto.CompactTextString(this) }
+func (*LogUsageRequest) ProtoMessage()       {}
 
 const Default_LogUsageRequest_ResolutionHours uint32 = 1
 
@@ -220,6 +232,7 @@ type LogUsageResponse struct {
 
 func (this *LogUsageResponse) Reset()         { *this = LogUsageResponse{} }
 func (this *LogUsageResponse) String() string { return proto.CompactTextString(this) }
+func (*LogUsageResponse) ProtoMessage()       {}
 
 func init() {
 	proto.RegisterEnum("appengine.LogServiceError_ErrorCode", LogServiceError_ErrorCode_name, LogServiceError_ErrorCode_value)

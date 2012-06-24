@@ -317,6 +317,7 @@ type StringProto struct {
 
 func (this *StringProto) Reset()         { *this = StringProto{} }
 func (this *StringProto) String() string { return proto.CompactTextString(this) }
+func (*StringProto) ProtoMessage()       {}
 
 type Integer32Proto struct {
 	Value            *int32 `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
@@ -325,6 +326,7 @@ type Integer32Proto struct {
 
 func (this *Integer32Proto) Reset()         { *this = Integer32Proto{} }
 func (this *Integer32Proto) String() string { return proto.CompactTextString(this) }
+func (*Integer32Proto) ProtoMessage()       {}
 
 type Integer64Proto struct {
 	Value            *int64 `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
@@ -333,6 +335,7 @@ type Integer64Proto struct {
 
 func (this *Integer64Proto) Reset()         { *this = Integer64Proto{} }
 func (this *Integer64Proto) String() string { return proto.CompactTextString(this) }
+func (*Integer64Proto) ProtoMessage()       {}
 
 type BoolProto struct {
 	Value            *bool  `protobuf:"varint,1,req,name=value" json:"value,omitempty"`
@@ -341,6 +344,7 @@ type BoolProto struct {
 
 func (this *BoolProto) Reset()         { *this = BoolProto{} }
 func (this *BoolProto) String() string { return proto.CompactTextString(this) }
+func (*BoolProto) ProtoMessage()       {}
 
 type DoubleProto struct {
 	Value            *float64 `protobuf:"fixed64,1,req,name=value" json:"value,omitempty"`
@@ -349,6 +353,7 @@ type DoubleProto struct {
 
 func (this *DoubleProto) Reset()         { *this = DoubleProto{} }
 func (this *DoubleProto) String() string { return proto.CompactTextString(this) }
+func (*DoubleProto) ProtoMessage()       {}
 
 type BytesProto struct {
 	Value            []byte `protobuf:"bytes,1,req,name=value" json:"value,omitempty"`
@@ -357,6 +362,7 @@ type BytesProto struct {
 
 func (this *BytesProto) Reset()         { *this = BytesProto{} }
 func (this *BytesProto) String() string { return proto.CompactTextString(this) }
+func (*BytesProto) ProtoMessage()       {}
 
 type VoidProto struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -364,6 +370,7 @@ type VoidProto struct {
 
 func (this *VoidProto) Reset()         { *this = VoidProto{} }
 func (this *VoidProto) String() string { return proto.CompactTextString(this) }
+func (*VoidProto) ProtoMessage()       {}
 
 type FileServiceErrors struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -371,6 +378,7 @@ type FileServiceErrors struct {
 
 func (this *FileServiceErrors) Reset()         { *this = FileServiceErrors{} }
 func (this *FileServiceErrors) String() string { return proto.CompactTextString(this) }
+func (*FileServiceErrors) ProtoMessage()       {}
 
 type KeyValue struct {
 	Key              []byte `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
@@ -380,6 +388,7 @@ type KeyValue struct {
 
 func (this *KeyValue) Reset()         { *this = KeyValue{} }
 func (this *KeyValue) String() string { return proto.CompactTextString(this) }
+func (*KeyValue) ProtoMessage()       {}
 
 type KeyValues struct {
 	Key              []byte   `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
@@ -390,6 +399,7 @@ type KeyValues struct {
 
 func (this *KeyValues) Reset()         { *this = KeyValues{} }
 func (this *KeyValues) String() string { return proto.CompactTextString(this) }
+func (*KeyValues) ProtoMessage()       {}
 
 const Default_KeyValues_Partial bool = false
 
@@ -399,6 +409,7 @@ type FileContentType struct {
 
 func (this *FileContentType) Reset()         { *this = FileContentType{} }
 func (this *FileContentType) String() string { return proto.CompactTextString(this) }
+func (*FileContentType) ProtoMessage()       {}
 
 type CreateRequest struct {
 	Filesystem            *string                      `protobuf:"bytes,1,req,name=filesystem" json:"filesystem,omitempty"`
@@ -411,6 +422,7 @@ type CreateRequest struct {
 
 func (this *CreateRequest) Reset()         { *this = CreateRequest{} }
 func (this *CreateRequest) String() string { return proto.CompactTextString(this) }
+func (*CreateRequest) ProtoMessage()       {}
 
 type CreateRequest_Parameter struct {
 	Name             *string `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
@@ -420,6 +432,7 @@ type CreateRequest_Parameter struct {
 
 func (this *CreateRequest_Parameter) Reset()         { *this = CreateRequest_Parameter{} }
 func (this *CreateRequest_Parameter) String() string { return proto.CompactTextString(this) }
+func (*CreateRequest_Parameter) ProtoMessage()       {}
 
 type CreateResponse struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
@@ -428,6 +441,7 @@ type CreateResponse struct {
 
 func (this *CreateResponse) Reset()         { *this = CreateResponse{} }
 func (this *CreateResponse) String() string { return proto.CompactTextString(this) }
+func (*CreateResponse) ProtoMessage()       {}
 
 type OpenRequest struct {
 	Filename             *string                      `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
@@ -441,6 +455,7 @@ type OpenRequest struct {
 
 func (this *OpenRequest) Reset()         { *this = OpenRequest{} }
 func (this *OpenRequest) String() string { return proto.CompactTextString(this) }
+func (*OpenRequest) ProtoMessage()       {}
 
 const Default_OpenRequest_ExclusiveLock bool = false
 const Default_OpenRequest_BufferedOutput bool = false
@@ -452,6 +467,7 @@ type OpenResponse struct {
 
 func (this *OpenResponse) Reset()         { *this = OpenResponse{} }
 func (this *OpenResponse) String() string { return proto.CompactTextString(this) }
+func (*OpenResponse) ProtoMessage()       {}
 
 type CloseRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
@@ -461,6 +477,7 @@ type CloseRequest struct {
 
 func (this *CloseRequest) Reset()         { *this = CloseRequest{} }
 func (this *CloseRequest) String() string { return proto.CompactTextString(this) }
+func (*CloseRequest) ProtoMessage()       {}
 
 const Default_CloseRequest_Finalize bool = false
 
@@ -470,6 +487,7 @@ type CloseResponse struct {
 
 func (this *CloseResponse) Reset()         { *this = CloseResponse{} }
 func (this *CloseResponse) String() string { return proto.CompactTextString(this) }
+func (*CloseResponse) ProtoMessage()       {}
 
 type FileStat struct {
 	Filename         *string                      `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
@@ -483,6 +501,7 @@ type FileStat struct {
 
 func (this *FileStat) Reset()         { *this = FileStat{} }
 func (this *FileStat) String() string { return proto.CompactTextString(this) }
+func (*FileStat) ProtoMessage()       {}
 
 type StatRequest struct {
 	Filename         *string `protobuf:"bytes,1,opt,name=filename" json:"filename,omitempty"`
@@ -492,6 +511,7 @@ type StatRequest struct {
 
 func (this *StatRequest) Reset()         { *this = StatRequest{} }
 func (this *StatRequest) String() string { return proto.CompactTextString(this) }
+func (*StatRequest) ProtoMessage()       {}
 
 type StatResponse struct {
 	Stat             []*FileStat `protobuf:"bytes,1,rep,name=stat" json:"stat,omitempty"`
@@ -501,6 +521,7 @@ type StatResponse struct {
 
 func (this *StatResponse) Reset()         { *this = StatResponse{} }
 func (this *StatResponse) String() string { return proto.CompactTextString(this) }
+func (*StatResponse) ProtoMessage()       {}
 
 const Default_StatResponse_MoreFilesFound bool = false
 
@@ -513,6 +534,7 @@ type AppendRequest struct {
 
 func (this *AppendRequest) Reset()         { *this = AppendRequest{} }
 func (this *AppendRequest) String() string { return proto.CompactTextString(this) }
+func (*AppendRequest) ProtoMessage()       {}
 
 type AppendResponse struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -520,6 +542,7 @@ type AppendResponse struct {
 
 func (this *AppendResponse) Reset()         { *this = AppendResponse{} }
 func (this *AppendResponse) String() string { return proto.CompactTextString(this) }
+func (*AppendResponse) ProtoMessage()       {}
 
 type DeleteRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
@@ -528,6 +551,7 @@ type DeleteRequest struct {
 
 func (this *DeleteRequest) Reset()         { *this = DeleteRequest{} }
 func (this *DeleteRequest) String() string { return proto.CompactTextString(this) }
+func (*DeleteRequest) ProtoMessage()       {}
 
 type DeleteResponse struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -535,6 +559,7 @@ type DeleteResponse struct {
 
 func (this *DeleteResponse) Reset()         { *this = DeleteResponse{} }
 func (this *DeleteResponse) String() string { return proto.CompactTextString(this) }
+func (*DeleteResponse) ProtoMessage()       {}
 
 type ReadRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
@@ -545,6 +570,7 @@ type ReadRequest struct {
 
 func (this *ReadRequest) Reset()         { *this = ReadRequest{} }
 func (this *ReadRequest) String() string { return proto.CompactTextString(this) }
+func (*ReadRequest) ProtoMessage()       {}
 
 type ReadResponse struct {
 	Data             []byte `protobuf:"bytes,1,req,name=data" json:"data,omitempty"`
@@ -553,6 +579,7 @@ type ReadResponse struct {
 
 func (this *ReadResponse) Reset()         { *this = ReadResponse{} }
 func (this *ReadResponse) String() string { return proto.CompactTextString(this) }
+func (*ReadResponse) ProtoMessage()       {}
 
 type ReadKeyValueRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
@@ -564,6 +591,7 @@ type ReadKeyValueRequest struct {
 
 func (this *ReadKeyValueRequest) Reset()         { *this = ReadKeyValueRequest{} }
 func (this *ReadKeyValueRequest) String() string { return proto.CompactTextString(this) }
+func (*ReadKeyValueRequest) ProtoMessage()       {}
 
 type ReadKeyValueResponse struct {
 	Data             []*ReadKeyValueResponse_KeyValue `protobuf:"bytes,1,rep,name=data" json:"data,omitempty"`
@@ -574,6 +602,7 @@ type ReadKeyValueResponse struct {
 
 func (this *ReadKeyValueResponse) Reset()         { *this = ReadKeyValueResponse{} }
 func (this *ReadKeyValueResponse) String() string { return proto.CompactTextString(this) }
+func (*ReadKeyValueResponse) ProtoMessage()       {}
 
 type ReadKeyValueResponse_KeyValue struct {
 	Key              []byte `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
@@ -583,6 +612,7 @@ type ReadKeyValueResponse_KeyValue struct {
 
 func (this *ReadKeyValueResponse_KeyValue) Reset()         { *this = ReadKeyValueResponse_KeyValue{} }
 func (this *ReadKeyValueResponse_KeyValue) String() string { return proto.CompactTextString(this) }
+func (*ReadKeyValueResponse_KeyValue) ProtoMessage()       {}
 
 type ShuffleEnums struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -590,6 +620,7 @@ type ShuffleEnums struct {
 
 func (this *ShuffleEnums) Reset()         { *this = ShuffleEnums{} }
 func (this *ShuffleEnums) String() string { return proto.CompactTextString(this) }
+func (*ShuffleEnums) ProtoMessage()       {}
 
 type ShuffleInputSpecification struct {
 	Format           *ShuffleEnums_InputFormat `protobuf:"varint,1,opt,name=format,enum=files.ShuffleEnums_InputFormat,def=1" json:"format,omitempty"`
@@ -599,6 +630,7 @@ type ShuffleInputSpecification struct {
 
 func (this *ShuffleInputSpecification) Reset()         { *this = ShuffleInputSpecification{} }
 func (this *ShuffleInputSpecification) String() string { return proto.CompactTextString(this) }
+func (*ShuffleInputSpecification) ProtoMessage()       {}
 
 const Default_ShuffleInputSpecification_Format ShuffleEnums_InputFormat = ShuffleEnums_RECORDS_KEY_VALUE_PROTO_INPUT
 
@@ -610,6 +642,7 @@ type ShuffleOutputSpecification struct {
 
 func (this *ShuffleOutputSpecification) Reset()         { *this = ShuffleOutputSpecification{} }
 func (this *ShuffleOutputSpecification) String() string { return proto.CompactTextString(this) }
+func (*ShuffleOutputSpecification) ProtoMessage()       {}
 
 const Default_ShuffleOutputSpecification_Format ShuffleEnums_OutputFormat = ShuffleEnums_RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT
 
@@ -624,6 +657,7 @@ type ShuffleRequest struct {
 
 func (this *ShuffleRequest) Reset()         { *this = ShuffleRequest{} }
 func (this *ShuffleRequest) String() string { return proto.CompactTextString(this) }
+func (*ShuffleRequest) ProtoMessage()       {}
 
 type ShuffleRequest_Callback struct {
 	Url              *string `protobuf:"bytes,1,req,name=url" json:"url,omitempty"`
@@ -635,6 +669,7 @@ type ShuffleRequest_Callback struct {
 
 func (this *ShuffleRequest_Callback) Reset()         { *this = ShuffleRequest_Callback{} }
 func (this *ShuffleRequest_Callback) String() string { return proto.CompactTextString(this) }
+func (*ShuffleRequest_Callback) ProtoMessage()       {}
 
 const Default_ShuffleRequest_Callback_Method string = "POST"
 const Default_ShuffleRequest_Callback_Queue string = "default"
@@ -645,6 +680,7 @@ type ShuffleResponse struct {
 
 func (this *ShuffleResponse) Reset()         { *this = ShuffleResponse{} }
 func (this *ShuffleResponse) String() string { return proto.CompactTextString(this) }
+func (*ShuffleResponse) ProtoMessage()       {}
 
 type GetShuffleStatusRequest struct {
 	ShuffleName      *string `protobuf:"bytes,1,req,name=shuffle_name" json:"shuffle_name,omitempty"`
@@ -653,6 +689,7 @@ type GetShuffleStatusRequest struct {
 
 func (this *GetShuffleStatusRequest) Reset()         { *this = GetShuffleStatusRequest{} }
 func (this *GetShuffleStatusRequest) String() string { return proto.CompactTextString(this) }
+func (*GetShuffleStatusRequest) ProtoMessage()       {}
 
 type GetShuffleStatusResponse struct {
 	Status           *ShuffleEnums_Status `protobuf:"varint,1,req,name=status,enum=files.ShuffleEnums_Status" json:"status,omitempty"`
@@ -662,6 +699,7 @@ type GetShuffleStatusResponse struct {
 
 func (this *GetShuffleStatusResponse) Reset()         { *this = GetShuffleStatusResponse{} }
 func (this *GetShuffleStatusResponse) String() string { return proto.CompactTextString(this) }
+func (*GetShuffleStatusResponse) ProtoMessage()       {}
 
 type GetCapabilitiesRequest struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -669,6 +707,7 @@ type GetCapabilitiesRequest struct {
 
 func (this *GetCapabilitiesRequest) Reset()         { *this = GetCapabilitiesRequest{} }
 func (this *GetCapabilitiesRequest) String() string { return proto.CompactTextString(this) }
+func (*GetCapabilitiesRequest) ProtoMessage()       {}
 
 type GetCapabilitiesResponse struct {
 	Filesystem       []string `protobuf:"bytes,1,rep,name=filesystem" json:"filesystem,omitempty"`
@@ -678,6 +717,7 @@ type GetCapabilitiesResponse struct {
 
 func (this *GetCapabilitiesResponse) Reset()         { *this = GetCapabilitiesResponse{} }
 func (this *GetCapabilitiesResponse) String() string { return proto.CompactTextString(this) }
+func (*GetCapabilitiesResponse) ProtoMessage()       {}
 
 type FinalizeRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
@@ -686,6 +726,7 @@ type FinalizeRequest struct {
 
 func (this *FinalizeRequest) Reset()         { *this = FinalizeRequest{} }
 func (this *FinalizeRequest) String() string { return proto.CompactTextString(this) }
+func (*FinalizeRequest) ProtoMessage()       {}
 
 type FinalizeResponse struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -693,6 +734,7 @@ type FinalizeResponse struct {
 
 func (this *FinalizeResponse) Reset()         { *this = FinalizeResponse{} }
 func (this *FinalizeResponse) String() string { return proto.CompactTextString(this) }
+func (*FinalizeResponse) ProtoMessage()       {}
 
 type GetDefaultGsBucketNameRequest struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -700,6 +742,7 @@ type GetDefaultGsBucketNameRequest struct {
 
 func (this *GetDefaultGsBucketNameRequest) Reset()         { *this = GetDefaultGsBucketNameRequest{} }
 func (this *GetDefaultGsBucketNameRequest) String() string { return proto.CompactTextString(this) }
+func (*GetDefaultGsBucketNameRequest) ProtoMessage()       {}
 
 type GetDefaultGsBucketNameResponse struct {
 	DefaultGsBucketName *string `protobuf:"bytes,1,opt,name=default_gs_bucket_name" json:"default_gs_bucket_name,omitempty"`
@@ -708,6 +751,7 @@ type GetDefaultGsBucketNameResponse struct {
 
 func (this *GetDefaultGsBucketNameResponse) Reset()         { *this = GetDefaultGsBucketNameResponse{} }
 func (this *GetDefaultGsBucketNameResponse) String() string { return proto.CompactTextString(this) }
+func (*GetDefaultGsBucketNameResponse) ProtoMessage()       {}
 
 func init() {
 	proto.RegisterEnum("files.FileServiceErrors_ErrorCode", FileServiceErrors_ErrorCode_name, FileServiceErrors_ErrorCode_value)

@@ -52,6 +52,7 @@ type SystemServiceError struct {
 
 func (this *SystemServiceError) Reset()         { *this = SystemServiceError{} }
 func (this *SystemServiceError) String() string { return proto.CompactTextString(this) }
+func (*SystemServiceError) ProtoMessage()       {}
 
 type SystemStat struct {
 	Current          *float64 `protobuf:"fixed64,1,opt,name=current" json:"current,omitempty"`
@@ -65,6 +66,7 @@ type SystemStat struct {
 
 func (this *SystemStat) Reset()         { *this = SystemStat{} }
 func (this *SystemStat) String() string { return proto.CompactTextString(this) }
+func (*SystemStat) ProtoMessage()       {}
 
 type GetSystemStatsRequest struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -72,6 +74,7 @@ type GetSystemStatsRequest struct {
 
 func (this *GetSystemStatsRequest) Reset()         { *this = GetSystemStatsRequest{} }
 func (this *GetSystemStatsRequest) String() string { return proto.CompactTextString(this) }
+func (*GetSystemStatsRequest) ProtoMessage()       {}
 
 type GetSystemStatsResponse struct {
 	Cpu              *SystemStat `protobuf:"bytes,1,opt,name=cpu" json:"cpu,omitempty"`
@@ -81,6 +84,7 @@ type GetSystemStatsResponse struct {
 
 func (this *GetSystemStatsResponse) Reset()         { *this = GetSystemStatsResponse{} }
 func (this *GetSystemStatsResponse) String() string { return proto.CompactTextString(this) }
+func (*GetSystemStatsResponse) ProtoMessage()       {}
 
 type StartBackgroundRequestRequest struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -88,6 +92,7 @@ type StartBackgroundRequestRequest struct {
 
 func (this *StartBackgroundRequestRequest) Reset()         { *this = StartBackgroundRequestRequest{} }
 func (this *StartBackgroundRequestRequest) String() string { return proto.CompactTextString(this) }
+func (*StartBackgroundRequestRequest) ProtoMessage()       {}
 
 type StartBackgroundRequestResponse struct {
 	RequestId        *string `protobuf:"bytes,1,opt,name=request_id" json:"request_id,omitempty"`
@@ -96,6 +101,7 @@ type StartBackgroundRequestResponse struct {
 
 func (this *StartBackgroundRequestResponse) Reset()         { *this = StartBackgroundRequestResponse{} }
 func (this *StartBackgroundRequestResponse) String() string { return proto.CompactTextString(this) }
+func (*StartBackgroundRequestResponse) ProtoMessage()       {}
 
 func init() {
 	proto.RegisterEnum("appengine.SystemServiceError_ErrorCode", SystemServiceError_ErrorCode_name, SystemServiceError_ErrorCode_value)

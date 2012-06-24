@@ -100,6 +100,7 @@ type URLFetchServiceError struct {
 
 func (this *URLFetchServiceError) Reset()         { *this = URLFetchServiceError{} }
 func (this *URLFetchServiceError) String() string { return proto.CompactTextString(this) }
+func (*URLFetchServiceError) ProtoMessage()       {}
 
 type URLFetchRequest struct {
 	Method                        *URLFetchRequest_RequestMethod `protobuf:"varint,1,req,enum=appengine.URLFetchRequest_RequestMethod" json:"Method,omitempty"`
@@ -114,6 +115,7 @@ type URLFetchRequest struct {
 
 func (this *URLFetchRequest) Reset()         { *this = URLFetchRequest{} }
 func (this *URLFetchRequest) String() string { return proto.CompactTextString(this) }
+func (*URLFetchRequest) ProtoMessage()       {}
 
 const Default_URLFetchRequest_FollowRedirects bool = true
 const Default_URLFetchRequest_MustValidateServerCertificate bool = true
@@ -126,6 +128,7 @@ type URLFetchRequest_Header struct {
 
 func (this *URLFetchRequest_Header) Reset()         { *this = URLFetchRequest_Header{} }
 func (this *URLFetchRequest_Header) String() string { return proto.CompactTextString(this) }
+func (*URLFetchRequest_Header) ProtoMessage()       {}
 
 type URLFetchResponse struct {
 	Content               []byte                     `protobuf:"bytes,1,opt" json:"Content,omitempty"`
@@ -143,6 +146,7 @@ type URLFetchResponse struct {
 
 func (this *URLFetchResponse) Reset()         { *this = URLFetchResponse{} }
 func (this *URLFetchResponse) String() string { return proto.CompactTextString(this) }
+func (*URLFetchResponse) ProtoMessage()       {}
 
 const Default_URLFetchResponse_ContentWasTruncated bool = false
 const Default_URLFetchResponse_ApiCpuMilliseconds int64 = 0
@@ -157,6 +161,7 @@ type URLFetchResponse_Header struct {
 
 func (this *URLFetchResponse_Header) Reset()         { *this = URLFetchResponse_Header{} }
 func (this *URLFetchResponse_Header) String() string { return proto.CompactTextString(this) }
+func (*URLFetchResponse_Header) ProtoMessage()       {}
 
 func init() {
 	proto.RegisterEnum("appengine.URLFetchServiceError_ErrorCode", URLFetchServiceError_ErrorCode_name, URLFetchServiceError_ErrorCode_value)

@@ -64,6 +64,7 @@ type ConversionServiceError struct {
 
 func (this *ConversionServiceError) Reset()         { *this = ConversionServiceError{} }
 func (this *ConversionServiceError) String() string { return proto.CompactTextString(this) }
+func (*ConversionServiceError) ProtoMessage()       {}
 
 type AssetInfo struct {
 	Name             *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
@@ -74,6 +75,7 @@ type AssetInfo struct {
 
 func (this *AssetInfo) Reset()         { *this = AssetInfo{} }
 func (this *AssetInfo) String() string { return proto.CompactTextString(this) }
+func (*AssetInfo) ProtoMessage()       {}
 
 type DocumentInfo struct {
 	Asset            []*AssetInfo `protobuf:"bytes,1,rep,name=asset" json:"asset,omitempty"`
@@ -82,6 +84,7 @@ type DocumentInfo struct {
 
 func (this *DocumentInfo) Reset()         { *this = DocumentInfo{} }
 func (this *DocumentInfo) String() string { return proto.CompactTextString(this) }
+func (*DocumentInfo) ProtoMessage()       {}
 
 type ConversionInput struct {
 	Input            *DocumentInfo              `protobuf:"bytes,1,req,name=input" json:"input,omitempty"`
@@ -92,6 +95,7 @@ type ConversionInput struct {
 
 func (this *ConversionInput) Reset()         { *this = ConversionInput{} }
 func (this *ConversionInput) String() string { return proto.CompactTextString(this) }
+func (*ConversionInput) ProtoMessage()       {}
 
 type ConversionInput_AuxData struct {
 	Key              *string `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
@@ -101,6 +105,7 @@ type ConversionInput_AuxData struct {
 
 func (this *ConversionInput_AuxData) Reset()         { *this = ConversionInput_AuxData{} }
 func (this *ConversionInput_AuxData) String() string { return proto.CompactTextString(this) }
+func (*ConversionInput_AuxData) ProtoMessage()       {}
 
 type ConversionOutput struct {
 	ErrorCode        *ConversionServiceError_ErrorCode `protobuf:"varint,1,req,name=error_code,enum=appengine.ConversionServiceError_ErrorCode" json:"error_code,omitempty"`
@@ -110,6 +115,7 @@ type ConversionOutput struct {
 
 func (this *ConversionOutput) Reset()         { *this = ConversionOutput{} }
 func (this *ConversionOutput) String() string { return proto.CompactTextString(this) }
+func (*ConversionOutput) ProtoMessage()       {}
 
 type ConversionRequest struct {
 	Conversion       []*ConversionInput `protobuf:"bytes,1,rep,name=conversion" json:"conversion,omitempty"`
@@ -118,6 +124,7 @@ type ConversionRequest struct {
 
 func (this *ConversionRequest) Reset()         { *this = ConversionRequest{} }
 func (this *ConversionRequest) String() string { return proto.CompactTextString(this) }
+func (*ConversionRequest) ProtoMessage()       {}
 
 type ConversionResponse struct {
 	Result           []*ConversionOutput `protobuf:"bytes,1,rep,name=result" json:"result,omitempty"`
@@ -126,6 +133,7 @@ type ConversionResponse struct {
 
 func (this *ConversionResponse) Reset()         { *this = ConversionResponse{} }
 func (this *ConversionResponse) String() string { return proto.CompactTextString(this) }
+func (*ConversionResponse) ProtoMessage()       {}
 
 func init() {
 	proto.RegisterEnum("appengine.ConversionServiceError_ErrorCode", ConversionServiceError_ErrorCode_name, ConversionServiceError_ErrorCode_value)

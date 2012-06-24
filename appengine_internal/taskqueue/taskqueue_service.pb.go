@@ -238,6 +238,7 @@ type Transaction struct {
 
 func (this *Transaction) Reset()         { *this = Transaction{} }
 func (this *Transaction) String() string { return proto.CompactTextString(this) }
+func (*Transaction) ProtoMessage()       {}
 
 const Default_Transaction_MarkChanges bool = false
 
@@ -247,6 +248,7 @@ type TaskQueueServiceError struct {
 
 func (this *TaskQueueServiceError) Reset()         { *this = TaskQueueServiceError{} }
 func (this *TaskQueueServiceError) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueServiceError) ProtoMessage()       {}
 
 type TaskPayload struct {
 	XXX_extensions   map[int32]proto.Extension `json:"-"`
@@ -255,6 +257,7 @@ type TaskPayload struct {
 
 func (this *TaskPayload) Reset()         { *this = TaskPayload{} }
 func (this *TaskPayload) String() string { return proto.CompactTextString(this) }
+func (*TaskPayload) ProtoMessage()       {}
 
 func (this *TaskPayload) Marshal() ([]byte, error) {
 	return proto.MarshalMessageSet(this.ExtensionMap())
@@ -292,6 +295,7 @@ type TaskQueueRetryParameters struct {
 
 func (this *TaskQueueRetryParameters) Reset()         { *this = TaskQueueRetryParameters{} }
 func (this *TaskQueueRetryParameters) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueRetryParameters) ProtoMessage()       {}
 
 const Default_TaskQueueRetryParameters_MinBackoffSec float64 = 0.1
 const Default_TaskQueueRetryParameters_MaxBackoffSec float64 = 3600
@@ -305,6 +309,7 @@ type TaskQueueAcl struct {
 
 func (this *TaskQueueAcl) Reset()         { *this = TaskQueueAcl{} }
 func (this *TaskQueueAcl) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueAcl) ProtoMessage()       {}
 
 type TaskQueueHttpHeader struct {
 	Key              []byte `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
@@ -314,6 +319,7 @@ type TaskQueueHttpHeader struct {
 
 func (this *TaskQueueHttpHeader) Reset()         { *this = TaskQueueHttpHeader{} }
 func (this *TaskQueueHttpHeader) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueHttpHeader) ProtoMessage()       {}
 
 type TaskQueueMode struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -321,6 +327,7 @@ type TaskQueueMode struct {
 
 func (this *TaskQueueMode) Reset()         { *this = TaskQueueMode{} }
 func (this *TaskQueueMode) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueMode) ProtoMessage()       {}
 
 type TaskQueueAddRequest struct {
 	QueueName        []byte                             `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
@@ -343,6 +350,7 @@ type TaskQueueAddRequest struct {
 
 func (this *TaskQueueAddRequest) Reset()         { *this = TaskQueueAddRequest{} }
 func (this *TaskQueueAddRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueAddRequest) ProtoMessage()       {}
 
 const Default_TaskQueueAddRequest_Method TaskQueueAddRequest_RequestMethod = TaskQueueAddRequest_POST
 const Default_TaskQueueAddRequest_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
@@ -355,6 +363,7 @@ type TaskQueueAddRequest_Header struct {
 
 func (this *TaskQueueAddRequest_Header) Reset()         { *this = TaskQueueAddRequest_Header{} }
 func (this *TaskQueueAddRequest_Header) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueAddRequest_Header) ProtoMessage()       {}
 
 type TaskQueueAddRequest_CronTimetable struct {
 	Schedule         []byte `protobuf:"bytes,13,req,name=schedule" json:"schedule,omitempty"`
@@ -364,6 +373,7 @@ type TaskQueueAddRequest_CronTimetable struct {
 
 func (this *TaskQueueAddRequest_CronTimetable) Reset()         { *this = TaskQueueAddRequest_CronTimetable{} }
 func (this *TaskQueueAddRequest_CronTimetable) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueAddRequest_CronTimetable) ProtoMessage()       {}
 
 type TaskQueueAddResponse struct {
 	ChosenTaskName   []byte `protobuf:"bytes,1,opt,name=chosen_task_name" json:"chosen_task_name,omitempty"`
@@ -372,6 +382,7 @@ type TaskQueueAddResponse struct {
 
 func (this *TaskQueueAddResponse) Reset()         { *this = TaskQueueAddResponse{} }
 func (this *TaskQueueAddResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueAddResponse) ProtoMessage()       {}
 
 type TaskQueueBulkAddRequest struct {
 	AddRequest       []*TaskQueueAddRequest `protobuf:"bytes,1,rep,name=add_request" json:"add_request,omitempty"`
@@ -380,6 +391,7 @@ type TaskQueueBulkAddRequest struct {
 
 func (this *TaskQueueBulkAddRequest) Reset()         { *this = TaskQueueBulkAddRequest{} }
 func (this *TaskQueueBulkAddRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueBulkAddRequest) ProtoMessage()       {}
 
 type TaskQueueBulkAddResponse struct {
 	Taskresult       []*TaskQueueBulkAddResponse_TaskResult `protobuf:"group,1,rep,name=TaskResult" json:"taskresult,omitempty"`
@@ -388,6 +400,7 @@ type TaskQueueBulkAddResponse struct {
 
 func (this *TaskQueueBulkAddResponse) Reset()         { *this = TaskQueueBulkAddResponse{} }
 func (this *TaskQueueBulkAddResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueBulkAddResponse) ProtoMessage()       {}
 
 type TaskQueueBulkAddResponse_TaskResult struct {
 	Result           *TaskQueueServiceError_ErrorCode `protobuf:"varint,2,req,name=result,enum=appengine.TaskQueueServiceError_ErrorCode" json:"result,omitempty"`
@@ -399,6 +412,7 @@ func (this *TaskQueueBulkAddResponse_TaskResult) Reset() {
 	*this = TaskQueueBulkAddResponse_TaskResult{}
 }
 func (this *TaskQueueBulkAddResponse_TaskResult) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueBulkAddResponse_TaskResult) ProtoMessage()       {}
 
 type TaskQueueDeleteRequest struct {
 	QueueName        []byte   `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
@@ -409,6 +423,7 @@ type TaskQueueDeleteRequest struct {
 
 func (this *TaskQueueDeleteRequest) Reset()         { *this = TaskQueueDeleteRequest{} }
 func (this *TaskQueueDeleteRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueDeleteRequest) ProtoMessage()       {}
 
 type TaskQueueDeleteResponse struct {
 	Result           []TaskQueueServiceError_ErrorCode `protobuf:"varint,3,rep,name=result,enum=appengine.TaskQueueServiceError_ErrorCode" json:"result,omitempty"`
@@ -417,6 +432,7 @@ type TaskQueueDeleteResponse struct {
 
 func (this *TaskQueueDeleteResponse) Reset()         { *this = TaskQueueDeleteResponse{} }
 func (this *TaskQueueDeleteResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueDeleteResponse) ProtoMessage()       {}
 
 type TaskQueueForceRunRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
@@ -427,6 +443,7 @@ type TaskQueueForceRunRequest struct {
 
 func (this *TaskQueueForceRunRequest) Reset()         { *this = TaskQueueForceRunRequest{} }
 func (this *TaskQueueForceRunRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueForceRunRequest) ProtoMessage()       {}
 
 type TaskQueueForceRunResponse struct {
 	Result           *TaskQueueServiceError_ErrorCode `protobuf:"varint,3,req,name=result,enum=appengine.TaskQueueServiceError_ErrorCode" json:"result,omitempty"`
@@ -435,6 +452,7 @@ type TaskQueueForceRunResponse struct {
 
 func (this *TaskQueueForceRunResponse) Reset()         { *this = TaskQueueForceRunResponse{} }
 func (this *TaskQueueForceRunResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueForceRunResponse) ProtoMessage()       {}
 
 type TaskQueueUpdateQueueRequest struct {
 	AppId                 []byte                    `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
@@ -452,6 +470,7 @@ type TaskQueueUpdateQueueRequest struct {
 
 func (this *TaskQueueUpdateQueueRequest) Reset()         { *this = TaskQueueUpdateQueueRequest{} }
 func (this *TaskQueueUpdateQueueRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueUpdateQueueRequest) ProtoMessage()       {}
 
 const Default_TaskQueueUpdateQueueRequest_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
 
@@ -461,6 +480,7 @@ type TaskQueueUpdateQueueResponse struct {
 
 func (this *TaskQueueUpdateQueueResponse) Reset()         { *this = TaskQueueUpdateQueueResponse{} }
 func (this *TaskQueueUpdateQueueResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueUpdateQueueResponse) ProtoMessage()       {}
 
 type TaskQueueFetchQueuesRequest struct {
 	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
@@ -470,6 +490,7 @@ type TaskQueueFetchQueuesRequest struct {
 
 func (this *TaskQueueFetchQueuesRequest) Reset()         { *this = TaskQueueFetchQueuesRequest{} }
 func (this *TaskQueueFetchQueuesRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueFetchQueuesRequest) ProtoMessage()       {}
 
 type TaskQueueFetchQueuesResponse struct {
 	Queue            []*TaskQueueFetchQueuesResponse_Queue `protobuf:"group,1,rep" json:"queue,omitempty"`
@@ -478,6 +499,7 @@ type TaskQueueFetchQueuesResponse struct {
 
 func (this *TaskQueueFetchQueuesResponse) Reset()         { *this = TaskQueueFetchQueuesResponse{} }
 func (this *TaskQueueFetchQueuesResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueFetchQueuesResponse) ProtoMessage()       {}
 
 type TaskQueueFetchQueuesResponse_Queue struct {
 	QueueName             []byte                    `protobuf:"bytes,2,req,name=queue_name" json:"queue_name,omitempty"`
@@ -496,6 +518,7 @@ type TaskQueueFetchQueuesResponse_Queue struct {
 
 func (this *TaskQueueFetchQueuesResponse_Queue) Reset()         { *this = TaskQueueFetchQueuesResponse_Queue{} }
 func (this *TaskQueueFetchQueuesResponse_Queue) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueFetchQueuesResponse_Queue) ProtoMessage()       {}
 
 const Default_TaskQueueFetchQueuesResponse_Queue_Paused bool = false
 const Default_TaskQueueFetchQueuesResponse_Queue_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
@@ -510,6 +533,7 @@ type TaskQueueFetchQueueStatsRequest struct {
 
 func (this *TaskQueueFetchQueueStatsRequest) Reset()         { *this = TaskQueueFetchQueueStatsRequest{} }
 func (this *TaskQueueFetchQueueStatsRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueFetchQueueStatsRequest) ProtoMessage()       {}
 
 const Default_TaskQueueFetchQueueStatsRequest_MaxNumTasks int32 = 0
 
@@ -524,6 +548,7 @@ type TaskQueueScannerQueueInfo struct {
 
 func (this *TaskQueueScannerQueueInfo) Reset()         { *this = TaskQueueScannerQueueInfo{} }
 func (this *TaskQueueScannerQueueInfo) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueScannerQueueInfo) ProtoMessage()       {}
 
 type TaskQueueFetchQueueStatsResponse struct {
 	Queuestats       []*TaskQueueFetchQueueStatsResponse_QueueStats `protobuf:"group,1,rep,name=QueueStats" json:"queuestats,omitempty"`
@@ -532,6 +557,7 @@ type TaskQueueFetchQueueStatsResponse struct {
 
 func (this *TaskQueueFetchQueueStatsResponse) Reset()         { *this = TaskQueueFetchQueueStatsResponse{} }
 func (this *TaskQueueFetchQueueStatsResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueFetchQueueStatsResponse) ProtoMessage()       {}
 
 type TaskQueueFetchQueueStatsResponse_QueueStats struct {
 	NumTasks         *int32                     `protobuf:"varint,2,req,name=num_tasks" json:"num_tasks,omitempty"`
@@ -546,6 +572,7 @@ func (this *TaskQueueFetchQueueStatsResponse_QueueStats) Reset() {
 func (this *TaskQueueFetchQueueStatsResponse_QueueStats) String() string {
 	return proto.CompactTextString(this)
 }
+func (*TaskQueueFetchQueueStatsResponse_QueueStats) ProtoMessage() {}
 
 type TaskQueuePauseQueueRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
@@ -556,6 +583,7 @@ type TaskQueuePauseQueueRequest struct {
 
 func (this *TaskQueuePauseQueueRequest) Reset()         { *this = TaskQueuePauseQueueRequest{} }
 func (this *TaskQueuePauseQueueRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueuePauseQueueRequest) ProtoMessage()       {}
 
 type TaskQueuePauseQueueResponse struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -563,6 +591,7 @@ type TaskQueuePauseQueueResponse struct {
 
 func (this *TaskQueuePauseQueueResponse) Reset()         { *this = TaskQueuePauseQueueResponse{} }
 func (this *TaskQueuePauseQueueResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueuePauseQueueResponse) ProtoMessage()       {}
 
 type TaskQueuePurgeQueueRequest struct {
 	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
@@ -572,6 +601,7 @@ type TaskQueuePurgeQueueRequest struct {
 
 func (this *TaskQueuePurgeQueueRequest) Reset()         { *this = TaskQueuePurgeQueueRequest{} }
 func (this *TaskQueuePurgeQueueRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueuePurgeQueueRequest) ProtoMessage()       {}
 
 type TaskQueuePurgeQueueResponse struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -579,6 +609,7 @@ type TaskQueuePurgeQueueResponse struct {
 
 func (this *TaskQueuePurgeQueueResponse) Reset()         { *this = TaskQueuePurgeQueueResponse{} }
 func (this *TaskQueuePurgeQueueResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueuePurgeQueueResponse) ProtoMessage()       {}
 
 type TaskQueueDeleteQueueRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
@@ -588,6 +619,7 @@ type TaskQueueDeleteQueueRequest struct {
 
 func (this *TaskQueueDeleteQueueRequest) Reset()         { *this = TaskQueueDeleteQueueRequest{} }
 func (this *TaskQueueDeleteQueueRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueDeleteQueueRequest) ProtoMessage()       {}
 
 type TaskQueueDeleteQueueResponse struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -595,6 +627,7 @@ type TaskQueueDeleteQueueResponse struct {
 
 func (this *TaskQueueDeleteQueueResponse) Reset()         { *this = TaskQueueDeleteQueueResponse{} }
 func (this *TaskQueueDeleteQueueResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueDeleteQueueResponse) ProtoMessage()       {}
 
 type TaskQueueDeleteGroupRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
@@ -603,6 +636,7 @@ type TaskQueueDeleteGroupRequest struct {
 
 func (this *TaskQueueDeleteGroupRequest) Reset()         { *this = TaskQueueDeleteGroupRequest{} }
 func (this *TaskQueueDeleteGroupRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueDeleteGroupRequest) ProtoMessage()       {}
 
 type TaskQueueDeleteGroupResponse struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -610,6 +644,7 @@ type TaskQueueDeleteGroupResponse struct {
 
 func (this *TaskQueueDeleteGroupResponse) Reset()         { *this = TaskQueueDeleteGroupResponse{} }
 func (this *TaskQueueDeleteGroupResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueDeleteGroupResponse) ProtoMessage()       {}
 
 type TaskQueueQueryTasksRequest struct {
 	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
@@ -623,6 +658,7 @@ type TaskQueueQueryTasksRequest struct {
 
 func (this *TaskQueueQueryTasksRequest) Reset()         { *this = TaskQueueQueryTasksRequest{} }
 func (this *TaskQueueQueryTasksRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueQueryTasksRequest) ProtoMessage()       {}
 
 const Default_TaskQueueQueryTasksRequest_MaxRows int32 = 1
 
@@ -633,6 +669,7 @@ type TaskQueueQueryTasksResponse struct {
 
 func (this *TaskQueueQueryTasksResponse) Reset()         { *this = TaskQueueQueryTasksResponse{} }
 func (this *TaskQueueQueryTasksResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueQueryTasksResponse) ProtoMessage()       {}
 
 type TaskQueueQueryTasksResponse_Task struct {
 	TaskName         []byte                                          `protobuf:"bytes,2,req,name=task_name" json:"task_name,omitempty"`
@@ -656,6 +693,7 @@ type TaskQueueQueryTasksResponse_Task struct {
 
 func (this *TaskQueueQueryTasksResponse_Task) Reset()         { *this = TaskQueueQueryTasksResponse_Task{} }
 func (this *TaskQueueQueryTasksResponse_Task) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueQueryTasksResponse_Task) ProtoMessage()       {}
 
 const Default_TaskQueueQueryTasksResponse_Task_RetryCount int32 = 0
 
@@ -671,6 +709,7 @@ func (this *TaskQueueQueryTasksResponse_Task_Header) Reset() {
 func (this *TaskQueueQueryTasksResponse_Task_Header) String() string {
 	return proto.CompactTextString(this)
 }
+func (*TaskQueueQueryTasksResponse_Task_Header) ProtoMessage() {}
 
 type TaskQueueQueryTasksResponse_Task_CronTimetable struct {
 	Schedule         []byte `protobuf:"bytes,14,req,name=schedule" json:"schedule,omitempty"`
@@ -684,6 +723,7 @@ func (this *TaskQueueQueryTasksResponse_Task_CronTimetable) Reset() {
 func (this *TaskQueueQueryTasksResponse_Task_CronTimetable) String() string {
 	return proto.CompactTextString(this)
 }
+func (*TaskQueueQueryTasksResponse_Task_CronTimetable) ProtoMessage() {}
 
 type TaskQueueQueryTasksResponse_Task_RunLog struct {
 	DispatchedUsec   *int64 `protobuf:"varint,17,req,name=dispatched_usec" json:"dispatched_usec,omitempty"`
@@ -699,6 +739,7 @@ func (this *TaskQueueQueryTasksResponse_Task_RunLog) Reset() {
 func (this *TaskQueueQueryTasksResponse_Task_RunLog) String() string {
 	return proto.CompactTextString(this)
 }
+func (*TaskQueueQueryTasksResponse_Task_RunLog) ProtoMessage() {}
 
 type TaskQueueFetchTaskRequest struct {
 	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
@@ -709,6 +750,7 @@ type TaskQueueFetchTaskRequest struct {
 
 func (this *TaskQueueFetchTaskRequest) Reset()         { *this = TaskQueueFetchTaskRequest{} }
 func (this *TaskQueueFetchTaskRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueFetchTaskRequest) ProtoMessage()       {}
 
 type TaskQueueFetchTaskResponse struct {
 	Task             *TaskQueueQueryTasksResponse `protobuf:"bytes,1,req,name=task" json:"task,omitempty"`
@@ -717,6 +759,7 @@ type TaskQueueFetchTaskResponse struct {
 
 func (this *TaskQueueFetchTaskResponse) Reset()         { *this = TaskQueueFetchTaskResponse{} }
 func (this *TaskQueueFetchTaskResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueFetchTaskResponse) ProtoMessage()       {}
 
 type TaskQueueUpdateStorageLimitRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
@@ -726,6 +769,7 @@ type TaskQueueUpdateStorageLimitRequest struct {
 
 func (this *TaskQueueUpdateStorageLimitRequest) Reset()         { *this = TaskQueueUpdateStorageLimitRequest{} }
 func (this *TaskQueueUpdateStorageLimitRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueUpdateStorageLimitRequest) ProtoMessage()       {}
 
 type TaskQueueUpdateStorageLimitResponse struct {
 	NewLimit         *int64 `protobuf:"varint,1,req,name=new_limit" json:"new_limit,omitempty"`
@@ -736,6 +780,7 @@ func (this *TaskQueueUpdateStorageLimitResponse) Reset() {
 	*this = TaskQueueUpdateStorageLimitResponse{}
 }
 func (this *TaskQueueUpdateStorageLimitResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueUpdateStorageLimitResponse) ProtoMessage()       {}
 
 type TaskQueueQueryAndOwnTasksRequest struct {
 	QueueName        []byte   `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
@@ -748,6 +793,7 @@ type TaskQueueQueryAndOwnTasksRequest struct {
 
 func (this *TaskQueueQueryAndOwnTasksRequest) Reset()         { *this = TaskQueueQueryAndOwnTasksRequest{} }
 func (this *TaskQueueQueryAndOwnTasksRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueQueryAndOwnTasksRequest) ProtoMessage()       {}
 
 const Default_TaskQueueQueryAndOwnTasksRequest_GroupByTag bool = false
 
@@ -758,6 +804,7 @@ type TaskQueueQueryAndOwnTasksResponse struct {
 
 func (this *TaskQueueQueryAndOwnTasksResponse) Reset()         { *this = TaskQueueQueryAndOwnTasksResponse{} }
 func (this *TaskQueueQueryAndOwnTasksResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueQueryAndOwnTasksResponse) ProtoMessage()       {}
 
 type TaskQueueQueryAndOwnTasksResponse_Task struct {
 	TaskName         []byte `protobuf:"bytes,2,req,name=task_name" json:"task_name,omitempty"`
@@ -774,6 +821,7 @@ func (this *TaskQueueQueryAndOwnTasksResponse_Task) Reset() {
 func (this *TaskQueueQueryAndOwnTasksResponse_Task) String() string {
 	return proto.CompactTextString(this)
 }
+func (*TaskQueueQueryAndOwnTasksResponse_Task) ProtoMessage() {}
 
 const Default_TaskQueueQueryAndOwnTasksResponse_Task_RetryCount int32 = 0
 
@@ -787,6 +835,7 @@ type TaskQueueModifyTaskLeaseRequest struct {
 
 func (this *TaskQueueModifyTaskLeaseRequest) Reset()         { *this = TaskQueueModifyTaskLeaseRequest{} }
 func (this *TaskQueueModifyTaskLeaseRequest) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueModifyTaskLeaseRequest) ProtoMessage()       {}
 
 type TaskQueueModifyTaskLeaseResponse struct {
 	UpdatedEtaUsec   *int64 `protobuf:"varint,1,req,name=updated_eta_usec" json:"updated_eta_usec,omitempty"`
@@ -795,6 +844,7 @@ type TaskQueueModifyTaskLeaseResponse struct {
 
 func (this *TaskQueueModifyTaskLeaseResponse) Reset()         { *this = TaskQueueModifyTaskLeaseResponse{} }
 func (this *TaskQueueModifyTaskLeaseResponse) String() string { return proto.CompactTextString(this) }
+func (*TaskQueueModifyTaskLeaseResponse) ProtoMessage()       {}
 
 func init() {
 	proto.RegisterEnum("appengine.TaskQueueServiceError_ErrorCode", TaskQueueServiceError_ErrorCode_name, TaskQueueServiceError_ErrorCode_value)

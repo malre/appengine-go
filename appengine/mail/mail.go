@@ -26,6 +26,7 @@ import (
 	"appengine_internal"
 	"code.google.com/p/goprotobuf/proto"
 
+	base_proto "appengine_internal/base"
 	mail_proto "appengine_internal/mail"
 )
 
@@ -96,7 +97,7 @@ func Send(c appengine.Context, msg *Message) error {
 			})
 		}
 	}
-	res := &struct{}{} // VoidProto
+	res := &base_proto.VoidProto{}
 	if err := c.Call("mail", "Send", req, res, nil); err != nil {
 		return err
 	}

@@ -179,6 +179,24 @@ func (f *Function) Task(args ...interface{}) (*taskqueue.Task, error) {
 			// a variadic arg
 			dt = ft.In(minArgs).Elem()
 		}
+		// nil arguments won't have a type, so they need special handling.
+		if at == nil {
+			// nil interface
+			switch dt.Kind() {
+			case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
+				continue // may be nil
+			}
+			return nil, fmt.Errorf("delay: argument %d has wrong type: %v is not nilable", i, dt)
+		}
+		switch at.Kind() {
+		case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
+			av := reflect.ValueOf(args[i-1])
+			if av.IsNil() {
+				// nil value in interface; not supported by gob, so we replace it
+				// with a nil interface value
+				args[i-1] = nil
+			}
+		}
 		if !at.AssignableTo(dt) {
 			return nil, fmt.Errorf("delay: argument %d has wrong type: %v is not assignable to %v", i, at, dt)
 		}
@@ -228,7 +246,22 @@ func runFunc(c appengine.Context, w http.ResponseWriter, req *http.Request) {
 	ft := f.fv.Type()
 	in := []reflect.Value{reflect.ValueOf(c)}
 	for _, arg := range inv.Args {
-		in = append(in, reflect.ValueOf(arg))
+		var v reflect.Value
+		if arg != nil {
+			v = reflect.ValueOf(arg)
+		} else {
+			// Task was passed a nil argument, so we must construct
+			// the zero value for the argument here.
+			n := len(in) // we're constructing the nth argument
+			var at reflect.Type
+			if !ft.IsVariadic() || n < ft.NumIn()-1 {
+				at = ft.In(n)
+			} else {
+				at = ft.In(ft.NumIn() - 1).Elem()
+			}
+			v = reflect.Zero(at)
+		}
+		in = append(in, v)
 	}
 	out := f.fv.Call(in)
 

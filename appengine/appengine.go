@@ -42,6 +42,7 @@ type Context interface {
 	// Developer-facing APIs wrap these methods to provide a more friendly API.
 
 	// Internal use only.
+	// TODO: s/interface{}/proto.Message/.
 	Call(service, method string, in, out interface{}, opts *appengine_internal.CallOptions) error
 	// Internal use only. Use AppID instead.
 	FullyQualifiedAppID() string
