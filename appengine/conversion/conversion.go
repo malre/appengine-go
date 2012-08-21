@@ -105,9 +105,9 @@ func (d *Document) Convert(c appengine.Context, mimeType string, opts *Options) 
 	doc := &Document{}
 	for _, asset := range output.Asset {
 		doc.Assets = append(doc.Assets, Asset{
-			Name: proto.GetString(asset.Name),
+			Name: asset.GetName(),
 			Data: asset.Data,
-			Type: proto.GetString(asset.MimeType),
+			Type: asset.GetMimeType(),
 		})
 	}
 	return doc, nil

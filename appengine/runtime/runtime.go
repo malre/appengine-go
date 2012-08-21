@@ -4,13 +4,15 @@
 
 /*
 Package runtime exposes information about the resource usage of the application.
+It also provides a way to run code in a new background context of a backend.
 */
 package runtime
 
 import (
+	"net/http"
+
 	"appengine"
 	"appengine_internal"
-	"code.google.com/p/goprotobuf/proto"
 
 	system_proto "appengine_internal/system"
 )
@@ -39,16 +41,102 @@ func Stats(c appengine.Context) (*Statistics, error) {
 	}
 	s := &Statistics{}
 	if res.Cpu != nil {
-		s.CPU.Total = proto.GetFloat64(res.Cpu.Total)
-		s.CPU.Rate1M = proto.GetFloat64(res.Cpu.Rate1M)
-		s.CPU.Rate10M = proto.GetFloat64(res.Cpu.Rate10M)
+		s.CPU.Total = res.Cpu.GetTotal()
+		s.CPU.Rate1M = res.Cpu.GetRate1M()
+		s.CPU.Rate10M = res.Cpu.GetRate10M()
 	}
 	if res.Memory != nil {
-		s.RAM.Current = proto.GetFloat64(res.Memory.Current)
-		s.RAM.Average1M = proto.GetFloat64(res.Memory.Average1M)
-		s.RAM.Average10M = proto.GetFloat64(res.Memory.Average10M)
+		s.RAM.Current = res.Memory.GetCurrent()
+		s.RAM.Average1M = res.Memory.GetAverage1M()
+		s.RAM.Average10M = res.Memory.GetAverage10M()
 	}
 	return s, nil
+}
+
+/*
+RunInBackground makes an API call that triggers an /_ah/background request.
+
+There are two independent code paths that need to make contact:
+the RunInBackground code, and the /_ah/background handler. The matchmaker
+loop arranges for the two paths to meet. The RunInBackground code passes
+a send to the matchmaker, the /_ah/background passes a recv to the matchmaker,
+and the matchmaker hooks them up.
+*/
+
+func init() {
+	http.HandleFunc("/_ah/background", handleBackground)
+
+	sc := make(chan send)
+	rc := make(chan recv)
+	sendc, recvc = sc, rc
+	go matchmaker(sc, rc)
+}
+
+var (
+	sendc chan<- send // RunInBackground sends to this
+	recvc chan<- recv // handleBackground sends to this
+)
+
+type send struct {
+	id string
+	f  func(appengine.Context)
+}
+
+type recv struct {
+	id string
+	ch chan<- func(appengine.Context)
+}
+
+func matchmaker(sendc <-chan send, recvc <-chan recv) {
+	// When one side of the match arrives before the other
+	// it is inserted in the corresponding map.
+	waitSend := make(map[string]send)
+	waitRecv := make(map[string]recv)
+
+	for {
+		select {
+		case s := <-sendc:
+			if r, ok := waitRecv[s.id]; ok {
+				// meet!
+				delete(waitRecv, s.id)
+				r.ch <- s.f
+			} else {
+				// waiting for r
+				waitSend[s.id] = s
+			}
+		case r := <-recvc:
+			if s, ok := waitSend[r.id]; ok {
+				// meet!
+				delete(waitSend, r.id)
+				r.ch <- s.f
+			} else {
+				// waiting for s
+				waitRecv[r.id] = r
+			}
+		}
+	}
+}
+
+var newContext = appengine.NewContext // for testing
+
+func handleBackground(w http.ResponseWriter, req *http.Request) {
+	id := req.Header.Get("X-AppEngine-BackgroundRequest")
+
+	ch := make(chan func(appengine.Context))
+	recvc <- recv{id, ch}
+	(<-ch)(newContext(req))
+}
+
+// RunInBackground runs f in a background goroutine in this process.
+// This is only valid to invoke from a backend.
+func RunInBackground(c appengine.Context, f func(c appengine.Context)) error {
+	req := &system_proto.StartBackgroundRequestRequest{}
+	res := &system_proto.StartBackgroundRequestResponse{}
+	if err := c.Call("system", "StartBackgroundRequest", req, res, nil); err != nil {
+		return err
+	}
+	sendc <- send{res.GetRequestId(), f}
+	return nil
 }
 
 func init() {

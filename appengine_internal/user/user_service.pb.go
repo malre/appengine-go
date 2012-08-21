@@ -4,10 +4,12 @@
 package appengine
 
 import proto "code.google.com/p/goprotobuf/proto"
-import "math"
+import json "encoding/json"
+import math "math"
 
-// Reference proto and math imports to suppress error if they are not otherwise used.
-var _ = proto.GetString
+// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+var _ = proto.Marshal
+var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type UserServiceError_ErrorCode int32
@@ -38,11 +40,6 @@ var UserServiceError_ErrorCode_value = map[string]int32{
 	"OAUTH_ERROR":           5,
 }
 
-// NewUserServiceError_ErrorCode is deprecated. Use x.Enum() instead.
-func NewUserServiceError_ErrorCode(x UserServiceError_ErrorCode) *UserServiceError_ErrorCode {
-	e := UserServiceError_ErrorCode(x)
-	return &e
-}
 func (x UserServiceError_ErrorCode) Enum() *UserServiceError_ErrorCode {
 	p := new(UserServiceError_ErrorCode)
 	*p = x
@@ -50,6 +47,17 @@ func (x UserServiceError_ErrorCode) Enum() *UserServiceError_ErrorCode {
 }
 func (x UserServiceError_ErrorCode) String() string {
 	return proto.EnumName(UserServiceError_ErrorCode_name, int32(x))
+}
+func (x UserServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *UserServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(UserServiceError_ErrorCode_value, data, "UserServiceError_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = UserServiceError_ErrorCode(value)
+	return nil
 }
 
 type UserServiceError struct {
@@ -71,6 +79,27 @@ func (this *CreateLoginURLRequest) Reset()         { *this = CreateLoginURLReque
 func (this *CreateLoginURLRequest) String() string { return proto.CompactTextString(this) }
 func (*CreateLoginURLRequest) ProtoMessage()       {}
 
+func (this *CreateLoginURLRequest) GetDestinationUrl() string {
+	if this != nil && this.DestinationUrl != nil {
+		return *this.DestinationUrl
+	}
+	return ""
+}
+
+func (this *CreateLoginURLRequest) GetAuthDomain() string {
+	if this != nil && this.AuthDomain != nil {
+		return *this.AuthDomain
+	}
+	return ""
+}
+
+func (this *CreateLoginURLRequest) GetFederatedIdentity() string {
+	if this != nil && this.FederatedIdentity != nil {
+		return *this.FederatedIdentity
+	}
+	return ""
+}
+
 type CreateLoginURLResponse struct {
 	LoginUrl         *string `protobuf:"bytes,1,req,name=login_url" json:"login_url,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -79,6 +108,13 @@ type CreateLoginURLResponse struct {
 func (this *CreateLoginURLResponse) Reset()         { *this = CreateLoginURLResponse{} }
 func (this *CreateLoginURLResponse) String() string { return proto.CompactTextString(this) }
 func (*CreateLoginURLResponse) ProtoMessage()       {}
+
+func (this *CreateLoginURLResponse) GetLoginUrl() string {
+	if this != nil && this.LoginUrl != nil {
+		return *this.LoginUrl
+	}
+	return ""
+}
 
 type CreateLogoutURLRequest struct {
 	DestinationUrl   *string `protobuf:"bytes,1,req,name=destination_url" json:"destination_url,omitempty"`
@@ -90,6 +126,20 @@ func (this *CreateLogoutURLRequest) Reset()         { *this = CreateLogoutURLReq
 func (this *CreateLogoutURLRequest) String() string { return proto.CompactTextString(this) }
 func (*CreateLogoutURLRequest) ProtoMessage()       {}
 
+func (this *CreateLogoutURLRequest) GetDestinationUrl() string {
+	if this != nil && this.DestinationUrl != nil {
+		return *this.DestinationUrl
+	}
+	return ""
+}
+
+func (this *CreateLogoutURLRequest) GetAuthDomain() string {
+	if this != nil && this.AuthDomain != nil {
+		return *this.AuthDomain
+	}
+	return ""
+}
+
 type CreateLogoutURLResponse struct {
 	LogoutUrl        *string `protobuf:"bytes,1,req,name=logout_url" json:"logout_url,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -99,6 +149,13 @@ func (this *CreateLogoutURLResponse) Reset()         { *this = CreateLogoutURLRe
 func (this *CreateLogoutURLResponse) String() string { return proto.CompactTextString(this) }
 func (*CreateLogoutURLResponse) ProtoMessage()       {}
 
+func (this *CreateLogoutURLResponse) GetLogoutUrl() string {
+	if this != nil && this.LogoutUrl != nil {
+		return *this.LogoutUrl
+	}
+	return ""
+}
+
 type GetOAuthUserRequest struct {
 	Scope            *string `protobuf:"bytes,1,opt,name=scope" json:"scope,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -107,6 +164,13 @@ type GetOAuthUserRequest struct {
 func (this *GetOAuthUserRequest) Reset()         { *this = GetOAuthUserRequest{} }
 func (this *GetOAuthUserRequest) String() string { return proto.CompactTextString(this) }
 func (*GetOAuthUserRequest) ProtoMessage()       {}
+
+func (this *GetOAuthUserRequest) GetScope() string {
+	if this != nil && this.Scope != nil {
+		return *this.Scope
+	}
+	return ""
+}
 
 type GetOAuthUserResponse struct {
 	Email            *string `protobuf:"bytes,1,req,name=email" json:"email,omitempty"`
@@ -122,6 +186,41 @@ func (this *GetOAuthUserResponse) String() string { return proto.CompactTextStri
 func (*GetOAuthUserResponse) ProtoMessage()       {}
 
 const Default_GetOAuthUserResponse_IsAdmin bool = false
+
+func (this *GetOAuthUserResponse) GetEmail() string {
+	if this != nil && this.Email != nil {
+		return *this.Email
+	}
+	return ""
+}
+
+func (this *GetOAuthUserResponse) GetUserId() string {
+	if this != nil && this.UserId != nil {
+		return *this.UserId
+	}
+	return ""
+}
+
+func (this *GetOAuthUserResponse) GetAuthDomain() string {
+	if this != nil && this.AuthDomain != nil {
+		return *this.AuthDomain
+	}
+	return ""
+}
+
+func (this *GetOAuthUserResponse) GetUserOrganization() string {
+	if this != nil && this.UserOrganization != nil {
+		return *this.UserOrganization
+	}
+	return ""
+}
+
+func (this *GetOAuthUserResponse) GetIsAdmin() bool {
+	if this != nil && this.IsAdmin != nil {
+		return *this.IsAdmin
+	}
+	return Default_GetOAuthUserResponse_IsAdmin
+}
 
 type CheckOAuthSignatureRequest struct {
 	XXX_unrecognized []byte `json:"-"`
@@ -140,6 +239,13 @@ func (this *CheckOAuthSignatureResponse) Reset()         { *this = CheckOAuthSig
 func (this *CheckOAuthSignatureResponse) String() string { return proto.CompactTextString(this) }
 func (*CheckOAuthSignatureResponse) ProtoMessage()       {}
 
+func (this *CheckOAuthSignatureResponse) GetOauthConsumerKey() string {
+	if this != nil && this.OauthConsumerKey != nil {
+		return *this.OauthConsumerKey
+	}
+	return ""
+}
+
 type CreateFederatedLoginRequest struct {
 	ClaimedId        *string `protobuf:"bytes,1,req,name=claimed_id" json:"claimed_id,omitempty"`
 	ContinueUrl      *string `protobuf:"bytes,2,req,name=continue_url" json:"continue_url,omitempty"`
@@ -151,6 +257,27 @@ func (this *CreateFederatedLoginRequest) Reset()         { *this = CreateFederat
 func (this *CreateFederatedLoginRequest) String() string { return proto.CompactTextString(this) }
 func (*CreateFederatedLoginRequest) ProtoMessage()       {}
 
+func (this *CreateFederatedLoginRequest) GetClaimedId() string {
+	if this != nil && this.ClaimedId != nil {
+		return *this.ClaimedId
+	}
+	return ""
+}
+
+func (this *CreateFederatedLoginRequest) GetContinueUrl() string {
+	if this != nil && this.ContinueUrl != nil {
+		return *this.ContinueUrl
+	}
+	return ""
+}
+
+func (this *CreateFederatedLoginRequest) GetAuthority() string {
+	if this != nil && this.Authority != nil {
+		return *this.Authority
+	}
+	return ""
+}
+
 type CreateFederatedLoginResponse struct {
 	RedirectedUrl    *string `protobuf:"bytes,1,req,name=redirected_url" json:"redirected_url,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -159,6 +286,13 @@ type CreateFederatedLoginResponse struct {
 func (this *CreateFederatedLoginResponse) Reset()         { *this = CreateFederatedLoginResponse{} }
 func (this *CreateFederatedLoginResponse) String() string { return proto.CompactTextString(this) }
 func (*CreateFederatedLoginResponse) ProtoMessage()       {}
+
+func (this *CreateFederatedLoginResponse) GetRedirectedUrl() string {
+	if this != nil && this.RedirectedUrl != nil {
+		return *this.RedirectedUrl
+	}
+	return ""
+}
 
 type CreateFederatedLogoutRequest struct {
 	DestinationUrl   *string `protobuf:"bytes,1,req,name=destination_url" json:"destination_url,omitempty"`
@@ -169,6 +303,13 @@ func (this *CreateFederatedLogoutRequest) Reset()         { *this = CreateFedera
 func (this *CreateFederatedLogoutRequest) String() string { return proto.CompactTextString(this) }
 func (*CreateFederatedLogoutRequest) ProtoMessage()       {}
 
+func (this *CreateFederatedLogoutRequest) GetDestinationUrl() string {
+	if this != nil && this.DestinationUrl != nil {
+		return *this.DestinationUrl
+	}
+	return ""
+}
+
 type CreateFederatedLogoutResponse struct {
 	LogoutUrl        *string `protobuf:"bytes,1,req,name=logout_url" json:"logout_url,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -177,6 +318,13 @@ type CreateFederatedLogoutResponse struct {
 func (this *CreateFederatedLogoutResponse) Reset()         { *this = CreateFederatedLogoutResponse{} }
 func (this *CreateFederatedLogoutResponse) String() string { return proto.CompactTextString(this) }
 func (*CreateFederatedLogoutResponse) ProtoMessage()       {}
+
+func (this *CreateFederatedLogoutResponse) GetLogoutUrl() string {
+	if this != nil && this.LogoutUrl != nil {
+		return *this.LogoutUrl
+	}
+	return ""
+}
 
 func init() {
 	proto.RegisterEnum("appengine.UserServiceError_ErrorCode", UserServiceError_ErrorCode_name, UserServiceError_ErrorCode_value)

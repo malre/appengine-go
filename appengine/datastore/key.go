@@ -280,8 +280,8 @@ func AllocateIDs(c appengine.Context, kind string, parent *Key, n int) (low, hig
 	}
 	// The protobuf is inclusive at both ends. Idiomatic Go (e.g. slices, for loops)
 	// is inclusive at the low end and exclusive at the high end, so we add 1.
-	low = proto.GetInt64(res.Start)
-	high = proto.GetInt64(res.End) + 1
+	low = res.GetStart()
+	high = res.GetEnd() + 1
 	if low+int64(n) != high {
 		return 0, 0, fmt.Errorf("datastore: internal error: could not allocate %d IDs", n)
 	}

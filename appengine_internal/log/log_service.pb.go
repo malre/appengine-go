@@ -4,10 +4,12 @@
 package appengine
 
 import proto "code.google.com/p/goprotobuf/proto"
-import "math"
+import json "encoding/json"
+import math "math"
 
-// Reference proto and math imports to suppress error if they are not otherwise used.
-var _ = proto.GetString
+// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+var _ = proto.Marshal
+var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type LogServiceError_ErrorCode int32
@@ -29,11 +31,6 @@ var LogServiceError_ErrorCode_value = map[string]int32{
 	"STORAGE_ERROR":   2,
 }
 
-// NewLogServiceError_ErrorCode is deprecated. Use x.Enum() instead.
-func NewLogServiceError_ErrorCode(x LogServiceError_ErrorCode) *LogServiceError_ErrorCode {
-	e := LogServiceError_ErrorCode(x)
-	return &e
-}
 func (x LogServiceError_ErrorCode) Enum() *LogServiceError_ErrorCode {
 	p := new(LogServiceError_ErrorCode)
 	*p = x
@@ -41,6 +38,17 @@ func (x LogServiceError_ErrorCode) Enum() *LogServiceError_ErrorCode {
 }
 func (x LogServiceError_ErrorCode) String() string {
 	return proto.EnumName(LogServiceError_ErrorCode_name, int32(x))
+}
+func (x LogServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *LogServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(LogServiceError_ErrorCode_value, data, "LogServiceError_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = LogServiceError_ErrorCode(value)
+	return nil
 }
 
 type LogServiceError struct {
@@ -62,6 +70,27 @@ func (this *UserAppLogLine) Reset()         { *this = UserAppLogLine{} }
 func (this *UserAppLogLine) String() string { return proto.CompactTextString(this) }
 func (*UserAppLogLine) ProtoMessage()       {}
 
+func (this *UserAppLogLine) GetTimestampUsec() int64 {
+	if this != nil && this.TimestampUsec != nil {
+		return *this.TimestampUsec
+	}
+	return 0
+}
+
+func (this *UserAppLogLine) GetLevel() int64 {
+	if this != nil && this.Level != nil {
+		return *this.Level
+	}
+	return 0
+}
+
+func (this *UserAppLogLine) GetMessage() string {
+	if this != nil && this.Message != nil {
+		return *this.Message
+	}
+	return ""
+}
+
 type UserAppLogGroup struct {
 	LogLine          []*UserAppLogLine `protobuf:"bytes,2,rep,name=log_line" json:"log_line,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
@@ -80,6 +109,13 @@ func (this *FlushRequest) Reset()         { *this = FlushRequest{} }
 func (this *FlushRequest) String() string { return proto.CompactTextString(this) }
 func (*FlushRequest) ProtoMessage()       {}
 
+func (this *FlushRequest) GetLogs() []byte {
+	if this != nil {
+		return this.Logs
+	}
+	return nil
+}
+
 type SetStatusRequest struct {
 	Status           *string `protobuf:"bytes,1,req,name=status" json:"status,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -89,6 +125,13 @@ func (this *SetStatusRequest) Reset()         { *this = SetStatusRequest{} }
 func (this *SetStatusRequest) String() string { return proto.CompactTextString(this) }
 func (*SetStatusRequest) ProtoMessage()       {}
 
+func (this *SetStatusRequest) GetStatus() string {
+	if this != nil && this.Status != nil {
+		return *this.Status
+	}
+	return ""
+}
+
 type LogOffset struct {
 	RequestId        []byte `protobuf:"bytes,1,opt,name=request_id" json:"request_id,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
@@ -97,6 +140,13 @@ type LogOffset struct {
 func (this *LogOffset) Reset()         { *this = LogOffset{} }
 func (this *LogOffset) String() string { return proto.CompactTextString(this) }
 func (*LogOffset) ProtoMessage()       {}
+
+func (this *LogOffset) GetRequestId() []byte {
+	if this != nil {
+		return this.RequestId
+	}
+	return nil
+}
 
 type LogLine struct {
 	Time             *int64  `protobuf:"varint,1,req,name=time" json:"time,omitempty"`
@@ -108,6 +158,27 @@ type LogLine struct {
 func (this *LogLine) Reset()         { *this = LogLine{} }
 func (this *LogLine) String() string { return proto.CompactTextString(this) }
 func (*LogLine) ProtoMessage()       {}
+
+func (this *LogLine) GetTime() int64 {
+	if this != nil && this.Time != nil {
+		return *this.Time
+	}
+	return 0
+}
+
+func (this *LogLine) GetLevel() int32 {
+	if this != nil && this.Level != nil {
+		return *this.Level
+	}
+	return 0
+}
+
+func (this *LogLine) GetLogMessage() string {
+	if this != nil && this.LogMessage != nil {
+		return *this.LogMessage
+	}
+	return ""
+}
 
 type RequestLog struct {
 	AppId                   *string    `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
@@ -156,6 +227,251 @@ func (*RequestLog) ProtoMessage()       {}
 const Default_RequestLog_ReplicaIndex int32 = -1
 const Default_RequestLog_Finished bool = true
 
+func (this *RequestLog) GetAppId() string {
+	if this != nil && this.AppId != nil {
+		return *this.AppId
+	}
+	return ""
+}
+
+func (this *RequestLog) GetVersionId() string {
+	if this != nil && this.VersionId != nil {
+		return *this.VersionId
+	}
+	return ""
+}
+
+func (this *RequestLog) GetRequestId() []byte {
+	if this != nil {
+		return this.RequestId
+	}
+	return nil
+}
+
+func (this *RequestLog) GetOffset() *LogOffset {
+	if this != nil {
+		return this.Offset
+	}
+	return nil
+}
+
+func (this *RequestLog) GetIp() string {
+	if this != nil && this.Ip != nil {
+		return *this.Ip
+	}
+	return ""
+}
+
+func (this *RequestLog) GetNickname() string {
+	if this != nil && this.Nickname != nil {
+		return *this.Nickname
+	}
+	return ""
+}
+
+func (this *RequestLog) GetStartTime() int64 {
+	if this != nil && this.StartTime != nil {
+		return *this.StartTime
+	}
+	return 0
+}
+
+func (this *RequestLog) GetEndTime() int64 {
+	if this != nil && this.EndTime != nil {
+		return *this.EndTime
+	}
+	return 0
+}
+
+func (this *RequestLog) GetLatency() int64 {
+	if this != nil && this.Latency != nil {
+		return *this.Latency
+	}
+	return 0
+}
+
+func (this *RequestLog) GetMcycles() int64 {
+	if this != nil && this.Mcycles != nil {
+		return *this.Mcycles
+	}
+	return 0
+}
+
+func (this *RequestLog) GetMethod() string {
+	if this != nil && this.Method != nil {
+		return *this.Method
+	}
+	return ""
+}
+
+func (this *RequestLog) GetResource() string {
+	if this != nil && this.Resource != nil {
+		return *this.Resource
+	}
+	return ""
+}
+
+func (this *RequestLog) GetHttpVersion() string {
+	if this != nil && this.HttpVersion != nil {
+		return *this.HttpVersion
+	}
+	return ""
+}
+
+func (this *RequestLog) GetStatus() int32 {
+	if this != nil && this.Status != nil {
+		return *this.Status
+	}
+	return 0
+}
+
+func (this *RequestLog) GetResponseSize() int64 {
+	if this != nil && this.ResponseSize != nil {
+		return *this.ResponseSize
+	}
+	return 0
+}
+
+func (this *RequestLog) GetReferrer() string {
+	if this != nil && this.Referrer != nil {
+		return *this.Referrer
+	}
+	return ""
+}
+
+func (this *RequestLog) GetUserAgent() string {
+	if this != nil && this.UserAgent != nil {
+		return *this.UserAgent
+	}
+	return ""
+}
+
+func (this *RequestLog) GetUrlMapEntry() string {
+	if this != nil && this.UrlMapEntry != nil {
+		return *this.UrlMapEntry
+	}
+	return ""
+}
+
+func (this *RequestLog) GetCombined() string {
+	if this != nil && this.Combined != nil {
+		return *this.Combined
+	}
+	return ""
+}
+
+func (this *RequestLog) GetApiMcycles() int64 {
+	if this != nil && this.ApiMcycles != nil {
+		return *this.ApiMcycles
+	}
+	return 0
+}
+
+func (this *RequestLog) GetHost() string {
+	if this != nil && this.Host != nil {
+		return *this.Host
+	}
+	return ""
+}
+
+func (this *RequestLog) GetCost() float64 {
+	if this != nil && this.Cost != nil {
+		return *this.Cost
+	}
+	return 0
+}
+
+func (this *RequestLog) GetTaskQueueName() string {
+	if this != nil && this.TaskQueueName != nil {
+		return *this.TaskQueueName
+	}
+	return ""
+}
+
+func (this *RequestLog) GetTaskName() string {
+	if this != nil && this.TaskName != nil {
+		return *this.TaskName
+	}
+	return ""
+}
+
+func (this *RequestLog) GetWasLoadingRequest() bool {
+	if this != nil && this.WasLoadingRequest != nil {
+		return *this.WasLoadingRequest
+	}
+	return false
+}
+
+func (this *RequestLog) GetPendingTime() int64 {
+	if this != nil && this.PendingTime != nil {
+		return *this.PendingTime
+	}
+	return 0
+}
+
+func (this *RequestLog) GetReplicaIndex() int32 {
+	if this != nil && this.ReplicaIndex != nil {
+		return *this.ReplicaIndex
+	}
+	return Default_RequestLog_ReplicaIndex
+}
+
+func (this *RequestLog) GetFinished() bool {
+	if this != nil && this.Finished != nil {
+		return *this.Finished
+	}
+	return Default_RequestLog_Finished
+}
+
+func (this *RequestLog) GetCloneKey() []byte {
+	if this != nil {
+		return this.CloneKey
+	}
+	return nil
+}
+
+func (this *RequestLog) GetLinesIncomplete() bool {
+	if this != nil && this.LinesIncomplete != nil {
+		return *this.LinesIncomplete
+	}
+	return false
+}
+
+func (this *RequestLog) GetExitReason() int32 {
+	if this != nil && this.ExitReason != nil {
+		return *this.ExitReason
+	}
+	return 0
+}
+
+func (this *RequestLog) GetWasThrottledForTime() bool {
+	if this != nil && this.WasThrottledForTime != nil {
+		return *this.WasThrottledForTime
+	}
+	return false
+}
+
+func (this *RequestLog) GetWasThrottledForRequests() bool {
+	if this != nil && this.WasThrottledForRequests != nil {
+		return *this.WasThrottledForRequests
+	}
+	return false
+}
+
+func (this *RequestLog) GetThrottledTime() int64 {
+	if this != nil && this.ThrottledTime != nil {
+		return *this.ThrottledTime
+	}
+	return 0
+}
+
+func (this *RequestLog) GetServerName() []byte {
+	if this != nil {
+		return this.ServerName
+	}
+	return nil
+}
+
 type LogReadRequest struct {
 	AppId             *string    `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
 	VersionId         []string   `protobuf:"bytes,2,rep,name=version_id" json:"version_id,omitempty"`
@@ -182,6 +498,118 @@ func (this *LogReadRequest) Reset()         { *this = LogReadRequest{} }
 func (this *LogReadRequest) String() string { return proto.CompactTextString(this) }
 func (*LogReadRequest) ProtoMessage()       {}
 
+func (this *LogReadRequest) GetAppId() string {
+	if this != nil && this.AppId != nil {
+		return *this.AppId
+	}
+	return ""
+}
+
+func (this *LogReadRequest) GetStartTime() int64 {
+	if this != nil && this.StartTime != nil {
+		return *this.StartTime
+	}
+	return 0
+}
+
+func (this *LogReadRequest) GetEndTime() int64 {
+	if this != nil && this.EndTime != nil {
+		return *this.EndTime
+	}
+	return 0
+}
+
+func (this *LogReadRequest) GetOffset() *LogOffset {
+	if this != nil {
+		return this.Offset
+	}
+	return nil
+}
+
+func (this *LogReadRequest) GetMinimumLogLevel() int32 {
+	if this != nil && this.MinimumLogLevel != nil {
+		return *this.MinimumLogLevel
+	}
+	return 0
+}
+
+func (this *LogReadRequest) GetIncludeIncomplete() bool {
+	if this != nil && this.IncludeIncomplete != nil {
+		return *this.IncludeIncomplete
+	}
+	return false
+}
+
+func (this *LogReadRequest) GetCount() int64 {
+	if this != nil && this.Count != nil {
+		return *this.Count
+	}
+	return 0
+}
+
+func (this *LogReadRequest) GetCombinedLogRegex() string {
+	if this != nil && this.CombinedLogRegex != nil {
+		return *this.CombinedLogRegex
+	}
+	return ""
+}
+
+func (this *LogReadRequest) GetHostRegex() string {
+	if this != nil && this.HostRegex != nil {
+		return *this.HostRegex
+	}
+	return ""
+}
+
+func (this *LogReadRequest) GetReplicaIndex() int32 {
+	if this != nil && this.ReplicaIndex != nil {
+		return *this.ReplicaIndex
+	}
+	return 0
+}
+
+func (this *LogReadRequest) GetIncludeAppLogs() bool {
+	if this != nil && this.IncludeAppLogs != nil {
+		return *this.IncludeAppLogs
+	}
+	return false
+}
+
+func (this *LogReadRequest) GetAppLogsPerRequest() int32 {
+	if this != nil && this.AppLogsPerRequest != nil {
+		return *this.AppLogsPerRequest
+	}
+	return 0
+}
+
+func (this *LogReadRequest) GetIncludeHost() bool {
+	if this != nil && this.IncludeHost != nil {
+		return *this.IncludeHost
+	}
+	return false
+}
+
+func (this *LogReadRequest) GetIncludeAll() bool {
+	if this != nil && this.IncludeAll != nil {
+		return *this.IncludeAll
+	}
+	return false
+}
+
+func (this *LogReadRequest) GetCacheIterator() bool {
+	if this != nil && this.CacheIterator != nil {
+		return *this.CacheIterator
+	}
+	return false
+}
+
+func (this *LogReadRequest) GetNumShards() int32 {
+	if this != nil && this.NumShards != nil {
+		return *this.NumShards
+	}
+	return 0
+}
+
 type LogReadResponse struct {
 	Log              []*RequestLog `protobuf:"bytes,1,rep,name=log" json:"log,omitempty"`
 	Offset           *LogOffset    `protobuf:"bytes,2,opt,name=offset" json:"offset,omitempty"`
@@ -193,18 +621,75 @@ func (this *LogReadResponse) Reset()         { *this = LogReadResponse{} }
 func (this *LogReadResponse) String() string { return proto.CompactTextString(this) }
 func (*LogReadResponse) ProtoMessage()       {}
 
+func (this *LogReadResponse) GetOffset() *LogOffset {
+	if this != nil {
+		return this.Offset
+	}
+	return nil
+}
+
+func (this *LogReadResponse) GetLastEndTime() int64 {
+	if this != nil && this.LastEndTime != nil {
+		return *this.LastEndTime
+	}
+	return 0
+}
+
 type LogUsageRecord struct {
 	VersionId        *string `protobuf:"bytes,1,opt,name=version_id" json:"version_id,omitempty"`
 	StartTime        *int32  `protobuf:"varint,2,opt,name=start_time" json:"start_time,omitempty"`
 	EndTime          *int32  `protobuf:"varint,3,opt,name=end_time" json:"end_time,omitempty"`
 	Count            *int64  `protobuf:"varint,4,opt,name=count" json:"count,omitempty"`
 	TotalSize        *int64  `protobuf:"varint,5,opt,name=total_size" json:"total_size,omitempty"`
+	Records          *int32  `protobuf:"varint,6,opt,name=records" json:"records,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *LogUsageRecord) Reset()         { *this = LogUsageRecord{} }
 func (this *LogUsageRecord) String() string { return proto.CompactTextString(this) }
 func (*LogUsageRecord) ProtoMessage()       {}
+
+func (this *LogUsageRecord) GetVersionId() string {
+	if this != nil && this.VersionId != nil {
+		return *this.VersionId
+	}
+	return ""
+}
+
+func (this *LogUsageRecord) GetStartTime() int32 {
+	if this != nil && this.StartTime != nil {
+		return *this.StartTime
+	}
+	return 0
+}
+
+func (this *LogUsageRecord) GetEndTime() int32 {
+	if this != nil && this.EndTime != nil {
+		return *this.EndTime
+	}
+	return 0
+}
+
+func (this *LogUsageRecord) GetCount() int64 {
+	if this != nil && this.Count != nil {
+		return *this.Count
+	}
+	return 0
+}
+
+func (this *LogUsageRecord) GetTotalSize() int64 {
+	if this != nil && this.TotalSize != nil {
+		return *this.TotalSize
+	}
+	return 0
+}
+
+func (this *LogUsageRecord) GetRecords() int32 {
+	if this != nil && this.Records != nil {
+		return *this.Records
+	}
+	return 0
+}
 
 type LogUsageRequest struct {
 	AppId            *string  `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
@@ -224,6 +709,55 @@ func (*LogUsageRequest) ProtoMessage()       {}
 
 const Default_LogUsageRequest_ResolutionHours uint32 = 1
 
+func (this *LogUsageRequest) GetAppId() string {
+	if this != nil && this.AppId != nil {
+		return *this.AppId
+	}
+	return ""
+}
+
+func (this *LogUsageRequest) GetStartTime() int32 {
+	if this != nil && this.StartTime != nil {
+		return *this.StartTime
+	}
+	return 0
+}
+
+func (this *LogUsageRequest) GetEndTime() int32 {
+	if this != nil && this.EndTime != nil {
+		return *this.EndTime
+	}
+	return 0
+}
+
+func (this *LogUsageRequest) GetResolutionHours() uint32 {
+	if this != nil && this.ResolutionHours != nil {
+		return *this.ResolutionHours
+	}
+	return Default_LogUsageRequest_ResolutionHours
+}
+
+func (this *LogUsageRequest) GetCombineVersions() bool {
+	if this != nil && this.CombineVersions != nil {
+		return *this.CombineVersions
+	}
+	return false
+}
+
+func (this *LogUsageRequest) GetUsageVersion() int32 {
+	if this != nil && this.UsageVersion != nil {
+		return *this.UsageVersion
+	}
+	return 0
+}
+
+func (this *LogUsageRequest) GetVersionsOnly() bool {
+	if this != nil && this.VersionsOnly != nil {
+		return *this.VersionsOnly
+	}
+	return false
+}
+
 type LogUsageResponse struct {
 	Usage            []*LogUsageRecord `protobuf:"bytes,1,rep,name=usage" json:"usage,omitempty"`
 	Summary          *LogUsageRecord   `protobuf:"bytes,2,opt,name=summary" json:"summary,omitempty"`
@@ -233,6 +767,13 @@ type LogUsageResponse struct {
 func (this *LogUsageResponse) Reset()         { *this = LogUsageResponse{} }
 func (this *LogUsageResponse) String() string { return proto.CompactTextString(this) }
 func (*LogUsageResponse) ProtoMessage()       {}
+
+func (this *LogUsageResponse) GetSummary() *LogUsageRecord {
+	if this != nil {
+		return this.Summary
+	}
+	return nil
+}
 
 func init() {
 	proto.RegisterEnum("appengine.LogServiceError_ErrorCode", LogServiceError_ErrorCode_name, LogServiceError_ErrorCode_value)

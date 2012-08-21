@@ -52,8 +52,32 @@ type Message struct {
 	// It defaults to "chat".
 	Type string
 
-	// TODO: RawXML
+	// RawXML is whether the body contains raw XML.
+	RawXML bool
 }
+
+// Presence represents an outgoing presence update.
+type Presence struct {
+	// Sender is the JID (optional).
+	Sender string
+
+	// The intended recipient of the presence update.
+	To string
+
+	// Type, per RFC 3921 (optional). Defaults to "available".
+	Type string
+
+	// State of presence (optional).
+	// Valid values: "away", "chat", "xa", "dnd" (RFC 3921).
+	State string
+
+	// Free text status message (optional).
+	Status string
+}
+
+var (
+	ErrPresenceUnavailable = errors.New("xmpp: presence unavailable")
+)
 
 // Handle arranges for f to be called for incoming XMPP messages.
 // Only messages of type "chat" or "normal" will be handled.
@@ -72,8 +96,9 @@ func Handle(f func(c appengine.Context, m *Message)) {
 // If any failures occur with specific recipients, the error will be an appengine.MultiError.
 func (m *Message) Send(c appengine.Context) error {
 	req := &xmpp_proto.XmppMessageRequest{
-		Jid:  m.To,
-		Body: &m.Body,
+		Jid:    m.To,
+		Body:   &m.Body,
+		RawXml: &m.RawXML,
 	}
 	if m.Type != "" && m.Type != "chat" {
 		req.Type = &m.Type
@@ -100,6 +125,74 @@ func (m *Message) Send(c appengine.Context) error {
 		return me
 	}
 	return nil
+}
+
+// Invite sends an invitation. If the from address is an empty string
+// the default (yourapp@appspot.com/bot) will be used.
+func Invite(c appengine.Context, to, from string) error {
+	req := &xmpp_proto.XmppInviteRequest{
+		Jid: &to,
+	}
+	if from != "" {
+		req.FromJid = &from
+	}
+	res := &xmpp_proto.XmppInviteResponse{}
+	return c.Call("xmpp", "SendInvite", req, res, nil)
+}
+
+// Send sends a presence update.
+func (p *Presence) Send(c appengine.Context) error {
+	req := &xmpp_proto.XmppSendPresenceRequest{
+		Jid: &p.To,
+	}
+	if p.State != "" {
+		req.Show = &p.State
+	}
+	if p.Type != "" {
+		req.Type = &p.Type
+	}
+	if p.Sender != "" {
+		req.FromJid = &p.Sender
+	}
+	if p.Status != "" {
+		req.Status = &p.Status
+	}
+	res := &xmpp_proto.XmppSendPresenceResponse{}
+	return c.Call("xmpp", "SendPresence", req, res, nil)
+}
+
+// GetPresence retrieves a user's presence.
+// If the from address is an empty string the default
+// (yourapp@appspot.com/bot) will be used.
+// Possible return values are "", "away", "dnd", "chat", "xa".
+// ErrPresenceUnavailable is returned if the presence is unavailable.
+func GetPresence(c appengine.Context, to string, from string) (string, error) {
+	req := &xmpp_proto.PresenceRequest{
+		Jid: &to,
+	}
+	if from != "" {
+		req.FromJid = &from
+	}
+	res := &xmpp_proto.PresenceResponse{}
+	if err := c.Call("xmpp", "GetPresence", req, res, nil); err != nil {
+		return "", err
+	}
+	if !*res.IsAvailable || res.Presence == nil {
+		return "", ErrPresenceUnavailable
+	}
+	switch *res.Presence {
+	case xmpp_proto.PresenceResponse_NORMAL:
+		return "", nil
+	case xmpp_proto.PresenceResponse_AWAY:
+		return "away", nil
+	case xmpp_proto.PresenceResponse_DO_NOT_DISTURB:
+		return "dnd", nil
+	case xmpp_proto.PresenceResponse_CHAT:
+		return "chat", nil
+	case xmpp_proto.PresenceResponse_EXTENDED_AWAY:
+		return "xa", nil
+	}
+	return "", fmt.Errorf("xmpp: unknown presence %v", *res.Presence)
 }
 
 func init() {

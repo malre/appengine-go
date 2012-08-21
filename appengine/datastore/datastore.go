@@ -44,12 +44,12 @@ func (e *ErrFieldMismatch) Error() string {
 
 // protoToKey converts a Reference proto to a *Key.
 func protoToKey(r *pb.Reference) (k *Key, err error) {
-	appID := proto.GetString(r.App)
+	appID := r.GetApp()
 	for _, e := range r.Path.Element {
 		k = &Key{
-			kind:     proto.GetString(e.Type),
-			stringID: proto.GetString(e.Name),
-			intID:    proto.GetInt64(e.Id),
+			kind:     e.GetType(),
+			stringID: e.GetName(),
+			intID:    e.GetId(),
 			parent:   k,
 			appID:    appID,
 		}
@@ -130,12 +130,12 @@ func multiValid(key []*Key) error {
 // referenceValueToKey is the same as protoToKey except the input is a
 // PropertyValue_ReferenceValue instead of a Reference.
 func referenceValueToKey(r *pb.PropertyValue_ReferenceValue) (k *Key, err error) {
-	appID := proto.GetString(r.App)
+	appID := r.GetApp()
 	for _, e := range r.Pathelement {
 		k = &Key{
-			kind:     proto.GetString(e.Type),
-			stringID: proto.GetString(e.Name),
-			intID:    proto.GetInt64(e.Id),
+			kind:     e.GetType(),
+			stringID: e.GetName(),
+			intID:    e.GetId(),
 			parent:   k,
 			appID:    appID,
 		}

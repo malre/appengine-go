@@ -168,7 +168,7 @@ func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err error)
 		res.ContentLength = int64(len(fres.Content))
 	}
 
-	truncated := proto.GetBool(fres.ContentWasTruncated)
+	truncated := fres.GetContentWasTruncated()
 	res.Body = &bodyReader{content: fres.Content, truncated: truncated}
 	return
 }

@@ -89,16 +89,16 @@ const (
 // protoToItem converts a protocol buffer item to a Go struct.
 func protoToItem(p *pb.MemcacheGetResponse_Item) *Item {
 	var expiration time.Duration
-	sec := proto.GetInt32(p.ExpiresInSeconds)
+	sec := p.GetExpiresInSeconds()
 	if sec > 0 && sec < secondsIn30Years {
 		expiration = time.Duration(sec) * time.Second
 	}
 	return &Item{
 		Key:        string(p.Key),
 		Value:      p.Value,
-		Flags:      proto.GetUint32(p.Flags),
+		Flags:      p.GetFlags(),
 		Expiration: expiration,
-		casID:      proto.GetUint64(p.CasId),
+		casID:      p.GetCasId(),
 	}
 }
 
@@ -366,21 +366,51 @@ func (cd Codec) Get(c appengine.Context, key string, v interface{}) (*Item, erro
 	return i, nil
 }
 
-func (cd Codec) set(c appengine.Context, item *Item, policy pb.MemcacheSetRequest_SetPolicy) error {
-	value, err := cd.Marshal(item.Object)
-	if err != nil {
-		return err
+func (cd Codec) set(c appengine.Context, items []*Item, policy pb.MemcacheSetRequest_SetPolicy) error {
+	var vs [][]byte
+	var me appengine.MultiError
+	for i, item := range items {
+		v, err := cd.Marshal(item.Object)
+		if err != nil {
+			if me == nil {
+				me = make(appengine.MultiError, len(items))
+			}
+			me[i] = err
+			continue
+		}
+		if me == nil {
+			vs = append(vs, v)
+		}
+	}
+	if me != nil {
+		return me
 	}
 
-	return singleError(set(c, []*Item{item}, [][]byte{value}, policy))
+	return set(c, items, vs, policy)
 }
 
 func (cd Codec) Set(c appengine.Context, item *Item) error {
-	return cd.set(c, item, pb.MemcacheSetRequest_SET)
+	return singleError(cd.set(c, []*Item{item}, pb.MemcacheSetRequest_SET))
+}
+
+func (cd Codec) SetMulti(c appengine.Context, items []*Item) error {
+	return cd.set(c, items, pb.MemcacheSetRequest_SET)
 }
 
 func (cd Codec) Add(c appengine.Context, item *Item) error {
-	return cd.set(c, item, pb.MemcacheSetRequest_ADD)
+	return singleError(cd.set(c, []*Item{item}, pb.MemcacheSetRequest_ADD))
+}
+
+func (cd Codec) AddMulti(c appengine.Context, items []*Item) error {
+	return cd.set(c, items, pb.MemcacheSetRequest_ADD)
+}
+
+func (cd Codec) CompareAndSwap(c appengine.Context, item *Item) error {
+	return singleError(cd.set(c, []*Item{item}, pb.MemcacheSetRequest_CAS))
+}
+
+func (cd Codec) CompareAndSwapMulti(c appengine.Context, items []*Item) error {
+	return cd.set(c, items, pb.MemcacheSetRequest_CAS)
 }
 
 var (

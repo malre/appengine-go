@@ -4,10 +4,12 @@
 package appengine
 
 import proto "code.google.com/p/goprotobuf/proto"
-import "math"
+import json "encoding/json"
+import math "math"
 
-// Reference proto and math imports to suppress error if they are not otherwise used.
-var _ = proto.GetString
+// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+var _ = proto.Marshal
+var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type MailServiceError_ErrorCode int32
@@ -38,11 +40,6 @@ var MailServiceError_ErrorCode_value = map[string]int32{
 	"INVALID_HEADER_NAME":     5,
 }
 
-// NewMailServiceError_ErrorCode is deprecated. Use x.Enum() instead.
-func NewMailServiceError_ErrorCode(x MailServiceError_ErrorCode) *MailServiceError_ErrorCode {
-	e := MailServiceError_ErrorCode(x)
-	return &e
-}
 func (x MailServiceError_ErrorCode) Enum() *MailServiceError_ErrorCode {
 	p := new(MailServiceError_ErrorCode)
 	*p = x
@@ -50,6 +47,17 @@ func (x MailServiceError_ErrorCode) Enum() *MailServiceError_ErrorCode {
 }
 func (x MailServiceError_ErrorCode) String() string {
 	return proto.EnumName(MailServiceError_ErrorCode_name, int32(x))
+}
+func (x MailServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *MailServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(MailServiceError_ErrorCode_value, data, "MailServiceError_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = MailServiceError_ErrorCode(value)
+	return nil
 }
 
 type MailServiceError struct {
@@ -70,6 +78,20 @@ func (this *MailAttachment) Reset()         { *this = MailAttachment{} }
 func (this *MailAttachment) String() string { return proto.CompactTextString(this) }
 func (*MailAttachment) ProtoMessage()       {}
 
+func (this *MailAttachment) GetFileName() string {
+	if this != nil && this.FileName != nil {
+		return *this.FileName
+	}
+	return ""
+}
+
+func (this *MailAttachment) GetData() []byte {
+	if this != nil {
+		return this.Data
+	}
+	return nil
+}
+
 type MailHeader struct {
 	Name             *string `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
 	Value            *string `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
@@ -79,6 +101,20 @@ type MailHeader struct {
 func (this *MailHeader) Reset()         { *this = MailHeader{} }
 func (this *MailHeader) String() string { return proto.CompactTextString(this) }
 func (*MailHeader) ProtoMessage()       {}
+
+func (this *MailHeader) GetName() string {
+	if this != nil && this.Name != nil {
+		return *this.Name
+	}
+	return ""
+}
+
+func (this *MailHeader) GetValue() string {
+	if this != nil && this.Value != nil {
+		return *this.Value
+	}
+	return ""
+}
 
 type MailMessage struct {
 	Sender           *string           `protobuf:"bytes,1,req" json:"Sender,omitempty"`
@@ -97,6 +133,41 @@ type MailMessage struct {
 func (this *MailMessage) Reset()         { *this = MailMessage{} }
 func (this *MailMessage) String() string { return proto.CompactTextString(this) }
 func (*MailMessage) ProtoMessage()       {}
+
+func (this *MailMessage) GetSender() string {
+	if this != nil && this.Sender != nil {
+		return *this.Sender
+	}
+	return ""
+}
+
+func (this *MailMessage) GetReplyTo() string {
+	if this != nil && this.ReplyTo != nil {
+		return *this.ReplyTo
+	}
+	return ""
+}
+
+func (this *MailMessage) GetSubject() string {
+	if this != nil && this.Subject != nil {
+		return *this.Subject
+	}
+	return ""
+}
+
+func (this *MailMessage) GetTextBody() string {
+	if this != nil && this.TextBody != nil {
+		return *this.TextBody
+	}
+	return ""
+}
+
+func (this *MailMessage) GetHtmlBody() string {
+	if this != nil && this.HtmlBody != nil {
+		return *this.HtmlBody
+	}
+	return ""
+}
 
 func init() {
 	proto.RegisterEnum("appengine.MailServiceError_ErrorCode", MailServiceError_ErrorCode_name, MailServiceError_ErrorCode_value)

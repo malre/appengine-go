@@ -4,10 +4,12 @@
 package appengine
 
 import proto "code.google.com/p/goprotobuf/proto"
-import "math"
+import json "encoding/json"
+import math "math"
 
-// Reference proto and math imports to suppress error if they are not otherwise used.
-var _ = proto.GetString
+// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+var _ = proto.Marshal
+var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type ChannelServiceError_ErrorCode int32
@@ -38,11 +40,6 @@ var ChannelServiceError_ErrorCode_value = map[string]int32{
 	"APPID_ALIAS_REQUIRED":           5,
 }
 
-// NewChannelServiceError_ErrorCode is deprecated. Use x.Enum() instead.
-func NewChannelServiceError_ErrorCode(x ChannelServiceError_ErrorCode) *ChannelServiceError_ErrorCode {
-	e := ChannelServiceError_ErrorCode(x)
-	return &e
-}
 func (x ChannelServiceError_ErrorCode) Enum() *ChannelServiceError_ErrorCode {
 	p := new(ChannelServiceError_ErrorCode)
 	*p = x
@@ -50,6 +47,17 @@ func (x ChannelServiceError_ErrorCode) Enum() *ChannelServiceError_ErrorCode {
 }
 func (x ChannelServiceError_ErrorCode) String() string {
 	return proto.EnumName(ChannelServiceError_ErrorCode_name, int32(x))
+}
+func (x ChannelServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *ChannelServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(ChannelServiceError_ErrorCode_value, data, "ChannelServiceError_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = ChannelServiceError_ErrorCode(value)
+	return nil
 }
 
 type ChannelServiceError struct {
@@ -63,13 +71,26 @@ func (*ChannelServiceError) ProtoMessage()       {}
 type CreateChannelRequest struct {
 	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
 	DurationMinutes  *int32  `protobuf:"varint,2,opt,name=duration_minutes" json:"duration_minutes,omitempty"`
-	Version          *string `protobuf:"bytes,3,opt,name=version" json:"version,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (this *CreateChannelRequest) Reset()         { *this = CreateChannelRequest{} }
 func (this *CreateChannelRequest) String() string { return proto.CompactTextString(this) }
 func (*CreateChannelRequest) ProtoMessage()       {}
+
+func (this *CreateChannelRequest) GetApplicationKey() string {
+	if this != nil && this.ApplicationKey != nil {
+		return *this.ApplicationKey
+	}
+	return ""
+}
+
+func (this *CreateChannelRequest) GetDurationMinutes() int32 {
+	if this != nil && this.DurationMinutes != nil {
+		return *this.DurationMinutes
+	}
+	return 0
+}
 
 type CreateChannelResponse struct {
 	Token            *string `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
@@ -81,6 +102,20 @@ func (this *CreateChannelResponse) Reset()         { *this = CreateChannelRespon
 func (this *CreateChannelResponse) String() string { return proto.CompactTextString(this) }
 func (*CreateChannelResponse) ProtoMessage()       {}
 
+func (this *CreateChannelResponse) GetToken() string {
+	if this != nil && this.Token != nil {
+		return *this.Token
+	}
+	return ""
+}
+
+func (this *CreateChannelResponse) GetDurationMinutes() int32 {
+	if this != nil && this.DurationMinutes != nil {
+		return *this.DurationMinutes
+	}
+	return 0
+}
+
 type SendMessageRequest struct {
 	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
 	Message          *string `protobuf:"bytes,2,req,name=message" json:"message,omitempty"`
@@ -90,6 +125,72 @@ type SendMessageRequest struct {
 func (this *SendMessageRequest) Reset()         { *this = SendMessageRequest{} }
 func (this *SendMessageRequest) String() string { return proto.CompactTextString(this) }
 func (*SendMessageRequest) ProtoMessage()       {}
+
+func (this *SendMessageRequest) GetApplicationKey() string {
+	if this != nil && this.ApplicationKey != nil {
+		return *this.ApplicationKey
+	}
+	return ""
+}
+
+func (this *SendMessageRequest) GetMessage() string {
+	if this != nil && this.Message != nil {
+		return *this.Message
+	}
+	return ""
+}
+
+type ChannelPresenceRequest struct {
+	ApplicationKey   []string `protobuf:"bytes,1,rep,name=application_key" json:"application_key,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (this *ChannelPresenceRequest) Reset()         { *this = ChannelPresenceRequest{} }
+func (this *ChannelPresenceRequest) String() string { return proto.CompactTextString(this) }
+func (*ChannelPresenceRequest) ProtoMessage()       {}
+
+type ChannelPresenceResponse struct {
+	QueryResult      []*ChannelPresenceResponse_QueryResult `protobuf:"bytes,1,rep,name=query_result" json:"query_result,omitempty"`
+	XXX_unrecognized []byte                                 `json:"-"`
+}
+
+func (this *ChannelPresenceResponse) Reset()         { *this = ChannelPresenceResponse{} }
+func (this *ChannelPresenceResponse) String() string { return proto.CompactTextString(this) }
+func (*ChannelPresenceResponse) ProtoMessage()       {}
+
+type ChannelPresenceResponse_QueryResult struct {
+	ApplicationKey   *string                        `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
+	IsAvailable      *bool                          `protobuf:"varint,2,req,name=is_available" json:"is_available,omitempty"`
+	ErrorCode        *ChannelServiceError_ErrorCode `protobuf:"varint,3,req,name=error_code,enum=appengine.ChannelServiceError_ErrorCode" json:"error_code,omitempty"`
+	XXX_unrecognized []byte                         `json:"-"`
+}
+
+func (this *ChannelPresenceResponse_QueryResult) Reset() {
+	*this = ChannelPresenceResponse_QueryResult{}
+}
+func (this *ChannelPresenceResponse_QueryResult) String() string { return proto.CompactTextString(this) }
+func (*ChannelPresenceResponse_QueryResult) ProtoMessage()       {}
+
+func (this *ChannelPresenceResponse_QueryResult) GetApplicationKey() string {
+	if this != nil && this.ApplicationKey != nil {
+		return *this.ApplicationKey
+	}
+	return ""
+}
+
+func (this *ChannelPresenceResponse_QueryResult) GetIsAvailable() bool {
+	if this != nil && this.IsAvailable != nil {
+		return *this.IsAvailable
+	}
+	return false
+}
+
+func (this *ChannelPresenceResponse_QueryResult) GetErrorCode() ChannelServiceError_ErrorCode {
+	if this != nil && this.ErrorCode != nil {
+		return *this.ErrorCode
+	}
+	return 0
+}
 
 func init() {
 	proto.RegisterEnum("appengine.ChannelServiceError_ErrorCode", ChannelServiceError_ErrorCode_name, ChannelServiceError_ErrorCode_value)

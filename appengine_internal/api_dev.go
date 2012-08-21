@@ -155,8 +155,8 @@ func NewContext(req *http.Request) *context {
 	return &context{req}
 }
 
-func (c *context) Call(service, method string, in, out interface{}, _ *CallOptions) error {
-	data, err := proto.Marshal(in.(proto.Message))
+func (c *context) Call(service, method string, in, out proto.Message, _ *CallOptions) error {
+	data, err := proto.Marshal(in)
 	if err != nil {
 		return err
 	}
@@ -164,7 +164,7 @@ func (c *context) Call(service, method string, in, out interface{}, _ *CallOptio
 	if err != nil {
 		return err
 	}
-	return proto.Unmarshal(res, out.(proto.Message))
+	return proto.Unmarshal(res, out)
 }
 
 func (c *context) Request() interface{} {

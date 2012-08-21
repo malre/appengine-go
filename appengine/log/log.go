@@ -30,6 +30,7 @@ package log
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -47,6 +48,10 @@ type Query struct {
 
 	// End time specifies the latest log to return (exclusive).
 	EndTime time.Time
+
+	// Offset specifies a position within the log stream to resume reading from,
+	// and should come from a previously returned Record's field of the same name.
+	Offset []byte
 
 	// Incomplete controls whether active (incomplete) requests should be included.
 	Incomplete bool
@@ -86,6 +91,9 @@ type Record struct {
 	// The time when this request finished.
 	EndTime time.Time
 
+	// Opaque cursor into the result stream.
+	Offset []byte
+
 	// The time required to process the request.
 	Latency     time.Duration
 	MCycles     int64
@@ -100,7 +108,7 @@ type Record struct {
 	UserAgent    string
 	URLMapEntry  string
 	Combined     string
-	APIMCycles   int64
+	APIMCycles   int64 // Deprecated; going away in 1.7.2.
 	Host         string
 
 	// The estimated cost of this request, in dollars.
@@ -119,10 +127,14 @@ type Result struct {
 	context     appengine.Context
 	request     *log_proto.LogReadRequest
 	resultsSeen bool
+	err         error
 }
 
 // Next returns the next log record,
 func (qr *Result) Next() (*Record, error) {
+	if qr.err != nil {
+		return nil, qr.err
+	}
 	if len(qr.logs) > 0 {
 		lr := qr.logs[0]
 		qr.logs = qr.logs[1:]
@@ -134,6 +146,7 @@ func (qr *Result) Next() (*Record, error) {
 	}
 
 	if err := qr.run(); err != nil {
+		// Errors here may be retried, so don't store the error.
 		return nil, err
 	}
 
@@ -165,17 +178,17 @@ func protoToAppLogs(logLines []*log_proto.LogLine) []AppLog {
 // representation of a single request-level log, to a Record, its
 // corresponding external representation.
 func protoToRecord(rl *log_proto.RequestLog) *Record {
-	finished := log_proto.Default_RequestLog_Finished
-	if rl.Finished != nil {
-		finished = *rl.Finished
+	offset, err := proto.Marshal(rl.Offset)
+	if err != nil {
+		offset = nil
 	}
-
 	return &Record{
 		AppID:             *rl.AppId,
 		VersionID:         *rl.VersionId,
 		RequestID:         rl.RequestId,
+		Offset:            offset,
 		IP:                *rl.Ip,
-		Nickname:          proto.GetString(rl.Nickname),
+		Nickname:          rl.GetNickname(),
 		StartTime:         time.Unix(0, *rl.StartTime*1e3),
 		EndTime:           time.Unix(0, *rl.EndTime*1e3),
 		Latency:           time.Duration(*rl.Latency) * time.Microsecond,
@@ -185,18 +198,18 @@ func protoToRecord(rl *log_proto.RequestLog) *Record {
 		HTTPVersion:       *rl.HttpVersion,
 		Status:            *rl.Status,
 		ResponseSize:      *rl.ResponseSize,
-		Referrer:          proto.GetString(rl.Referrer),
-		UserAgent:         proto.GetString(rl.UserAgent),
+		Referrer:          rl.GetReferrer(),
+		UserAgent:         rl.GetUserAgent(),
 		URLMapEntry:       *rl.UrlMapEntry,
 		Combined:          *rl.Combined,
-		APIMCycles:        proto.GetInt64(rl.ApiMcycles),
-		Host:              proto.GetString(rl.Host),
-		Cost:              proto.GetFloat64(rl.Cost),
-		TaskQueueName:     proto.GetString(rl.TaskQueueName),
-		TaskName:          proto.GetString(rl.TaskName),
-		WasLoadingRequest: proto.GetBool(rl.WasLoadingRequest),
-		PendingTime:       time.Duration(proto.GetInt64(rl.PendingTime)) * time.Microsecond,
-		Finished:          finished,
+		APIMCycles:        rl.GetApiMcycles(),
+		Host:              rl.GetHost(),
+		Cost:              rl.GetCost(),
+		TaskQueueName:     rl.GetTaskQueueName(),
+		TaskName:          rl.GetTaskName(),
+		WasLoadingRequest: rl.GetWasLoadingRequest(),
+		PendingTime:       time.Duration(rl.GetPendingTime()) * time.Microsecond,
+		Finished:          rl.GetFinished(),
 		AppLogs:           protoToAppLogs(rl.Line),
 	}
 }
@@ -212,6 +225,13 @@ func (params *Query) Run(c appengine.Context) *Result {
 	}
 	if !params.EndTime.IsZero() {
 		req.EndTime = proto.Int64(params.EndTime.UnixNano() / 1e3)
+	}
+	if params.Offset != nil {
+		var offset log_proto.LogOffset
+		if err := proto.Unmarshal(params.Offset, &offset); err != nil {
+			return &Result{context: c, err: fmt.Errorf("bad Offset: %v", err)}
+		}
+		req.Offset = &offset
 	}
 	if params.Incomplete {
 		req.IncludeIncomplete = &params.Incomplete

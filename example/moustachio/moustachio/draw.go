@@ -58,7 +58,7 @@ func moustache(m image.Image, x, y, size, droopFactor int) image.Image {
 
 // pt returns the raster.Point corresponding to the pixel position (x, y).
 func pt(x, y int) raster.Point {
-	return raster.Point{raster.Fix32(x << 8), raster.Fix32(y << 8)}
+	return raster.Point{X: raster.Fix32(x << 8), Y: raster.Fix32(y << 8)}
 }
 
 // rgba returns an RGBA version of the image, making a copy only if

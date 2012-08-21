@@ -151,7 +151,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 	impPathPackages := make(map[string]*Package) // map import path to *Package
 	for dirname, files := range pkgFiles {
 		p := &Package{
-			ImportPath: dirname,
+			ImportPath: filepath.ToSlash(dirname),
 			Files:      files,
 		}
 		if p.ImportPath == "main" {
@@ -251,12 +251,11 @@ func parseFile(baseDir, filename string) (*File, error) {
 	}
 
 	return &File{
-			Name:        filename,
-			PackageName: file.Name.Name,
-			ImportPaths: imports,
-			HasInit:     hasInit,
-		},
-		nil
+		Name:        filename,
+		PackageName: file.Name.Name,
+		ImportPaths: imports,
+		HasInit:     hasInit,
+	}, nil
 }
 
 var legalImportPath = regexp.MustCompile(`^[a-zA-Z0-9_\-./]+$`)
@@ -357,6 +356,11 @@ func (c *compLitChecker) Visit(node ast.Node) ast.Visitor {
 
 // isStandardPackage reports whether import path s is a standard package.
 func isStandardPackage(s string) bool {
+	// Don't consider any import path containing a dot to be a standard package.
+	if strings.Contains(s, ".") {
+		return false
+	}
+
 	ctxt := build.Default
 	ctxt.GOROOT = *goRoot
 	ctxt.Compiler = "gc"

@@ -5,6 +5,7 @@
 package logviewer
 
 import (
+	"encoding/base64"
 	"errors"
 	"net/http"
 	"strconv"
@@ -75,10 +76,16 @@ func query(w http.ResponseWriter, r *http.Request) {
 	if err == nil && level > -1 && level < len(appLevels) {
 		query.ApplyMinLevel = true
 		query.MinLevel = level
+	} else {
+		level = -1
 	}
 	count, err := strconv.Atoi(r.FormValue("count"))
 	if err != nil {
 		count = 25
+	}
+	offset, err := base64.URLEncoding.DecodeString(r.FormValue("offset"))
+	if err == nil && len(offset) > 0 {
+		query.Offset = offset
 	}
 
 	// Set up a map of untyped values to pass to the log template.  Our
@@ -89,6 +96,7 @@ func query(w http.ResponseWriter, r *http.Request) {
 		Level     int
 		Count     int
 		Error     error
+		Next      string
 		Logs      []*log.Record
 	}{
 		AppLevels: appLevels, // We'll build the form from appLevels as well.
@@ -108,6 +116,12 @@ func query(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		data.Logs = append(data.Logs, record)
+	}
+	if len(data.Logs) == count {
+		v := r.URL.Query()
+		offset := data.Logs[len(data.Logs)-1].Offset
+		v.Set("offset", base64.URLEncoding.EncodeToString(offset))
+		data.Next = v.Encode()
 	}
 
 	// Execute the main page template and return the response.

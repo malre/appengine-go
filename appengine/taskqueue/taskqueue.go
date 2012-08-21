@@ -354,9 +354,7 @@ type QueueStatistics struct {
 	Tasks     int       // may be an approximation
 	OldestETA time.Time // zero if there are no pending tasks
 
-	SamplePeriod    time.Duration
 	Executed1Minute int     // tasks executed in the last minute
-	Executed1Hour   int     // tasks executed in the last hour
 	InFlight        int     // tasks executing now
 	EnforcedRate    float64 // requests per second
 }
@@ -387,11 +385,9 @@ func QueueStats(c appengine.Context, queueNames []string, maxTasks int) ([]Queue
 			qs[i].OldestETA = time.Unix(0, eta*1e3)
 		}
 		if si := qsg.ScannerInfo; si != nil {
-			qs[i].SamplePeriod = time.Duration(*si.SamplingDurationSeconds*1e9) * time.Nanosecond
 			qs[i].Executed1Minute = int(*si.ExecutedLastMinute)
-			qs[i].Executed1Hour = int(*si.ExecutedLastHour)
-			qs[i].InFlight = int(proto.GetInt32(si.RequestsInFlight))
-			qs[i].EnforcedRate = proto.GetFloat64(si.EnforcedRate)
+			qs[i].InFlight = int(si.GetRequestsInFlight())
+			qs[i].EnforcedRate = si.GetEnforcedRate()
 		}
 	}
 	return qs, nil

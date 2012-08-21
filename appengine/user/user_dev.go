@@ -23,6 +23,7 @@ func current(c appengine.Context) *User {
 	return &User{
 		Email:             hdr.Get(hEmail),
 		ID:                hdr.Get(hID),
+		Admin:             hdr.Get(hIsAdmin) == "1",
 		FederatedIdentity: hdr.Get(hFederatedIdentity),
 		FederatedProvider: hdr.Get(hFederatedProvider),
 	}

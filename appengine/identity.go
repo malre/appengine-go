@@ -58,3 +58,6 @@ func Datacenter() string { return appengine_internal.Datacenter() }
 // In production, it looks like "Google App Engine/X.Y.Z".
 // In the development appserver, it looks like "Development/X.Y".
 func ServerSoftware() string { return appengine_internal.ServerSoftware() }
+
+// RequestID returns a string that uniquely identifies the request.
+func RequestID(c Context) string { return appengine_internal.RequestID(c.Request()) }

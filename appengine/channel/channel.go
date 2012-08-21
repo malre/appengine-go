@@ -25,21 +25,20 @@ import (
 
 	"appengine"
 	"appengine_internal"
-	"code.google.com/p/goprotobuf/proto"
 
 	base_proto "appengine_internal/base"
 	channel_proto "appengine_internal/channel"
 )
 
 // Create creates a channel and returns a token for use by the client.
-// The clientID is an appication-provided string used to identify the client.
+// The clientID is an application-provided string used to identify the client.
 func Create(c appengine.Context, clientID string) (token string, err error) {
 	req := &channel_proto.CreateChannelRequest{
 		ApplicationKey: &clientID,
 	}
 	resp := &channel_proto.CreateChannelResponse{}
 	err = c.Call(service, "CreateChannel", req, resp, nil)
-	token = proto.GetString(resp.Token)
+	token = resp.GetToken()
 	return
 }
 

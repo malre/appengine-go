@@ -185,6 +185,7 @@ func buildApp(app *App) error {
 		if i == len(app.Packages)-1 {
 			srcDir = *workDir
 		}
+		srcDir, _ = filepath.Abs(srcDir) // assume os.Getwd doesn't fail
 		args = []string{
 			gopack,
 			"grcP", srcDir,
@@ -205,6 +206,7 @@ func buildApp(app *App) error {
 		linker,
 		"-L", *workDir,
 		"-o", binaryFile,
+		"-w", // disable dwarf generation
 	}
 	if !*dynamic {
 		// force the binary to be statically linked

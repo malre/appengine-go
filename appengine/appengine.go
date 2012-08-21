@@ -12,6 +12,7 @@ import (
 	"net/http"
 
 	"appengine_internal"
+	"code.google.com/p/goprotobuf/proto"
 )
 
 // IsDevAppServer reports whether the App Engine app is running in the
@@ -42,8 +43,7 @@ type Context interface {
 	// Developer-facing APIs wrap these methods to provide a more friendly API.
 
 	// Internal use only.
-	// TODO: s/interface{}/proto.Message/.
-	Call(service, method string, in, out interface{}, opts *appengine_internal.CallOptions) error
+	Call(service, method string, in, out proto.Message, opts *appengine_internal.CallOptions) error
 	// Internal use only. Use AppID instead.
 	FullyQualifiedAppID() string
 	// Internal use only.

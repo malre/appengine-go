@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"appengine"
-	"code.google.com/p/goprotobuf/proto"
 
 	pb "appengine_internal/datastore"
 )
@@ -214,10 +213,10 @@ func protoToProperties(dst chan<- Property, errc chan<- error, src *pb.EntityPro
 			value = key
 		}
 		dst <- Property{
-			Name:     proto.GetString(x.Name),
+			Name:     x.GetName(),
 			Value:    value,
 			NoIndex:  noIndex,
-			Multiple: proto.GetBool(x.Multiple),
+			Multiple: x.GetMultiple(),
 		}
 	}
 	errc <- nil

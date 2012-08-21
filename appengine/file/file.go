@@ -73,7 +73,7 @@ func (fi fileInfo) ModTime() time.Time {
 }
 
 func (fi fileInfo) Size() int64 {
-	return proto.GetInt64(fi.s.Length)
+	return fi.s.GetLength()
 }
 
 // DefaultBucketName returns the name of this application's

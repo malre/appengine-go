@@ -4,10 +4,12 @@
 package appengine
 
 import proto "code.google.com/p/goprotobuf/proto"
-import "math"
+import json "encoding/json"
+import math "math"
 
-// Reference proto and math imports to suppress error if they are not otherwise used.
-var _ = proto.GetString
+// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+var _ = proto.Marshal
+var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type SystemServiceError_ErrorCode int32
@@ -32,11 +34,6 @@ var SystemServiceError_ErrorCode_value = map[string]int32{
 	"LIMIT_REACHED":    3,
 }
 
-// NewSystemServiceError_ErrorCode is deprecated. Use x.Enum() instead.
-func NewSystemServiceError_ErrorCode(x SystemServiceError_ErrorCode) *SystemServiceError_ErrorCode {
-	e := SystemServiceError_ErrorCode(x)
-	return &e
-}
 func (x SystemServiceError_ErrorCode) Enum() *SystemServiceError_ErrorCode {
 	p := new(SystemServiceError_ErrorCode)
 	*p = x
@@ -44,6 +41,17 @@ func (x SystemServiceError_ErrorCode) Enum() *SystemServiceError_ErrorCode {
 }
 func (x SystemServiceError_ErrorCode) String() string {
 	return proto.EnumName(SystemServiceError_ErrorCode_name, int32(x))
+}
+func (x SystemServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *SystemServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(SystemServiceError_ErrorCode_value, data, "SystemServiceError_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = SystemServiceError_ErrorCode(value)
+	return nil
 }
 
 type SystemServiceError struct {
@@ -68,6 +76,48 @@ func (this *SystemStat) Reset()         { *this = SystemStat{} }
 func (this *SystemStat) String() string { return proto.CompactTextString(this) }
 func (*SystemStat) ProtoMessage()       {}
 
+func (this *SystemStat) GetCurrent() float64 {
+	if this != nil && this.Current != nil {
+		return *this.Current
+	}
+	return 0
+}
+
+func (this *SystemStat) GetAverage1M() float64 {
+	if this != nil && this.Average1M != nil {
+		return *this.Average1M
+	}
+	return 0
+}
+
+func (this *SystemStat) GetAverage10M() float64 {
+	if this != nil && this.Average10M != nil {
+		return *this.Average10M
+	}
+	return 0
+}
+
+func (this *SystemStat) GetTotal() float64 {
+	if this != nil && this.Total != nil {
+		return *this.Total
+	}
+	return 0
+}
+
+func (this *SystemStat) GetRate1M() float64 {
+	if this != nil && this.Rate1M != nil {
+		return *this.Rate1M
+	}
+	return 0
+}
+
+func (this *SystemStat) GetRate10M() float64 {
+	if this != nil && this.Rate10M != nil {
+		return *this.Rate10M
+	}
+	return 0
+}
+
 type GetSystemStatsRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -86,6 +136,20 @@ func (this *GetSystemStatsResponse) Reset()         { *this = GetSystemStatsResp
 func (this *GetSystemStatsResponse) String() string { return proto.CompactTextString(this) }
 func (*GetSystemStatsResponse) ProtoMessage()       {}
 
+func (this *GetSystemStatsResponse) GetCpu() *SystemStat {
+	if this != nil {
+		return this.Cpu
+	}
+	return nil
+}
+
+func (this *GetSystemStatsResponse) GetMemory() *SystemStat {
+	if this != nil {
+		return this.Memory
+	}
+	return nil
+}
+
 type StartBackgroundRequestRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -102,6 +166,13 @@ type StartBackgroundRequestResponse struct {
 func (this *StartBackgroundRequestResponse) Reset()         { *this = StartBackgroundRequestResponse{} }
 func (this *StartBackgroundRequestResponse) String() string { return proto.CompactTextString(this) }
 func (*StartBackgroundRequestResponse) ProtoMessage()       {}
+
+func (this *StartBackgroundRequestResponse) GetRequestId() string {
+	if this != nil && this.RequestId != nil {
+		return *this.RequestId
+	}
+	return ""
+}
 
 func init() {
 	proto.RegisterEnum("appengine.SystemServiceError_ErrorCode", SystemServiceError_ErrorCode_name, SystemServiceError_ErrorCode_value)

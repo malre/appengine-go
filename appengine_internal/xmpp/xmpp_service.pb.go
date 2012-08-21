@@ -4,10 +4,12 @@
 package appengine
 
 import proto "code.google.com/p/goprotobuf/proto"
-import "math"
+import json "encoding/json"
+import math "math"
 
-// Reference proto and math imports to suppress error if they are not otherwise used.
-var _ = proto.GetString
+// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+var _ = proto.Marshal
+var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type XmppServiceError_ErrorCode int32
@@ -44,11 +46,6 @@ var XmppServiceError_ErrorCode_value = map[string]int32{
 	"APPID_ALIAS_REQUIRED": 8,
 }
 
-// NewXmppServiceError_ErrorCode is deprecated. Use x.Enum() instead.
-func NewXmppServiceError_ErrorCode(x XmppServiceError_ErrorCode) *XmppServiceError_ErrorCode {
-	e := XmppServiceError_ErrorCode(x)
-	return &e
-}
 func (x XmppServiceError_ErrorCode) Enum() *XmppServiceError_ErrorCode {
 	p := new(XmppServiceError_ErrorCode)
 	*p = x
@@ -56,6 +53,17 @@ func (x XmppServiceError_ErrorCode) Enum() *XmppServiceError_ErrorCode {
 }
 func (x XmppServiceError_ErrorCode) String() string {
 	return proto.EnumName(XmppServiceError_ErrorCode_name, int32(x))
+}
+func (x XmppServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *XmppServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(XmppServiceError_ErrorCode_value, data, "XmppServiceError_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = XmppServiceError_ErrorCode(value)
+	return nil
 }
 
 type PresenceResponse_SHOW int32
@@ -83,11 +91,6 @@ var PresenceResponse_SHOW_value = map[string]int32{
 	"EXTENDED_AWAY":  4,
 }
 
-// NewPresenceResponse_SHOW is deprecated. Use x.Enum() instead.
-func NewPresenceResponse_SHOW(x PresenceResponse_SHOW) *PresenceResponse_SHOW {
-	e := PresenceResponse_SHOW(x)
-	return &e
-}
 func (x PresenceResponse_SHOW) Enum() *PresenceResponse_SHOW {
 	p := new(PresenceResponse_SHOW)
 	*p = x
@@ -95,6 +98,17 @@ func (x PresenceResponse_SHOW) Enum() *PresenceResponse_SHOW {
 }
 func (x PresenceResponse_SHOW) String() string {
 	return proto.EnumName(PresenceResponse_SHOW_name, int32(x))
+}
+func (x PresenceResponse_SHOW) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *PresenceResponse_SHOW) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(PresenceResponse_SHOW_value, data, "PresenceResponse_SHOW")
+	if err != nil {
+		return err
+	}
+	*x = PresenceResponse_SHOW(value)
+	return nil
 }
 
 type XmppMessageResponse_XmppMessageStatus int32
@@ -116,11 +130,6 @@ var XmppMessageResponse_XmppMessageStatus_value = map[string]int32{
 	"OTHER_ERROR": 2,
 }
 
-// NewXmppMessageResponse_XmppMessageStatus is deprecated. Use x.Enum() instead.
-func NewXmppMessageResponse_XmppMessageStatus(x XmppMessageResponse_XmppMessageStatus) *XmppMessageResponse_XmppMessageStatus {
-	e := XmppMessageResponse_XmppMessageStatus(x)
-	return &e
-}
 func (x XmppMessageResponse_XmppMessageStatus) Enum() *XmppMessageResponse_XmppMessageStatus {
 	p := new(XmppMessageResponse_XmppMessageStatus)
 	*p = x
@@ -128,6 +137,17 @@ func (x XmppMessageResponse_XmppMessageStatus) Enum() *XmppMessageResponse_XmppM
 }
 func (x XmppMessageResponse_XmppMessageStatus) String() string {
 	return proto.EnumName(XmppMessageResponse_XmppMessageStatus_name, int32(x))
+}
+func (x XmppMessageResponse_XmppMessageStatus) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *XmppMessageResponse_XmppMessageStatus) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(XmppMessageResponse_XmppMessageStatus_value, data, "XmppMessageResponse_XmppMessageStatus")
+	if err != nil {
+		return err
+	}
+	*x = XmppMessageResponse_XmppMessageStatus(value)
+	return nil
 }
 
 type XmppServiceError struct {
@@ -148,6 +168,20 @@ func (this *PresenceRequest) Reset()         { *this = PresenceRequest{} }
 func (this *PresenceRequest) String() string { return proto.CompactTextString(this) }
 func (*PresenceRequest) ProtoMessage()       {}
 
+func (this *PresenceRequest) GetJid() string {
+	if this != nil && this.Jid != nil {
+		return *this.Jid
+	}
+	return ""
+}
+
+func (this *PresenceRequest) GetFromJid() string {
+	if this != nil && this.FromJid != nil {
+		return *this.FromJid
+	}
+	return ""
+}
+
 type PresenceResponse struct {
 	IsAvailable      *bool                  `protobuf:"varint,1,req,name=is_available" json:"is_available,omitempty"`
 	Presence         *PresenceResponse_SHOW `protobuf:"varint,2,opt,name=presence,enum=appengine.PresenceResponse_SHOW" json:"presence,omitempty"`
@@ -157,6 +191,20 @@ type PresenceResponse struct {
 func (this *PresenceResponse) Reset()         { *this = PresenceResponse{} }
 func (this *PresenceResponse) String() string { return proto.CompactTextString(this) }
 func (*PresenceResponse) ProtoMessage()       {}
+
+func (this *PresenceResponse) GetIsAvailable() bool {
+	if this != nil && this.IsAvailable != nil {
+		return *this.IsAvailable
+	}
+	return false
+}
+
+func (this *PresenceResponse) GetPresence() PresenceResponse_SHOW {
+	if this != nil && this.Presence != nil {
+		return *this.Presence
+	}
+	return 0
+}
 
 type XmppMessageRequest struct {
 	Jid              []string `protobuf:"bytes,1,rep,name=jid" json:"jid,omitempty"`
@@ -173,6 +221,34 @@ func (*XmppMessageRequest) ProtoMessage()       {}
 
 const Default_XmppMessageRequest_RawXml bool = false
 const Default_XmppMessageRequest_Type string = "chat"
+
+func (this *XmppMessageRequest) GetBody() string {
+	if this != nil && this.Body != nil {
+		return *this.Body
+	}
+	return ""
+}
+
+func (this *XmppMessageRequest) GetRawXml() bool {
+	if this != nil && this.RawXml != nil {
+		return *this.RawXml
+	}
+	return Default_XmppMessageRequest_RawXml
+}
+
+func (this *XmppMessageRequest) GetType() string {
+	if this != nil && this.Type != nil {
+		return *this.Type
+	}
+	return Default_XmppMessageRequest_Type
+}
+
+func (this *XmppMessageRequest) GetFromJid() string {
+	if this != nil && this.FromJid != nil {
+		return *this.FromJid
+	}
+	return ""
+}
 
 type XmppMessageResponse struct {
 	Status           []XmppMessageResponse_XmppMessageStatus `protobuf:"varint,1,rep,name=status,enum=appengine.XmppMessageResponse_XmppMessageStatus" json:"status,omitempty"`
@@ -196,6 +272,41 @@ func (this *XmppSendPresenceRequest) Reset()         { *this = XmppSendPresenceR
 func (this *XmppSendPresenceRequest) String() string { return proto.CompactTextString(this) }
 func (*XmppSendPresenceRequest) ProtoMessage()       {}
 
+func (this *XmppSendPresenceRequest) GetJid() string {
+	if this != nil && this.Jid != nil {
+		return *this.Jid
+	}
+	return ""
+}
+
+func (this *XmppSendPresenceRequest) GetType() string {
+	if this != nil && this.Type != nil {
+		return *this.Type
+	}
+	return ""
+}
+
+func (this *XmppSendPresenceRequest) GetShow() string {
+	if this != nil && this.Show != nil {
+		return *this.Show
+	}
+	return ""
+}
+
+func (this *XmppSendPresenceRequest) GetStatus() string {
+	if this != nil && this.Status != nil {
+		return *this.Status
+	}
+	return ""
+}
+
+func (this *XmppSendPresenceRequest) GetFromJid() string {
+	if this != nil && this.FromJid != nil {
+		return *this.FromJid
+	}
+	return ""
+}
+
 type XmppSendPresenceResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -213,6 +324,20 @@ type XmppInviteRequest struct {
 func (this *XmppInviteRequest) Reset()         { *this = XmppInviteRequest{} }
 func (this *XmppInviteRequest) String() string { return proto.CompactTextString(this) }
 func (*XmppInviteRequest) ProtoMessage()       {}
+
+func (this *XmppInviteRequest) GetJid() string {
+	if this != nil && this.Jid != nil {
+		return *this.Jid
+	}
+	return ""
+}
+
+func (this *XmppInviteRequest) GetFromJid() string {
+	if this != nil && this.FromJid != nil {
+		return *this.FromJid
+	}
+	return ""
+}
 
 type XmppInviteResponse struct {
 	XXX_unrecognized []byte `json:"-"`

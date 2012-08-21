@@ -16,6 +16,7 @@ import (
 
 const (
 	hVersionId = "X-AppEngine-Inbound-Version-Id"
+	hRequestId = "X-AppEngine-Request-Log-Id"
 )
 
 func BackendHostname(req interface{}, name string, index int) string {
@@ -54,4 +55,8 @@ func Datacenter() string {
 
 func ServerSoftware() string {
 	return os.Getenv("SERVER_SOFTWARE")
+}
+
+func RequestID(req interface{}) string {
+	return req.(*http.Request).Header.Get(hRequestId)
 }

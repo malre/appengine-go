@@ -109,7 +109,7 @@ func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 func parseAddr(compAddr string) (net, addr string) {
 	parts := strings.SplitN(compAddr, ":", 2)
 	if len(parts) != 2 {
-		log.Fatalf("appengine: bad composite address %q", compAddr)
+		log.Panicf("appengine: bad composite address %q", compAddr)
 	}
 	return parts[0], parts[1]
 }
@@ -148,7 +148,7 @@ func Main() {
 	// Check flags.
 	flag.Parse()
 	if *addrHTTP == "" || *addrAPI == "" {
-		log.Fatal("appengine_internal.Main should not be called directly. It should only be called from the App Engine App Server.")
+		log.Panic("appengine_internal.Main should not be called directly. It should only be called from the App Engine App Server.")
 	}
 	httpNet, httpAddr := parseAddr(*addrHTTP)
 	apiNet, apiAddr := parseAddr(*addrAPI)
@@ -159,7 +159,7 @@ func Main() {
 	// Serve HTTP requests forwarded from the appserver to us.
 	http.HandleFunc("/_appengine_delegate_health_check", handleHealthCheck)
 	if serveHTTPFunc == nil {
-		log.Fatal("appengine: no ServeHTTPFunc registered.")
+		log.Panic("appengine: no ServeHTTPFunc registered.")
 	}
 	serveHTTPFunc(httpNet, httpAddr)
 }

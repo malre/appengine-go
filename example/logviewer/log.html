@@ -51,6 +51,11 @@
 {{end}}
 
 <div id="logs">
+{{if .Next}}
+<a href="/?{{.Next}}">Next {{.Count}} &gt;</a>
+{{else}}
+Next {{.Count}} &gt;
+{{end}}
 <ol>
 {{range .Logs}}
   <li class="log">
@@ -60,7 +65,7 @@
     <span>{{.StartTime.Format "2006-01-02 15:04:05.000 MST"}}</span>
     <span class="path">{{.Resource|html}}</span>
     <span>{{.Status}}</span>
-    <span>{{.Latency}}us</span>
+    <span>{{.Latency}}</span>
     <span>{{.ResponseSize}}</span>
     <span>{{.UserAgent|html}}</span>
   </h5>

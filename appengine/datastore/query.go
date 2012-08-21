@@ -344,8 +344,8 @@ func (q *Query) Count(c appengine.Context) (int, error) {
 		if len(res.Result) != 0 {
 			return 0, errors.New("datastore: internal error: Count request returned too much data")
 		}
-		n += proto.GetInt32(res.SkippedResults)
-		if !proto.GetBool(res.MoreResults) {
+		n += res.GetSkippedResults()
+		if !res.GetMoreResults() {
 			break
 		}
 		if err := callNext(c, res, newQ.offset-n, 0); err != nil {
@@ -396,9 +396,10 @@ func callNext(c appengine.Context, res *pb.QueryResult, offset, limit int32) err
 // If q is a ``keys-only'' query, GetAll ignores dst and only returns the keys.
 func (q *Query) GetAll(c appengine.Context, dst interface{}) ([]*Key, error) {
 	var (
-		dv       reflect.Value
-		mat      multiArgType
-		elemType reflect.Type
+		dv               reflect.Value
+		mat              multiArgType
+		elemType         reflect.Type
+		errFieldMismatch error
 	)
 	if !q.keysOnly {
 		dv = reflect.ValueOf(dst)
@@ -440,7 +441,14 @@ func (q *Query) GetAll(c appengine.Context, dst interface{}) ([]*Key, error) {
 				ev.Elem().Set(x)
 			}
 			if err = loadEntity(ev.Interface(), e); err != nil {
-				return keys, err
+				if _, ok := err.(*ErrFieldMismatch); ok {
+					// We continue loading entities even in the face of field mismatch errors.
+					// If we encounter any other error, that other error is returned. Otherwise,
+					// an ErrFieldMismatch is returned.
+					errFieldMismatch = err
+				} else {
+					return keys, err
+				}
 			}
 			if mat != multiArgTypeStructPtr {
 				ev = ev.Elem()
@@ -449,7 +457,7 @@ func (q *Query) GetAll(c appengine.Context, dst interface{}) ([]*Key, error) {
 		}
 		keys = append(keys, k)
 	}
-	return keys, nil
+	return keys, errFieldMismatch
 }
 
 // Run runs the query in the given context.
@@ -472,14 +480,14 @@ func (q *Query) Run(c appengine.Context) *Iterator {
 		t.err = err
 		return t
 	}
-	offset := q.offset - proto.GetInt32(t.res.SkippedResults)
-	for offset > 0 && proto.GetBool(t.res.MoreResults) {
+	offset := q.offset - t.res.GetSkippedResults()
+	for offset > 0 && t.res.GetMoreResults() {
 		t.prevCC = t.res.CompiledCursor
 		if err := callNext(t.c, &t.res, offset, t.limit); err != nil {
 			t.err = err
 			break
 		}
-		skip := proto.GetInt32(t.res.SkippedResults)
+		skip := t.res.GetSkippedResults()
 		if skip < 0 {
 			t.err = errors.New("datastore: internal error: negative number of skipped_results")
 			break
@@ -537,7 +545,7 @@ func (t *Iterator) next() (*Key, *pb.EntityProto, error) {
 
 	// Issue datastore_v3/Next RPCs as necessary.
 	for t.i == len(t.res.Result) {
-		if !proto.GetBool(t.res.MoreResults) {
+		if !t.res.GetMoreResults() {
 			t.err = Done
 			return nil, nil, t.err
 		}
@@ -546,7 +554,7 @@ func (t *Iterator) next() (*Key, *pb.EntityProto, error) {
 			t.err = err
 			return nil, nil, t.err
 		}
-		if proto.GetInt32(t.res.SkippedResults) != 0 {
+		if t.res.GetSkippedResults() != 0 {
 			t.err = errors.New("datastore: internal error: iterator has skipped results")
 			return nil, nil, t.err
 		}
@@ -580,7 +588,7 @@ func (t *Iterator) Cursor() (Cursor, error) {
 	}
 	// If we are at either end of the current batch of results,
 	// return the compiled cursor at that end.
-	skipped := proto.GetInt32(t.res.SkippedResults)
+	skipped := t.res.GetSkippedResults()
 	if t.i == 0 && skipped == 0 {
 		if t.prevCC == nil {
 			// A nil pointer (of type *pb.CompiledCursor) means no constraint:

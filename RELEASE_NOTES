@@ -3,6 +3,33 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.7.1 - August 2012
+===========================
+appengine:
+  - Add RequestID function.
+  ! Make Context's Call method take proto.Message arguments.
+    This is an internal-only method, so should not affect correct applications.
+appengine/datastore:
+  - Mark noindex string fields as Text so that the Datastore Viewer can
+    display them.
+  - Make GetAll not return early when encountering ErrFieldMismatch.
+appengine/image:
+  - New package.
+appengine/log:
+  - Deprecate Record.APIMCycles.
+appengine/memcache:
+  - Add Codec methods SetMulti, AddMulti, CompareAndSwap, CompareAndSwapMulti.
+appengine/remote_api:
+  - New package.
+appengine/runtime:
+  - Add RunInBackground function.
+appengine/user:
+  - Add OAuth user support.
+  - Add Admin to User struct.
+appengine/xmpp:
+  - Add RawXML support.
+  - Add presence support.
+
 Version 1.7.0 - June 2012
 =========================
 appengine/datastore:

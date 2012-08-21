@@ -4,10 +4,12 @@
 package appengine
 
 import proto "code.google.com/p/goprotobuf/proto"
-import "math"
+import json "encoding/json"
+import math "math"
 
-// Reference proto and math imports to suppress error if they are not otherwise used.
-var _ = proto.GetString
+// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+var _ = proto.Marshal
+var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type ConversionServiceError_ErrorCode int32
@@ -44,11 +46,6 @@ var ConversionServiceError_ErrorCode_value = map[string]int32{
 	"INVALID_REQUEST":        7,
 }
 
-// NewConversionServiceError_ErrorCode is deprecated. Use x.Enum() instead.
-func NewConversionServiceError_ErrorCode(x ConversionServiceError_ErrorCode) *ConversionServiceError_ErrorCode {
-	e := ConversionServiceError_ErrorCode(x)
-	return &e
-}
 func (x ConversionServiceError_ErrorCode) Enum() *ConversionServiceError_ErrorCode {
 	p := new(ConversionServiceError_ErrorCode)
 	*p = x
@@ -56,6 +53,17 @@ func (x ConversionServiceError_ErrorCode) Enum() *ConversionServiceError_ErrorCo
 }
 func (x ConversionServiceError_ErrorCode) String() string {
 	return proto.EnumName(ConversionServiceError_ErrorCode_name, int32(x))
+}
+func (x ConversionServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *ConversionServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(ConversionServiceError_ErrorCode_value, data, "ConversionServiceError_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = ConversionServiceError_ErrorCode(value)
+	return nil
 }
 
 type ConversionServiceError struct {
@@ -77,6 +85,27 @@ func (this *AssetInfo) Reset()         { *this = AssetInfo{} }
 func (this *AssetInfo) String() string { return proto.CompactTextString(this) }
 func (*AssetInfo) ProtoMessage()       {}
 
+func (this *AssetInfo) GetName() string {
+	if this != nil && this.Name != nil {
+		return *this.Name
+	}
+	return ""
+}
+
+func (this *AssetInfo) GetData() []byte {
+	if this != nil {
+		return this.Data
+	}
+	return nil
+}
+
+func (this *AssetInfo) GetMimeType() string {
+	if this != nil && this.MimeType != nil {
+		return *this.MimeType
+	}
+	return ""
+}
+
 type DocumentInfo struct {
 	Asset            []*AssetInfo `protobuf:"bytes,1,rep,name=asset" json:"asset,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
@@ -97,6 +126,20 @@ func (this *ConversionInput) Reset()         { *this = ConversionInput{} }
 func (this *ConversionInput) String() string { return proto.CompactTextString(this) }
 func (*ConversionInput) ProtoMessage()       {}
 
+func (this *ConversionInput) GetInput() *DocumentInfo {
+	if this != nil {
+		return this.Input
+	}
+	return nil
+}
+
+func (this *ConversionInput) GetOutputMimeType() string {
+	if this != nil && this.OutputMimeType != nil {
+		return *this.OutputMimeType
+	}
+	return ""
+}
+
 type ConversionInput_AuxData struct {
 	Key              *string `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
 	Value            *string `protobuf:"bytes,2,opt,name=value" json:"value,omitempty"`
@@ -107,6 +150,20 @@ func (this *ConversionInput_AuxData) Reset()         { *this = ConversionInput_A
 func (this *ConversionInput_AuxData) String() string { return proto.CompactTextString(this) }
 func (*ConversionInput_AuxData) ProtoMessage()       {}
 
+func (this *ConversionInput_AuxData) GetKey() string {
+	if this != nil && this.Key != nil {
+		return *this.Key
+	}
+	return ""
+}
+
+func (this *ConversionInput_AuxData) GetValue() string {
+	if this != nil && this.Value != nil {
+		return *this.Value
+	}
+	return ""
+}
+
 type ConversionOutput struct {
 	ErrorCode        *ConversionServiceError_ErrorCode `protobuf:"varint,1,req,name=error_code,enum=appengine.ConversionServiceError_ErrorCode" json:"error_code,omitempty"`
 	Output           *DocumentInfo                     `protobuf:"bytes,2,opt,name=output" json:"output,omitempty"`
@@ -116,6 +173,20 @@ type ConversionOutput struct {
 func (this *ConversionOutput) Reset()         { *this = ConversionOutput{} }
 func (this *ConversionOutput) String() string { return proto.CompactTextString(this) }
 func (*ConversionOutput) ProtoMessage()       {}
+
+func (this *ConversionOutput) GetErrorCode() ConversionServiceError_ErrorCode {
+	if this != nil && this.ErrorCode != nil {
+		return *this.ErrorCode
+	}
+	return 0
+}
+
+func (this *ConversionOutput) GetOutput() *DocumentInfo {
+	if this != nil {
+		return this.Output
+	}
+	return nil
+}
 
 type ConversionRequest struct {
 	Conversion       []*ConversionInput `protobuf:"bytes,1,rep,name=conversion" json:"conversion,omitempty"`

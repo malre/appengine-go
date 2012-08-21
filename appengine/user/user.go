@@ -23,6 +23,7 @@ import (
 type User struct {
 	Email      string
 	AuthDomain string
+	Admin      bool
 
 	// ID is the unique permanent ID of the user.
 	// It is populated if the Email is associated

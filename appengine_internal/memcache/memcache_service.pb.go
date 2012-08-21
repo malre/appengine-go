@@ -4,10 +4,12 @@
 package appengine
 
 import proto "code.google.com/p/goprotobuf/proto"
-import "math"
+import json "encoding/json"
+import math "math"
 
-// Reference proto and math imports to suppress error if they are not otherwise used.
-var _ = proto.GetString
+// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+var _ = proto.Marshal
+var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type MemcacheServiceError_ErrorCode int32
@@ -19,6 +21,7 @@ const (
 	MemcacheServiceError_PERMISSION_DENIED              MemcacheServiceError_ErrorCode = 3
 	MemcacheServiceError_NUM_BACKENDS_UNSPECIFIED       MemcacheServiceError_ErrorCode = 4
 	MemcacheServiceError_MEMCACHE_POOL_HINT_UNSPECIFIED MemcacheServiceError_ErrorCode = 5
+	MemcacheServiceError_INVALID_VALUE                  MemcacheServiceError_ErrorCode = 6
 )
 
 var MemcacheServiceError_ErrorCode_name = map[int32]string{
@@ -28,6 +31,7 @@ var MemcacheServiceError_ErrorCode_name = map[int32]string{
 	3: "PERMISSION_DENIED",
 	4: "NUM_BACKENDS_UNSPECIFIED",
 	5: "MEMCACHE_POOL_HINT_UNSPECIFIED",
+	6: "INVALID_VALUE",
 }
 var MemcacheServiceError_ErrorCode_value = map[string]int32{
 	"OK":                             0,
@@ -36,13 +40,9 @@ var MemcacheServiceError_ErrorCode_value = map[string]int32{
 	"PERMISSION_DENIED":              3,
 	"NUM_BACKENDS_UNSPECIFIED":       4,
 	"MEMCACHE_POOL_HINT_UNSPECIFIED": 5,
+	"INVALID_VALUE":                  6,
 }
 
-// NewMemcacheServiceError_ErrorCode is deprecated. Use x.Enum() instead.
-func NewMemcacheServiceError_ErrorCode(x MemcacheServiceError_ErrorCode) *MemcacheServiceError_ErrorCode {
-	e := MemcacheServiceError_ErrorCode(x)
-	return &e
-}
 func (x MemcacheServiceError_ErrorCode) Enum() *MemcacheServiceError_ErrorCode {
 	p := new(MemcacheServiceError_ErrorCode)
 	*p = x
@@ -50,6 +50,17 @@ func (x MemcacheServiceError_ErrorCode) Enum() *MemcacheServiceError_ErrorCode {
 }
 func (x MemcacheServiceError_ErrorCode) String() string {
 	return proto.EnumName(MemcacheServiceError_ErrorCode_name, int32(x))
+}
+func (x MemcacheServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *MemcacheServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(MemcacheServiceError_ErrorCode_value, data, "MemcacheServiceError_ErrorCode")
+	if err != nil {
+		return err
+	}
+	*x = MemcacheServiceError_ErrorCode(value)
+	return nil
 }
 
 type MemcacheSetRequest_SetPolicy int32
@@ -74,11 +85,6 @@ var MemcacheSetRequest_SetPolicy_value = map[string]int32{
 	"CAS":     4,
 }
 
-// NewMemcacheSetRequest_SetPolicy is deprecated. Use x.Enum() instead.
-func NewMemcacheSetRequest_SetPolicy(x MemcacheSetRequest_SetPolicy) *MemcacheSetRequest_SetPolicy {
-	e := MemcacheSetRequest_SetPolicy(x)
-	return &e
-}
 func (x MemcacheSetRequest_SetPolicy) Enum() *MemcacheSetRequest_SetPolicy {
 	p := new(MemcacheSetRequest_SetPolicy)
 	*p = x
@@ -86,6 +92,17 @@ func (x MemcacheSetRequest_SetPolicy) Enum() *MemcacheSetRequest_SetPolicy {
 }
 func (x MemcacheSetRequest_SetPolicy) String() string {
 	return proto.EnumName(MemcacheSetRequest_SetPolicy_name, int32(x))
+}
+func (x MemcacheSetRequest_SetPolicy) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *MemcacheSetRequest_SetPolicy) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(MemcacheSetRequest_SetPolicy_value, data, "MemcacheSetRequest_SetPolicy")
+	if err != nil {
+		return err
+	}
+	*x = MemcacheSetRequest_SetPolicy(value)
+	return nil
 }
 
 type MemcacheSetResponse_SetStatusCode int32
@@ -110,11 +127,6 @@ var MemcacheSetResponse_SetStatusCode_value = map[string]int32{
 	"EXISTS":     4,
 }
 
-// NewMemcacheSetResponse_SetStatusCode is deprecated. Use x.Enum() instead.
-func NewMemcacheSetResponse_SetStatusCode(x MemcacheSetResponse_SetStatusCode) *MemcacheSetResponse_SetStatusCode {
-	e := MemcacheSetResponse_SetStatusCode(x)
-	return &e
-}
 func (x MemcacheSetResponse_SetStatusCode) Enum() *MemcacheSetResponse_SetStatusCode {
 	p := new(MemcacheSetResponse_SetStatusCode)
 	*p = x
@@ -122,6 +134,17 @@ func (x MemcacheSetResponse_SetStatusCode) Enum() *MemcacheSetResponse_SetStatus
 }
 func (x MemcacheSetResponse_SetStatusCode) String() string {
 	return proto.EnumName(MemcacheSetResponse_SetStatusCode_name, int32(x))
+}
+func (x MemcacheSetResponse_SetStatusCode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *MemcacheSetResponse_SetStatusCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(MemcacheSetResponse_SetStatusCode_value, data, "MemcacheSetResponse_SetStatusCode")
+	if err != nil {
+		return err
+	}
+	*x = MemcacheSetResponse_SetStatusCode(value)
+	return nil
 }
 
 type MemcacheDeleteResponse_DeleteStatusCode int32
@@ -140,11 +163,6 @@ var MemcacheDeleteResponse_DeleteStatusCode_value = map[string]int32{
 	"NOT_FOUND": 2,
 }
 
-// NewMemcacheDeleteResponse_DeleteStatusCode is deprecated. Use x.Enum() instead.
-func NewMemcacheDeleteResponse_DeleteStatusCode(x MemcacheDeleteResponse_DeleteStatusCode) *MemcacheDeleteResponse_DeleteStatusCode {
-	e := MemcacheDeleteResponse_DeleteStatusCode(x)
-	return &e
-}
 func (x MemcacheDeleteResponse_DeleteStatusCode) Enum() *MemcacheDeleteResponse_DeleteStatusCode {
 	p := new(MemcacheDeleteResponse_DeleteStatusCode)
 	*p = x
@@ -152,6 +170,17 @@ func (x MemcacheDeleteResponse_DeleteStatusCode) Enum() *MemcacheDeleteResponse_
 }
 func (x MemcacheDeleteResponse_DeleteStatusCode) String() string {
 	return proto.EnumName(MemcacheDeleteResponse_DeleteStatusCode_name, int32(x))
+}
+func (x MemcacheDeleteResponse_DeleteStatusCode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *MemcacheDeleteResponse_DeleteStatusCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(MemcacheDeleteResponse_DeleteStatusCode_value, data, "MemcacheDeleteResponse_DeleteStatusCode")
+	if err != nil {
+		return err
+	}
+	*x = MemcacheDeleteResponse_DeleteStatusCode(value)
+	return nil
 }
 
 type MemcacheIncrementRequest_Direction int32
@@ -170,11 +199,6 @@ var MemcacheIncrementRequest_Direction_value = map[string]int32{
 	"DECREMENT": 2,
 }
 
-// NewMemcacheIncrementRequest_Direction is deprecated. Use x.Enum() instead.
-func NewMemcacheIncrementRequest_Direction(x MemcacheIncrementRequest_Direction) *MemcacheIncrementRequest_Direction {
-	e := MemcacheIncrementRequest_Direction(x)
-	return &e
-}
 func (x MemcacheIncrementRequest_Direction) Enum() *MemcacheIncrementRequest_Direction {
 	p := new(MemcacheIncrementRequest_Direction)
 	*p = x
@@ -182,6 +206,17 @@ func (x MemcacheIncrementRequest_Direction) Enum() *MemcacheIncrementRequest_Dir
 }
 func (x MemcacheIncrementRequest_Direction) String() string {
 	return proto.EnumName(MemcacheIncrementRequest_Direction_name, int32(x))
+}
+func (x MemcacheIncrementRequest_Direction) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *MemcacheIncrementRequest_Direction) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(MemcacheIncrementRequest_Direction_value, data, "MemcacheIncrementRequest_Direction")
+	if err != nil {
+		return err
+	}
+	*x = MemcacheIncrementRequest_Direction(value)
+	return nil
 }
 
 type MemcacheIncrementResponse_IncrementStatusCode int32
@@ -203,11 +238,6 @@ var MemcacheIncrementResponse_IncrementStatusCode_value = map[string]int32{
 	"ERROR":       3,
 }
 
-// NewMemcacheIncrementResponse_IncrementStatusCode is deprecated. Use x.Enum() instead.
-func NewMemcacheIncrementResponse_IncrementStatusCode(x MemcacheIncrementResponse_IncrementStatusCode) *MemcacheIncrementResponse_IncrementStatusCode {
-	e := MemcacheIncrementResponse_IncrementStatusCode(x)
-	return &e
-}
 func (x MemcacheIncrementResponse_IncrementStatusCode) Enum() *MemcacheIncrementResponse_IncrementStatusCode {
 	p := new(MemcacheIncrementResponse_IncrementStatusCode)
 	*p = x
@@ -215,6 +245,17 @@ func (x MemcacheIncrementResponse_IncrementStatusCode) Enum() *MemcacheIncrement
 }
 func (x MemcacheIncrementResponse_IncrementStatusCode) String() string {
 	return proto.EnumName(MemcacheIncrementResponse_IncrementStatusCode_name, int32(x))
+}
+func (x MemcacheIncrementResponse_IncrementStatusCode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *MemcacheIncrementResponse_IncrementStatusCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(MemcacheIncrementResponse_IncrementStatusCode_value, data, "MemcacheIncrementResponse_IncrementStatusCode")
+	if err != nil {
+		return err
+	}
+	*x = MemcacheIncrementResponse_IncrementStatusCode(value)
+	return nil
 }
 
 type MemcacheServiceError struct {
@@ -237,6 +278,34 @@ func (this *AppOverride) Reset()         { *this = AppOverride{} }
 func (this *AppOverride) String() string { return proto.CompactTextString(this) }
 func (*AppOverride) ProtoMessage()       {}
 
+func (this *AppOverride) GetAppId() string {
+	if this != nil && this.AppId != nil {
+		return *this.AppId
+	}
+	return ""
+}
+
+func (this *AppOverride) GetNumMemcachegBackends() int32 {
+	if this != nil && this.NumMemcachegBackends != nil {
+		return *this.NumMemcachegBackends
+	}
+	return 0
+}
+
+func (this *AppOverride) GetIgnoreShardlock() bool {
+	if this != nil && this.IgnoreShardlock != nil {
+		return *this.IgnoreShardlock
+	}
+	return false
+}
+
+func (this *AppOverride) GetMemcachePoolHint() string {
+	if this != nil && this.MemcachePoolHint != nil {
+		return *this.MemcachePoolHint
+	}
+	return ""
+}
+
 type MemcacheGetRequest struct {
 	Key              [][]byte     `protobuf:"bytes,1,rep,name=key" json:"key,omitempty"`
 	NameSpace        *string      `protobuf:"bytes,2,opt,name=name_space" json:"name_space,omitempty"`
@@ -248,6 +317,27 @@ type MemcacheGetRequest struct {
 func (this *MemcacheGetRequest) Reset()         { *this = MemcacheGetRequest{} }
 func (this *MemcacheGetRequest) String() string { return proto.CompactTextString(this) }
 func (*MemcacheGetRequest) ProtoMessage()       {}
+
+func (this *MemcacheGetRequest) GetNameSpace() string {
+	if this != nil && this.NameSpace != nil {
+		return *this.NameSpace
+	}
+	return ""
+}
+
+func (this *MemcacheGetRequest) GetForCas() bool {
+	if this != nil && this.ForCas != nil {
+		return *this.ForCas
+	}
+	return false
+}
+
+func (this *MemcacheGetRequest) GetOverride() *AppOverride {
+	if this != nil {
+		return this.Override
+	}
+	return nil
+}
 
 type MemcacheGetResponse struct {
 	Item             []*MemcacheGetResponse_Item `protobuf:"group,1,rep" json:"item,omitempty"`
@@ -271,6 +361,41 @@ func (this *MemcacheGetResponse_Item) Reset()         { *this = MemcacheGetRespo
 func (this *MemcacheGetResponse_Item) String() string { return proto.CompactTextString(this) }
 func (*MemcacheGetResponse_Item) ProtoMessage()       {}
 
+func (this *MemcacheGetResponse_Item) GetKey() []byte {
+	if this != nil {
+		return this.Key
+	}
+	return nil
+}
+
+func (this *MemcacheGetResponse_Item) GetValue() []byte {
+	if this != nil {
+		return this.Value
+	}
+	return nil
+}
+
+func (this *MemcacheGetResponse_Item) GetFlags() uint32 {
+	if this != nil && this.Flags != nil {
+		return *this.Flags
+	}
+	return 0
+}
+
+func (this *MemcacheGetResponse_Item) GetCasId() uint64 {
+	if this != nil && this.CasId != nil {
+		return *this.CasId
+	}
+	return 0
+}
+
+func (this *MemcacheGetResponse_Item) GetExpiresInSeconds() int32 {
+	if this != nil && this.ExpiresInSeconds != nil {
+		return *this.ExpiresInSeconds
+	}
+	return 0
+}
+
 type MemcacheSetRequest struct {
 	Item             []*MemcacheSetRequest_Item `protobuf:"group,1,rep" json:"item,omitempty"`
 	NameSpace        *string                    `protobuf:"bytes,7,opt,name=name_space" json:"name_space,omitempty"`
@@ -281,6 +406,20 @@ type MemcacheSetRequest struct {
 func (this *MemcacheSetRequest) Reset()         { *this = MemcacheSetRequest{} }
 func (this *MemcacheSetRequest) String() string { return proto.CompactTextString(this) }
 func (*MemcacheSetRequest) ProtoMessage()       {}
+
+func (this *MemcacheSetRequest) GetNameSpace() string {
+	if this != nil && this.NameSpace != nil {
+		return *this.NameSpace
+	}
+	return ""
+}
+
+func (this *MemcacheSetRequest) GetOverride() *AppOverride {
+	if this != nil {
+		return this.Override
+	}
+	return nil
+}
 
 type MemcacheSetRequest_Item struct {
 	Key              []byte                        `protobuf:"bytes,2,req,name=key" json:"key,omitempty"`
@@ -299,6 +438,55 @@ func (*MemcacheSetRequest_Item) ProtoMessage()       {}
 
 const Default_MemcacheSetRequest_Item_SetPolicy MemcacheSetRequest_SetPolicy = MemcacheSetRequest_SET
 const Default_MemcacheSetRequest_Item_ExpirationTime uint32 = 0
+
+func (this *MemcacheSetRequest_Item) GetKey() []byte {
+	if this != nil {
+		return this.Key
+	}
+	return nil
+}
+
+func (this *MemcacheSetRequest_Item) GetValue() []byte {
+	if this != nil {
+		return this.Value
+	}
+	return nil
+}
+
+func (this *MemcacheSetRequest_Item) GetFlags() uint32 {
+	if this != nil && this.Flags != nil {
+		return *this.Flags
+	}
+	return 0
+}
+
+func (this *MemcacheSetRequest_Item) GetSetPolicy() MemcacheSetRequest_SetPolicy {
+	if this != nil && this.SetPolicy != nil {
+		return *this.SetPolicy
+	}
+	return Default_MemcacheSetRequest_Item_SetPolicy
+}
+
+func (this *MemcacheSetRequest_Item) GetExpirationTime() uint32 {
+	if this != nil && this.ExpirationTime != nil {
+		return *this.ExpirationTime
+	}
+	return Default_MemcacheSetRequest_Item_ExpirationTime
+}
+
+func (this *MemcacheSetRequest_Item) GetCasId() uint64 {
+	if this != nil && this.CasId != nil {
+		return *this.CasId
+	}
+	return 0
+}
+
+func (this *MemcacheSetRequest_Item) GetForCas() bool {
+	if this != nil && this.ForCas != nil {
+		return *this.ForCas
+	}
+	return false
+}
 
 type MemcacheSetResponse struct {
 	SetStatus        []MemcacheSetResponse_SetStatusCode `protobuf:"varint,1,rep,name=set_status,enum=appengine.MemcacheSetResponse_SetStatusCode" json:"set_status,omitempty"`
@@ -320,6 +508,20 @@ func (this *MemcacheDeleteRequest) Reset()         { *this = MemcacheDeleteReque
 func (this *MemcacheDeleteRequest) String() string { return proto.CompactTextString(this) }
 func (*MemcacheDeleteRequest) ProtoMessage()       {}
 
+func (this *MemcacheDeleteRequest) GetNameSpace() string {
+	if this != nil && this.NameSpace != nil {
+		return *this.NameSpace
+	}
+	return ""
+}
+
+func (this *MemcacheDeleteRequest) GetOverride() *AppOverride {
+	if this != nil {
+		return this.Override
+	}
+	return nil
+}
+
 type MemcacheDeleteRequest_Item struct {
 	Key              []byte  `protobuf:"bytes,2,req,name=key" json:"key,omitempty"`
 	DeleteTime       *uint32 `protobuf:"fixed32,3,opt,name=delete_time,def=0" json:"delete_time,omitempty"`
@@ -331,6 +533,20 @@ func (this *MemcacheDeleteRequest_Item) String() string { return proto.CompactTe
 func (*MemcacheDeleteRequest_Item) ProtoMessage()       {}
 
 const Default_MemcacheDeleteRequest_Item_DeleteTime uint32 = 0
+
+func (this *MemcacheDeleteRequest_Item) GetKey() []byte {
+	if this != nil {
+		return this.Key
+	}
+	return nil
+}
+
+func (this *MemcacheDeleteRequest_Item) GetDeleteTime() uint32 {
+	if this != nil && this.DeleteTime != nil {
+		return *this.DeleteTime
+	}
+	return Default_MemcacheDeleteRequest_Item_DeleteTime
+}
 
 type MemcacheDeleteResponse struct {
 	DeleteStatus     []MemcacheDeleteResponse_DeleteStatusCode `protobuf:"varint,1,rep,name=delete_status,enum=appengine.MemcacheDeleteResponse_DeleteStatusCode" json:"delete_status,omitempty"`
@@ -359,6 +575,55 @@ func (*MemcacheIncrementRequest) ProtoMessage()       {}
 const Default_MemcacheIncrementRequest_Delta uint64 = 1
 const Default_MemcacheIncrementRequest_Direction MemcacheIncrementRequest_Direction = MemcacheIncrementRequest_INCREMENT
 
+func (this *MemcacheIncrementRequest) GetKey() []byte {
+	if this != nil {
+		return this.Key
+	}
+	return nil
+}
+
+func (this *MemcacheIncrementRequest) GetNameSpace() string {
+	if this != nil && this.NameSpace != nil {
+		return *this.NameSpace
+	}
+	return ""
+}
+
+func (this *MemcacheIncrementRequest) GetDelta() uint64 {
+	if this != nil && this.Delta != nil {
+		return *this.Delta
+	}
+	return Default_MemcacheIncrementRequest_Delta
+}
+
+func (this *MemcacheIncrementRequest) GetDirection() MemcacheIncrementRequest_Direction {
+	if this != nil && this.Direction != nil {
+		return *this.Direction
+	}
+	return Default_MemcacheIncrementRequest_Direction
+}
+
+func (this *MemcacheIncrementRequest) GetInitialValue() uint64 {
+	if this != nil && this.InitialValue != nil {
+		return *this.InitialValue
+	}
+	return 0
+}
+
+func (this *MemcacheIncrementRequest) GetInitialFlags() uint32 {
+	if this != nil && this.InitialFlags != nil {
+		return *this.InitialFlags
+	}
+	return 0
+}
+
+func (this *MemcacheIncrementRequest) GetOverride() *AppOverride {
+	if this != nil {
+		return this.Override
+	}
+	return nil
+}
+
 type MemcacheIncrementResponse struct {
 	NewValue         *uint64                                        `protobuf:"varint,1,opt,name=new_value" json:"new_value,omitempty"`
 	IncrementStatus  *MemcacheIncrementResponse_IncrementStatusCode `protobuf:"varint,2,opt,name=increment_status,enum=appengine.MemcacheIncrementResponse_IncrementStatusCode" json:"increment_status,omitempty"`
@@ -368,6 +633,20 @@ type MemcacheIncrementResponse struct {
 func (this *MemcacheIncrementResponse) Reset()         { *this = MemcacheIncrementResponse{} }
 func (this *MemcacheIncrementResponse) String() string { return proto.CompactTextString(this) }
 func (*MemcacheIncrementResponse) ProtoMessage()       {}
+
+func (this *MemcacheIncrementResponse) GetNewValue() uint64 {
+	if this != nil && this.NewValue != nil {
+		return *this.NewValue
+	}
+	return 0
+}
+
+func (this *MemcacheIncrementResponse) GetIncrementStatus() MemcacheIncrementResponse_IncrementStatusCode {
+	if this != nil && this.IncrementStatus != nil {
+		return *this.IncrementStatus
+	}
+	return 0
+}
 
 type MemcacheBatchIncrementRequest struct {
 	NameSpace        *string                     `protobuf:"bytes,1,opt,name=name_space" json:"name_space,omitempty"`
@@ -379,6 +658,20 @@ type MemcacheBatchIncrementRequest struct {
 func (this *MemcacheBatchIncrementRequest) Reset()         { *this = MemcacheBatchIncrementRequest{} }
 func (this *MemcacheBatchIncrementRequest) String() string { return proto.CompactTextString(this) }
 func (*MemcacheBatchIncrementRequest) ProtoMessage()       {}
+
+func (this *MemcacheBatchIncrementRequest) GetNameSpace() string {
+	if this != nil && this.NameSpace != nil {
+		return *this.NameSpace
+	}
+	return ""
+}
+
+func (this *MemcacheBatchIncrementRequest) GetOverride() *AppOverride {
+	if this != nil {
+		return this.Override
+	}
+	return nil
+}
 
 type MemcacheBatchIncrementResponse struct {
 	Item             []*MemcacheIncrementResponse `protobuf:"bytes,1,rep,name=item" json:"item,omitempty"`
@@ -398,6 +691,13 @@ func (this *MemcacheFlushRequest) Reset()         { *this = MemcacheFlushRequest
 func (this *MemcacheFlushRequest) String() string { return proto.CompactTextString(this) }
 func (*MemcacheFlushRequest) ProtoMessage()       {}
 
+func (this *MemcacheFlushRequest) GetOverride() *AppOverride {
+	if this != nil {
+		return this.Override
+	}
+	return nil
+}
+
 type MemcacheFlushResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -415,6 +715,13 @@ func (this *MemcacheStatsRequest) Reset()         { *this = MemcacheStatsRequest
 func (this *MemcacheStatsRequest) String() string { return proto.CompactTextString(this) }
 func (*MemcacheStatsRequest) ProtoMessage()       {}
 
+func (this *MemcacheStatsRequest) GetOverride() *AppOverride {
+	if this != nil {
+		return this.Override
+	}
+	return nil
+}
+
 type MergedNamespaceStats struct {
 	Hits             *uint64 `protobuf:"varint,1,req,name=hits" json:"hits,omitempty"`
 	Misses           *uint64 `protobuf:"varint,2,req,name=misses" json:"misses,omitempty"`
@@ -429,6 +736,48 @@ func (this *MergedNamespaceStats) Reset()         { *this = MergedNamespaceStats
 func (this *MergedNamespaceStats) String() string { return proto.CompactTextString(this) }
 func (*MergedNamespaceStats) ProtoMessage()       {}
 
+func (this *MergedNamespaceStats) GetHits() uint64 {
+	if this != nil && this.Hits != nil {
+		return *this.Hits
+	}
+	return 0
+}
+
+func (this *MergedNamespaceStats) GetMisses() uint64 {
+	if this != nil && this.Misses != nil {
+		return *this.Misses
+	}
+	return 0
+}
+
+func (this *MergedNamespaceStats) GetByteHits() uint64 {
+	if this != nil && this.ByteHits != nil {
+		return *this.ByteHits
+	}
+	return 0
+}
+
+func (this *MergedNamespaceStats) GetItems() uint64 {
+	if this != nil && this.Items != nil {
+		return *this.Items
+	}
+	return 0
+}
+
+func (this *MergedNamespaceStats) GetBytes() uint64 {
+	if this != nil && this.Bytes != nil {
+		return *this.Bytes
+	}
+	return 0
+}
+
+func (this *MergedNamespaceStats) GetOldestItemAge() uint32 {
+	if this != nil && this.OldestItemAge != nil {
+		return *this.OldestItemAge
+	}
+	return 0
+}
+
 type MemcacheStatsResponse struct {
 	Stats            *MergedNamespaceStats `protobuf:"bytes,1,opt,name=stats" json:"stats,omitempty"`
 	XXX_unrecognized []byte                `json:"-"`
@@ -437,6 +786,13 @@ type MemcacheStatsResponse struct {
 func (this *MemcacheStatsResponse) Reset()         { *this = MemcacheStatsResponse{} }
 func (this *MemcacheStatsResponse) String() string { return proto.CompactTextString(this) }
 func (*MemcacheStatsResponse) ProtoMessage()       {}
+
+func (this *MemcacheStatsResponse) GetStats() *MergedNamespaceStats {
+	if this != nil {
+		return this.Stats
+	}
+	return nil
+}
 
 type MemcacheGrabTailRequest struct {
 	ItemCount        *int32       `protobuf:"varint,1,req,name=item_count" json:"item_count,omitempty"`
@@ -448,6 +804,27 @@ type MemcacheGrabTailRequest struct {
 func (this *MemcacheGrabTailRequest) Reset()         { *this = MemcacheGrabTailRequest{} }
 func (this *MemcacheGrabTailRequest) String() string { return proto.CompactTextString(this) }
 func (*MemcacheGrabTailRequest) ProtoMessage()       {}
+
+func (this *MemcacheGrabTailRequest) GetItemCount() int32 {
+	if this != nil && this.ItemCount != nil {
+		return *this.ItemCount
+	}
+	return 0
+}
+
+func (this *MemcacheGrabTailRequest) GetNameSpace() string {
+	if this != nil && this.NameSpace != nil {
+		return *this.NameSpace
+	}
+	return ""
+}
+
+func (this *MemcacheGrabTailRequest) GetOverride() *AppOverride {
+	if this != nil {
+		return this.Override
+	}
+	return nil
+}
 
 type MemcacheGrabTailResponse struct {
 	Item             []*MemcacheGrabTailResponse_Item `protobuf:"group,1,rep" json:"item,omitempty"`
@@ -467,6 +844,20 @@ type MemcacheGrabTailResponse_Item struct {
 func (this *MemcacheGrabTailResponse_Item) Reset()         { *this = MemcacheGrabTailResponse_Item{} }
 func (this *MemcacheGrabTailResponse_Item) String() string { return proto.CompactTextString(this) }
 func (*MemcacheGrabTailResponse_Item) ProtoMessage()       {}
+
+func (this *MemcacheGrabTailResponse_Item) GetValue() []byte {
+	if this != nil {
+		return this.Value
+	}
+	return nil
+}
+
+func (this *MemcacheGrabTailResponse_Item) GetFlags() uint32 {
+	if this != nil && this.Flags != nil {
+		return *this.Flags
+	}
+	return 0
+}
 
 func init() {
 	proto.RegisterEnum("appengine.MemcacheServiceError_ErrorCode", MemcacheServiceError_ErrorCode_name, MemcacheServiceError_ErrorCode_value)

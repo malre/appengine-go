@@ -220,6 +220,9 @@ func propertiesToProto(defaultAppID string, key *Key, src <-chan Property) (*pb.
 			x.Value.BooleanValue = proto.Bool(v)
 		case string:
 			x.Value.StringValue = proto.String(v)
+			if p.NoIndex {
+				x.Meaning = pb.Property_TEXT.Enum()
+			}
 		case float64:
 			x.Value.DoubleValue = proto.Float64(v)
 		case *Key:
