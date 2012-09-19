@@ -39,7 +39,7 @@ func Create(c appengine.Context, clientID string) (token string, err error) {
 	resp := &channel_proto.CreateChannelResponse{}
 	err = c.Call(service, "CreateChannel", req, resp, nil)
 	token = resp.GetToken()
-	return
+	return token, remapError(err)
 }
 
 // Send sends a message on the channel associated with clientID.
@@ -49,7 +49,7 @@ func Send(c appengine.Context, clientID, message string) error {
 		Message:        &message,
 	}
 	resp := &base_proto.VoidProto{}
-	return c.Call(service, "SendChannelMessage", req, resp, nil)
+	return remapError(c.Call(service, "SendChannelMessage", req, resp, nil))
 }
 
 // SendJSON is a helper function that sends a JSON-encoded value
@@ -62,11 +62,21 @@ func SendJSON(c appengine.Context, clientID string, value interface{}) error {
 	return Send(c, clientID, string(m))
 }
 
+// remapError fixes any APIError referencing "xmpp" into one referencing "channel".
+func remapError(err error) error {
+	if e, ok := err.(*appengine_internal.APIError); ok {
+		if e.Service == "xmpp" {
+			e.Service = "channel"
+		}
+	}
+	return err
+}
+
 var service = "xmpp" // prod
 
 func init() {
 	if appengine.IsDevAppServer() {
 		service = "channel" // dev
 	}
-	appengine_internal.RegisterErrorCodeMap(service, channel_proto.ChannelServiceError_ErrorCode_name)
+	appengine_internal.RegisterErrorCodeMap("channel", channel_proto.ChannelServiceError_ErrorCode_name)
 }

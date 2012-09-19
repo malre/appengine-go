@@ -8,6 +8,7 @@ package blobstore
 
 import (
 	"bufio"
+	"crypto/sha512"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -397,8 +398,21 @@ func (w *Writer) Key() (appengine.BlobKey, error) {
 	return k, err
 }
 
+// blobFileIndexKeyName returns the key name for a __BlobFileIndex__ entity.
+//
+// Per the Python SDK's blobstore.py, we return the creationHandle directly
+// if it's under 500 bytes, else we return its hex SHA-512 value.
+func blobFileIndexKeyName(creationHandle string) string {
+	if len(creationHandle) < 500 {
+		return creationHandle
+	}
+	h := sha512.New()
+	io.WriteString(h, creationHandle)
+	return fmt.Sprintf("%x", h.Sum(nil))
+}
+
 func (w *Writer) keyNewWay(handle string) (appengine.BlobKey, error) {
-	key := datastore.NewKey(w.c, blobFileIndexKind, handle, 0, nil)
+	key := datastore.NewKey(w.c, blobFileIndexKind, blobFileIndexKeyName(handle), 0, nil)
 	var blobKey struct {
 		Value string `datastore:"blob_key"`
 	}
