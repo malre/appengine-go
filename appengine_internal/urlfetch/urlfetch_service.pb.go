@@ -195,14 +195,11 @@ func (this *URLFetchRequest) GetMustValidateServerCertificate() bool {
 }
 
 type URLFetchRequest_Header struct {
-	Key              *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
-	Value            *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Key   *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
+	Value *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
 }
 
-func (this *URLFetchRequest_Header) Reset()         { *this = URLFetchRequest_Header{} }
-func (this *URLFetchRequest_Header) String() string { return proto.CompactTextString(this) }
-func (*URLFetchRequest_Header) ProtoMessage()       {}
+func (this *URLFetchRequest_Header) Reset() { *this = URLFetchRequest_Header{} }
 
 func (this *URLFetchRequest_Header) GetKey() string {
 	if this != nil && this.Key != nil {
@@ -305,14 +302,11 @@ func (this *URLFetchResponse) GetApiBytesReceived() int64 {
 }
 
 type URLFetchResponse_Header struct {
-	Key              *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
-	Value            *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Key   *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
+	Value *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
 }
 
-func (this *URLFetchResponse_Header) Reset()         { *this = URLFetchResponse_Header{} }
-func (this *URLFetchResponse_Header) String() string { return proto.CompactTextString(this) }
-func (*URLFetchResponse_Header) ProtoMessage()       {}
+func (this *URLFetchResponse_Header) Reset() { *this = URLFetchResponse_Header{} }
 
 func (this *URLFetchResponse_Header) GetKey() string {
 	if this != nil && this.Key != nil {

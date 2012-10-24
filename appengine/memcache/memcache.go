@@ -464,6 +464,13 @@ func Stats(c appengine.Context) (*Statistics, error) {
 	}, nil
 }
 
+// Flush flushes all items from memcache.
+func Flush(c appengine.Context) error {
+	req := &pb.MemcacheFlushRequest{}
+	res := &pb.MemcacheFlushResponse{}
+	return c.Call("memcache", "FlushAll", req, res, nil)
+}
+
 func init() {
 	appengine_internal.RegisterErrorCodeMap("memcache", pb.MemcacheServiceError_ErrorCode_name)
 }

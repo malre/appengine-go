@@ -6,8 +6,10 @@ package appengine
 
 import (
 	"strings"
+	"time"
 
 	"appengine_internal"
+	pb "appengine_internal/app_identity"
 )
 
 // AppID returns the application ID for the current application.
@@ -61,3 +63,46 @@ func ServerSoftware() string { return appengine_internal.ServerSoftware() }
 
 // RequestID returns a string that uniquely identifies the request.
 func RequestID(c Context) string { return appengine_internal.RequestID(c.Request()) }
+
+// AccessToken generates an OAuth2 access token for the specified scopes on
+// behalf of service account of this application. This token will expire after
+// the returned time.
+func AccessToken(c Context, scopes ...string) (token string, expiry time.Time, err error) {
+	req := &pb.GetAccessTokenRequest{Scope: scopes}
+	res := &pb.GetAccessTokenResponse{}
+
+	err = c.Call("app_identity_service", "GetAccessToken", req, res, nil)
+	if err != nil {
+		return "", time.Time{}, err
+	}
+	return res.GetAccessToken(), time.Unix(res.GetExpirationTime(), 0), nil
+}
+
+// ServiceAccount returns a string representing the service account name, in
+// the form of an email address (typically app_id@appspot.gserviceaccount.com).
+func ServiceAccount(c Context) (string, error) {
+	req := &pb.GetServiceAccountNameRequest{}
+	res := &pb.GetServiceAccountNameResponse{}
+
+	err := c.Call("app_identity_service", "GetServiceAccountName", req, res, nil)
+	if err != nil {
+		return "", err
+	}
+	return res.GetServiceAccountName(), err
+}
+
+// SignBytes signs bytes using a private key unique to your application.
+func SignBytes(c Context, bytes []byte) (string, []byte, error) {
+	req := &pb.SignForAppRequest{BytesToSign: bytes}
+	res := &pb.SignForAppResponse{}
+
+	err := c.Call("app_identity_service", "SignForApp", req, res, nil)
+	if err != nil {
+		return "", nil, err
+	}
+	return res.GetKeyName(), res.GetSignatureBytes(), err
+}
+
+func init() {
+	appengine_internal.RegisterErrorCodeMap("app_identity_service", pb.AppIdentityServiceError_ErrorCode_name)
+}

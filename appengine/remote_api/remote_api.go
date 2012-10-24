@@ -17,6 +17,7 @@ import (
 
 	"appengine"
 	"appengine/user"
+	"appengine_internal"
 	pb "appengine_internal/remote_api"
 	"code.google.com/p/goprotobuf/proto"
 )
@@ -80,8 +81,14 @@ func handle(w http.ResponseWriter, req *http.Request) {
 	remRes := &pb.Response{}
 	if err == nil {
 		remRes.Response = rawRes.buf
+	} else if ae, ok := err.(*appengine_internal.APIError); ok {
+		remRes.ApplicationError = &pb.ApplicationError{
+			Code:   &ae.Code,
+			Detail: &ae.Detail,
+		}
 	} else {
-		// TODO: Map appengine_internal.APIError correctly here.
+		// This shouldn't normally happen.
+		c.Errorf("appengine/remote_api: Unexpected error of type %T: %v", err, err)
 		remRes.ApplicationError = &pb.ApplicationError{
 			Code:   proto.Int32(0),
 			Detail: proto.String(err.Error()),

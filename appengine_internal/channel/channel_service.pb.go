@@ -71,7 +71,6 @@ func (*ChannelServiceError) ProtoMessage()       {}
 type CreateChannelRequest struct {
 	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
 	DurationMinutes  *int32  `protobuf:"varint,2,opt,name=duration_minutes" json:"duration_minutes,omitempty"`
-	Tag              *string `protobuf:"bytes,3,opt,name=tag" json:"tag,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -91,13 +90,6 @@ func (this *CreateChannelRequest) GetDurationMinutes() int32 {
 		return *this.DurationMinutes
 	}
 	return 0
-}
-
-func (this *CreateChannelRequest) GetTag() string {
-	if this != nil && this.Tag != nil {
-		return *this.Tag
-	}
-	return ""
 }
 
 type CreateChannelResponse struct {
@@ -127,7 +119,6 @@ func (this *CreateChannelResponse) GetDurationMinutes() int32 {
 type SendMessageRequest struct {
 	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
 	Message          *string `protobuf:"bytes,2,req,name=message" json:"message,omitempty"`
-	Tag              *string `protobuf:"bytes,3,opt,name=tag" json:"tag,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -149,29 +140,14 @@ func (this *SendMessageRequest) GetMessage() string {
 	return ""
 }
 
-func (this *SendMessageRequest) GetTag() string {
-	if this != nil && this.Tag != nil {
-		return *this.Tag
-	}
-	return ""
-}
-
 type ChannelPresenceRequest struct {
 	ApplicationKey   []string `protobuf:"bytes,1,rep,name=application_key" json:"application_key,omitempty"`
-	Tag              *string  `protobuf:"bytes,2,opt,name=tag" json:"tag,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (this *ChannelPresenceRequest) Reset()         { *this = ChannelPresenceRequest{} }
 func (this *ChannelPresenceRequest) String() string { return proto.CompactTextString(this) }
 func (*ChannelPresenceRequest) ProtoMessage()       {}
-
-func (this *ChannelPresenceRequest) GetTag() string {
-	if this != nil && this.Tag != nil {
-		return *this.Tag
-	}
-	return ""
-}
 
 type ChannelPresenceResponse struct {
 	QueryResult      []*ChannelPresenceResponse_QueryResult `protobuf:"bytes,1,rep,name=query_result" json:"query_result,omitempty"`

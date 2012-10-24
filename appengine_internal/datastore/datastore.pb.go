@@ -358,6 +358,7 @@ const (
 	Error_COMMITTED_BUT_STILL_APPLYING Error_ErrorCode = 8
 	Error_CAPABILITY_DISABLED          Error_ErrorCode = 9
 	Error_TRY_ALTERNATE_BACKEND        Error_ErrorCode = 10
+	Error_SAFE_TIME_TOO_OLD            Error_ErrorCode = 11
 )
 
 var Error_ErrorCode_name = map[int32]string{
@@ -371,6 +372,7 @@ var Error_ErrorCode_name = map[int32]string{
 	8:  "COMMITTED_BUT_STILL_APPLYING",
 	9:  "CAPABILITY_DISABLED",
 	10: "TRY_ALTERNATE_BACKEND",
+	11: "SAFE_TIME_TOO_OLD",
 }
 var Error_ErrorCode_value = map[string]int32{
 	"BAD_REQUEST":                  1,
@@ -383,6 +385,7 @@ var Error_ErrorCode_value = map[string]int32{
 	"COMMITTED_BUT_STILL_APPLYING": 8,
 	"CAPABILITY_DISABLED":          9,
 	"TRY_ALTERNATE_BACKEND":        10,
+	"SAFE_TIME_TOO_OLD":            11,
 }
 
 func (x Error_ErrorCode) Enum() *Error_ErrorCode {
@@ -582,14 +585,11 @@ func (this *PropertyValue) GetReferencevalue() *PropertyValue_ReferenceValue {
 }
 
 type PropertyValue_PointValue struct {
-	X                *float64 `protobuf:"fixed64,6,req,name=x" json:"x,omitempty"`
-	Y                *float64 `protobuf:"fixed64,7,req,name=y" json:"y,omitempty"`
-	XXX_unrecognized []byte   `json:"-"`
+	X *float64 `protobuf:"fixed64,6,req,name=x" json:"x,omitempty"`
+	Y *float64 `protobuf:"fixed64,7,req,name=y" json:"y,omitempty"`
 }
 
-func (this *PropertyValue_PointValue) Reset()         { *this = PropertyValue_PointValue{} }
-func (this *PropertyValue_PointValue) String() string { return proto.CompactTextString(this) }
-func (*PropertyValue_PointValue) ProtoMessage()       {}
+func (this *PropertyValue_PointValue) Reset() { *this = PropertyValue_PointValue{} }
 
 func (this *PropertyValue_PointValue) GetX() float64 {
 	if this != nil && this.X != nil {
@@ -613,12 +613,9 @@ type PropertyValue_UserValue struct {
 	ObfuscatedGaiaid  *string `protobuf:"bytes,19,opt,name=obfuscated_gaiaid" json:"obfuscated_gaiaid,omitempty"`
 	FederatedIdentity *string `protobuf:"bytes,21,opt,name=federated_identity" json:"federated_identity,omitempty"`
 	FederatedProvider *string `protobuf:"bytes,22,opt,name=federated_provider" json:"federated_provider,omitempty"`
-	XXX_unrecognized  []byte  `json:"-"`
 }
 
-func (this *PropertyValue_UserValue) Reset()         { *this = PropertyValue_UserValue{} }
-func (this *PropertyValue_UserValue) String() string { return proto.CompactTextString(this) }
-func (*PropertyValue_UserValue) ProtoMessage()       {}
+func (this *PropertyValue_UserValue) Reset() { *this = PropertyValue_UserValue{} }
 
 func (this *PropertyValue_UserValue) GetEmail() string {
 	if this != nil && this.Email != nil {
@@ -670,15 +667,12 @@ func (this *PropertyValue_UserValue) GetFederatedProvider() string {
 }
 
 type PropertyValue_ReferenceValue struct {
-	App              *string                                     `protobuf:"bytes,13,req,name=app" json:"app,omitempty"`
-	NameSpace        *string                                     `protobuf:"bytes,20,opt,name=name_space" json:"name_space,omitempty"`
-	Pathelement      []*PropertyValue_ReferenceValue_PathElement `protobuf:"group,14,rep,name=PathElement" json:"pathelement,omitempty"`
-	XXX_unrecognized []byte                                      `json:"-"`
+	App         *string                                     `protobuf:"bytes,13,req,name=app" json:"app,omitempty"`
+	NameSpace   *string                                     `protobuf:"bytes,20,opt,name=name_space" json:"name_space,omitempty"`
+	Pathelement []*PropertyValue_ReferenceValue_PathElement `protobuf:"group,14,rep,name=PathElement" json:"pathelement,omitempty"`
 }
 
-func (this *PropertyValue_ReferenceValue) Reset()         { *this = PropertyValue_ReferenceValue{} }
-func (this *PropertyValue_ReferenceValue) String() string { return proto.CompactTextString(this) }
-func (*PropertyValue_ReferenceValue) ProtoMessage()       {}
+func (this *PropertyValue_ReferenceValue) Reset() { *this = PropertyValue_ReferenceValue{} }
 
 func (this *PropertyValue_ReferenceValue) GetApp() string {
 	if this != nil && this.App != nil {
@@ -695,19 +689,14 @@ func (this *PropertyValue_ReferenceValue) GetNameSpace() string {
 }
 
 type PropertyValue_ReferenceValue_PathElement struct {
-	Type             *string `protobuf:"bytes,15,req,name=type" json:"type,omitempty"`
-	Id               *int64  `protobuf:"varint,16,opt,name=id" json:"id,omitempty"`
-	Name             *string `protobuf:"bytes,17,opt,name=name" json:"name,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Type *string `protobuf:"bytes,15,req,name=type" json:"type,omitempty"`
+	Id   *int64  `protobuf:"varint,16,opt,name=id" json:"id,omitempty"`
+	Name *string `protobuf:"bytes,17,opt,name=name" json:"name,omitempty"`
 }
 
 func (this *PropertyValue_ReferenceValue_PathElement) Reset() {
 	*this = PropertyValue_ReferenceValue_PathElement{}
 }
-func (this *PropertyValue_ReferenceValue_PathElement) String() string {
-	return proto.CompactTextString(this)
-}
-func (*PropertyValue_ReferenceValue_PathElement) ProtoMessage() {}
 
 func (this *PropertyValue_ReferenceValue_PathElement) GetType() string {
 	if this != nil && this.Type != nil {
@@ -790,15 +779,12 @@ func (this *Path) String() string { return proto.CompactTextString(this) }
 func (*Path) ProtoMessage()       {}
 
 type Path_Element struct {
-	Type             *string `protobuf:"bytes,2,req,name=type" json:"type,omitempty"`
-	Id               *int64  `protobuf:"varint,3,opt,name=id" json:"id,omitempty"`
-	Name             *string `protobuf:"bytes,4,opt,name=name" json:"name,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Type *string `protobuf:"bytes,2,req,name=type" json:"type,omitempty"`
+	Id   *int64  `protobuf:"varint,3,opt,name=id" json:"id,omitempty"`
+	Name *string `protobuf:"bytes,4,opt,name=name" json:"name,omitempty"`
 }
 
-func (this *Path_Element) Reset()         { *this = Path_Element{} }
-func (this *Path_Element) String() string { return proto.CompactTextString(this) }
-func (*Path_Element) ProtoMessage()       {}
+func (this *Path_Element) Reset() { *this = Path_Element{} }
 
 func (this *Path_Element) GetType() string {
 	if this != nil && this.Type != nil {
@@ -1010,14 +996,11 @@ func (this *Index) GetAncestor() bool {
 }
 
 type Index_Property struct {
-	Name             *string                   `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
-	Direction        *Index_Property_Direction `protobuf:"varint,4,opt,name=direction,enum=datastore.Index_Property_Direction,def=1" json:"direction,omitempty"`
-	XXX_unrecognized []byte                    `json:"-"`
+	Name      *string                   `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
+	Direction *Index_Property_Direction `protobuf:"varint,4,opt,name=direction,enum=datastore.Index_Property_Direction,def=1" json:"direction,omitempty"`
 }
 
-func (this *Index_Property) Reset()         { *this = Index_Property{} }
-func (this *Index_Property) String() string { return proto.CompactTextString(this) }
-func (*Index_Property) ProtoMessage()       {}
+func (this *Index_Property) Reset() { *this = Index_Property{} }
 
 const Default_Index_Property_Direction Index_Property_Direction = Index_Property_ASCENDING
 
@@ -1120,32 +1103,32 @@ func (this *Transaction) GetMarkChanges() bool {
 }
 
 type Query struct {
-	App                  *string           `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
-	NameSpace            *string           `protobuf:"bytes,29,opt,name=name_space" json:"name_space,omitempty"`
-	Kind                 *string           `protobuf:"bytes,3,opt,name=kind" json:"kind,omitempty"`
-	Ancestor             *Reference        `protobuf:"bytes,17,opt,name=ancestor" json:"ancestor,omitempty"`
-	Filter               []*Query_Filter   `protobuf:"group,4,rep" json:"filter,omitempty"`
-	SearchQuery          *string           `protobuf:"bytes,8,opt,name=search_query" json:"search_query,omitempty"`
-	Order                []*Query_Order    `protobuf:"group,9,rep" json:"order,omitempty"`
-	Hint                 *Query_Hint       `protobuf:"varint,18,opt,name=hint,enum=datastore.Query_Hint" json:"hint,omitempty"`
-	Count                *int32            `protobuf:"varint,23,opt,name=count" json:"count,omitempty"`
-	Offset               *int32            `protobuf:"varint,12,opt,name=offset,def=0" json:"offset,omitempty"`
-	Limit                *int32            `protobuf:"varint,16,opt,name=limit" json:"limit,omitempty"`
-	CompiledCursor       *CompiledCursor   `protobuf:"bytes,30,opt,name=compiled_cursor" json:"compiled_cursor,omitempty"`
-	EndCompiledCursor    *CompiledCursor   `protobuf:"bytes,31,opt,name=end_compiled_cursor" json:"end_compiled_cursor,omitempty"`
-	CompositeIndex       []*CompositeIndex `protobuf:"bytes,19,rep,name=composite_index" json:"composite_index,omitempty"`
-	RequirePerfectPlan   *bool             `protobuf:"varint,20,opt,name=require_perfect_plan,def=0" json:"require_perfect_plan,omitempty"`
-	KeysOnly             *bool             `protobuf:"varint,21,opt,name=keys_only,def=0" json:"keys_only,omitempty"`
-	Transaction          *Transaction      `protobuf:"bytes,22,opt,name=transaction" json:"transaction,omitempty"`
-	Compile              *bool             `protobuf:"varint,25,opt,name=compile,def=0" json:"compile,omitempty"`
-	FailoverMs           *int64            `protobuf:"varint,26,opt,name=failover_ms" json:"failover_ms,omitempty"`
-	Strong               *bool             `protobuf:"varint,32,opt,name=strong" json:"strong,omitempty"`
-	PropertyName         []string          `protobuf:"bytes,33,rep,name=property_name" json:"property_name,omitempty"`
-	GroupByPropertyName  []string          `protobuf:"bytes,34,rep,name=group_by_property_name" json:"group_by_property_name,omitempty"`
-	Distinct             *bool             `protobuf:"varint,24,opt,name=distinct" json:"distinct,omitempty"`
-	SafeTimeMicroseconds *int64            `protobuf:"varint,35,opt,name=safe_time_microseconds" json:"safe_time_microseconds,omitempty"`
-	SafeReplicaName      []string          `protobuf:"bytes,36,rep,name=safe_replica_name" json:"safe_replica_name,omitempty"`
-	XXX_unrecognized     []byte            `json:"-"`
+	App                     *string           `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
+	NameSpace               *string           `protobuf:"bytes,29,opt,name=name_space" json:"name_space,omitempty"`
+	Kind                    *string           `protobuf:"bytes,3,opt,name=kind" json:"kind,omitempty"`
+	Ancestor                *Reference        `protobuf:"bytes,17,opt,name=ancestor" json:"ancestor,omitempty"`
+	Filter                  []*Query_Filter   `protobuf:"group,4,rep" json:"filter,omitempty"`
+	SearchQuery             *string           `protobuf:"bytes,8,opt,name=search_query" json:"search_query,omitempty"`
+	Order                   []*Query_Order    `protobuf:"group,9,rep" json:"order,omitempty"`
+	Hint                    *Query_Hint       `protobuf:"varint,18,opt,name=hint,enum=datastore.Query_Hint" json:"hint,omitempty"`
+	Count                   *int32            `protobuf:"varint,23,opt,name=count" json:"count,omitempty"`
+	Offset                  *int32            `protobuf:"varint,12,opt,name=offset,def=0" json:"offset,omitempty"`
+	Limit                   *int32            `protobuf:"varint,16,opt,name=limit" json:"limit,omitempty"`
+	CompiledCursor          *CompiledCursor   `protobuf:"bytes,30,opt,name=compiled_cursor" json:"compiled_cursor,omitempty"`
+	EndCompiledCursor       *CompiledCursor   `protobuf:"bytes,31,opt,name=end_compiled_cursor" json:"end_compiled_cursor,omitempty"`
+	CompositeIndex          []*CompositeIndex `protobuf:"bytes,19,rep,name=composite_index" json:"composite_index,omitempty"`
+	RequirePerfectPlan      *bool             `protobuf:"varint,20,opt,name=require_perfect_plan,def=0" json:"require_perfect_plan,omitempty"`
+	KeysOnly                *bool             `protobuf:"varint,21,opt,name=keys_only,def=0" json:"keys_only,omitempty"`
+	Transaction             *Transaction      `protobuf:"bytes,22,opt,name=transaction" json:"transaction,omitempty"`
+	Compile                 *bool             `protobuf:"varint,25,opt,name=compile,def=0" json:"compile,omitempty"`
+	FailoverMs              *int64            `protobuf:"varint,26,opt,name=failover_ms" json:"failover_ms,omitempty"`
+	Strong                  *bool             `protobuf:"varint,32,opt,name=strong" json:"strong,omitempty"`
+	PropertyName            []string          `protobuf:"bytes,33,rep,name=property_name" json:"property_name,omitempty"`
+	GroupByPropertyName     []string          `protobuf:"bytes,34,rep,name=group_by_property_name" json:"group_by_property_name,omitempty"`
+	Distinct                *bool             `protobuf:"varint,24,opt,name=distinct" json:"distinct,omitempty"`
+	MinSafeTimeMicroseconds *int64            `protobuf:"varint,35,opt,name=min_safe_time_microseconds" json:"min_safe_time_microseconds,omitempty"`
+	SafeReplicaName         []string          `protobuf:"bytes,36,rep,name=safe_replica_name" json:"safe_replica_name,omitempty"`
+	XXX_unrecognized        []byte            `json:"-"`
 }
 
 func (this *Query) Reset()         { *this = Query{} }
@@ -1283,22 +1266,19 @@ func (this *Query) GetDistinct() bool {
 	return false
 }
 
-func (this *Query) GetSafeTimeMicroseconds() int64 {
-	if this != nil && this.SafeTimeMicroseconds != nil {
-		return *this.SafeTimeMicroseconds
+func (this *Query) GetMinSafeTimeMicroseconds() int64 {
+	if this != nil && this.MinSafeTimeMicroseconds != nil {
+		return *this.MinSafeTimeMicroseconds
 	}
 	return 0
 }
 
 type Query_Filter struct {
-	Op               *Query_Filter_Operator `protobuf:"varint,6,req,name=op,enum=datastore.Query_Filter_Operator" json:"op,omitempty"`
-	Property         []*Property            `protobuf:"bytes,14,rep,name=property" json:"property,omitempty"`
-	XXX_unrecognized []byte                 `json:"-"`
+	Op       *Query_Filter_Operator `protobuf:"varint,6,req,name=op,enum=datastore.Query_Filter_Operator" json:"op,omitempty"`
+	Property []*Property            `protobuf:"bytes,14,rep,name=property" json:"property,omitempty"`
 }
 
-func (this *Query_Filter) Reset()         { *this = Query_Filter{} }
-func (this *Query_Filter) String() string { return proto.CompactTextString(this) }
-func (*Query_Filter) ProtoMessage()       {}
+func (this *Query_Filter) Reset() { *this = Query_Filter{} }
 
 func (this *Query_Filter) GetOp() Query_Filter_Operator {
 	if this != nil && this.Op != nil {
@@ -1308,14 +1288,11 @@ func (this *Query_Filter) GetOp() Query_Filter_Operator {
 }
 
 type Query_Order struct {
-	Property         *string                `protobuf:"bytes,10,req,name=property" json:"property,omitempty"`
-	Direction        *Query_Order_Direction `protobuf:"varint,11,opt,name=direction,enum=datastore.Query_Order_Direction,def=1" json:"direction,omitempty"`
-	XXX_unrecognized []byte                 `json:"-"`
+	Property  *string                `protobuf:"bytes,10,req,name=property" json:"property,omitempty"`
+	Direction *Query_Order_Direction `protobuf:"varint,11,opt,name=direction,enum=datastore.Query_Order_Direction,def=1" json:"direction,omitempty"`
 }
 
-func (this *Query_Order) Reset()         { *this = Query_Order{} }
-func (this *Query_Order) String() string { return proto.CompactTextString(this) }
-func (*Query_Order) ProtoMessage()       {}
+func (this *Query_Order) Reset() { *this = Query_Order{} }
 
 const Default_Query_Order_Direction Query_Order_Direction = Query_Order_ASCENDING
 
@@ -1410,12 +1387,9 @@ type CompiledQuery_PrimaryScan struct {
 	StartPostfixValue          []string `protobuf:"bytes,22,rep,name=start_postfix_value" json:"start_postfix_value,omitempty"`
 	EndPostfixValue            []string `protobuf:"bytes,23,rep,name=end_postfix_value" json:"end_postfix_value,omitempty"`
 	EndUnappliedLogTimestampUs *int64   `protobuf:"varint,19,opt,name=end_unapplied_log_timestamp_us" json:"end_unapplied_log_timestamp_us,omitempty"`
-	XXX_unrecognized           []byte   `json:"-"`
 }
 
-func (this *CompiledQuery_PrimaryScan) Reset()         { *this = CompiledQuery_PrimaryScan{} }
-func (this *CompiledQuery_PrimaryScan) String() string { return proto.CompactTextString(this) }
-func (*CompiledQuery_PrimaryScan) ProtoMessage()       {}
+func (this *CompiledQuery_PrimaryScan) Reset() { *this = CompiledQuery_PrimaryScan{} }
 
 func (this *CompiledQuery_PrimaryScan) GetIndexName() string {
 	if this != nil && this.IndexName != nil {
@@ -1460,15 +1434,12 @@ func (this *CompiledQuery_PrimaryScan) GetEndUnappliedLogTimestampUs() int64 {
 }
 
 type CompiledQuery_MergeJoinScan struct {
-	IndexName        *string  `protobuf:"bytes,8,req,name=index_name" json:"index_name,omitempty"`
-	PrefixValue      []string `protobuf:"bytes,9,rep,name=prefix_value" json:"prefix_value,omitempty"`
-	ValuePrefix      *bool    `protobuf:"varint,20,opt,name=value_prefix,def=0" json:"value_prefix,omitempty"`
-	XXX_unrecognized []byte   `json:"-"`
+	IndexName   *string  `protobuf:"bytes,8,req,name=index_name" json:"index_name,omitempty"`
+	PrefixValue []string `protobuf:"bytes,9,rep,name=prefix_value" json:"prefix_value,omitempty"`
+	ValuePrefix *bool    `protobuf:"varint,20,opt,name=value_prefix,def=0" json:"value_prefix,omitempty"`
 }
 
-func (this *CompiledQuery_MergeJoinScan) Reset()         { *this = CompiledQuery_MergeJoinScan{} }
-func (this *CompiledQuery_MergeJoinScan) String() string { return proto.CompactTextString(this) }
-func (*CompiledQuery_MergeJoinScan) ProtoMessage()       {}
+func (this *CompiledQuery_MergeJoinScan) Reset() { *this = CompiledQuery_MergeJoinScan{} }
 
 const Default_CompiledQuery_MergeJoinScan_ValuePrefix bool = false
 
@@ -1487,15 +1458,12 @@ func (this *CompiledQuery_MergeJoinScan) GetValuePrefix() bool {
 }
 
 type CompiledQuery_EntityFilter struct {
-	Distinct         *bool      `protobuf:"varint,14,opt,name=distinct,def=0" json:"distinct,omitempty"`
-	Kind             *string    `protobuf:"bytes,17,opt,name=kind" json:"kind,omitempty"`
-	Ancestor         *Reference `protobuf:"bytes,18,opt,name=ancestor" json:"ancestor,omitempty"`
-	XXX_unrecognized []byte     `json:"-"`
+	Distinct *bool      `protobuf:"varint,14,opt,name=distinct,def=0" json:"distinct,omitempty"`
+	Kind     *string    `protobuf:"bytes,17,opt,name=kind" json:"kind,omitempty"`
+	Ancestor *Reference `protobuf:"bytes,18,opt,name=ancestor" json:"ancestor,omitempty"`
 }
 
-func (this *CompiledQuery_EntityFilter) Reset()         { *this = CompiledQuery_EntityFilter{} }
-func (this *CompiledQuery_EntityFilter) String() string { return proto.CompactTextString(this) }
-func (*CompiledQuery_EntityFilter) ProtoMessage()       {}
+func (this *CompiledQuery_EntityFilter) Reset() { *this = CompiledQuery_EntityFilter{} }
 
 const Default_CompiledQuery_EntityFilter_Distinct bool = false
 
@@ -1538,16 +1506,13 @@ func (this *CompiledCursor) GetMultiqueryIndex() int32 {
 }
 
 type CompiledCursor_Position struct {
-	StartKey         *string                               `protobuf:"bytes,27,opt,name=start_key" json:"start_key,omitempty"`
-	Indexvalue       []*CompiledCursor_Position_IndexValue `protobuf:"group,29,rep,name=IndexValue" json:"indexvalue,omitempty"`
-	Key              *Reference                            `protobuf:"bytes,32,opt,name=key" json:"key,omitempty"`
-	StartInclusive   *bool                                 `protobuf:"varint,28,opt,name=start_inclusive,def=1" json:"start_inclusive,omitempty"`
-	XXX_unrecognized []byte                                `json:"-"`
+	StartKey       *string                               `protobuf:"bytes,27,opt,name=start_key" json:"start_key,omitempty"`
+	Indexvalue     []*CompiledCursor_Position_IndexValue `protobuf:"group,29,rep,name=IndexValue" json:"indexvalue,omitempty"`
+	Key            *Reference                            `protobuf:"bytes,32,opt,name=key" json:"key,omitempty"`
+	StartInclusive *bool                                 `protobuf:"varint,28,opt,name=start_inclusive,def=1" json:"start_inclusive,omitempty"`
 }
 
-func (this *CompiledCursor_Position) Reset()         { *this = CompiledCursor_Position{} }
-func (this *CompiledCursor_Position) String() string { return proto.CompactTextString(this) }
-func (*CompiledCursor_Position) ProtoMessage()       {}
+func (this *CompiledCursor_Position) Reset() { *this = CompiledCursor_Position{} }
 
 const Default_CompiledCursor_Position_StartInclusive bool = true
 
@@ -1573,14 +1538,11 @@ func (this *CompiledCursor_Position) GetStartInclusive() bool {
 }
 
 type CompiledCursor_Position_IndexValue struct {
-	Property         *string        `protobuf:"bytes,30,opt,name=property" json:"property,omitempty"`
-	Value            *PropertyValue `protobuf:"bytes,31,req,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte         `json:"-"`
+	Property *string        `protobuf:"bytes,30,opt,name=property" json:"property,omitempty"`
+	Value    *PropertyValue `protobuf:"bytes,31,req,name=value" json:"value,omitempty"`
 }
 
-func (this *CompiledCursor_Position_IndexValue) Reset()         { *this = CompiledCursor_Position_IndexValue{} }
-func (this *CompiledCursor_Position_IndexValue) String() string { return proto.CompactTextString(this) }
-func (*CompiledCursor_Position_IndexValue) ProtoMessage()       {}
+func (this *CompiledCursor_Position_IndexValue) Reset() { *this = CompiledCursor_Position_IndexValue{} }
 
 func (this *CompiledCursor_Position_IndexValue) GetProperty() string {
 	if this != nil && this.Property != nil {
@@ -1679,12 +1641,9 @@ func (this *Cost) GetCommitcost() *Cost_CommitCost {
 type Cost_CommitCost struct {
 	RequestedEntityPuts    *int32 `protobuf:"varint,6,opt,name=requested_entity_puts" json:"requested_entity_puts,omitempty"`
 	RequestedEntityDeletes *int32 `protobuf:"varint,7,opt,name=requested_entity_deletes" json:"requested_entity_deletes,omitempty"`
-	XXX_unrecognized       []byte `json:"-"`
 }
 
-func (this *Cost_CommitCost) Reset()         { *this = Cost_CommitCost{} }
-func (this *Cost_CommitCost) String() string { return proto.CompactTextString(this) }
-func (*Cost_CommitCost) ProtoMessage()       {}
+func (this *Cost_CommitCost) Reset() { *this = Cost_CommitCost{} }
 
 func (this *Cost_CommitCost) GetRequestedEntityPuts() int32 {
 	if this != nil && this.RequestedEntityPuts != nil {
@@ -1743,14 +1702,11 @@ func (this *GetResponse) String() string { return proto.CompactTextString(this) 
 func (*GetResponse) ProtoMessage()       {}
 
 type GetResponse_Entity struct {
-	Entity           *EntityProto `protobuf:"bytes,2,opt,name=entity" json:"entity,omitempty"`
-	Version          *int64       `protobuf:"varint,3,opt,name=version" json:"version,omitempty"`
-	XXX_unrecognized []byte       `json:"-"`
+	Entity  *EntityProto `protobuf:"bytes,2,opt,name=entity" json:"entity,omitempty"`
+	Version *int64       `protobuf:"varint,3,opt,name=version" json:"version,omitempty"`
 }
 
-func (this *GetResponse_Entity) Reset()         { *this = GetResponse_Entity{} }
-func (this *GetResponse_Entity) String() string { return proto.CompactTextString(this) }
-func (*GetResponse_Entity) ProtoMessage()       {}
+func (this *GetResponse_Entity) Reset() { *this = GetResponse_Entity{} }
 
 func (this *GetResponse_Entity) GetEntity() *EntityProto {
 	if this != nil {
@@ -1997,6 +1953,7 @@ type QueryResult struct {
 	MoreResults      *bool             `protobuf:"varint,3,req,name=more_results" json:"more_results,omitempty"`
 	KeysOnly         *bool             `protobuf:"varint,4,opt,name=keys_only" json:"keys_only,omitempty"`
 	IndexOnly        *bool             `protobuf:"varint,9,opt,name=index_only" json:"index_only,omitempty"`
+	SmallOps         *bool             `protobuf:"varint,10,opt,name=small_ops" json:"small_ops,omitempty"`
 	CompiledQuery    *CompiledQuery    `protobuf:"bytes,5,opt,name=compiled_query" json:"compiled_query,omitempty"`
 	CompiledCursor   *CompiledCursor   `protobuf:"bytes,6,opt,name=compiled_cursor" json:"compiled_cursor,omitempty"`
 	Index            []*CompositeIndex `protobuf:"bytes,8,rep,name=index" json:"index,omitempty"`
@@ -2038,6 +1995,13 @@ func (this *QueryResult) GetKeysOnly() bool {
 func (this *QueryResult) GetIndexOnly() bool {
 	if this != nil && this.IndexOnly != nil {
 		return *this.IndexOnly
+	}
+	return false
+}
+
+func (this *QueryResult) GetSmallOps() bool {
+	if this != nil && this.SmallOps != nil {
+		return *this.SmallOps
 	}
 	return false
 }
@@ -2190,14 +2154,11 @@ func (this *CommitResponse) GetCost() *Cost {
 }
 
 type CommitResponse_Version struct {
-	RootEntityKey    *Reference `protobuf:"bytes,4,req,name=root_entity_key" json:"root_entity_key,omitempty"`
-	Version          *int64     `protobuf:"varint,5,req,name=version" json:"version,omitempty"`
-	XXX_unrecognized []byte     `json:"-"`
+	RootEntityKey *Reference `protobuf:"bytes,4,req,name=root_entity_key" json:"root_entity_key,omitempty"`
+	Version       *int64     `protobuf:"varint,5,req,name=version" json:"version,omitempty"`
 }
 
-func (this *CommitResponse_Version) Reset()         { *this = CommitResponse_Version{} }
-func (this *CommitResponse_Version) String() string { return proto.CompactTextString(this) }
-func (*CommitResponse_Version) ProtoMessage()       {}
+func (this *CommitResponse_Version) Reset() { *this = CommitResponse_Version{} }
 
 func (this *CommitResponse_Version) GetRootEntityKey() *Reference {
 	if this != nil {

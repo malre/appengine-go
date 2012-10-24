@@ -92,6 +92,8 @@ func (e *CallError) Error() string {
 		msg = "Over quota"
 	case 6: // CAPABILITY_DISABLED
 		msg = "Capability disabled"
+	case 9: // BUFFER_ERROR
+		msg = "Buffer error"
 	case 11: // CANCELLED
 		msg = "Canceled"
 	default:

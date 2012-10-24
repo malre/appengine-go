@@ -3,6 +3,17 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.7.3 - October 2012
+============================
+appengine:
+  - Add AccessToken, ServiceAccount and SignBytes functions.
+appengine/log:
+  ! Remove the deprecated Record.APIMCycles field.
+appengine/memcache:
+  - Add Flush function.
+appengine/socket:
+  - New package.
+
 Version 1.7.2 - September 2012
 ==============================
 No changes.

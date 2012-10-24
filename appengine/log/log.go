@@ -108,7 +108,6 @@ type Record struct {
 	UserAgent    string
 	URLMapEntry  string
 	Combined     string
-	APIMCycles   int64 // Deprecated; going away in 1.7.2.
 	Host         string
 
 	// The estimated cost of this request, in dollars.
@@ -202,7 +201,6 @@ func protoToRecord(rl *log_proto.RequestLog) *Record {
 		UserAgent:         rl.GetUserAgent(),
 		URLMapEntry:       *rl.UrlMapEntry,
 		Combined:          *rl.Combined,
-		APIMCycles:        rl.GetApiMcycles(),
 		Host:              rl.GetHost(),
 		Cost:              rl.GetCost(),
 		TaskQueueName:     rl.GetTaskQueueName(),
