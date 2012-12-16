@@ -28,6 +28,11 @@ func Dial(c appengine.Context, protocol, addr string) (*Conn, error) {
 	return DialTimeout(c, protocol, addr, 0)
 }
 
+var ipFamilies = []pb.CreateSocketRequest_SocketFamily{
+	pb.CreateSocketRequest_IPv4,
+	pb.CreateSocketRequest_IPv6,
+}
+
 // DialTimeout is like Dial but takes a timeout.
 // The timeout includes name resolution, if required.
 func DialTimeout(c appengine.Context, protocol, addr string, timeout time.Duration) (*Conn, error) {
@@ -55,10 +60,7 @@ func DialTimeout(c appengine.Context, protocol, addr string, timeout time.Durati
 		return nil, fmt.Errorf("socket: unknown protocol %q", protocol)
 	}
 
-	// TODO: auto-switch between IPv4 and IPv6.
-	fam := pb.CreateSocketRequest_IPv4
-
-	packedAddrs, resolved, err := resolve(c, []pb.CreateSocketRequest_SocketFamily{fam}, host, deadline)
+	packedAddrs, resolved, err := resolve(c, ipFamilies, host, deadline)
 	if err != nil {
 		return nil, fmt.Errorf("socket: failed resolving %q: %v", host, err)
 	}
@@ -66,35 +68,40 @@ func DialTimeout(c appengine.Context, protocol, addr string, timeout time.Durati
 		return nil, fmt.Errorf("no addresses for %q", host)
 	}
 
-	createReq := &pb.CreateSocketRequest{
+	packedAddr := packedAddrs[0] // use first address
+	fam := pb.CreateSocketRequest_IPv4
+	if len(packedAddr) == net.IPv6len {
+		fam = pb.CreateSocketRequest_IPv6
+	}
+
+	req := &pb.CreateSocketRequest{
 		Family:   fam.Enum(),
 		Protocol: prot.Enum(),
 		RemoteIp: &pb.AddressPort{
 			Port:          proto.Int32(int32(port)),
-			PackedAddress: packedAddrs[0], // use first address
+			PackedAddress: packedAddr,
 		},
 	}
 	if resolved {
-		createReq.RemoteIp.HostnameHint = &host
+		req.RemoteIp.HostnameHint = &host
 	}
-	createRes := &pb.CreateSocketReply{}
-	if err := c.Call("remote_socket", "CreateSocket", createReq, createRes, opts(deadline)); err != nil {
+	res := &pb.CreateSocketReply{}
+	if err := c.Call("remote_socket", "CreateSocket", req, res, opts(deadline)); err != nil {
 		return nil, err
 	}
 
 	return &Conn{
-		c:    c,
-		desc: createRes.GetSocketDescriptor(),
+		c:      c,
+		desc:   res.GetSocketDescriptor(),
+		prot:   prot,
+		local:  res.ProxyExternalIp,
+		remote: req.RemoteIp,
 	}, nil
 }
 
 // LookupIP returns the given host's IP addresses.
 func LookupIP(c appengine.Context, host string) (addrs []net.IP, err error) {
-	fams := []pb.CreateSocketRequest_SocketFamily{
-		pb.CreateSocketRequest_IPv4,
-		pb.CreateSocketRequest_IPv6,
-	}
-	packedAddrs, _, err := resolve(c, fams, host, time.Time{})
+	packedAddrs, _, err := resolve(c, ipFamilies, host, time.Time{})
 	if err != nil {
 		return nil, fmt.Errorf("socket: failed resolving %q: %v", host, err)
 	}
@@ -131,16 +138,19 @@ func opts(deadline time.Time) *appengine_internal.CallOptions {
 		return nil
 	}
 	return &appengine_internal.CallOptions{
-		Deadline: deadline.Sub(time.Now()),
+		Timeout: deadline.Sub(time.Now()),
 	}
 }
 
 // Conn represents a socket connection.
 // It implements net.Conn.
 type Conn struct {
-	c      appengine.Context // TODO: add a SetContext method to update this
+	c      appengine.Context
 	desc   string
 	offset int64
+
+	prot          pb.CreateSocketRequest_SocketProtocol
+	local, remote *pb.AddressPort
 
 	readDeadline, writeDeadline time.Time // optional
 }
@@ -212,10 +222,27 @@ func (cn *Conn) Close() error {
 	return nil
 }
 
-func (cn *Conn) LocalAddr() net.Addr { /* TODO */ return nil
+func addr(prot pb.CreateSocketRequest_SocketProtocol, ap *pb.AddressPort) net.Addr {
+	if ap == nil {
+		return nil
+	}
+	switch prot {
+	case pb.CreateSocketRequest_TCP:
+		return &net.TCPAddr{
+			IP:   net.IP(ap.PackedAddress),
+			Port: int(*ap.Port),
+		}
+	case pb.CreateSocketRequest_UDP:
+		return &net.UDPAddr{
+			IP:   net.IP(ap.PackedAddress),
+			Port: int(*ap.Port),
+		}
+	}
+	panic("unknown protocol " + prot.String())
 }
-func (cn *Conn) RemoteAddr() net.Addr { /* TODO */ return nil
-}
+
+func (cn *Conn) LocalAddr() net.Addr  { return addr(cn.prot, cn.local) }
+func (cn *Conn) RemoteAddr() net.Addr { return addr(cn.prot, cn.remote) }
 
 func (cn *Conn) SetDeadline(t time.Time) error {
 	cn.readDeadline = t

@@ -68,6 +68,11 @@ type Query struct {
 
 	// The major version IDs whose logs should be retrieved.
 	Versions []string
+
+	// A list of requests to search for instead of a time-based scan. Cannot be
+	// combined with filtering options such as StartTime, EndTime, Offset,
+	// Incomplete, ApplyMinLevel, or Versions.
+	RequestIDs []string
 }
 
 // AppLog represents a single application-level log.
@@ -250,6 +255,13 @@ func (params *Query) Run(c appengine.Context) *Result {
 		req.VersionId = []string{versionID}
 	} else {
 		req.VersionId = params.Versions
+	}
+	if params.RequestIDs != nil {
+		ids := make([][]byte, len(params.RequestIDs))
+		for i, v := range params.RequestIDs {
+			ids[i] = []byte(v)
+		}
+		req.RequestId = ids
 	}
 
 	return &Result{context: c, request: req}

@@ -206,6 +206,64 @@ func (this *PresenceResponse) GetPresence() PresenceResponse_SHOW {
 	return 0
 }
 
+type BulkPresenceRequest struct {
+	Jid              []string `protobuf:"bytes,1,rep,name=jid" json:"jid,omitempty"`
+	FromJid          *string  `protobuf:"bytes,2,opt,name=from_jid" json:"from_jid,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (this *BulkPresenceRequest) Reset()         { *this = BulkPresenceRequest{} }
+func (this *BulkPresenceRequest) String() string { return proto.CompactTextString(this) }
+func (*BulkPresenceRequest) ProtoMessage()       {}
+
+func (this *BulkPresenceRequest) GetFromJid() string {
+	if this != nil && this.FromJid != nil {
+		return *this.FromJid
+	}
+	return ""
+}
+
+type BulkPresenceResponse struct {
+	PresenceResponse []*BulkPresenceResponse_JidStatus `protobuf:"bytes,1,rep,name=presence_response" json:"presence_response,omitempty"`
+	XXX_unrecognized []byte                            `json:"-"`
+}
+
+func (this *BulkPresenceResponse) Reset()         { *this = BulkPresenceResponse{} }
+func (this *BulkPresenceResponse) String() string { return proto.CompactTextString(this) }
+func (*BulkPresenceResponse) ProtoMessage()       {}
+
+type BulkPresenceResponse_JidStatus struct {
+	IsAvailable      *bool                  `protobuf:"varint,1,opt,name=is_available" json:"is_available,omitempty"`
+	Presence         *PresenceResponse_SHOW `protobuf:"varint,2,opt,name=presence,enum=appengine.PresenceResponse_SHOW" json:"presence,omitempty"`
+	Valid            *bool                  `protobuf:"varint,3,opt,name=valid" json:"valid,omitempty"`
+	XXX_unrecognized []byte                 `json:"-"`
+}
+
+func (this *BulkPresenceResponse_JidStatus) Reset()         { *this = BulkPresenceResponse_JidStatus{} }
+func (this *BulkPresenceResponse_JidStatus) String() string { return proto.CompactTextString(this) }
+func (*BulkPresenceResponse_JidStatus) ProtoMessage()       {}
+
+func (this *BulkPresenceResponse_JidStatus) GetIsAvailable() bool {
+	if this != nil && this.IsAvailable != nil {
+		return *this.IsAvailable
+	}
+	return false
+}
+
+func (this *BulkPresenceResponse_JidStatus) GetPresence() PresenceResponse_SHOW {
+	if this != nil && this.Presence != nil {
+		return *this.Presence
+	}
+	return 0
+}
+
+func (this *BulkPresenceResponse_JidStatus) GetValid() bool {
+	if this != nil && this.Valid != nil {
+		return *this.Valid
+	}
+	return false
+}
+
 type XmppMessageRequest struct {
 	Jid              []string `protobuf:"bytes,1,rep,name=jid" json:"jid,omitempty"`
 	Body             *string  `protobuf:"bytes,2,req,name=body" json:"body,omitempty"`

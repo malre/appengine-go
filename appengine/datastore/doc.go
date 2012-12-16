@@ -207,7 +207,7 @@ Example code:
 				serveError(c, w, err)
 				return
 			}
-			fmt.Fprintf(b, "Key=%v\nWidget=%#v\n\n", x, key)
+			fmt.Fprintf(b, "Key=%v\nWidget=%#v\n\n", key, x)
 		}
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		io.Copy(w, b)

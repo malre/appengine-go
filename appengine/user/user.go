@@ -16,10 +16,6 @@ import (
 )
 
 // User represents a user of the application.
-//
-// Its fields are not validated. A User whose email address does not
-// correspond to a valid Google account can be stored in the datastore,
-// but will never match a real user.
 type User struct {
 	Email      string
 	AuthDomain string
@@ -46,7 +42,7 @@ func (u *User) String() string {
 }
 
 // LoginURL returns a URL that, when visited, prompts the user to sign in,
-// then redirects the user to the URL specified by 'dest'.
+// then redirects the user to the URL specified by dest.
 func LoginURL(c appengine.Context, dest string) (string, error) {
 	return LoginURLFederated(c, dest, "")
 }
@@ -67,7 +63,7 @@ func LoginURLFederated(c appengine.Context, dest, identity string) (string, erro
 }
 
 // LogoutURL returns a URL that, when visited, signs the user out,
-// then redirects the user to the URL specified by 'dest'.
+// then redirects the user to the URL specified by dest.
 func LogoutURL(c appengine.Context, dest string) (string, error) {
 	req := &pb.CreateLogoutURLRequest{
 		DestinationUrl: proto.String(dest),

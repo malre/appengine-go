@@ -38,7 +38,7 @@ func RegisterHTTPFunc(f ServeHTTPFunc) {
 }
 
 type CallOptions struct {
-	Deadline time.Duration // if non-zero, overrides RPC default
+	Timeout time.Duration // if non-zero, overrides RPC default
 }
 
 // errorCodeMaps is a map of service name to the error code map for the service.

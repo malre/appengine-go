@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"go/scanner"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -36,9 +37,13 @@ var (
 	binaryName      = flag.String("binary_name", "_go_app.bin", "Name of final binary, relative to --work_dir.")
 	dynamic         = flag.Bool("dynamic", false, "Create a binary with a dynamic linking header.")
 	extraImports    = flag.String("extra_imports", "", "A comma-separated list of extra packages to import.")
+	gcFlags         = flag.String("gcflags", "", "Comma-separated list of extra compiler flags.")
+	goPath          = flag.String("gopath", os.Getenv("GOPATH"), "Location of extra packages.")
 	goRoot          = flag.String("goroot", os.Getenv("GOROOT"), "Root of the Go installation.")
+	ldFlags         = flag.String("ldflags", "", "Comma-separated list of extra linker flags.")
 	logFile         = flag.String("log_file", "", "If set, a file to write messages to.")
 	pkgDupes        = flag.String("pkg_dupe_whitelist", "", "Comma-separated list of packages that are okay to duplicate.")
+	printExtras     = flag.Bool("print_extras", false, "Whether to skip building and just print extra-app files.")
 	trampoline      = flag.String("trampoline", "", "If set, a binary to invoke tools with.")
 	trampolineFlags = flag.String("trampoline_flags", "", "Comma-separated flags to pass to trampoline.")
 	unsafe          = flag.Bool("unsafe", false, "Permit unsafe packages.")
@@ -100,6 +105,11 @@ func main() {
 		log.Fatalf("go-app-builder: Failed parsing input: %v", err)
 	}
 
+	if *printExtras {
+		printExtraFiles(os.Stdout, app)
+		return
+	}
+
 	if err := buildApp(app); err != nil {
 		log.Fatalf("go-app-builder: Failed building app: %v", err)
 	}
@@ -121,8 +131,7 @@ func buildApp(app *App) error {
 	if err != nil {
 		return fmt.Errorf("failed creating main: %v", err)
 	}
-	const mainName = "_go_main.go"
-	mainFile := filepath.Join(*workDir, mainName)
+	mainFile := filepath.Join(*workDir, "_go_main.go")
 	defer os.Remove(mainFile)
 	if err := ioutil.WriteFile(mainFile, []byte(mainStr), 0640); err != nil {
 		return fmt.Errorf("failed writing main: %v", err)
@@ -163,10 +172,30 @@ func buildApp(app *App) error {
 			// reject unsafe code
 			args = append(args, "-u")
 		}
+		if *gcFlags != "" {
+			args = append(args, parseToolFlags(*gcFlags)...)
+		}
 		if i < len(app.Packages)-1 {
 			// regular package
+			base := *appBase
+			if pkg.BaseDir != "" {
+				base = pkg.BaseDir
+			}
 			for _, f := range pkg.Files {
-				args = append(args, filepath.Join(*appBase, f.Name))
+				args = append(args, filepath.Join(base, f.Name))
+			}
+			if len(pkg.Files) > 0 && len(extra) > 0 {
+				// synthetic extra imports
+				extraImportsStr, err := MakeExtraImports(pkg.Files[0].PackageName, extra)
+				if err != nil {
+					return fmt.Errorf("failed creating extra-imports file: %v", err)
+				}
+				extraImportsFile := filepath.Join(*workDir, fmt.Sprintf("_extra_imports_%d.go", i))
+				defer os.Remove(extraImportsFile)
+				if err := ioutil.WriteFile(extraImportsFile, []byte(extraImportsStr), 0640); err != nil {
+					return fmt.Errorf("failed writing extra-imports file: %v", err)
+				}
+				args = append(args, extraImportsFile)
 			}
 		} else {
 			// synthetic main package
@@ -178,7 +207,7 @@ func buildApp(app *App) error {
 		}
 
 		// Turn the object file into an archive file, stripped of file path information.
-		// The path we strip depends on whether this object file is based on user code
+		// The paths we strip depends on whether this object file is based on user code
 		// or the synthetic main code.
 		archiveFile := filepath.Join(*workDir, pkg.ImportPath) + ".a"
 		srcDir := *appBase
@@ -195,6 +224,18 @@ func buildApp(app *App) error {
 		defer os.Remove(archiveFile)
 		if err := run(args, env); err != nil {
 			return err
+		}
+		if i != len(app.Packages)-1 && len(extra) > 0 {
+			// Run gopack again, this time stripping the absolute workDir prefix.
+			absWorkDir, _ := filepath.Abs(*workDir) // assume os.Getwd doesn't fail
+			args = []string{
+				gopack,
+				"grcP", absWorkDir,
+				archiveFile,
+			}
+			if err := run(args, env); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -216,6 +257,9 @@ func buildApp(app *App) error {
 		// reject unsafe code
 		args = append(args, "-u")
 	}
+	if *ldFlags != "" {
+		args = append(args, parseToolFlags(*ldFlags)...)
+	}
 	args = append(args, archiveFile)
 	if err := run(args, env); err != nil {
 		return err
@@ -231,6 +275,19 @@ func buildApp(app *App) error {
 	}
 
 	return nil
+}
+
+func printExtraFiles(w io.Writer, app *App) {
+	for _, pkg := range app.Packages {
+		if pkg.BaseDir == "" {
+			continue // app file
+		}
+		for _, f := range pkg.Files {
+			rel := filepath.Join(filepath.FromSlash(pkg.ImportPath), f.Name)
+			dst := filepath.Join(pkg.BaseDir, f.Name)
+			fmt.Fprintf(w, "%s|%s\n", rel, dst)
+		}
+	}
 }
 
 func toolPath(x string) string {

@@ -12,12 +12,15 @@ import (
 	"go/parser"
 	"go/scanner"
 	"go/token"
+	"log"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // App represents an entire Go App Engine app.
@@ -25,12 +28,15 @@ type App struct {
 	Files        []*File    // the complete set of source files for this app
 	Packages     []*Package // the packages
 	RootPackages []*Package // the subset of packages with init functions
+
+	PackageIndex map[string]*Package // index from import path to package object
 }
 
 // Package represents a Go package.
 type Package struct {
 	ImportPath   string     // the path under which this package may be imported
 	Files        []*File    // the set of source files that form this package
+	BaseDir      string     // what the file names are relative to, if outside app
 	Dependencies []*Package // the packages that this directly depends upon, in no particular order
 	HasInit      bool       // whether the package has any init functions
 }
@@ -82,7 +88,9 @@ func (v vfs) readDir(dir string) (fis []os.FileInfo, err error) {
 // and returns the dependency DAG as an App.
 // Elements of filenames are considered relative to baseDir.
 func ParseFiles(baseDir string, filenames []string) (*App, error) {
-	app := new(App)
+	app := &App{
+		PackageIndex: make(map[string]*Package),
+	}
 	pkgFiles := make(map[string][]*File) // app package name => its files
 
 	vfs := vfs{baseDir, filenames}
@@ -113,9 +121,9 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 
 	dirs := make(map[string]bool)
 	for _, f := range filenames {
-		dir := filepath.Dir(f)
-		if dir == "" || dir == string(filepath.Separator) || dir == "." {
-			return nil, errors.New("go files must be in a subdirectory of the app root")
+		dir := filepath.Dir(f) // "." for top-level files
+		if dir == "" || dir == string(filepath.Separator) {
+			return nil, fmt.Errorf("bad filename %q", f)
 		}
 		dirs[dir] = true
 	}
@@ -148,10 +156,16 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 	}
 
 	// Create Package objects.
-	impPathPackages := make(map[string]*Package) // map import path to *Package
 	for dirname, files := range pkgFiles {
+		imp := filepath.ToSlash(dirname)
+		if dirname == "." {
+			// top-level package; generate random package name
+			rng := rand.New(rand.NewSource(time.Now().Unix()))
+			imp = fmt.Sprintf("main%05d", rng.Intn(1e5))
+		}
+
 		p := &Package{
-			ImportPath: filepath.ToSlash(dirname),
+			ImportPath: imp,
 			Files:      files,
 		}
 		if p.ImportPath == "main" {
@@ -170,7 +184,11 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		if p.HasInit {
 			app.RootPackages = append(app.RootPackages, p)
 		}
-		impPathPackages[p.ImportPath] = p
+		app.PackageIndex[p.ImportPath] = p
+	}
+
+	if *goPath != "" {
+		addFromGOPATH(app)
 	}
 
 	// Populate dependency lists.
@@ -183,7 +201,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		}
 		p.Dependencies = make([]*Package, 0, len(imports))
 		for path := range imports {
-			pkg, ok := impPathPackages[path]
+			pkg, ok := app.PackageIndex[path]
 			if !ok {
 				// A file declared an import we don't know.
 				// It could be a package from the standard library.
@@ -200,6 +218,47 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 	}
 
 	return app, nil
+}
+
+// addFromGOPATH adds packages from GOPATH that are needed by the app.
+func addFromGOPATH(app *App) {
+	warned := make(map[string]bool)
+	for i := 0; i < len(app.Packages); i++ { // app.Packages is grown during this loop
+		p := app.Packages[i]
+		for _, f := range p.Files {
+			for _, path := range f.ImportPaths {
+				if isStandardPackage(path) || app.PackageIndex[path] != nil {
+					continue
+				}
+				pkg, err := gopathPackage(path)
+				if err != nil {
+					if !warned[path] {
+						log.Printf("Can't find package %q in $GOPATH: %v", path, err)
+						warned[path] = true
+					}
+					continue
+				}
+
+				files := make([]*File, len(pkg.GoFiles))
+				for i, f := range pkg.GoFiles {
+					files[i] = &File{
+						Name:        f,
+						PackageName: pkg.Name,
+						// NOTE: This is inaccurate, but it is sufficient to
+						// record all the package imports for each file.
+						ImportPaths: pkg.Imports,
+					}
+				}
+				p := &Package{
+					ImportPath: path,
+					Files:      files,
+					BaseDir:    pkg.Dir,
+				}
+				app.Packages = append(app.Packages, p)
+				app.PackageIndex[path] = p
+			}
+		}
+	}
 }
 
 // isInit returns whether the given function declaration is a true init function.
@@ -354,10 +413,18 @@ func (c *compLitChecker) Visit(node ast.Node) ast.Visitor {
 	return c
 }
 
+// Cache of standard package status.
+var stdPackageCache = make(map[string]bool)
+
 // isStandardPackage reports whether import path s is a standard package.
 func isStandardPackage(s string) bool {
+	if std, ok := stdPackageCache[s]; ok {
+		return std
+	}
+
 	// Don't consider any import path containing a dot to be a standard package.
 	if strings.Contains(s, ".") {
+		stdPackageCache[s] = false
 		return false
 	}
 
@@ -366,9 +433,24 @@ func isStandardPackage(s string) bool {
 	ctxt.Compiler = "gc"
 	pkg, err := ctxt.Import(s, "/nowhere", build.FindOnly|build.AllowBinary)
 	if err != nil {
+		stdPackageCache[s] = false
 		return false
 	}
-	return pkg.ImportPath != ""
+	std := pkg.ImportPath != ""
+	stdPackageCache[s] = std
+	return std
+}
+
+// gopathPackage imports information about a package in GOPATH.
+func gopathPackage(s string) (*build.Package, error) {
+	ctxt := build.Default
+	ctxt.GOROOT = *goRoot
+	ctxt.GOPATH = *goPath
+	ctxt.BuildTags = append([]string{"appengine"}, ctxt.BuildTags...) // don't affect build.Default
+	ctxt.Compiler = "gc"
+	// Don't use FindOnly or AllowBinary because we want import information
+	// and we require the source files.
+	return ctxt.Import(s, "/nowhere", 0)
 }
 
 // topologicalSort sorts the given slice of *Package in topological order.

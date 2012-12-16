@@ -3,6 +3,16 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.7.4 - November 2012
+=============================
+appengine/log:
+  - Add Query.RequestIDs field.
+appengine/socket:
+  - Support dialing IPv6 addresses.
+  - Implement LocalAddr and RemoteAddr methods.
+Other:
+  - Respect $GOPATH for dev_appserver and appcfg update.
+
 Version 1.7.3 - October 2012
 ============================
 appengine:

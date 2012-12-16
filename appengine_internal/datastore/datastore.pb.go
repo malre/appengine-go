@@ -102,6 +102,42 @@ func (x *Property_Meaning) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type Property_FtsTokenizationOption int32
+
+const (
+	Property_HTML Property_FtsTokenizationOption = 1
+	Property_ATOM Property_FtsTokenizationOption = 2
+)
+
+var Property_FtsTokenizationOption_name = map[int32]string{
+	1: "HTML",
+	2: "ATOM",
+}
+var Property_FtsTokenizationOption_value = map[string]int32{
+	"HTML": 1,
+	"ATOM": 2,
+}
+
+func (x Property_FtsTokenizationOption) Enum() *Property_FtsTokenizationOption {
+	p := new(Property_FtsTokenizationOption)
+	*p = x
+	return p
+}
+func (x Property_FtsTokenizationOption) String() string {
+	return proto.EnumName(Property_FtsTokenizationOption_name, int32(x))
+}
+func (x Property_FtsTokenizationOption) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *Property_FtsTokenizationOption) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(Property_FtsTokenizationOption_value, data, "Property_FtsTokenizationOption")
+	if err != nil {
+		return err
+	}
+	*x = Property_FtsTokenizationOption(value)
+	return nil
+}
+
 type EntityProto_Kind int32
 
 const (
@@ -720,12 +756,15 @@ func (this *PropertyValue_ReferenceValue_PathElement) GetName() string {
 }
 
 type Property struct {
-	Meaning          *Property_Meaning `protobuf:"varint,1,opt,name=meaning,enum=datastore.Property_Meaning,def=0" json:"meaning,omitempty"`
-	MeaningUri       *string           `protobuf:"bytes,2,opt,name=meaning_uri" json:"meaning_uri,omitempty"`
-	Name             *string           `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
-	Value            *PropertyValue    `protobuf:"bytes,5,req,name=value" json:"value,omitempty"`
-	Multiple         *bool             `protobuf:"varint,4,req,name=multiple" json:"multiple,omitempty"`
-	XXX_unrecognized []byte            `json:"-"`
+	Meaning               *Property_Meaning               `protobuf:"varint,1,opt,name=meaning,enum=datastore.Property_Meaning,def=0" json:"meaning,omitempty"`
+	MeaningUri            *string                         `protobuf:"bytes,2,opt,name=meaning_uri" json:"meaning_uri,omitempty"`
+	Name                  *string                         `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
+	Value                 *PropertyValue                  `protobuf:"bytes,5,req,name=value" json:"value,omitempty"`
+	Multiple              *bool                           `protobuf:"varint,4,req,name=multiple" json:"multiple,omitempty"`
+	Searchable            *bool                           `protobuf:"varint,6,opt,name=searchable,def=0" json:"searchable,omitempty"`
+	FtsTokenizationOption *Property_FtsTokenizationOption `protobuf:"varint,8,opt,name=fts_tokenization_option,enum=datastore.Property_FtsTokenizationOption" json:"fts_tokenization_option,omitempty"`
+	Locale                *string                         `protobuf:"bytes,9,opt,name=locale,def=en" json:"locale,omitempty"`
+	XXX_unrecognized      []byte                          `json:"-"`
 }
 
 func (this *Property) Reset()         { *this = Property{} }
@@ -733,6 +772,8 @@ func (this *Property) String() string { return proto.CompactTextString(this) }
 func (*Property) ProtoMessage()       {}
 
 const Default_Property_Meaning Property_Meaning = Property_NO_MEANING
+const Default_Property_Searchable bool = false
+const Default_Property_Locale string = "en"
 
 func (this *Property) GetMeaning() Property_Meaning {
 	if this != nil && this.Meaning != nil {
@@ -767,6 +808,27 @@ func (this *Property) GetMultiple() bool {
 		return *this.Multiple
 	}
 	return false
+}
+
+func (this *Property) GetSearchable() bool {
+	if this != nil && this.Searchable != nil {
+		return *this.Searchable
+	}
+	return Default_Property_Searchable
+}
+
+func (this *Property) GetFtsTokenizationOption() Property_FtsTokenizationOption {
+	if this != nil && this.FtsTokenizationOption != nil {
+		return *this.FtsTokenizationOption
+	}
+	return 0
+}
+
+func (this *Property) GetLocale() string {
+	if this != nil && this.Locale != nil {
+		return *this.Locale
+	}
+	return Default_Property_Locale
 }
 
 type Path struct {
@@ -911,6 +973,7 @@ type EntityProto struct {
 	KindUri          *string           `protobuf:"bytes,5,opt,name=kind_uri" json:"kind_uri,omitempty"`
 	Property         []*Property       `protobuf:"bytes,14,rep,name=property" json:"property,omitempty"`
 	RawProperty      []*Property       `protobuf:"bytes,15,rep,name=raw_property" json:"raw_property,omitempty"`
+	Rank             *int32            `protobuf:"varint,18,opt,name=rank" json:"rank,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
 }
 
@@ -951,6 +1014,13 @@ func (this *EntityProto) GetKindUri() string {
 		return *this.KindUri
 	}
 	return ""
+}
+
+func (this *EntityProto) GetRank() int32 {
+	if this != nil && this.Rank != nil {
+		return *this.Rank
+	}
+	return 0
 }
 
 type CompositeProperty struct {
@@ -2176,6 +2246,7 @@ func (this *CommitResponse_Version) GetVersion() int64 {
 
 func init() {
 	proto.RegisterEnum("datastore.Property_Meaning", Property_Meaning_name, Property_Meaning_value)
+	proto.RegisterEnum("datastore.Property_FtsTokenizationOption", Property_FtsTokenizationOption_name, Property_FtsTokenizationOption_value)
 	proto.RegisterEnum("datastore.EntityProto_Kind", EntityProto_Kind_name, EntityProto_Kind_value)
 	proto.RegisterEnum("datastore.Index_Property_Direction", Index_Property_Direction_name, Index_Property_Direction_value)
 	proto.RegisterEnum("datastore.CompositeIndex_State", CompositeIndex_State_name, CompositeIndex_State_value)

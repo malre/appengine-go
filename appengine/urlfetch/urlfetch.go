@@ -27,15 +27,24 @@ import (
 // this transport and use the Client rather than using this transport
 // directly.
 type Transport struct {
-	Context                       appengine.Context
-	Deadline                      time.Duration // zero means App Engine's default
+	Context  appengine.Context
+	Deadline time.Duration // zero means 5-second default
+
+	// Controls whether the application checks the validity of SSL certificates
+	// over HTTPS connections. A value of false (the default) instructs the
+	// application to send a request to the server only if the certificate is
+	// valid and signed by a trusted certificate authority (CA), and also
+	// includes a hostname that matches the certificate. A value of true
+	// instructs the application to perform no certificate validation.
 	AllowInvalidServerCertificate bool
 }
 
 // Verify statically that *Transport implements http.RoundTripper.
 var _ http.RoundTripper = (*Transport)(nil)
 
-// Client returns an *http.Client using a default urlfetch Transport.
+// Client returns an *http.Client using a default urlfetch Transport. This
+// client will have the default deadline of 5 seconds, and will check the
+// validity of SSL certificates.
 func Client(context appengine.Context) *http.Client {
 	return &http.Client{
 		Transport: &Transport{
@@ -116,7 +125,7 @@ func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err error)
 
 	if t.Deadline != 0 {
 		freq.Deadline = proto.Float64(t.Deadline.Seconds())
-		opts.Deadline = t.Deadline
+		opts.Timeout = t.Deadline
 	}
 
 	for k, vals := range req.Header {

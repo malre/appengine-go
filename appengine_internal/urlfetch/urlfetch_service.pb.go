@@ -89,6 +89,7 @@ const (
 	URLFetchRequest_HEAD   URLFetchRequest_RequestMethod = 3
 	URLFetchRequest_PUT    URLFetchRequest_RequestMethod = 4
 	URLFetchRequest_DELETE URLFetchRequest_RequestMethod = 5
+	URLFetchRequest_PATCH  URLFetchRequest_RequestMethod = 6
 )
 
 var URLFetchRequest_RequestMethod_name = map[int32]string{
@@ -97,6 +98,7 @@ var URLFetchRequest_RequestMethod_name = map[int32]string{
 	3: "HEAD",
 	4: "PUT",
 	5: "DELETE",
+	6: "PATCH",
 }
 var URLFetchRequest_RequestMethod_value = map[string]int32{
 	"GET":    1,
@@ -104,6 +106,7 @@ var URLFetchRequest_RequestMethod_value = map[string]int32{
 	"HEAD":   3,
 	"PUT":    4,
 	"DELETE": 5,
+	"PATCH":  6,
 }
 
 func (x URLFetchRequest_RequestMethod) Enum() *URLFetchRequest_RequestMethod {
