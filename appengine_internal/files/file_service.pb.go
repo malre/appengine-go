@@ -504,6 +504,13 @@ func (this *KeyValues) GetKey() []byte {
 	return nil
 }
 
+func (this *KeyValues) GetValue() [][]byte {
+	if this != nil {
+		return this.Value
+	}
+	return nil
+}
+
 func (this *KeyValues) GetPartial() bool {
 	if this != nil && this.Partial != nil {
 		return *this.Partial
@@ -551,6 +558,13 @@ func (this *CreateRequest) GetFilename() string {
 		return *this.Filename
 	}
 	return ""
+}
+
+func (this *CreateRequest) GetParameters() []*CreateRequest_Parameter {
+	if this != nil {
+		return this.Parameters
+	}
+	return nil
 }
 
 func (this *CreateRequest) GetExpirationTimeSeconds() int64 {
@@ -794,6 +808,13 @@ func (*StatResponse) ProtoMessage()       {}
 
 const Default_StatResponse_MoreFilesFound bool = false
 
+func (this *StatResponse) GetStat() []*FileStat {
+	if this != nil {
+		return this.Stat
+	}
+	return nil
+}
+
 func (this *StatResponse) GetMoreFilesFound() bool {
 	if this != nil && this.MoreFilesFound != nil {
 		return *this.MoreFilesFound
@@ -964,6 +985,13 @@ func (this *ReadKeyValueResponse) Reset()         { *this = ReadKeyValueResponse
 func (this *ReadKeyValueResponse) String() string { return proto.CompactTextString(this) }
 func (*ReadKeyValueResponse) ProtoMessage()       {}
 
+func (this *ReadKeyValueResponse) GetData() []*ReadKeyValueResponse_KeyValue {
+	if this != nil {
+		return this.Data
+	}
+	return nil
+}
+
 func (this *ReadKeyValueResponse) GetNextKey() []byte {
 	if this != nil {
 		return this.NextKey
@@ -1055,6 +1083,13 @@ func (this *ShuffleOutputSpecification) GetFormat() ShuffleEnums_OutputFormat {
 	return Default_ShuffleOutputSpecification_Format
 }
 
+func (this *ShuffleOutputSpecification) GetPath() []string {
+	if this != nil {
+		return this.Path
+	}
+	return nil
+}
+
 type ShuffleRequest struct {
 	ShuffleName      *string                      `protobuf:"bytes,1,req,name=shuffle_name" json:"shuffle_name,omitempty"`
 	Input            []*ShuffleInputSpecification `protobuf:"bytes,2,rep,name=input" json:"input,omitempty"`
@@ -1073,6 +1108,13 @@ func (this *ShuffleRequest) GetShuffleName() string {
 		return *this.ShuffleName
 	}
 	return ""
+}
+
+func (this *ShuffleRequest) GetInput() []*ShuffleInputSpecification {
+	if this != nil {
+		return this.Input
+	}
+	return nil
 }
 
 func (this *ShuffleRequest) GetOutput() *ShuffleOutputSpecification {
@@ -1205,6 +1247,13 @@ func (this *GetCapabilitiesResponse) Reset()         { *this = GetCapabilitiesRe
 func (this *GetCapabilitiesResponse) String() string { return proto.CompactTextString(this) }
 func (*GetCapabilitiesResponse) ProtoMessage()       {}
 
+func (this *GetCapabilitiesResponse) GetFilesystem() []string {
+	if this != nil {
+		return this.Filesystem
+	}
+	return nil
+}
+
 func (this *GetCapabilitiesResponse) GetShuffleAvailable() bool {
 	if this != nil && this.ShuffleAvailable != nil {
 		return *this.ShuffleAvailable
@@ -1308,6 +1357,13 @@ type ListDirResponse struct {
 func (this *ListDirResponse) Reset()         { *this = ListDirResponse{} }
 func (this *ListDirResponse) String() string { return proto.CompactTextString(this) }
 func (*ListDirResponse) ProtoMessage()       {}
+
+func (this *ListDirResponse) GetFilenames() []string {
+	if this != nil {
+		return this.Filenames
+	}
+	return nil
+}
 
 func init() {
 	proto.RegisterEnum("files.FileServiceErrors_ErrorCode", FileServiceErrors_ErrorCode_name, FileServiceErrors_ErrorCode_value)

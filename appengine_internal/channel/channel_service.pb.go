@@ -149,6 +149,13 @@ func (this *ChannelPresenceRequest) Reset()         { *this = ChannelPresenceReq
 func (this *ChannelPresenceRequest) String() string { return proto.CompactTextString(this) }
 func (*ChannelPresenceRequest) ProtoMessage()       {}
 
+func (this *ChannelPresenceRequest) GetApplicationKey() []string {
+	if this != nil {
+		return this.ApplicationKey
+	}
+	return nil
+}
+
 type ChannelPresenceResponse struct {
 	QueryResult      []*ChannelPresenceResponse_QueryResult `protobuf:"bytes,1,rep,name=query_result" json:"query_result,omitempty"`
 	XXX_unrecognized []byte                                 `json:"-"`
@@ -157,6 +164,13 @@ type ChannelPresenceResponse struct {
 func (this *ChannelPresenceResponse) Reset()         { *this = ChannelPresenceResponse{} }
 func (this *ChannelPresenceResponse) String() string { return proto.CompactTextString(this) }
 func (*ChannelPresenceResponse) ProtoMessage()       {}
+
+func (this *ChannelPresenceResponse) GetQueryResult() []*ChannelPresenceResponse_QueryResult {
+	if this != nil {
+		return this.QueryResult
+	}
+	return nil
+}
 
 type ChannelPresenceResponse_QueryResult struct {
 	ApplicationKey   *string                        `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`

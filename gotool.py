@@ -16,7 +16,11 @@ if __name__ == '__main__':
   tool = os.path.basename(__file__)
   bin = os.path.join(GOROOT, 'bin', tool)
   os.environ['GOROOT'] = GOROOT
-  for key in ('GOBIN', 'GOPATH'):
-    if key in os.environ:
-      del os.environ[key]
+  if 'GOBIN' in os.environ:
+    del os.environ['GOBIN']
+
+  # Set a GOPATH if one is not set.
+  if not os.environ.get('GOPATH'):
+    os.environ['GOPATH'] = os.path.join(SDK_BASE, 'gopath')
+
   os.execve(bin, sys.argv, os.environ)

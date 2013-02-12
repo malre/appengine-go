@@ -148,6 +148,27 @@ func (this *MailMessage) GetReplyTo() string {
 	return ""
 }
 
+func (this *MailMessage) GetTo() []string {
+	if this != nil {
+		return this.To
+	}
+	return nil
+}
+
+func (this *MailMessage) GetCc() []string {
+	if this != nil {
+		return this.Cc
+	}
+	return nil
+}
+
+func (this *MailMessage) GetBcc() []string {
+	if this != nil {
+		return this.Bcc
+	}
+	return nil
+}
+
 func (this *MailMessage) GetSubject() string {
 	if this != nil && this.Subject != nil {
 		return *this.Subject
@@ -167,6 +188,20 @@ func (this *MailMessage) GetHtmlBody() string {
 		return *this.HtmlBody
 	}
 	return ""
+}
+
+func (this *MailMessage) GetAttachment() []*MailAttachment {
+	if this != nil {
+		return this.Attachment
+	}
+	return nil
+}
+
+func (this *MailMessage) GetHeader() []*MailHeader {
+	if this != nil {
+		return this.Header
+	}
+	return nil
 }
 
 func init() {

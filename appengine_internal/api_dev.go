@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"sync"
 
+	basepb "appengine_internal/base"
 	"appengine_internal/remote_api"
 	"code.google.com/p/goprotobuf/proto"
 )
@@ -155,7 +156,20 @@ func NewContext(req *http.Request) *context {
 	return &context{req}
 }
 
-func (c *context) Call(service, method string, in, out proto.Message, _ *CallOptions) error {
+func (c *context) Call(service, method string, in, out ProtoMessage, opts *CallOptions) error {
+	if service == "__go__" {
+		if method == "GetNamespace" {
+			out.(*basepb.StringProto).Value = proto.String(c.req.Header.Get("X-AppEngine-Current-Namespace"))
+			return nil
+		}
+		if method == "GetDefaultNamespace" {
+			out.(*basepb.StringProto).Value = proto.String(c.req.Header.Get("X-AppEngine-Default-Namespace"))
+			return nil
+		}
+	}
+	if f, ok := apiOverrides[struct{ service, method string }{service, method}]; ok {
+		return f(in, out, opts)
+	}
 	data, err := proto.Marshal(in)
 	if err != nil {
 		return err

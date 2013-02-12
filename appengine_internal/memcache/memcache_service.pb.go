@@ -51,14 +51,11 @@ func (x *MemcacheShardingStrategy_Enum) UnmarshalJSON(data []byte) error {
 type MemcacheServiceError_ErrorCode int32
 
 const (
-	MemcacheServiceError_OK                                     MemcacheServiceError_ErrorCode = 0
-	MemcacheServiceError_UNSPECIFIED_ERROR                      MemcacheServiceError_ErrorCode = 1
-	MemcacheServiceError_NAMESPACE_NOT_SET                      MemcacheServiceError_ErrorCode = 2
-	MemcacheServiceError_PERMISSION_DENIED                      MemcacheServiceError_ErrorCode = 3
-	MemcacheServiceError_NUM_BACKENDS_UNSPECIFIED               MemcacheServiceError_ErrorCode = 4
-	MemcacheServiceError_MEMCACHE_POOL_HINT_UNSPECIFIED         MemcacheServiceError_ErrorCode = 5
-	MemcacheServiceError_INVALID_VALUE                          MemcacheServiceError_ErrorCode = 6
-	MemcacheServiceError_MEMCACHE_SHARDING_STRATEGY_UNSPECIFIED MemcacheServiceError_ErrorCode = 7
+	MemcacheServiceError_OK                MemcacheServiceError_ErrorCode = 0
+	MemcacheServiceError_UNSPECIFIED_ERROR MemcacheServiceError_ErrorCode = 1
+	MemcacheServiceError_NAMESPACE_NOT_SET MemcacheServiceError_ErrorCode = 2
+	MemcacheServiceError_PERMISSION_DENIED MemcacheServiceError_ErrorCode = 3
+	MemcacheServiceError_INVALID_VALUE     MemcacheServiceError_ErrorCode = 6
 )
 
 var MemcacheServiceError_ErrorCode_name = map[int32]string{
@@ -66,20 +63,14 @@ var MemcacheServiceError_ErrorCode_name = map[int32]string{
 	1: "UNSPECIFIED_ERROR",
 	2: "NAMESPACE_NOT_SET",
 	3: "PERMISSION_DENIED",
-	4: "NUM_BACKENDS_UNSPECIFIED",
-	5: "MEMCACHE_POOL_HINT_UNSPECIFIED",
 	6: "INVALID_VALUE",
-	7: "MEMCACHE_SHARDING_STRATEGY_UNSPECIFIED",
 }
 var MemcacheServiceError_ErrorCode_value = map[string]int32{
-	"OK":                                     0,
-	"UNSPECIFIED_ERROR":                      1,
-	"NAMESPACE_NOT_SET":                      2,
-	"PERMISSION_DENIED":                      3,
-	"NUM_BACKENDS_UNSPECIFIED":               4,
-	"MEMCACHE_POOL_HINT_UNSPECIFIED":         5,
-	"INVALID_VALUE":                          6,
-	"MEMCACHE_SHARDING_STRATEGY_UNSPECIFIED": 7,
+	"OK":                0,
+	"UNSPECIFIED_ERROR": 1,
+	"NAMESPACE_NOT_SET": 2,
+	"PERMISSION_DENIED": 3,
+	"INVALID_VALUE":     6,
 }
 
 func (x MemcacheServiceError_ErrorCode) Enum() *MemcacheServiceError_ErrorCode {
@@ -315,7 +306,7 @@ func (*MemcacheServiceError) ProtoMessage()       {}
 
 type AppOverride struct {
 	AppId                    *string                        `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	NumMemcachegBackends     *int32                         `protobuf:"varint,2,req,name=num_memcacheg_backends" json:"num_memcacheg_backends,omitempty"`
+	NumMemcachegBackends     *int32                         `protobuf:"varint,2,opt,name=num_memcacheg_backends" json:"num_memcacheg_backends,omitempty"`
 	IgnoreShardlock          *bool                          `protobuf:"varint,3,opt,name=ignore_shardlock" json:"ignore_shardlock,omitempty"`
 	MemcachePoolHint         *string                        `protobuf:"bytes,4,opt,name=memcache_pool_hint" json:"memcache_pool_hint,omitempty"`
 	MemcacheShardingStrategy *MemcacheShardingStrategy_Enum `protobuf:"varint,5,opt,name=memcache_sharding_strategy,enum=appengine.MemcacheShardingStrategy_Enum" json:"memcache_sharding_strategy,omitempty"`
@@ -373,6 +364,13 @@ func (this *MemcacheGetRequest) Reset()         { *this = MemcacheGetRequest{} }
 func (this *MemcacheGetRequest) String() string { return proto.CompactTextString(this) }
 func (*MemcacheGetRequest) ProtoMessage()       {}
 
+func (this *MemcacheGetRequest) GetKey() [][]byte {
+	if this != nil {
+		return this.Key
+	}
+	return nil
+}
+
 func (this *MemcacheGetRequest) GetNameSpace() string {
 	if this != nil && this.NameSpace != nil {
 		return *this.NameSpace
@@ -402,6 +400,13 @@ type MemcacheGetResponse struct {
 func (this *MemcacheGetResponse) Reset()         { *this = MemcacheGetResponse{} }
 func (this *MemcacheGetResponse) String() string { return proto.CompactTextString(this) }
 func (*MemcacheGetResponse) ProtoMessage()       {}
+
+func (this *MemcacheGetResponse) GetItem() []*MemcacheGetResponse_Item {
+	if this != nil {
+		return this.Item
+	}
+	return nil
+}
 
 type MemcacheGetResponse_Item struct {
 	Key              []byte  `protobuf:"bytes,2,req,name=key" json:"key,omitempty"`
@@ -458,6 +463,13 @@ type MemcacheSetRequest struct {
 func (this *MemcacheSetRequest) Reset()         { *this = MemcacheSetRequest{} }
 func (this *MemcacheSetRequest) String() string { return proto.CompactTextString(this) }
 func (*MemcacheSetRequest) ProtoMessage()       {}
+
+func (this *MemcacheSetRequest) GetItem() []*MemcacheSetRequest_Item {
+	if this != nil {
+		return this.Item
+	}
+	return nil
+}
 
 func (this *MemcacheSetRequest) GetNameSpace() string {
 	if this != nil && this.NameSpace != nil {
@@ -546,6 +558,13 @@ func (this *MemcacheSetResponse) Reset()         { *this = MemcacheSetResponse{}
 func (this *MemcacheSetResponse) String() string { return proto.CompactTextString(this) }
 func (*MemcacheSetResponse) ProtoMessage()       {}
 
+func (this *MemcacheSetResponse) GetSetStatus() []MemcacheSetResponse_SetStatusCode {
+	if this != nil {
+		return this.SetStatus
+	}
+	return nil
+}
+
 type MemcacheDeleteRequest struct {
 	Item             []*MemcacheDeleteRequest_Item `protobuf:"group,1,rep" json:"item,omitempty"`
 	NameSpace        *string                       `protobuf:"bytes,4,opt,name=name_space" json:"name_space,omitempty"`
@@ -556,6 +575,13 @@ type MemcacheDeleteRequest struct {
 func (this *MemcacheDeleteRequest) Reset()         { *this = MemcacheDeleteRequest{} }
 func (this *MemcacheDeleteRequest) String() string { return proto.CompactTextString(this) }
 func (*MemcacheDeleteRequest) ProtoMessage()       {}
+
+func (this *MemcacheDeleteRequest) GetItem() []*MemcacheDeleteRequest_Item {
+	if this != nil {
+		return this.Item
+	}
+	return nil
+}
 
 func (this *MemcacheDeleteRequest) GetNameSpace() string {
 	if this != nil && this.NameSpace != nil {
@@ -602,6 +628,13 @@ type MemcacheDeleteResponse struct {
 func (this *MemcacheDeleteResponse) Reset()         { *this = MemcacheDeleteResponse{} }
 func (this *MemcacheDeleteResponse) String() string { return proto.CompactTextString(this) }
 func (*MemcacheDeleteResponse) ProtoMessage()       {}
+
+func (this *MemcacheDeleteResponse) GetDeleteStatus() []MemcacheDeleteResponse_DeleteStatusCode {
+	if this != nil {
+		return this.DeleteStatus
+	}
+	return nil
+}
 
 type MemcacheIncrementRequest struct {
 	Key              []byte                              `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
@@ -712,6 +745,13 @@ func (this *MemcacheBatchIncrementRequest) GetNameSpace() string {
 	return ""
 }
 
+func (this *MemcacheBatchIncrementRequest) GetItem() []*MemcacheIncrementRequest {
+	if this != nil {
+		return this.Item
+	}
+	return nil
+}
+
 func (this *MemcacheBatchIncrementRequest) GetOverride() *AppOverride {
 	if this != nil {
 		return this.Override
@@ -727,6 +767,13 @@ type MemcacheBatchIncrementResponse struct {
 func (this *MemcacheBatchIncrementResponse) Reset()         { *this = MemcacheBatchIncrementResponse{} }
 func (this *MemcacheBatchIncrementResponse) String() string { return proto.CompactTextString(this) }
 func (*MemcacheBatchIncrementResponse) ProtoMessage()       {}
+
+func (this *MemcacheBatchIncrementResponse) GetItem() []*MemcacheIncrementResponse {
+	if this != nil {
+		return this.Item
+	}
+	return nil
+}
 
 type MemcacheFlushRequest struct {
 	Override         *AppOverride `protobuf:"bytes,1,opt,name=override" json:"override,omitempty"`
@@ -880,6 +927,13 @@ type MemcacheGrabTailResponse struct {
 func (this *MemcacheGrabTailResponse) Reset()         { *this = MemcacheGrabTailResponse{} }
 func (this *MemcacheGrabTailResponse) String() string { return proto.CompactTextString(this) }
 func (*MemcacheGrabTailResponse) ProtoMessage()       {}
+
+func (this *MemcacheGrabTailResponse) GetItem() []*MemcacheGrabTailResponse_Item {
+	if this != nil {
+		return this.Item
+	}
+	return nil
+}
 
 type MemcacheGrabTailResponse_Item struct {
 	Value []byte  `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`

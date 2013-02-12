@@ -515,6 +515,13 @@ func (this *ImagesTransformRequest) GetImage() *ImageData {
 	return nil
 }
 
+func (this *ImagesTransformRequest) GetTransform() []*Transform {
+	if this != nil {
+		return this.Transform
+	}
+	return nil
+}
+
 func (this *ImagesTransformRequest) GetOutput() *OutputSettings {
 	if this != nil {
 		return this.Output
@@ -654,6 +661,20 @@ func (this *ImagesCompositeRequest) Reset()         { *this = ImagesCompositeReq
 func (this *ImagesCompositeRequest) String() string { return proto.CompactTextString(this) }
 func (*ImagesCompositeRequest) ProtoMessage()       {}
 
+func (this *ImagesCompositeRequest) GetImage() []*ImageData {
+	if this != nil {
+		return this.Image
+	}
+	return nil
+}
+
+func (this *ImagesCompositeRequest) GetOptions() []*CompositeImageOptions {
+	if this != nil {
+		return this.Options
+	}
+	return nil
+}
+
 func (this *ImagesCompositeRequest) GetCanvas() *ImagesCanvas {
 	if this != nil {
 		return this.Canvas
@@ -703,6 +724,27 @@ type ImagesHistogram struct {
 func (this *ImagesHistogram) Reset()         { *this = ImagesHistogram{} }
 func (this *ImagesHistogram) String() string { return proto.CompactTextString(this) }
 func (*ImagesHistogram) ProtoMessage()       {}
+
+func (this *ImagesHistogram) GetRed() []int32 {
+	if this != nil {
+		return this.Red
+	}
+	return nil
+}
+
+func (this *ImagesHistogram) GetGreen() []int32 {
+	if this != nil {
+		return this.Green
+	}
+	return nil
+}
+
+func (this *ImagesHistogram) GetBlue() []int32 {
+	if this != nil {
+		return this.Blue
+	}
+	return nil
+}
 
 type ImagesHistogramResponse struct {
 	Histogram        *ImagesHistogram `protobuf:"bytes,1,req,name=histogram" json:"histogram,omitempty"`

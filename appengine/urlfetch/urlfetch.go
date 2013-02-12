@@ -97,8 +97,9 @@ func (br *bodyReader) Close() error {
 
 // A map of the URL Fetch-accepted methods that take a request body.
 var methodAcceptsRequestBody = map[string]bool{
-	"POST": true,
-	"PUT":  true,
+	"POST":  true,
+	"PUT":   true,
+	"PATCH": true,
 }
 
 // RoundTrip issues a single HTTP request and returns its response. Per the

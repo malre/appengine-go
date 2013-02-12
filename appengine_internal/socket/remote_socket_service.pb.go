@@ -1037,6 +1037,13 @@ func (this *CreateSocketRequest) GetProtocol() CreateSocketRequest_SocketProtoco
 	return 0
 }
 
+func (this *CreateSocketRequest) GetSocketOptions() []*SocketOption {
+	if this != nil {
+		return this.SocketOptions
+	}
+	return nil
+}
+
 func (this *CreateSocketRequest) GetProxyExternalIp() *AddressPort {
 	if this != nil {
 		return this.ProxyExternalIp
@@ -1250,6 +1257,13 @@ func (this *SetSocketOptionsRequest) GetSocketDescriptor() string {
 	return ""
 }
 
+func (this *SetSocketOptionsRequest) GetOptions() []*SocketOption {
+	if this != nil {
+		return this.Options
+	}
+	return nil
+}
+
 type SetSocketOptionsReply struct {
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -1275,6 +1289,13 @@ func (this *GetSocketOptionsRequest) GetSocketDescriptor() string {
 	return ""
 }
 
+func (this *GetSocketOptionsRequest) GetOptions() []*SocketOption {
+	if this != nil {
+		return this.Options
+	}
+	return nil
+}
+
 type GetSocketOptionsReply struct {
 	Options          []*SocketOption `protobuf:"bytes,2,rep,name=options" json:"options,omitempty"`
 	XXX_unrecognized []byte          `json:"-"`
@@ -1283,6 +1304,13 @@ type GetSocketOptionsReply struct {
 func (this *GetSocketOptionsReply) Reset()         { *this = GetSocketOptionsReply{} }
 func (this *GetSocketOptionsReply) String() string { return proto.CompactTextString(this) }
 func (*GetSocketOptionsReply) ProtoMessage()       {}
+
+func (this *GetSocketOptionsReply) GetOptions() []*SocketOption {
+	if this != nil {
+		return this.Options
+	}
+	return nil
+}
 
 type ConnectRequest struct {
 	SocketDescriptor *string      `protobuf:"bytes,1,req,name=socket_descriptor" json:"socket_descriptor,omitempty"`
@@ -1692,6 +1720,13 @@ func (*PollRequest) ProtoMessage()       {}
 
 const Default_PollRequest_TimeoutSeconds float64 = -1
 
+func (this *PollRequest) GetEvents() []*PollEvent {
+	if this != nil {
+		return this.Events
+	}
+	return nil
+}
+
 func (this *PollRequest) GetTimeoutSeconds() float64 {
 	if this != nil && this.TimeoutSeconds != nil {
 		return *this.TimeoutSeconds
@@ -1707,6 +1742,13 @@ type PollReply struct {
 func (this *PollReply) Reset()         { *this = PollReply{} }
 func (this *PollReply) String() string { return proto.CompactTextString(this) }
 func (*PollReply) ProtoMessage()       {}
+
+func (this *PollReply) GetEvents() []*PollEvent {
+	if this != nil {
+		return this.Events
+	}
+	return nil
+}
 
 type ResolveRequest struct {
 	Name             *string                            `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
@@ -1725,6 +1767,13 @@ func (this *ResolveRequest) GetName() string {
 	return ""
 }
 
+func (this *ResolveRequest) GetAddressFamilies() []CreateSocketRequest_SocketFamily {
+	if this != nil {
+		return this.AddressFamilies
+	}
+	return nil
+}
+
 type ResolveReply struct {
 	PackedAddress    [][]byte `protobuf:"bytes,2,rep,name=packed_address" json:"packed_address,omitempty"`
 	CanonicalName    *string  `protobuf:"bytes,3,opt,name=canonical_name" json:"canonical_name,omitempty"`
@@ -1736,11 +1785,25 @@ func (this *ResolveReply) Reset()         { *this = ResolveReply{} }
 func (this *ResolveReply) String() string { return proto.CompactTextString(this) }
 func (*ResolveReply) ProtoMessage()       {}
 
+func (this *ResolveReply) GetPackedAddress() [][]byte {
+	if this != nil {
+		return this.PackedAddress
+	}
+	return nil
+}
+
 func (this *ResolveReply) GetCanonicalName() string {
 	if this != nil && this.CanonicalName != nil {
 		return *this.CanonicalName
 	}
 	return ""
+}
+
+func (this *ResolveReply) GetAliases() []string {
+	if this != nil {
+		return this.Aliases
+	}
+	return nil
 }
 
 func init() {

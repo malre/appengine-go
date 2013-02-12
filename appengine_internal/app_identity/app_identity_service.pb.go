@@ -156,6 +156,13 @@ func (this *GetPublicCertificateForAppResponse) Reset()         { *this = GetPub
 func (this *GetPublicCertificateForAppResponse) String() string { return proto.CompactTextString(this) }
 func (*GetPublicCertificateForAppResponse) ProtoMessage()       {}
 
+func (this *GetPublicCertificateForAppResponse) GetPublicCertificateList() []*PublicCertificate {
+	if this != nil {
+		return this.PublicCertificateList
+	}
+	return nil
+}
+
 func (this *GetPublicCertificateForAppResponse) GetMaxClientCacheTimeInSecond() int64 {
 	if this != nil && this.MaxClientCacheTimeInSecond != nil {
 		return *this.MaxClientCacheTimeInSecond
@@ -196,6 +203,13 @@ type GetAccessTokenRequest struct {
 func (this *GetAccessTokenRequest) Reset()         { *this = GetAccessTokenRequest{} }
 func (this *GetAccessTokenRequest) String() string { return proto.CompactTextString(this) }
 func (*GetAccessTokenRequest) ProtoMessage()       {}
+
+func (this *GetAccessTokenRequest) GetScope() []string {
+	if this != nil {
+		return this.Scope
+	}
+	return nil
+}
 
 func (this *GetAccessTokenRequest) GetServiceAccountId() int64 {
 	if this != nil && this.ServiceAccountId != nil {

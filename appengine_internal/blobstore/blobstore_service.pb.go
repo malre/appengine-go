@@ -142,6 +142,13 @@ func (this *DeleteBlobRequest) Reset()         { *this = DeleteBlobRequest{} }
 func (this *DeleteBlobRequest) String() string { return proto.CompactTextString(this) }
 func (*DeleteBlobRequest) ProtoMessage()       {}
 
+func (this *DeleteBlobRequest) GetBlobKey() []string {
+	if this != nil {
+		return this.BlobKey
+	}
+	return nil
+}
+
 type FetchDataRequest struct {
 	BlobKey          *string `protobuf:"bytes,1,req,name=blob_key" json:"blob_key,omitempty"`
 	StartIndex       *int64  `protobuf:"varint,2,req,name=start_index" json:"start_index,omitempty"`
@@ -247,6 +254,13 @@ func (this *DecodeBlobKeyRequest) Reset()         { *this = DecodeBlobKeyRequest
 func (this *DecodeBlobKeyRequest) String() string { return proto.CompactTextString(this) }
 func (*DecodeBlobKeyRequest) ProtoMessage()       {}
 
+func (this *DecodeBlobKeyRequest) GetBlobKey() []string {
+	if this != nil {
+		return this.BlobKey
+	}
+	return nil
+}
+
 type DecodeBlobKeyResponse struct {
 	Decoded          []string `protobuf:"bytes,1,rep,name=decoded" json:"decoded,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
@@ -255,6 +269,13 @@ type DecodeBlobKeyResponse struct {
 func (this *DecodeBlobKeyResponse) Reset()         { *this = DecodeBlobKeyResponse{} }
 func (this *DecodeBlobKeyResponse) String() string { return proto.CompactTextString(this) }
 func (*DecodeBlobKeyResponse) ProtoMessage()       {}
+
+func (this *DecodeBlobKeyResponse) GetDecoded() []string {
+	if this != nil {
+		return this.Decoded
+	}
+	return nil
+}
 
 type CreateEncodedGoogleStorageKeyRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`

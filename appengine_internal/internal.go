@@ -22,12 +22,24 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"code.google.com/p/goprotobuf/proto"
 )
 
 var (
 	addrHTTP = flag.String("addr_http", "", "net:laddr to listen on for HTTP requests.")
 	addrAPI  = flag.String("addr_api", "", "net:raddr to dial for API requests.")
 )
+
+// ProtoMessage is the same as proto.Message. It is defined here because user
+// code cannot import package proto.
+type ProtoMessage interface {
+	Reset()
+	String() string
+	ProtoMessage()
+}
+
+var _ ProtoMessage = proto.Message(ProtoMessage(nil))
 
 type ServeHTTPFunc func(netw, addr string)
 
@@ -119,16 +131,20 @@ func parseAddr(compAddr string) (net, addr string) {
 type failingTransport struct{}
 
 func (failingTransport) RoundTrip(*http.Request) (*http.Response, error) {
-	return nil, errors.New("http.DefaultClient is not available in App Engine. " +
+	return nil, errors.New("http.DefaultTransport and http.DefaultClient are not available in App Engine. " +
 		"See https://developers.google.com/appengine/docs/go/urlfetch/overview")
 }
 
 func init() {
-	// http.DefaultClient doesn't work in production so break it
+	// http.DefaultTransport doesn't work in production so break it
 	// explicitly so it fails the same way in both dev and prod
 	// (and with a useful error message)
-	http.DefaultClient = &http.Client{Transport: failingTransport{}}
+	http.DefaultTransport = failingTransport{}
 }
+
+// appPackagesInitialized is closed at the start of Main, after all app packages
+// have been initialized
+var appPackagesInitialized = make(chan struct{})
 
 // Main is designed so that the complete generated main.main package is:
 //
@@ -147,6 +163,7 @@ func init() {
 // The "myapp/packageX" packages are expected to register HTTP handlers
 // in their init functions.
 func Main() {
+	close(appPackagesInitialized)
 	// Check flags.
 	flag.Parse()
 	if *addrHTTP == "" || *addrAPI == "" {
@@ -164,4 +181,16 @@ func Main() {
 		log.Panic("appengine: no ServeHTTPFunc registered.")
 	}
 	serveHTTPFunc(httpNet, httpAddr)
+}
+
+// NamespaceMods is a map from API service to a function that will mutate an RPC request to attach a namespace.
+// The function should be prepared to be called on the same message more than once; it should only modify the
+// RPC request the first time.
+var NamespaceMods = make(map[string]func(m proto.Message, namespace string))
+
+// apiOverrides is a map of replacements for the implementation of API RPC calls.
+var apiOverrides = make(map[struct{ service, method string }]func(proto.Message, proto.Message, *CallOptions) error)
+
+func RegisterAPIOverride(service, method string, f func(proto.Message, proto.Message, *CallOptions) error) {
+	apiOverrides[struct{ service, method string }{service, method}] = f
 }

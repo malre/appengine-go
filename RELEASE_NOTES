@@ -3,7 +3,27 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
-Version 1.7.4 - November 2012
+Version 1.7.5 - February 2013
+=============================
+appengine:
+  - Add Namespace function for multitenancy support.
+  ! Make Context's Call method take appengine_internal.ProtoMessage arguments.
+    This is an internal-only method, so should not affect correct applications,
+    but will permit wrapping Context's Call method.
+appengine/conversion:
+  ! Remove this package from the SDK following the decommissioning of the API
+    in 1.7.4.
+appengine/datastore:
+  - Support multitenancy.
+appengine/memcache:
+  - Support multitenancy.
+appengine/taskqueue:
+  - Add DeleteMulti function.
+  - Support multitenancy.
+appengine/xmpp:
+  - Add GetPresenceMulti function.
+
+Version 1.7.4 - December 2012
 =============================
 appengine/log:
   - Add Query.RequestIDs field.

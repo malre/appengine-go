@@ -76,7 +76,7 @@ func (t *transaction) setTransactionField(x interface{}) (err error) {
 	return nil
 }
 
-func (t *transaction) Call(service, method string, in, out proto.Message, opts *appengine_internal.CallOptions) error {
+func (t *transaction) Call(service, method string, in, out appengine_internal.ProtoMessage, opts *appengine_internal.CallOptions) error {
 	if t.finished {
 		return errors.New("datastore: transaction context has expired")
 	}

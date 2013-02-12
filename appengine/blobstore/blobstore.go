@@ -61,6 +61,7 @@ func isErrFieldMismatch(err error) bool {
 // Stat returns the BlobInfo for a provided blobKey. If no blob was found for
 // that key, Stat returns datastore.ErrNoSuchEntity.
 func Stat(c appengine.Context, blobKey appengine.BlobKey) (*BlobInfo, error) {
+	c, _ = appengine.Namespace(c, "") // Blobstore is always in the empty string namespace
 	dskey := datastore.NewKey(c, blobInfoKind, string(blobKey), 0, nil)
 	bi := &BlobInfo{
 		BlobKey: blobKey,
@@ -271,6 +272,7 @@ const creationHandlePrefix = "writable:"
 // then closed, and then its Key method can be called to retrieve the
 // newly-created blob key if there were no errors.
 func Create(c appengine.Context, mimeType string) (*Writer, error) {
+	c, _ = appengine.Namespace(c, "") // Blobstore is always in the empty string namespace
 	if mimeType == "" {
 		mimeType = "application/octet-stream"
 	}

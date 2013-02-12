@@ -17,6 +17,7 @@ Usage:
 package main
 
 import (
+	"crypto/sha1"
 	"errors"
 	"flag"
 	"fmt"
@@ -26,6 +27,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -44,6 +46,7 @@ var (
 	logFile         = flag.String("log_file", "", "If set, a file to write messages to.")
 	pkgDupes        = flag.String("pkg_dupe_whitelist", "", "Comma-separated list of packages that are okay to duplicate.")
 	printExtras     = flag.Bool("print_extras", false, "Whether to skip building and just print extra-app files.")
+	printExtrasHash = flag.Bool("print_extras_hash", false, "Whether to skip building and just print a hash of the extra-app files.")
 	trampoline      = flag.String("trampoline", "", "If set, a binary to invoke tools with.")
 	trampolineFlags = flag.String("trampoline_flags", "", "Comma-separated flags to pass to trampoline.")
 	unsafe          = flag.Bool("unsafe", false, "Permit unsafe packages.")
@@ -107,6 +110,10 @@ func main() {
 
 	if *printExtras {
 		printExtraFiles(os.Stdout, app)
+		return
+	}
+	if *printExtrasHash {
+		printExtraFilesHash(os.Stdout, app)
 		return
 	}
 
@@ -283,11 +290,34 @@ func printExtraFiles(w io.Writer, app *App) {
 			continue // app file
 		}
 		for _, f := range pkg.Files {
-			rel := filepath.Join(filepath.FromSlash(pkg.ImportPath), f.Name)
+			// The app-relative path should always use forward slash.
+			// The code in dev_appserver only deals with those paths.
+			rel := path.Join(pkg.ImportPath, f.Name)
 			dst := filepath.Join(pkg.BaseDir, f.Name)
 			fmt.Fprintf(w, "%s|%s\n", rel, dst)
 		}
 	}
+}
+
+func printExtraFilesHash(w io.Writer, app *App) {
+	// Compute a hash of the extra files information, namely the name and mtime
+	// of all the extra files. This is sufficient information for the dev_appserver
+	// to be able to decide whether a rebuild is necessary based on GOPATH changes.
+	h := sha1.New()
+	for _, pkg := range app.Packages {
+		if pkg.BaseDir == "" {
+			continue // app file
+		}
+		for _, f := range pkg.Files {
+			dst := filepath.Join(pkg.BaseDir, f.Name)
+			fi, err := os.Stat(dst)
+			if err != nil {
+				log.Fatalf("go-app-builder: os.Stat(%q): %v", dst, err)
+			}
+			fmt.Fprintf(h, "%s: %v\n", dst, fi.ModTime())
+		}
+	}
+	fmt.Fprintf(w, "%x", h.Sum(nil))
 }
 
 func toolPath(x string) string {

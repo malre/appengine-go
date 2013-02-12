@@ -169,6 +169,13 @@ func (this *URLFetchRequest) GetUrl() string {
 	return ""
 }
 
+func (this *URLFetchRequest) GetHeader() []*URLFetchRequest_Header {
+	if this != nil {
+		return this.Header
+	}
+	return nil
+}
+
 func (this *URLFetchRequest) GetPayload() []byte {
 	if this != nil {
 		return this.Payload
@@ -253,6 +260,13 @@ func (this *URLFetchResponse) GetStatusCode() int32 {
 		return *this.StatusCode
 	}
 	return 0
+}
+
+func (this *URLFetchResponse) GetHeader() []*URLFetchResponse_Header {
+	if this != nil {
+		return this.Header
+	}
+	return nil
 }
 
 func (this *URLFetchResponse) GetContentWasTruncated() bool {

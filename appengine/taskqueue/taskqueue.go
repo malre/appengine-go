@@ -6,7 +6,7 @@
 Package taskqueue provides a client for App Engine's taskqueue service.
 Using this service, applications may perform work outside a user's request.
 
-A Task may be constucted manually; alternatively, since the most common
+A Task may be constructed manually; alternatively, since the most common
 taskqueue operation is to add a single POST task, NewPOSTTask makes it easy.
 
 	t := taskqueue.NewPOSTTask("/worker", url.Values{
@@ -16,7 +16,7 @@ taskqueue operation is to add a single POST task, NewPOSTTask makes it easy.
 */
 package taskqueue
 
-// TODO: Bulk task deleting, queue management.
+// TODO: Queue management.
 
 import (
 	"errors"
@@ -27,6 +27,7 @@ import (
 
 	"appengine"
 	"appengine_internal"
+	basepb "appengine_internal/base"
 	taskqueue_proto "appengine_internal/taskqueue"
 	"code.google.com/p/goprotobuf/proto"
 )
@@ -141,7 +142,12 @@ func NewPOSTTask(path string, params url.Values) *Task {
 	}
 }
 
-func newAddReq(task *Task, queueName string) (*taskqueue_proto.TaskQueueAddRequest, error) {
+var (
+	currentNamespace = http.CanonicalHeaderKey("X-AppEngine-Current-Namespace")
+	defaultNamespace = http.CanonicalHeaderKey("X-AppEngine-Default-Namespace")
+)
+
+func newAddReq(c appengine.Context, task *Task, queueName string) (*taskqueue_proto.TaskQueueAddRequest, error) {
 	if queueName == "" {
 		queueName = "default"
 	}
@@ -184,6 +190,28 @@ func newAddReq(task *Task, queueName string) (*taskqueue_proto.TaskQueueAddReque
 		if method == "POST" || method == "PUT" {
 			req.Body = task.Payload
 		}
+
+		// Namespace headers.
+		if _, ok := task.Header[currentNamespace]; !ok {
+			// Fetch the current namespace of this request.
+			s := &basepb.StringProto{}
+			c.Call("__go__", "GetNamespace", &basepb.VoidProto{}, s, nil)
+			req.Header = append(req.Header, &taskqueue_proto.TaskQueueAddRequest_Header{
+				Key:   []byte(currentNamespace),
+				Value: []byte(s.GetValue()),
+			})
+		}
+		if _, ok := task.Header[defaultNamespace]; !ok {
+			// Fetch the X-AppEngine-Default-Namespace header of this request.
+			s := &basepb.StringProto{}
+			c.Call("__go__", "GetDefaultNamespace", &basepb.VoidProto{}, s, nil)
+			if ns := s.GetValue(); ns != "" {
+				req.Header = append(req.Header, &taskqueue_proto.TaskQueueAddRequest_Header{
+					Key:   []byte(defaultNamespace),
+					Value: []byte(ns),
+				})
+			}
+		}
 	}
 
 	if task.RetryOptions != nil {
@@ -198,7 +226,7 @@ func newAddReq(task *Task, queueName string) (*taskqueue_proto.TaskQueueAddReque
 // Add returns an equivalent Task with defaults filled in, including setting
 // the task's Name field to the chosen name if the original was empty.
 func Add(c appengine.Context, task *Task, queueName string) (*Task, error) {
-	req, err := newAddReq(task, queueName)
+	req, err := newAddReq(c, task, queueName)
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +253,7 @@ func AddMulti(c appengine.Context, tasks []*Task, queueName string) ([]*Task, er
 	}
 	me, any := make(appengine.MultiError, len(tasks)), false
 	for i, t := range tasks {
-		req.AddRequest[i], me[i] = newAddReq(t, queueName)
+		req.AddRequest[i], me[i] = newAddReq(c, t, queueName)
 		any = any || me[i] != nil
 	}
 	if any {
@@ -262,21 +290,43 @@ func AddMulti(c appengine.Context, tasks []*Task, queueName string) ([]*Task, er
 
 // Delete deletes a task from a named queue.
 func Delete(c appengine.Context, task *Task, queueName string) error {
+	err := DeleteMulti(c, []*Task{task}, queueName)
+	if me, ok := err.(appengine.MultiError); ok {
+		return me[0]
+	}
+	return err
+}
+
+// DeleteMulti deletes multiple tasks from a named queue.
+// If a given task could not be deleted, an appengine.MultiError is returned.
+func DeleteMulti(c appengine.Context, tasks []*Task, queueName string) error {
+	taskNames := make([][]byte, len(tasks))
+	for i, t := range tasks {
+		taskNames[i] = []byte(t.Name)
+	}
 	req := &taskqueue_proto.TaskQueueDeleteRequest{
 		QueueName: []byte(queueName),
-		TaskName:  [][]byte{[]byte(task.Name)},
+		TaskName:  taskNames,
 	}
 	res := &taskqueue_proto.TaskQueueDeleteResponse{}
 	if err := c.Call("taskqueue", "Delete", req, res, nil); err != nil {
 		return err
 	}
-	for _, ec := range res.Result {
+	if a, b := len(req.TaskName), len(res.Result); a != b {
+		return fmt.Errorf("taskqueue: internal error: requested deletion of %d tasks, got %d results", a, b)
+	}
+	me, any := make(appengine.MultiError, len(res.Result)), false
+	for i, ec := range res.Result {
 		if ec != taskqueue_proto.TaskQueueServiceError_OK {
-			return &appengine_internal.APIError{
+			me[i] = &appengine_internal.APIError{
 				Service: "taskqueue",
 				Code:    int32(ec),
 			}
+			any = true
 		}
+	}
+	if any {
+		return me
 	}
 	return nil
 }
@@ -290,7 +340,10 @@ func lease(c appengine.Context, maxTasks int, queueName string, leaseTime int, g
 		Tag:          tag,
 	}
 	res := &taskqueue_proto.TaskQueueQueryAndOwnTasksResponse{}
-	if err := c.Call("taskqueue", "QueryAndOwnTasks", req, res, nil); err != nil {
+	callOpts := &appengine_internal.CallOptions{
+		Timeout: 10 * time.Second,
+	}
+	if err := c.Call("taskqueue", "QueryAndOwnTasks", req, res, callOpts); err != nil {
 		return nil, err
 	}
 	tasks := make([]*Task, len(res.Task))
@@ -373,7 +426,10 @@ func QueueStats(c appengine.Context, queueNames []string, maxTasks int) ([]Queue
 		req.MaxNumTasks = proto.Int32(int32(maxTasks))
 	}
 	res := &taskqueue_proto.TaskQueueFetchQueueStatsResponse{}
-	if err := c.Call("taskqueue", "FetchQueueStats", req, res, nil); err != nil {
+	callOpts := &appengine_internal.CallOptions{
+		Timeout: 10 * time.Second,
+	}
+	if err := c.Call("taskqueue", "FetchQueueStats", req, res, callOpts); err != nil {
 		return nil, err
 	}
 	qs := make([]QueueStatistics, len(res.Queuestats))

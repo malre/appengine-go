@@ -100,6 +100,13 @@ func (this *UserAppLogGroup) Reset()         { *this = UserAppLogGroup{} }
 func (this *UserAppLogGroup) String() string { return proto.CompactTextString(this) }
 func (*UserAppLogGroup) ProtoMessage()       {}
 
+func (this *UserAppLogGroup) GetLogLine() []*UserAppLogLine {
+	if this != nil {
+		return this.LogLine
+	}
+	return nil
+}
+
 type FlushRequest struct {
 	Logs             []byte `protobuf:"bytes,1,opt,name=logs" json:"logs,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
@@ -182,6 +189,7 @@ func (this *LogLine) GetLogMessage() string {
 
 type RequestLog struct {
 	AppId                   *string    `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
+	ServerId                *string    `protobuf:"bytes,37,opt,name=server_id,def=default" json:"server_id,omitempty"`
 	VersionId               *string    `protobuf:"bytes,2,req,name=version_id" json:"version_id,omitempty"`
 	RequestId               []byte     `protobuf:"bytes,3,req,name=request_id" json:"request_id,omitempty"`
 	Offset                  *LogOffset `protobuf:"bytes,35,opt,name=offset" json:"offset,omitempty"`
@@ -224,6 +232,7 @@ func (this *RequestLog) Reset()         { *this = RequestLog{} }
 func (this *RequestLog) String() string { return proto.CompactTextString(this) }
 func (*RequestLog) ProtoMessage()       {}
 
+const Default_RequestLog_ServerId string = "default"
 const Default_RequestLog_ReplicaIndex int32 = -1
 const Default_RequestLog_Finished bool = true
 
@@ -232,6 +241,13 @@ func (this *RequestLog) GetAppId() string {
 		return *this.AppId
 	}
 	return ""
+}
+
+func (this *RequestLog) GetServerId() string {
+	if this != nil && this.ServerId != nil {
+		return *this.ServerId
+	}
+	return Default_RequestLog_ServerId
 }
 
 func (this *RequestLog) GetVersionId() string {
@@ -430,6 +446,13 @@ func (this *RequestLog) GetCloneKey() []byte {
 	return nil
 }
 
+func (this *RequestLog) GetLine() []*LogLine {
+	if this != nil {
+		return this.Line
+	}
+	return nil
+}
+
 func (this *RequestLog) GetLinesIncomplete() bool {
 	if this != nil && this.LinesIncomplete != nil {
 		return *this.LinesIncomplete
@@ -472,26 +495,53 @@ func (this *RequestLog) GetServerName() []byte {
 	return nil
 }
 
+type LogServerVersion struct {
+	ServerId         *string `protobuf:"bytes,1,opt,name=server_id,def=default" json:"server_id,omitempty"`
+	VersionId        *string `protobuf:"bytes,2,opt,name=version_id" json:"version_id,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (this *LogServerVersion) Reset()         { *this = LogServerVersion{} }
+func (this *LogServerVersion) String() string { return proto.CompactTextString(this) }
+func (*LogServerVersion) ProtoMessage()       {}
+
+const Default_LogServerVersion_ServerId string = "default"
+
+func (this *LogServerVersion) GetServerId() string {
+	if this != nil && this.ServerId != nil {
+		return *this.ServerId
+	}
+	return Default_LogServerVersion_ServerId
+}
+
+func (this *LogServerVersion) GetVersionId() string {
+	if this != nil && this.VersionId != nil {
+		return *this.VersionId
+	}
+	return ""
+}
+
 type LogReadRequest struct {
-	AppId             *string    `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	VersionId         []string   `protobuf:"bytes,2,rep,name=version_id" json:"version_id,omitempty"`
-	StartTime         *int64     `protobuf:"varint,3,opt,name=start_time" json:"start_time,omitempty"`
-	EndTime           *int64     `protobuf:"varint,4,opt,name=end_time" json:"end_time,omitempty"`
-	Offset            *LogOffset `protobuf:"bytes,5,opt,name=offset" json:"offset,omitempty"`
-	RequestId         [][]byte   `protobuf:"bytes,6,rep,name=request_id" json:"request_id,omitempty"`
-	MinimumLogLevel   *int32     `protobuf:"varint,7,opt,name=minimum_log_level" json:"minimum_log_level,omitempty"`
-	IncludeIncomplete *bool      `protobuf:"varint,8,opt,name=include_incomplete" json:"include_incomplete,omitempty"`
-	Count             *int64     `protobuf:"varint,9,opt,name=count" json:"count,omitempty"`
-	CombinedLogRegex  *string    `protobuf:"bytes,14,opt,name=combined_log_regex" json:"combined_log_regex,omitempty"`
-	HostRegex         *string    `protobuf:"bytes,15,opt,name=host_regex" json:"host_regex,omitempty"`
-	ReplicaIndex      *int32     `protobuf:"varint,16,opt,name=replica_index" json:"replica_index,omitempty"`
-	IncludeAppLogs    *bool      `protobuf:"varint,10,opt,name=include_app_logs" json:"include_app_logs,omitempty"`
-	AppLogsPerRequest *int32     `protobuf:"varint,17,opt,name=app_logs_per_request" json:"app_logs_per_request,omitempty"`
-	IncludeHost       *bool      `protobuf:"varint,11,opt,name=include_host" json:"include_host,omitempty"`
-	IncludeAll        *bool      `protobuf:"varint,12,opt,name=include_all" json:"include_all,omitempty"`
-	CacheIterator     *bool      `protobuf:"varint,13,opt,name=cache_iterator" json:"cache_iterator,omitempty"`
-	NumShards         *int32     `protobuf:"varint,18,opt,name=num_shards" json:"num_shards,omitempty"`
-	XXX_unrecognized  []byte     `json:"-"`
+	AppId             *string             `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
+	VersionId         []string            `protobuf:"bytes,2,rep,name=version_id" json:"version_id,omitempty"`
+	ServerVersion     []*LogServerVersion `protobuf:"bytes,19,rep,name=server_version" json:"server_version,omitempty"`
+	StartTime         *int64              `protobuf:"varint,3,opt,name=start_time" json:"start_time,omitempty"`
+	EndTime           *int64              `protobuf:"varint,4,opt,name=end_time" json:"end_time,omitempty"`
+	Offset            *LogOffset          `protobuf:"bytes,5,opt,name=offset" json:"offset,omitempty"`
+	RequestId         [][]byte            `protobuf:"bytes,6,rep,name=request_id" json:"request_id,omitempty"`
+	MinimumLogLevel   *int32              `protobuf:"varint,7,opt,name=minimum_log_level" json:"minimum_log_level,omitempty"`
+	IncludeIncomplete *bool               `protobuf:"varint,8,opt,name=include_incomplete" json:"include_incomplete,omitempty"`
+	Count             *int64              `protobuf:"varint,9,opt,name=count" json:"count,omitempty"`
+	CombinedLogRegex  *string             `protobuf:"bytes,14,opt,name=combined_log_regex" json:"combined_log_regex,omitempty"`
+	HostRegex         *string             `protobuf:"bytes,15,opt,name=host_regex" json:"host_regex,omitempty"`
+	ReplicaIndex      *int32              `protobuf:"varint,16,opt,name=replica_index" json:"replica_index,omitempty"`
+	IncludeAppLogs    *bool               `protobuf:"varint,10,opt,name=include_app_logs" json:"include_app_logs,omitempty"`
+	AppLogsPerRequest *int32              `protobuf:"varint,17,opt,name=app_logs_per_request" json:"app_logs_per_request,omitempty"`
+	IncludeHost       *bool               `protobuf:"varint,11,opt,name=include_host" json:"include_host,omitempty"`
+	IncludeAll        *bool               `protobuf:"varint,12,opt,name=include_all" json:"include_all,omitempty"`
+	CacheIterator     *bool               `protobuf:"varint,13,opt,name=cache_iterator" json:"cache_iterator,omitempty"`
+	NumShards         *int32              `protobuf:"varint,18,opt,name=num_shards" json:"num_shards,omitempty"`
+	XXX_unrecognized  []byte              `json:"-"`
 }
 
 func (this *LogReadRequest) Reset()         { *this = LogReadRequest{} }
@@ -503,6 +553,20 @@ func (this *LogReadRequest) GetAppId() string {
 		return *this.AppId
 	}
 	return ""
+}
+
+func (this *LogReadRequest) GetVersionId() []string {
+	if this != nil {
+		return this.VersionId
+	}
+	return nil
+}
+
+func (this *LogReadRequest) GetServerVersion() []*LogServerVersion {
+	if this != nil {
+		return this.ServerVersion
+	}
+	return nil
 }
 
 func (this *LogReadRequest) GetStartTime() int64 {
@@ -522,6 +586,13 @@ func (this *LogReadRequest) GetEndTime() int64 {
 func (this *LogReadRequest) GetOffset() *LogOffset {
 	if this != nil {
 		return this.Offset
+	}
+	return nil
+}
+
+func (this *LogReadRequest) GetRequestId() [][]byte {
+	if this != nil {
+		return this.RequestId
 	}
 	return nil
 }
@@ -621,6 +692,13 @@ func (this *LogReadResponse) Reset()         { *this = LogReadResponse{} }
 func (this *LogReadResponse) String() string { return proto.CompactTextString(this) }
 func (*LogReadResponse) ProtoMessage()       {}
 
+func (this *LogReadResponse) GetLog() []*RequestLog {
+	if this != nil {
+		return this.Log
+	}
+	return nil
+}
+
 func (this *LogReadResponse) GetOffset() *LogOffset {
 	if this != nil {
 		return this.Offset
@@ -716,6 +794,13 @@ func (this *LogUsageRequest) GetAppId() string {
 	return ""
 }
 
+func (this *LogUsageRequest) GetVersionId() []string {
+	if this != nil {
+		return this.VersionId
+	}
+	return nil
+}
+
 func (this *LogUsageRequest) GetStartTime() int32 {
 	if this != nil && this.StartTime != nil {
 		return *this.StartTime
@@ -767,6 +852,13 @@ type LogUsageResponse struct {
 func (this *LogUsageResponse) Reset()         { *this = LogUsageResponse{} }
 func (this *LogUsageResponse) String() string { return proto.CompactTextString(this) }
 func (*LogUsageResponse) ProtoMessage()       {}
+
+func (this *LogUsageResponse) GetUsage() []*LogUsageRecord {
+	if this != nil {
+		return this.Usage
+	}
+	return nil
+}
 
 func (this *LogUsageResponse) GetSummary() *LogUsageRecord {
 	if this != nil {

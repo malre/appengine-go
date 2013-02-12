@@ -109,6 +109,13 @@ func (this *CapabilityConfigList) Reset()         { *this = CapabilityConfigList
 func (this *CapabilityConfigList) String() string { return proto.CompactTextString(this) }
 func (*CapabilityConfigList) ProtoMessage()       {}
 
+func (this *CapabilityConfigList) GetConfig() []*CapabilityConfig {
+	if this != nil {
+		return this.Config
+	}
+	return nil
+}
+
 func (this *CapabilityConfigList) GetDefaultConfig() *CapabilityConfig {
 	if this != nil {
 		return this.DefaultConfig
@@ -200,6 +207,20 @@ func (this *IsEnabledRequest) GetPackage() string {
 	return ""
 }
 
+func (this *IsEnabledRequest) GetCapability() []string {
+	if this != nil {
+		return this.Capability
+	}
+	return nil
+}
+
+func (this *IsEnabledRequest) GetCall() []string {
+	if this != nil {
+		return this.Call
+	}
+	return nil
+}
+
 type IsEnabledResponse struct {
 	SummaryStatus      *IsEnabledResponse_SummaryStatus `protobuf:"varint,1,req,name=summary_status,enum=appengine.IsEnabledResponse_SummaryStatus" json:"summary_status,omitempty"`
 	TimeUntilScheduled *int64                           `protobuf:"varint,2,opt,name=time_until_scheduled" json:"time_until_scheduled,omitempty"`
@@ -223,6 +244,13 @@ func (this *IsEnabledResponse) GetTimeUntilScheduled() int64 {
 		return *this.TimeUntilScheduled
 	}
 	return 0
+}
+
+func (this *IsEnabledResponse) GetConfig() []*CapabilityConfig {
+	if this != nil {
+		return this.Config
+	}
+	return nil
 }
 
 func init() {

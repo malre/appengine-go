@@ -255,6 +255,42 @@ func (x *CompositeIndex_State) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type Snapshot_Status int32
+
+const (
+	Snapshot_INACTIVE Snapshot_Status = 0
+	Snapshot_ACTIVE   Snapshot_Status = 1
+)
+
+var Snapshot_Status_name = map[int32]string{
+	0: "INACTIVE",
+	1: "ACTIVE",
+}
+var Snapshot_Status_value = map[string]int32{
+	"INACTIVE": 0,
+	"ACTIVE":   1,
+}
+
+func (x Snapshot_Status) Enum() *Snapshot_Status {
+	p := new(Snapshot_Status)
+	*p = x
+	return p
+}
+func (x Snapshot_Status) String() string {
+	return proto.EnumName(Snapshot_Status_name, int32(x))
+}
+func (x Snapshot_Status) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *Snapshot_Status) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(Snapshot_Status_value, data, "Snapshot_Status")
+	if err != nil {
+		return err
+	}
+	*x = Snapshot_Status(value)
+	return nil
+}
+
 type Query_Hint int32
 
 const (
@@ -724,6 +760,13 @@ func (this *PropertyValue_ReferenceValue) GetNameSpace() string {
 	return ""
 }
 
+func (this *PropertyValue_ReferenceValue) GetPathelement() []*PropertyValue_ReferenceValue_PathElement {
+	if this != nil {
+		return this.Pathelement
+	}
+	return nil
+}
+
 type PropertyValue_ReferenceValue_PathElement struct {
 	Type *string `protobuf:"bytes,15,req,name=type" json:"type,omitempty"`
 	Id   *int64  `protobuf:"varint,16,opt,name=id" json:"id,omitempty"`
@@ -839,6 +882,13 @@ type Path struct {
 func (this *Path) Reset()         { *this = Path{} }
 func (this *Path) String() string { return proto.CompactTextString(this) }
 func (*Path) ProtoMessage()       {}
+
+func (this *Path) GetElement() []*Path_Element {
+	if this != nil {
+		return this.Element
+	}
+	return nil
+}
 
 type Path_Element struct {
 	Type *string `protobuf:"bytes,2,req,name=type" json:"type,omitempty"`
@@ -1016,6 +1066,20 @@ func (this *EntityProto) GetKindUri() string {
 	return ""
 }
 
+func (this *EntityProto) GetProperty() []*Property {
+	if this != nil {
+		return this.Property
+	}
+	return nil
+}
+
+func (this *EntityProto) GetRawProperty() []*Property {
+	if this != nil {
+		return this.RawProperty
+	}
+	return nil
+}
+
 func (this *EntityProto) GetRank() int32 {
 	if this != nil && this.Rank != nil {
 		return *this.Rank
@@ -1038,6 +1102,13 @@ func (this *CompositeProperty) GetIndexId() int64 {
 		return *this.IndexId
 	}
 	return 0
+}
+
+func (this *CompositeProperty) GetValue() []string {
+	if this != nil {
+		return this.Value
+	}
+	return nil
 }
 
 type Index struct {
@@ -1063,6 +1134,13 @@ func (this *Index) GetAncestor() bool {
 		return *this.Ancestor
 	}
 	return false
+}
+
+func (this *Index) GetProperty() []*Index_Property {
+	if this != nil {
+		return this.Property
+	}
+	return nil
 }
 
 type Index_Property struct {
@@ -1138,6 +1216,22 @@ func (this *CompositeIndex) GetOnlyUseIfRequired() bool {
 	return Default_CompositeIndex_OnlyUseIfRequired
 }
 
+type Snapshot struct {
+	Ts               *int64 `protobuf:"varint,1,req,name=ts" json:"ts,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (this *Snapshot) Reset()         { *this = Snapshot{} }
+func (this *Snapshot) String() string { return proto.CompactTextString(this) }
+func (*Snapshot) ProtoMessage()       {}
+
+func (this *Snapshot) GetTs() int64 {
+	if this != nil && this.Ts != nil {
+		return *this.Ts
+	}
+	return 0
+}
+
 type Transaction struct {
 	Handle           *uint64 `protobuf:"fixed64,1,req,name=handle" json:"handle,omitempty"`
 	App              *string `protobuf:"bytes,2,req,name=app" json:"app,omitempty"`
@@ -1173,32 +1267,32 @@ func (this *Transaction) GetMarkChanges() bool {
 }
 
 type Query struct {
-	App                     *string           `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
-	NameSpace               *string           `protobuf:"bytes,29,opt,name=name_space" json:"name_space,omitempty"`
-	Kind                    *string           `protobuf:"bytes,3,opt,name=kind" json:"kind,omitempty"`
-	Ancestor                *Reference        `protobuf:"bytes,17,opt,name=ancestor" json:"ancestor,omitempty"`
-	Filter                  []*Query_Filter   `protobuf:"group,4,rep" json:"filter,omitempty"`
-	SearchQuery             *string           `protobuf:"bytes,8,opt,name=search_query" json:"search_query,omitempty"`
-	Order                   []*Query_Order    `protobuf:"group,9,rep" json:"order,omitempty"`
-	Hint                    *Query_Hint       `protobuf:"varint,18,opt,name=hint,enum=datastore.Query_Hint" json:"hint,omitempty"`
-	Count                   *int32            `protobuf:"varint,23,opt,name=count" json:"count,omitempty"`
-	Offset                  *int32            `protobuf:"varint,12,opt,name=offset,def=0" json:"offset,omitempty"`
-	Limit                   *int32            `protobuf:"varint,16,opt,name=limit" json:"limit,omitempty"`
-	CompiledCursor          *CompiledCursor   `protobuf:"bytes,30,opt,name=compiled_cursor" json:"compiled_cursor,omitempty"`
-	EndCompiledCursor       *CompiledCursor   `protobuf:"bytes,31,opt,name=end_compiled_cursor" json:"end_compiled_cursor,omitempty"`
-	CompositeIndex          []*CompositeIndex `protobuf:"bytes,19,rep,name=composite_index" json:"composite_index,omitempty"`
-	RequirePerfectPlan      *bool             `protobuf:"varint,20,opt,name=require_perfect_plan,def=0" json:"require_perfect_plan,omitempty"`
-	KeysOnly                *bool             `protobuf:"varint,21,opt,name=keys_only,def=0" json:"keys_only,omitempty"`
-	Transaction             *Transaction      `protobuf:"bytes,22,opt,name=transaction" json:"transaction,omitempty"`
-	Compile                 *bool             `protobuf:"varint,25,opt,name=compile,def=0" json:"compile,omitempty"`
-	FailoverMs              *int64            `protobuf:"varint,26,opt,name=failover_ms" json:"failover_ms,omitempty"`
-	Strong                  *bool             `protobuf:"varint,32,opt,name=strong" json:"strong,omitempty"`
-	PropertyName            []string          `protobuf:"bytes,33,rep,name=property_name" json:"property_name,omitempty"`
-	GroupByPropertyName     []string          `protobuf:"bytes,34,rep,name=group_by_property_name" json:"group_by_property_name,omitempty"`
-	Distinct                *bool             `protobuf:"varint,24,opt,name=distinct" json:"distinct,omitempty"`
-	MinSafeTimeMicroseconds *int64            `protobuf:"varint,35,opt,name=min_safe_time_microseconds" json:"min_safe_time_microseconds,omitempty"`
-	SafeReplicaName         []string          `protobuf:"bytes,36,rep,name=safe_replica_name" json:"safe_replica_name,omitempty"`
-	XXX_unrecognized        []byte            `json:"-"`
+	App                 *string           `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
+	NameSpace           *string           `protobuf:"bytes,29,opt,name=name_space" json:"name_space,omitempty"`
+	Kind                *string           `protobuf:"bytes,3,opt,name=kind" json:"kind,omitempty"`
+	Ancestor            *Reference        `protobuf:"bytes,17,opt,name=ancestor" json:"ancestor,omitempty"`
+	Filter              []*Query_Filter   `protobuf:"group,4,rep" json:"filter,omitempty"`
+	SearchQuery         *string           `protobuf:"bytes,8,opt,name=search_query" json:"search_query,omitempty"`
+	Order               []*Query_Order    `protobuf:"group,9,rep" json:"order,omitempty"`
+	Hint                *Query_Hint       `protobuf:"varint,18,opt,name=hint,enum=datastore.Query_Hint" json:"hint,omitempty"`
+	Count               *int32            `protobuf:"varint,23,opt,name=count" json:"count,omitempty"`
+	Offset              *int32            `protobuf:"varint,12,opt,name=offset,def=0" json:"offset,omitempty"`
+	Limit               *int32            `protobuf:"varint,16,opt,name=limit" json:"limit,omitempty"`
+	CompiledCursor      *CompiledCursor   `protobuf:"bytes,30,opt,name=compiled_cursor" json:"compiled_cursor,omitempty"`
+	EndCompiledCursor   *CompiledCursor   `protobuf:"bytes,31,opt,name=end_compiled_cursor" json:"end_compiled_cursor,omitempty"`
+	CompositeIndex      []*CompositeIndex `protobuf:"bytes,19,rep,name=composite_index" json:"composite_index,omitempty"`
+	RequirePerfectPlan  *bool             `protobuf:"varint,20,opt,name=require_perfect_plan,def=0" json:"require_perfect_plan,omitempty"`
+	KeysOnly            *bool             `protobuf:"varint,21,opt,name=keys_only,def=0" json:"keys_only,omitempty"`
+	Transaction         *Transaction      `protobuf:"bytes,22,opt,name=transaction" json:"transaction,omitempty"`
+	Compile             *bool             `protobuf:"varint,25,opt,name=compile,def=0" json:"compile,omitempty"`
+	FailoverMs          *int64            `protobuf:"varint,26,opt,name=failover_ms" json:"failover_ms,omitempty"`
+	Strong              *bool             `protobuf:"varint,32,opt,name=strong" json:"strong,omitempty"`
+	PropertyName        []string          `protobuf:"bytes,33,rep,name=property_name" json:"property_name,omitempty"`
+	GroupByPropertyName []string          `protobuf:"bytes,34,rep,name=group_by_property_name" json:"group_by_property_name,omitempty"`
+	Distinct            *bool             `protobuf:"varint,24,opt,name=distinct" json:"distinct,omitempty"`
+	MinSafeTimeSeconds  *int64            `protobuf:"varint,35,opt,name=min_safe_time_seconds" json:"min_safe_time_seconds,omitempty"`
+	SafeReplicaName     []string          `protobuf:"bytes,36,rep,name=safe_replica_name" json:"safe_replica_name,omitempty"`
+	XXX_unrecognized    []byte            `json:"-"`
 }
 
 func (this *Query) Reset()         { *this = Query{} }
@@ -1238,11 +1332,25 @@ func (this *Query) GetAncestor() *Reference {
 	return nil
 }
 
+func (this *Query) GetFilter() []*Query_Filter {
+	if this != nil {
+		return this.Filter
+	}
+	return nil
+}
+
 func (this *Query) GetSearchQuery() string {
 	if this != nil && this.SearchQuery != nil {
 		return *this.SearchQuery
 	}
 	return ""
+}
+
+func (this *Query) GetOrder() []*Query_Order {
+	if this != nil {
+		return this.Order
+	}
+	return nil
 }
 
 func (this *Query) GetHint() Query_Hint {
@@ -1283,6 +1391,13 @@ func (this *Query) GetCompiledCursor() *CompiledCursor {
 func (this *Query) GetEndCompiledCursor() *CompiledCursor {
 	if this != nil {
 		return this.EndCompiledCursor
+	}
+	return nil
+}
+
+func (this *Query) GetCompositeIndex() []*CompositeIndex {
+	if this != nil {
+		return this.CompositeIndex
 	}
 	return nil
 }
@@ -1329,6 +1444,20 @@ func (this *Query) GetStrong() bool {
 	return false
 }
 
+func (this *Query) GetPropertyName() []string {
+	if this != nil {
+		return this.PropertyName
+	}
+	return nil
+}
+
+func (this *Query) GetGroupByPropertyName() []string {
+	if this != nil {
+		return this.GroupByPropertyName
+	}
+	return nil
+}
+
 func (this *Query) GetDistinct() bool {
 	if this != nil && this.Distinct != nil {
 		return *this.Distinct
@@ -1336,11 +1465,18 @@ func (this *Query) GetDistinct() bool {
 	return false
 }
 
-func (this *Query) GetMinSafeTimeMicroseconds() int64 {
-	if this != nil && this.MinSafeTimeMicroseconds != nil {
-		return *this.MinSafeTimeMicroseconds
+func (this *Query) GetMinSafeTimeSeconds() int64 {
+	if this != nil && this.MinSafeTimeSeconds != nil {
+		return *this.MinSafeTimeSeconds
 	}
 	return 0
+}
+
+func (this *Query) GetSafeReplicaName() []string {
+	if this != nil {
+		return this.SafeReplicaName
+	}
+	return nil
 }
 
 type Query_Filter struct {
@@ -1355,6 +1491,13 @@ func (this *Query_Filter) GetOp() Query_Filter_Operator {
 		return *this.Op
 	}
 	return 0
+}
+
+func (this *Query_Filter) GetProperty() []*Property {
+	if this != nil {
+		return this.Property
+	}
+	return nil
 }
 
 type Query_Order struct {
@@ -1406,6 +1549,13 @@ func (this *CompiledQuery) GetPrimaryscan() *CompiledQuery_PrimaryScan {
 	return nil
 }
 
+func (this *CompiledQuery) GetMergejoinscan() []*CompiledQuery_MergeJoinScan {
+	if this != nil {
+		return this.Mergejoinscan
+	}
+	return nil
+}
+
 func (this *CompiledQuery) GetIndexDef() *Index {
 	if this != nil {
 		return this.IndexDef
@@ -1432,6 +1582,13 @@ func (this *CompiledQuery) GetKeysOnly() bool {
 		return *this.KeysOnly
 	}
 	return false
+}
+
+func (this *CompiledQuery) GetPropertyName() []string {
+	if this != nil {
+		return this.PropertyName
+	}
+	return nil
 }
 
 func (this *CompiledQuery) GetDistinctInfixSize() int32 {
@@ -1496,6 +1653,20 @@ func (this *CompiledQuery_PrimaryScan) GetEndInclusive() bool {
 	return false
 }
 
+func (this *CompiledQuery_PrimaryScan) GetStartPostfixValue() []string {
+	if this != nil {
+		return this.StartPostfixValue
+	}
+	return nil
+}
+
+func (this *CompiledQuery_PrimaryScan) GetEndPostfixValue() []string {
+	if this != nil {
+		return this.EndPostfixValue
+	}
+	return nil
+}
+
 func (this *CompiledQuery_PrimaryScan) GetEndUnappliedLogTimestampUs() int64 {
 	if this != nil && this.EndUnappliedLogTimestampUs != nil {
 		return *this.EndUnappliedLogTimestampUs
@@ -1518,6 +1689,13 @@ func (this *CompiledQuery_MergeJoinScan) GetIndexName() string {
 		return *this.IndexName
 	}
 	return ""
+}
+
+func (this *CompiledQuery_MergeJoinScan) GetPrefixValue() []string {
+	if this != nil {
+		return this.PrefixValue
+	}
+	return nil
 }
 
 func (this *CompiledQuery_MergeJoinScan) GetValuePrefix() bool {
@@ -1575,6 +1753,13 @@ func (this *CompiledCursor) GetMultiqueryIndex() int32 {
 	return 0
 }
 
+func (this *CompiledCursor) GetPosition() []*CompiledCursor_Position {
+	if this != nil {
+		return this.Position
+	}
+	return nil
+}
+
 type CompiledCursor_Position struct {
 	StartKey       *string                               `protobuf:"bytes,27,opt,name=start_key" json:"start_key,omitempty"`
 	Indexvalue     []*CompiledCursor_Position_IndexValue `protobuf:"group,29,rep,name=IndexValue" json:"indexvalue,omitempty"`
@@ -1591,6 +1776,13 @@ func (this *CompiledCursor_Position) GetStartKey() string {
 		return *this.StartKey
 	}
 	return ""
+}
+
+func (this *CompiledCursor_Position) GetIndexvalue() []*CompiledCursor_Position_IndexValue {
+	if this != nil {
+		return this.Indexvalue
+	}
+	return nil
 }
 
 func (this *CompiledCursor_Position) GetKey() *Reference {
@@ -1734,12 +1926,22 @@ type GetRequest struct {
 	Transaction      *Transaction `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
 	FailoverMs       *int64       `protobuf:"varint,3,opt,name=failover_ms" json:"failover_ms,omitempty"`
 	Strong           *bool        `protobuf:"varint,4,opt,name=strong" json:"strong,omitempty"`
+	AllowDeferred    *bool        `protobuf:"varint,5,opt,name=allow_deferred,def=0" json:"allow_deferred,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *GetRequest) Reset()         { *this = GetRequest{} }
 func (this *GetRequest) String() string { return proto.CompactTextString(this) }
 func (*GetRequest) ProtoMessage()       {}
+
+const Default_GetRequest_AllowDeferred bool = false
+
+func (this *GetRequest) GetKey() []*Reference {
+	if this != nil {
+		return this.Key
+	}
+	return nil
+}
 
 func (this *GetRequest) GetTransaction() *Transaction {
 	if this != nil {
@@ -1762,8 +1964,16 @@ func (this *GetRequest) GetStrong() bool {
 	return false
 }
 
+func (this *GetRequest) GetAllowDeferred() bool {
+	if this != nil && this.AllowDeferred != nil {
+		return *this.AllowDeferred
+	}
+	return Default_GetRequest_AllowDeferred
+}
+
 type GetResponse struct {
 	Entity           []*GetResponse_Entity `protobuf:"group,1,rep" json:"entity,omitempty"`
+	Deferred         []*Reference          `protobuf:"bytes,5,rep,name=deferred" json:"deferred,omitempty"`
 	XXX_unrecognized []byte                `json:"-"`
 }
 
@@ -1771,8 +1981,23 @@ func (this *GetResponse) Reset()         { *this = GetResponse{} }
 func (this *GetResponse) String() string { return proto.CompactTextString(this) }
 func (*GetResponse) ProtoMessage()       {}
 
+func (this *GetResponse) GetEntity() []*GetResponse_Entity {
+	if this != nil {
+		return this.Entity
+	}
+	return nil
+}
+
+func (this *GetResponse) GetDeferred() []*Reference {
+	if this != nil {
+		return this.Deferred
+	}
+	return nil
+}
+
 type GetResponse_Entity struct {
 	Entity  *EntityProto `protobuf:"bytes,2,opt,name=entity" json:"entity,omitempty"`
+	Key     *Reference   `protobuf:"bytes,4,opt,name=key" json:"key,omitempty"`
 	Version *int64       `protobuf:"varint,3,opt,name=version" json:"version,omitempty"`
 }
 
@@ -1785,25 +2010,16 @@ func (this *GetResponse_Entity) GetEntity() *EntityProto {
 	return nil
 }
 
+func (this *GetResponse_Entity) GetKey() *Reference {
+	if this != nil {
+		return this.Key
+	}
+	return nil
+}
+
 func (this *GetResponse_Entity) GetVersion() int64 {
 	if this != nil && this.Version != nil {
 		return *this.Version
-	}
-	return 0
-}
-
-type SnapshotInfo struct {
-	SnapshotTsMs     *int64 `protobuf:"varint,1,req,name=snapshot_ts_ms" json:"snapshot_ts_ms,omitempty"`
-	XXX_unrecognized []byte `json:"-"`
-}
-
-func (this *SnapshotInfo) Reset()         { *this = SnapshotInfo{} }
-func (this *SnapshotInfo) String() string { return proto.CompactTextString(this) }
-func (*SnapshotInfo) ProtoMessage()       {}
-
-func (this *SnapshotInfo) GetSnapshotTsMs() int64 {
-	if this != nil && this.SnapshotTsMs != nil {
-		return *this.SnapshotTsMs
 	}
 	return 0
 }
@@ -1815,7 +2031,7 @@ type PutRequest struct {
 	Trusted          *bool             `protobuf:"varint,4,opt,name=trusted,def=0" json:"trusted,omitempty"`
 	Force            *bool             `protobuf:"varint,7,opt,name=force,def=0" json:"force,omitempty"`
 	MarkChanges      *bool             `protobuf:"varint,8,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
-	SnapshotInfo     []*SnapshotInfo   `protobuf:"bytes,9,rep,name=snapshot_info" json:"snapshot_info,omitempty"`
+	Snapshot         []*Snapshot       `protobuf:"bytes,9,rep,name=snapshot" json:"snapshot,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
 }
 
@@ -1827,9 +2043,23 @@ const Default_PutRequest_Trusted bool = false
 const Default_PutRequest_Force bool = false
 const Default_PutRequest_MarkChanges bool = false
 
+func (this *PutRequest) GetEntity() []*EntityProto {
+	if this != nil {
+		return this.Entity
+	}
+	return nil
+}
+
 func (this *PutRequest) GetTransaction() *Transaction {
 	if this != nil {
 		return this.Transaction
+	}
+	return nil
+}
+
+func (this *PutRequest) GetCompositeIndex() []*CompositeIndex {
+	if this != nil {
+		return this.CompositeIndex
 	}
 	return nil
 }
@@ -1855,6 +2085,13 @@ func (this *PutRequest) GetMarkChanges() bool {
 	return Default_PutRequest_MarkChanges
 }
 
+func (this *PutRequest) GetSnapshot() []*Snapshot {
+	if this != nil {
+		return this.Snapshot
+	}
+	return nil
+}
+
 type PutResponse struct {
 	Key              []*Reference `protobuf:"bytes,1,rep,name=key" json:"key,omitempty"`
 	Cost             *Cost        `protobuf:"bytes,2,opt,name=cost" json:"cost,omitempty"`
@@ -1866,9 +2103,23 @@ func (this *PutResponse) Reset()         { *this = PutResponse{} }
 func (this *PutResponse) String() string { return proto.CompactTextString(this) }
 func (*PutResponse) ProtoMessage()       {}
 
+func (this *PutResponse) GetKey() []*Reference {
+	if this != nil {
+		return this.Key
+	}
+	return nil
+}
+
 func (this *PutResponse) GetCost() *Cost {
 	if this != nil {
 		return this.Cost
+	}
+	return nil
+}
+
+func (this *PutResponse) GetVersion() []int64 {
+	if this != nil {
+		return this.Version
 	}
 	return nil
 }
@@ -1877,7 +2128,7 @@ type TouchRequest struct {
 	Key              []*Reference      `protobuf:"bytes,1,rep,name=key" json:"key,omitempty"`
 	CompositeIndex   []*CompositeIndex `protobuf:"bytes,2,rep,name=composite_index" json:"composite_index,omitempty"`
 	Force            *bool             `protobuf:"varint,3,opt,name=force,def=0" json:"force,omitempty"`
-	SnapshotInfo     []*SnapshotInfo   `protobuf:"bytes,9,rep,name=snapshot_info" json:"snapshot_info,omitempty"`
+	Snapshot         []*Snapshot       `protobuf:"bytes,9,rep,name=snapshot" json:"snapshot,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
 }
 
@@ -1887,11 +2138,32 @@ func (*TouchRequest) ProtoMessage()       {}
 
 const Default_TouchRequest_Force bool = false
 
+func (this *TouchRequest) GetKey() []*Reference {
+	if this != nil {
+		return this.Key
+	}
+	return nil
+}
+
+func (this *TouchRequest) GetCompositeIndex() []*CompositeIndex {
+	if this != nil {
+		return this.CompositeIndex
+	}
+	return nil
+}
+
 func (this *TouchRequest) GetForce() bool {
 	if this != nil && this.Force != nil {
 		return *this.Force
 	}
 	return Default_TouchRequest_Force
+}
+
+func (this *TouchRequest) GetSnapshot() []*Snapshot {
+	if this != nil {
+		return this.Snapshot
+	}
+	return nil
 }
 
 type TouchResponse struct {
@@ -1911,13 +2183,13 @@ func (this *TouchResponse) GetCost() *Cost {
 }
 
 type DeleteRequest struct {
-	Key              []*Reference    `protobuf:"bytes,6,rep,name=key" json:"key,omitempty"`
-	Transaction      *Transaction    `protobuf:"bytes,5,opt,name=transaction" json:"transaction,omitempty"`
-	Trusted          *bool           `protobuf:"varint,4,opt,name=trusted,def=0" json:"trusted,omitempty"`
-	Force            *bool           `protobuf:"varint,7,opt,name=force,def=0" json:"force,omitempty"`
-	MarkChanges      *bool           `protobuf:"varint,8,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
-	SnapshotInfo     []*SnapshotInfo `protobuf:"bytes,9,rep,name=snapshot_info" json:"snapshot_info,omitempty"`
-	XXX_unrecognized []byte          `json:"-"`
+	Key              []*Reference `protobuf:"bytes,6,rep,name=key" json:"key,omitempty"`
+	Transaction      *Transaction `protobuf:"bytes,5,opt,name=transaction" json:"transaction,omitempty"`
+	Trusted          *bool        `protobuf:"varint,4,opt,name=trusted,def=0" json:"trusted,omitempty"`
+	Force            *bool        `protobuf:"varint,7,opt,name=force,def=0" json:"force,omitempty"`
+	MarkChanges      *bool        `protobuf:"varint,8,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
+	Snapshot         []*Snapshot  `protobuf:"bytes,9,rep,name=snapshot" json:"snapshot,omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
 func (this *DeleteRequest) Reset()         { *this = DeleteRequest{} }
@@ -1927,6 +2199,13 @@ func (*DeleteRequest) ProtoMessage()       {}
 const Default_DeleteRequest_Trusted bool = false
 const Default_DeleteRequest_Force bool = false
 const Default_DeleteRequest_MarkChanges bool = false
+
+func (this *DeleteRequest) GetKey() []*Reference {
+	if this != nil {
+		return this.Key
+	}
+	return nil
+}
 
 func (this *DeleteRequest) GetTransaction() *Transaction {
 	if this != nil {
@@ -1956,6 +2235,13 @@ func (this *DeleteRequest) GetMarkChanges() bool {
 	return Default_DeleteRequest_MarkChanges
 }
 
+func (this *DeleteRequest) GetSnapshot() []*Snapshot {
+	if this != nil {
+		return this.Snapshot
+	}
+	return nil
+}
+
 type DeleteResponse struct {
 	Cost             *Cost   `protobuf:"bytes,1,opt,name=cost" json:"cost,omitempty"`
 	Version          []int64 `protobuf:"varint,3,rep,name=version" json:"version,omitempty"`
@@ -1969,6 +2255,13 @@ func (*DeleteResponse) ProtoMessage()       {}
 func (this *DeleteResponse) GetCost() *Cost {
 	if this != nil {
 		return this.Cost
+	}
+	return nil
+}
+
+func (this *DeleteResponse) GetVersion() []int64 {
+	if this != nil {
+		return this.Version
 	}
 	return nil
 }
@@ -2041,6 +2334,13 @@ func (this *QueryResult) GetCursor() *Cursor {
 	return nil
 }
 
+func (this *QueryResult) GetResult() []*EntityProto {
+	if this != nil {
+		return this.Result
+	}
+	return nil
+}
+
 func (this *QueryResult) GetSkippedResults() int32 {
 	if this != nil && this.SkippedResults != nil {
 		return *this.SkippedResults
@@ -2086,6 +2386,13 @@ func (this *QueryResult) GetCompiledQuery() *CompiledQuery {
 func (this *QueryResult) GetCompiledCursor() *CompiledCursor {
 	if this != nil {
 		return this.CompiledCursor
+	}
+	return nil
+}
+
+func (this *QueryResult) GetIndex() []*CompositeIndex {
+	if this != nil {
+		return this.Index
 	}
 	return nil
 }
@@ -2155,6 +2462,13 @@ func (this *CompositeIndices) Reset()         { *this = CompositeIndices{} }
 func (this *CompositeIndices) String() string { return proto.CompactTextString(this) }
 func (*CompositeIndices) ProtoMessage()       {}
 
+func (this *CompositeIndices) GetIndex() []*CompositeIndex {
+	if this != nil {
+		return this.Index
+	}
+	return nil
+}
+
 type AddActionsRequest struct {
 	Transaction      *Transaction `protobuf:"bytes,1,req,name=transaction" json:"transaction,omitempty"`
 	Action           []*Action    `protobuf:"bytes,2,rep,name=action" json:"action,omitempty"`
@@ -2168,6 +2482,13 @@ func (*AddActionsRequest) ProtoMessage()       {}
 func (this *AddActionsRequest) GetTransaction() *Transaction {
 	if this != nil {
 		return this.Transaction
+	}
+	return nil
+}
+
+func (this *AddActionsRequest) GetAction() []*Action {
+	if this != nil {
+		return this.Action
 	}
 	return nil
 }
@@ -2223,6 +2544,13 @@ func (this *CommitResponse) GetCost() *Cost {
 	return nil
 }
 
+func (this *CommitResponse) GetVersion() []*CommitResponse_Version {
+	if this != nil {
+		return this.Version
+	}
+	return nil
+}
+
 type CommitResponse_Version struct {
 	RootEntityKey *Reference `protobuf:"bytes,4,req,name=root_entity_key" json:"root_entity_key,omitempty"`
 	Version       *int64     `protobuf:"varint,5,req,name=version" json:"version,omitempty"`
@@ -2250,6 +2578,7 @@ func init() {
 	proto.RegisterEnum("datastore.EntityProto_Kind", EntityProto_Kind_name, EntityProto_Kind_value)
 	proto.RegisterEnum("datastore.Index_Property_Direction", Index_Property_Direction_name, Index_Property_Direction_value)
 	proto.RegisterEnum("datastore.CompositeIndex_State", CompositeIndex_State_name, CompositeIndex_State_value)
+	proto.RegisterEnum("datastore.Snapshot_Status", Snapshot_Status_name, Snapshot_Status_value)
 	proto.RegisterEnum("datastore.Query_Hint", Query_Hint_name, Query_Hint_value)
 	proto.RegisterEnum("datastore.Query_Filter_Operator", Query_Filter_Operator_name, Query_Filter_Operator_value)
 	proto.RegisterEnum("datastore.Query_Order_Direction", Query_Order_Direction_name, Query_Order_Direction_value)

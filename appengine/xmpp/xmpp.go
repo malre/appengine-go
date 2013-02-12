@@ -77,6 +77,7 @@ type Presence struct {
 
 var (
 	ErrPresenceUnavailable = errors.New("xmpp: presence unavailable")
+	ErrInvalidJID          = errors.New("xmpp: invalid JID")
 )
 
 // Handle arranges for f to be called for incoming XMPP messages.
@@ -161,6 +162,14 @@ func (p *Presence) Send(c appengine.Context) error {
 	return c.Call("xmpp", "SendPresence", req, res, nil)
 }
 
+var presenceMap = map[xmpp_proto.PresenceResponse_SHOW]string{
+	xmpp_proto.PresenceResponse_NORMAL:         "",
+	xmpp_proto.PresenceResponse_AWAY:           "away",
+	xmpp_proto.PresenceResponse_DO_NOT_DISTURB: "dnd",
+	xmpp_proto.PresenceResponse_CHAT:           "chat",
+	xmpp_proto.PresenceResponse_EXTENDED_AWAY:  "xa",
+}
+
 // GetPresence retrieves a user's presence.
 // If the from address is an empty string the default
 // (yourapp@appspot.com/bot) will be used.
@@ -180,19 +189,63 @@ func GetPresence(c appengine.Context, to string, from string) (string, error) {
 	if !*res.IsAvailable || res.Presence == nil {
 		return "", ErrPresenceUnavailable
 	}
-	switch *res.Presence {
-	case xmpp_proto.PresenceResponse_NORMAL:
-		return "", nil
-	case xmpp_proto.PresenceResponse_AWAY:
-		return "away", nil
-	case xmpp_proto.PresenceResponse_DO_NOT_DISTURB:
-		return "dnd", nil
-	case xmpp_proto.PresenceResponse_CHAT:
-		return "chat", nil
-	case xmpp_proto.PresenceResponse_EXTENDED_AWAY:
-		return "xa", nil
+	presence, ok := presenceMap[*res.Presence]
+	if ok {
+		return presence, nil
 	}
 	return "", fmt.Errorf("xmpp: unknown presence %v", *res.Presence)
+}
+
+// GetPresenceMulti retrieves multiple users' presence.
+// If the from address is an empty string the default
+// (yourapp@appspot.com/bot) will be used.
+// Possible return values are "", "away", "dnd", "chat", "xa".
+// If any presence is unavailable, an appengine.MultiError is returned
+func GetPresenceMulti(c appengine.Context, to []string, from string) ([]string, error) {
+	req := &xmpp_proto.BulkPresenceRequest{
+		Jid: to,
+	}
+	if from != "" {
+		req.FromJid = &from
+	}
+	res := &xmpp_proto.BulkPresenceResponse{}
+
+	if err := c.Call("xmpp", "BulkGetPresence", req, res, nil); err != nil {
+		return nil, err
+	}
+
+	presences := make([]string, 0, len(res.PresenceResponse))
+	errs := appengine.MultiError{}
+
+	addResult := func(presence string, err error) {
+		presences = append(presences, presence)
+		errs = append(errs, err)
+	}
+
+	anyErr := false
+	for _, subres := range res.PresenceResponse {
+		if !subres.GetValid() {
+			anyErr = true
+			addResult("", ErrInvalidJID)
+			continue
+		}
+		if !*subres.IsAvailable || subres.Presence == nil {
+			anyErr = true
+			addResult("", ErrPresenceUnavailable)
+			continue
+		}
+		presence, ok := presenceMap[*subres.Presence]
+		if ok {
+			addResult(presence, nil)
+		} else {
+			anyErr = true
+			addResult("", fmt.Errorf("xmpp: unknown presence %q", *subres.Presence))
+		}
+	}
+	if anyErr {
+		return presences, errs
+	}
+	return presences, nil
 }
 
 func init() {

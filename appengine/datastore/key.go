@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"appengine"
+	basepb "appengine_internal/base"
 	"code.google.com/p/goprotobuf/proto"
 
 	pb "appengine_internal/datastore"
@@ -21,11 +22,12 @@ import (
 
 // Key represents the datastore key for a stored entity, and is immutable.
 type Key struct {
-	kind     string
-	stringID string
-	intID    int64
-	parent   *Key
-	appID    string
+	kind      string
+	stringID  string
+	intID     int64
+	parent    *Key
+	appID     string
+	namespace string
 }
 
 // Kind returns the key's kind (also known as entity type).
@@ -76,7 +78,7 @@ func (k *Key) valid() bool {
 			if k.parent.Incomplete() {
 				return false
 			}
-			if k.parent.appID != k.appID {
+			if k.parent.appID != k.appID || k.parent.namespace != k.namespace {
 				return false
 			}
 		}
@@ -87,7 +89,7 @@ func (k *Key) valid() bool {
 // Equal returns whether two keys are equal.
 func (k *Key) Equal(o *Key) bool {
 	for k != nil && o != nil {
-		if k.kind != o.kind || k.stringID != o.stringID || k.intID != o.intID || k.appID != o.appID {
+		if k.kind != o.kind || k.stringID != o.stringID || k.intID != o.intID || k.appID != o.appID || k.namespace != o.namespace {
 			return false
 		}
 		k, o = k.parent, o.parent
@@ -129,11 +131,12 @@ func (k *Key) String() string {
 }
 
 type gobKey struct {
-	Kind     string
-	StringID string
-	IntID    int64
-	Parent   *gobKey
-	AppID    string
+	Kind      string
+	StringID  string
+	IntID     int64
+	Parent    *gobKey
+	AppID     string
+	Namespace string
 }
 
 func keyToGobKey(k *Key) *gobKey {
@@ -141,11 +144,12 @@ func keyToGobKey(k *Key) *gobKey {
 		return nil
 	}
 	return &gobKey{
-		Kind:     k.kind,
-		StringID: k.stringID,
-		IntID:    k.intID,
-		Parent:   keyToGobKey(k.parent),
-		AppID:    k.appID,
+		Kind:      k.kind,
+		StringID:  k.stringID,
+		IntID:     k.intID,
+		Parent:    keyToGobKey(k.parent),
+		AppID:     k.appID,
+		Namespace: k.namespace,
 	}
 }
 
@@ -154,11 +158,12 @@ func gobKeyToKey(gk *gobKey) *Key {
 		return nil
 	}
 	return &Key{
-		kind:     gk.Kind,
-		stringID: gk.StringID,
-		intID:    gk.IntID,
-		parent:   gobKeyToKey(gk.Parent),
-		appID:    gk.AppID,
+		kind:      gk.Kind,
+		stringID:  gk.StringID,
+		intID:     gk.IntID,
+		parent:    gobKeyToKey(gk.Parent),
+		appID:     gk.AppID,
+		namespace: gk.Namespace,
 	}
 }
 
@@ -242,12 +247,24 @@ func NewIncompleteKey(c appengine.Context, kind string, parent *Key) *Key {
 // the key returned is incomplete.
 // parent must either be a complete key or nil.
 func NewKey(c appengine.Context, kind, stringID string, intID int64, parent *Key) *Key {
+	// If there's a parent key, use its namespace.
+	// Otherwise, do a fake RPC to try to get a namespace if c is a namespacedContext (or wraps one).
+	var namespace string
+	if parent != nil {
+		namespace = parent.namespace
+	} else {
+		s := &basepb.StringProto{}
+		c.Call("__go__", "GetNamespace", &basepb.VoidProto{}, s, nil)
+		namespace = s.GetValue() // "" if the RPC fails
+	}
+
 	return &Key{
-		kind:     kind,
-		stringID: stringID,
-		intID:    intID,
-		parent:   parent,
-		appID:    c.FullyQualifiedAppID(),
+		kind:      kind,
+		stringID:  stringID,
+		intID:     intID,
+		parent:    parent,
+		appID:     c.FullyQualifiedAppID(),
+		namespace: namespace,
 	}
 }
 

@@ -471,6 +471,29 @@ func Flush(c appengine.Context) error {
 	return c.Call("memcache", "FlushAll", req, res, nil)
 }
 
+func namespaceMod(m proto.Message, namespace string) {
+	switch m := m.(type) {
+	case *pb.MemcacheDeleteRequest:
+		if m.NameSpace == nil {
+			m.NameSpace = &namespace
+		}
+	case *pb.MemcacheGetRequest:
+		if m.NameSpace == nil {
+			m.NameSpace = &namespace
+		}
+	case *pb.MemcacheIncrementRequest:
+		if m.NameSpace == nil {
+			m.NameSpace = &namespace
+		}
+	case *pb.MemcacheSetRequest:
+		if m.NameSpace == nil {
+			m.NameSpace = &namespace
+		}
+		// MemcacheFlushRequest, MemcacheStatsRequest do not apply namespace.
+	}
+}
+
 func init() {
 	appengine_internal.RegisterErrorCodeMap("memcache", pb.MemcacheServiceError_ErrorCode_name)
+	appengine_internal.NamespaceMods["memcache"] = namespaceMod
 }

@@ -5,5 +5,10 @@
 setlocal
 set GOROOT=%~dp0\goroot
 set GOBIN=
-set GOPATH=
+
+:: Set a GOPATH if one is not set.
+if not "%GOPATH%"=="" goto havepath
+set GOPATH=%~dp0\gopath
+:havepath
+
 %GOROOT%\bin\%~n0.exe %*

@@ -45,13 +45,15 @@ func (e *ErrFieldMismatch) Error() string {
 // protoToKey converts a Reference proto to a *Key.
 func protoToKey(r *pb.Reference) (k *Key, err error) {
 	appID := r.GetApp()
+	namespace := r.GetNameSpace()
 	for _, e := range r.Path.Element {
 		k = &Key{
-			kind:     e.GetType(),
-			stringID: e.GetName(),
-			intID:    e.GetId(),
-			parent:   k,
-			appID:    appID,
+			kind:      e.GetType(),
+			stringID:  e.GetName(),
+			intID:     e.GetId(),
+			parent:    k,
+			appID:     appID,
+			namespace: namespace,
 		}
 		if !k.valid() {
 			return nil, ErrInvalidKey
@@ -84,8 +86,13 @@ func keyToProto(defaultAppID string, k *Key) *pb.Reference {
 			e[n].Id = &i.intID
 		}
 	}
+	var namespace *string
+	if k.namespace != "" {
+		namespace = proto.String(k.namespace)
+	}
 	return &pb.Reference{
-		App: proto.String(appID),
+		App:       proto.String(appID),
+		NameSpace: namespace,
 		Path: &pb.Path{
 			Element: e,
 		},
@@ -131,13 +138,15 @@ func multiValid(key []*Key) error {
 // PropertyValue_ReferenceValue instead of a Reference.
 func referenceValueToKey(r *pb.PropertyValue_ReferenceValue) (k *Key, err error) {
 	appID := r.GetApp()
+	namespace := r.GetNameSpace()
 	for _, e := range r.Pathelement {
 		k = &Key{
-			kind:     e.GetType(),
-			stringID: e.GetName(),
-			intID:    e.GetId(),
-			parent:   k,
-			appID:    appID,
+			kind:      e.GetType(),
+			stringID:  e.GetName(),
+			intID:     e.GetId(),
+			parent:    k,
+			appID:     appID,
+			namespace: namespace,
 		}
 		if !k.valid() {
 			return nil, ErrInvalidKey
@@ -160,6 +169,7 @@ func keyToReferenceValue(defaultAppID string, k *Key) *pb.PropertyValue_Referenc
 	}
 	return &pb.PropertyValue_ReferenceValue{
 		App:         ref.App,
+		NameSpace:   ref.NameSpace,
 		Pathelement: pe,
 	}
 }
@@ -371,6 +381,18 @@ func DeleteMulti(c appengine.Context, key []*Key) error {
 	return c.Call("datastore_v3", "Delete", req, res, nil)
 }
 
+func namespaceMod(m proto.Message, namespace string) {
+	// pb.Query is the only type that has a name_space field.
+	// All other namespace support in datastore is in the keys.
+	switch m := m.(type) {
+	case *pb.Query:
+		if m.NameSpace == nil {
+			m.NameSpace = &namespace
+		}
+	}
+}
+
 func init() {
 	appengine_internal.RegisterErrorCodeMap("datastore_v3", pb.Error_ErrorCode_name)
+	appengine_internal.NamespaceMods["datastore_v3"] = namespaceMod
 }
