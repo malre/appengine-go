@@ -250,17 +250,17 @@ type ImagesServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *ImagesServiceError) Reset()         { *this = ImagesServiceError{} }
-func (this *ImagesServiceError) String() string { return proto.CompactTextString(this) }
-func (*ImagesServiceError) ProtoMessage()       {}
+func (m *ImagesServiceError) Reset()         { *m = ImagesServiceError{} }
+func (m *ImagesServiceError) String() string { return proto.CompactTextString(m) }
+func (*ImagesServiceError) ProtoMessage()    {}
 
 type ImagesServiceTransform struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *ImagesServiceTransform) Reset()         { *this = ImagesServiceTransform{} }
-func (this *ImagesServiceTransform) String() string { return proto.CompactTextString(this) }
-func (*ImagesServiceTransform) ProtoMessage()       {}
+func (m *ImagesServiceTransform) Reset()         { *m = ImagesServiceTransform{} }
+func (m *ImagesServiceTransform) String() string { return proto.CompactTextString(m) }
+func (*ImagesServiceTransform) ProtoMessage()    {}
 
 type Transform struct {
 	Width            *int32   `protobuf:"varint,1,opt,name=width" json:"width,omitempty"`
@@ -280,9 +280,9 @@ type Transform struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *Transform) Reset()         { *this = Transform{} }
-func (this *Transform) String() string { return proto.CompactTextString(this) }
-func (*Transform) ProtoMessage()       {}
+func (m *Transform) Reset()         { *m = Transform{} }
+func (m *Transform) String() string { return proto.CompactTextString(m) }
+func (*Transform) ProtoMessage()    {}
 
 const Default_Transform_CropToFit bool = false
 const Default_Transform_CropOffsetX float32 = 0.5
@@ -297,100 +297,100 @@ const Default_Transform_CropBottomY float32 = 1
 const Default_Transform_Autolevels bool = false
 const Default_Transform_AllowStretch bool = false
 
-func (this *Transform) GetWidth() int32 {
-	if this != nil && this.Width != nil {
-		return *this.Width
+func (m *Transform) GetWidth() int32 {
+	if m != nil && m.Width != nil {
+		return *m.Width
 	}
 	return 0
 }
 
-func (this *Transform) GetHeight() int32 {
-	if this != nil && this.Height != nil {
-		return *this.Height
+func (m *Transform) GetHeight() int32 {
+	if m != nil && m.Height != nil {
+		return *m.Height
 	}
 	return 0
 }
 
-func (this *Transform) GetCropToFit() bool {
-	if this != nil && this.CropToFit != nil {
-		return *this.CropToFit
+func (m *Transform) GetCropToFit() bool {
+	if m != nil && m.CropToFit != nil {
+		return *m.CropToFit
 	}
 	return Default_Transform_CropToFit
 }
 
-func (this *Transform) GetCropOffsetX() float32 {
-	if this != nil && this.CropOffsetX != nil {
-		return *this.CropOffsetX
+func (m *Transform) GetCropOffsetX() float32 {
+	if m != nil && m.CropOffsetX != nil {
+		return *m.CropOffsetX
 	}
 	return Default_Transform_CropOffsetX
 }
 
-func (this *Transform) GetCropOffsetY() float32 {
-	if this != nil && this.CropOffsetY != nil {
-		return *this.CropOffsetY
+func (m *Transform) GetCropOffsetY() float32 {
+	if m != nil && m.CropOffsetY != nil {
+		return *m.CropOffsetY
 	}
 	return Default_Transform_CropOffsetY
 }
 
-func (this *Transform) GetRotate() int32 {
-	if this != nil && this.Rotate != nil {
-		return *this.Rotate
+func (m *Transform) GetRotate() int32 {
+	if m != nil && m.Rotate != nil {
+		return *m.Rotate
 	}
 	return Default_Transform_Rotate
 }
 
-func (this *Transform) GetHorizontalFlip() bool {
-	if this != nil && this.HorizontalFlip != nil {
-		return *this.HorizontalFlip
+func (m *Transform) GetHorizontalFlip() bool {
+	if m != nil && m.HorizontalFlip != nil {
+		return *m.HorizontalFlip
 	}
 	return Default_Transform_HorizontalFlip
 }
 
-func (this *Transform) GetVerticalFlip() bool {
-	if this != nil && this.VerticalFlip != nil {
-		return *this.VerticalFlip
+func (m *Transform) GetVerticalFlip() bool {
+	if m != nil && m.VerticalFlip != nil {
+		return *m.VerticalFlip
 	}
 	return Default_Transform_VerticalFlip
 }
 
-func (this *Transform) GetCropLeftX() float32 {
-	if this != nil && this.CropLeftX != nil {
-		return *this.CropLeftX
+func (m *Transform) GetCropLeftX() float32 {
+	if m != nil && m.CropLeftX != nil {
+		return *m.CropLeftX
 	}
 	return Default_Transform_CropLeftX
 }
 
-func (this *Transform) GetCropTopY() float32 {
-	if this != nil && this.CropTopY != nil {
-		return *this.CropTopY
+func (m *Transform) GetCropTopY() float32 {
+	if m != nil && m.CropTopY != nil {
+		return *m.CropTopY
 	}
 	return Default_Transform_CropTopY
 }
 
-func (this *Transform) GetCropRightX() float32 {
-	if this != nil && this.CropRightX != nil {
-		return *this.CropRightX
+func (m *Transform) GetCropRightX() float32 {
+	if m != nil && m.CropRightX != nil {
+		return *m.CropRightX
 	}
 	return Default_Transform_CropRightX
 }
 
-func (this *Transform) GetCropBottomY() float32 {
-	if this != nil && this.CropBottomY != nil {
-		return *this.CropBottomY
+func (m *Transform) GetCropBottomY() float32 {
+	if m != nil && m.CropBottomY != nil {
+		return *m.CropBottomY
 	}
 	return Default_Transform_CropBottomY
 }
 
-func (this *Transform) GetAutolevels() bool {
-	if this != nil && this.Autolevels != nil {
-		return *this.Autolevels
+func (m *Transform) GetAutolevels() bool {
+	if m != nil && m.Autolevels != nil {
+		return *m.Autolevels
 	}
 	return Default_Transform_Autolevels
 }
 
-func (this *Transform) GetAllowStretch() bool {
-	if this != nil && this.AllowStretch != nil {
-		return *this.AllowStretch
+func (m *Transform) GetAllowStretch() bool {
+	if m != nil && m.AllowStretch != nil {
+		return *m.AllowStretch
 	}
 	return Default_Transform_AllowStretch
 }
@@ -403,34 +403,34 @@ type ImageData struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *ImageData) Reset()         { *this = ImageData{} }
-func (this *ImageData) String() string { return proto.CompactTextString(this) }
-func (*ImageData) ProtoMessage()       {}
+func (m *ImageData) Reset()         { *m = ImageData{} }
+func (m *ImageData) String() string { return proto.CompactTextString(m) }
+func (*ImageData) ProtoMessage()    {}
 
-func (this *ImageData) GetContent() []byte {
-	if this != nil {
-		return this.Content
+func (m *ImageData) GetContent() []byte {
+	if m != nil {
+		return m.Content
 	}
 	return nil
 }
 
-func (this *ImageData) GetBlobKey() string {
-	if this != nil && this.BlobKey != nil {
-		return *this.BlobKey
+func (m *ImageData) GetBlobKey() string {
+	if m != nil && m.BlobKey != nil {
+		return *m.BlobKey
 	}
 	return ""
 }
 
-func (this *ImageData) GetWidth() int32 {
-	if this != nil && this.Width != nil {
-		return *this.Width
+func (m *ImageData) GetWidth() int32 {
+	if m != nil && m.Width != nil {
+		return *m.Width
 	}
 	return 0
 }
 
-func (this *ImageData) GetHeight() int32 {
-	if this != nil && this.Height != nil {
-		return *this.Height
+func (m *ImageData) GetHeight() int32 {
+	if m != nil && m.Height != nil {
+		return *m.Height
 	}
 	return 0
 }
@@ -442,30 +442,30 @@ type InputSettings struct {
 	XXX_unrecognized           []byte                                     `json:"-"`
 }
 
-func (this *InputSettings) Reset()         { *this = InputSettings{} }
-func (this *InputSettings) String() string { return proto.CompactTextString(this) }
-func (*InputSettings) ProtoMessage()       {}
+func (m *InputSettings) Reset()         { *m = InputSettings{} }
+func (m *InputSettings) String() string { return proto.CompactTextString(m) }
+func (*InputSettings) ProtoMessage()    {}
 
 const Default_InputSettings_CorrectExifOrientation InputSettings_ORIENTATION_CORRECTION_TYPE = InputSettings_UNCHANGED_ORIENTATION
 const Default_InputSettings_ParseMetadata bool = false
 
-func (this *InputSettings) GetCorrectExifOrientation() InputSettings_ORIENTATION_CORRECTION_TYPE {
-	if this != nil && this.CorrectExifOrientation != nil {
-		return *this.CorrectExifOrientation
+func (m *InputSettings) GetCorrectExifOrientation() InputSettings_ORIENTATION_CORRECTION_TYPE {
+	if m != nil && m.CorrectExifOrientation != nil {
+		return *m.CorrectExifOrientation
 	}
 	return Default_InputSettings_CorrectExifOrientation
 }
 
-func (this *InputSettings) GetParseMetadata() bool {
-	if this != nil && this.ParseMetadata != nil {
-		return *this.ParseMetadata
+func (m *InputSettings) GetParseMetadata() bool {
+	if m != nil && m.ParseMetadata != nil {
+		return *m.ParseMetadata
 	}
 	return Default_InputSettings_ParseMetadata
 }
 
-func (this *InputSettings) GetTransparentSubstitutionRgb() int32 {
-	if this != nil && this.TransparentSubstitutionRgb != nil {
-		return *this.TransparentSubstitutionRgb
+func (m *InputSettings) GetTransparentSubstitutionRgb() int32 {
+	if m != nil && m.TransparentSubstitutionRgb != nil {
+		return *m.TransparentSubstitutionRgb
 	}
 	return 0
 }
@@ -476,22 +476,22 @@ type OutputSettings struct {
 	XXX_unrecognized []byte                    `json:"-"`
 }
 
-func (this *OutputSettings) Reset()         { *this = OutputSettings{} }
-func (this *OutputSettings) String() string { return proto.CompactTextString(this) }
-func (*OutputSettings) ProtoMessage()       {}
+func (m *OutputSettings) Reset()         { *m = OutputSettings{} }
+func (m *OutputSettings) String() string { return proto.CompactTextString(m) }
+func (*OutputSettings) ProtoMessage()    {}
 
 const Default_OutputSettings_MimeType OutputSettings_MIME_TYPE = OutputSettings_PNG
 
-func (this *OutputSettings) GetMimeType() OutputSettings_MIME_TYPE {
-	if this != nil && this.MimeType != nil {
-		return *this.MimeType
+func (m *OutputSettings) GetMimeType() OutputSettings_MIME_TYPE {
+	if m != nil && m.MimeType != nil {
+		return *m.MimeType
 	}
 	return Default_OutputSettings_MimeType
 }
 
-func (this *OutputSettings) GetQuality() int32 {
-	if this != nil && this.Quality != nil {
-		return *this.Quality
+func (m *OutputSettings) GetQuality() int32 {
+	if m != nil && m.Quality != nil {
+		return *m.Quality
 	}
 	return 0
 }
@@ -504,34 +504,34 @@ type ImagesTransformRequest struct {
 	XXX_unrecognized []byte          `json:"-"`
 }
 
-func (this *ImagesTransformRequest) Reset()         { *this = ImagesTransformRequest{} }
-func (this *ImagesTransformRequest) String() string { return proto.CompactTextString(this) }
-func (*ImagesTransformRequest) ProtoMessage()       {}
+func (m *ImagesTransformRequest) Reset()         { *m = ImagesTransformRequest{} }
+func (m *ImagesTransformRequest) String() string { return proto.CompactTextString(m) }
+func (*ImagesTransformRequest) ProtoMessage()    {}
 
-func (this *ImagesTransformRequest) GetImage() *ImageData {
-	if this != nil {
-		return this.Image
+func (m *ImagesTransformRequest) GetImage() *ImageData {
+	if m != nil {
+		return m.Image
 	}
 	return nil
 }
 
-func (this *ImagesTransformRequest) GetTransform() []*Transform {
-	if this != nil {
-		return this.Transform
+func (m *ImagesTransformRequest) GetTransform() []*Transform {
+	if m != nil {
+		return m.Transform
 	}
 	return nil
 }
 
-func (this *ImagesTransformRequest) GetOutput() *OutputSettings {
-	if this != nil {
-		return this.Output
+func (m *ImagesTransformRequest) GetOutput() *OutputSettings {
+	if m != nil {
+		return m.Output
 	}
 	return nil
 }
 
-func (this *ImagesTransformRequest) GetInput() *InputSettings {
-	if this != nil {
-		return this.Input
+func (m *ImagesTransformRequest) GetInput() *InputSettings {
+	if m != nil {
+		return m.Input
 	}
 	return nil
 }
@@ -542,20 +542,20 @@ type ImagesTransformResponse struct {
 	XXX_unrecognized []byte     `json:"-"`
 }
 
-func (this *ImagesTransformResponse) Reset()         { *this = ImagesTransformResponse{} }
-func (this *ImagesTransformResponse) String() string { return proto.CompactTextString(this) }
-func (*ImagesTransformResponse) ProtoMessage()       {}
+func (m *ImagesTransformResponse) Reset()         { *m = ImagesTransformResponse{} }
+func (m *ImagesTransformResponse) String() string { return proto.CompactTextString(m) }
+func (*ImagesTransformResponse) ProtoMessage()    {}
 
-func (this *ImagesTransformResponse) GetImage() *ImageData {
-	if this != nil {
-		return this.Image
+func (m *ImagesTransformResponse) GetImage() *ImageData {
+	if m != nil {
+		return m.Image
 	}
 	return nil
 }
 
-func (this *ImagesTransformResponse) GetSourceMetadata() string {
-	if this != nil && this.SourceMetadata != nil {
-		return *this.SourceMetadata
+func (m *ImagesTransformResponse) GetSourceMetadata() string {
+	if m != nil && m.SourceMetadata != nil {
+		return *m.SourceMetadata
 	}
 	return ""
 }
@@ -569,41 +569,41 @@ type CompositeImageOptions struct {
 	XXX_unrecognized []byte                        `json:"-"`
 }
 
-func (this *CompositeImageOptions) Reset()         { *this = CompositeImageOptions{} }
-func (this *CompositeImageOptions) String() string { return proto.CompactTextString(this) }
-func (*CompositeImageOptions) ProtoMessage()       {}
+func (m *CompositeImageOptions) Reset()         { *m = CompositeImageOptions{} }
+func (m *CompositeImageOptions) String() string { return proto.CompactTextString(m) }
+func (*CompositeImageOptions) ProtoMessage()    {}
 
-func (this *CompositeImageOptions) GetSourceIndex() int32 {
-	if this != nil && this.SourceIndex != nil {
-		return *this.SourceIndex
+func (m *CompositeImageOptions) GetSourceIndex() int32 {
+	if m != nil && m.SourceIndex != nil {
+		return *m.SourceIndex
 	}
 	return 0
 }
 
-func (this *CompositeImageOptions) GetXOffset() int32 {
-	if this != nil && this.XOffset != nil {
-		return *this.XOffset
+func (m *CompositeImageOptions) GetXOffset() int32 {
+	if m != nil && m.XOffset != nil {
+		return *m.XOffset
 	}
 	return 0
 }
 
-func (this *CompositeImageOptions) GetYOffset() int32 {
-	if this != nil && this.YOffset != nil {
-		return *this.YOffset
+func (m *CompositeImageOptions) GetYOffset() int32 {
+	if m != nil && m.YOffset != nil {
+		return *m.YOffset
 	}
 	return 0
 }
 
-func (this *CompositeImageOptions) GetOpacity() float32 {
-	if this != nil && this.Opacity != nil {
-		return *this.Opacity
+func (m *CompositeImageOptions) GetOpacity() float32 {
+	if m != nil && m.Opacity != nil {
+		return *m.Opacity
 	}
 	return 0
 }
 
-func (this *CompositeImageOptions) GetAnchor() CompositeImageOptions_ANCHOR {
-	if this != nil && this.Anchor != nil {
-		return *this.Anchor
+func (m *CompositeImageOptions) GetAnchor() CompositeImageOptions_ANCHOR {
+	if m != nil && m.Anchor != nil {
+		return *m.Anchor
 	}
 	return 0
 }
@@ -616,36 +616,36 @@ type ImagesCanvas struct {
 	XXX_unrecognized []byte          `json:"-"`
 }
 
-func (this *ImagesCanvas) Reset()         { *this = ImagesCanvas{} }
-func (this *ImagesCanvas) String() string { return proto.CompactTextString(this) }
-func (*ImagesCanvas) ProtoMessage()       {}
+func (m *ImagesCanvas) Reset()         { *m = ImagesCanvas{} }
+func (m *ImagesCanvas) String() string { return proto.CompactTextString(m) }
+func (*ImagesCanvas) ProtoMessage()    {}
 
 const Default_ImagesCanvas_Color int32 = -1
 
-func (this *ImagesCanvas) GetWidth() int32 {
-	if this != nil && this.Width != nil {
-		return *this.Width
+func (m *ImagesCanvas) GetWidth() int32 {
+	if m != nil && m.Width != nil {
+		return *m.Width
 	}
 	return 0
 }
 
-func (this *ImagesCanvas) GetHeight() int32 {
-	if this != nil && this.Height != nil {
-		return *this.Height
+func (m *ImagesCanvas) GetHeight() int32 {
+	if m != nil && m.Height != nil {
+		return *m.Height
 	}
 	return 0
 }
 
-func (this *ImagesCanvas) GetOutput() *OutputSettings {
-	if this != nil {
-		return this.Output
+func (m *ImagesCanvas) GetOutput() *OutputSettings {
+	if m != nil {
+		return m.Output
 	}
 	return nil
 }
 
-func (this *ImagesCanvas) GetColor() int32 {
-	if this != nil && this.Color != nil {
-		return *this.Color
+func (m *ImagesCanvas) GetColor() int32 {
+	if m != nil && m.Color != nil {
+		return *m.Color
 	}
 	return Default_ImagesCanvas_Color
 }
@@ -657,27 +657,27 @@ type ImagesCompositeRequest struct {
 	XXX_unrecognized []byte                   `json:"-"`
 }
 
-func (this *ImagesCompositeRequest) Reset()         { *this = ImagesCompositeRequest{} }
-func (this *ImagesCompositeRequest) String() string { return proto.CompactTextString(this) }
-func (*ImagesCompositeRequest) ProtoMessage()       {}
+func (m *ImagesCompositeRequest) Reset()         { *m = ImagesCompositeRequest{} }
+func (m *ImagesCompositeRequest) String() string { return proto.CompactTextString(m) }
+func (*ImagesCompositeRequest) ProtoMessage()    {}
 
-func (this *ImagesCompositeRequest) GetImage() []*ImageData {
-	if this != nil {
-		return this.Image
+func (m *ImagesCompositeRequest) GetImage() []*ImageData {
+	if m != nil {
+		return m.Image
 	}
 	return nil
 }
 
-func (this *ImagesCompositeRequest) GetOptions() []*CompositeImageOptions {
-	if this != nil {
-		return this.Options
+func (m *ImagesCompositeRequest) GetOptions() []*CompositeImageOptions {
+	if m != nil {
+		return m.Options
 	}
 	return nil
 }
 
-func (this *ImagesCompositeRequest) GetCanvas() *ImagesCanvas {
-	if this != nil {
-		return this.Canvas
+func (m *ImagesCompositeRequest) GetCanvas() *ImagesCanvas {
+	if m != nil {
+		return m.Canvas
 	}
 	return nil
 }
@@ -687,13 +687,13 @@ type ImagesCompositeResponse struct {
 	XXX_unrecognized []byte     `json:"-"`
 }
 
-func (this *ImagesCompositeResponse) Reset()         { *this = ImagesCompositeResponse{} }
-func (this *ImagesCompositeResponse) String() string { return proto.CompactTextString(this) }
-func (*ImagesCompositeResponse) ProtoMessage()       {}
+func (m *ImagesCompositeResponse) Reset()         { *m = ImagesCompositeResponse{} }
+func (m *ImagesCompositeResponse) String() string { return proto.CompactTextString(m) }
+func (*ImagesCompositeResponse) ProtoMessage()    {}
 
-func (this *ImagesCompositeResponse) GetImage() *ImageData {
-	if this != nil {
-		return this.Image
+func (m *ImagesCompositeResponse) GetImage() *ImageData {
+	if m != nil {
+		return m.Image
 	}
 	return nil
 }
@@ -703,13 +703,13 @@ type ImagesHistogramRequest struct {
 	XXX_unrecognized []byte     `json:"-"`
 }
 
-func (this *ImagesHistogramRequest) Reset()         { *this = ImagesHistogramRequest{} }
-func (this *ImagesHistogramRequest) String() string { return proto.CompactTextString(this) }
-func (*ImagesHistogramRequest) ProtoMessage()       {}
+func (m *ImagesHistogramRequest) Reset()         { *m = ImagesHistogramRequest{} }
+func (m *ImagesHistogramRequest) String() string { return proto.CompactTextString(m) }
+func (*ImagesHistogramRequest) ProtoMessage()    {}
 
-func (this *ImagesHistogramRequest) GetImage() *ImageData {
-	if this != nil {
-		return this.Image
+func (m *ImagesHistogramRequest) GetImage() *ImageData {
+	if m != nil {
+		return m.Image
 	}
 	return nil
 }
@@ -721,27 +721,27 @@ type ImagesHistogram struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *ImagesHistogram) Reset()         { *this = ImagesHistogram{} }
-func (this *ImagesHistogram) String() string { return proto.CompactTextString(this) }
-func (*ImagesHistogram) ProtoMessage()       {}
+func (m *ImagesHistogram) Reset()         { *m = ImagesHistogram{} }
+func (m *ImagesHistogram) String() string { return proto.CompactTextString(m) }
+func (*ImagesHistogram) ProtoMessage()    {}
 
-func (this *ImagesHistogram) GetRed() []int32 {
-	if this != nil {
-		return this.Red
+func (m *ImagesHistogram) GetRed() []int32 {
+	if m != nil {
+		return m.Red
 	}
 	return nil
 }
 
-func (this *ImagesHistogram) GetGreen() []int32 {
-	if this != nil {
-		return this.Green
+func (m *ImagesHistogram) GetGreen() []int32 {
+	if m != nil {
+		return m.Green
 	}
 	return nil
 }
 
-func (this *ImagesHistogram) GetBlue() []int32 {
-	if this != nil {
-		return this.Blue
+func (m *ImagesHistogram) GetBlue() []int32 {
+	if m != nil {
+		return m.Blue
 	}
 	return nil
 }
@@ -751,13 +751,13 @@ type ImagesHistogramResponse struct {
 	XXX_unrecognized []byte           `json:"-"`
 }
 
-func (this *ImagesHistogramResponse) Reset()         { *this = ImagesHistogramResponse{} }
-func (this *ImagesHistogramResponse) String() string { return proto.CompactTextString(this) }
-func (*ImagesHistogramResponse) ProtoMessage()       {}
+func (m *ImagesHistogramResponse) Reset()         { *m = ImagesHistogramResponse{} }
+func (m *ImagesHistogramResponse) String() string { return proto.CompactTextString(m) }
+func (*ImagesHistogramResponse) ProtoMessage()    {}
 
-func (this *ImagesHistogramResponse) GetHistogram() *ImagesHistogram {
-	if this != nil {
-		return this.Histogram
+func (m *ImagesHistogramResponse) GetHistogram() *ImagesHistogram {
+	if m != nil {
+		return m.Histogram
 	}
 	return nil
 }
@@ -768,22 +768,22 @@ type ImagesGetUrlBaseRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *ImagesGetUrlBaseRequest) Reset()         { *this = ImagesGetUrlBaseRequest{} }
-func (this *ImagesGetUrlBaseRequest) String() string { return proto.CompactTextString(this) }
-func (*ImagesGetUrlBaseRequest) ProtoMessage()       {}
+func (m *ImagesGetUrlBaseRequest) Reset()         { *m = ImagesGetUrlBaseRequest{} }
+func (m *ImagesGetUrlBaseRequest) String() string { return proto.CompactTextString(m) }
+func (*ImagesGetUrlBaseRequest) ProtoMessage()    {}
 
 const Default_ImagesGetUrlBaseRequest_CreateSecureUrl bool = false
 
-func (this *ImagesGetUrlBaseRequest) GetBlobKey() string {
-	if this != nil && this.BlobKey != nil {
-		return *this.BlobKey
+func (m *ImagesGetUrlBaseRequest) GetBlobKey() string {
+	if m != nil && m.BlobKey != nil {
+		return *m.BlobKey
 	}
 	return ""
 }
 
-func (this *ImagesGetUrlBaseRequest) GetCreateSecureUrl() bool {
-	if this != nil && this.CreateSecureUrl != nil {
-		return *this.CreateSecureUrl
+func (m *ImagesGetUrlBaseRequest) GetCreateSecureUrl() bool {
+	if m != nil && m.CreateSecureUrl != nil {
+		return *m.CreateSecureUrl
 	}
 	return Default_ImagesGetUrlBaseRequest_CreateSecureUrl
 }
@@ -793,13 +793,13 @@ type ImagesGetUrlBaseResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *ImagesGetUrlBaseResponse) Reset()         { *this = ImagesGetUrlBaseResponse{} }
-func (this *ImagesGetUrlBaseResponse) String() string { return proto.CompactTextString(this) }
-func (*ImagesGetUrlBaseResponse) ProtoMessage()       {}
+func (m *ImagesGetUrlBaseResponse) Reset()         { *m = ImagesGetUrlBaseResponse{} }
+func (m *ImagesGetUrlBaseResponse) String() string { return proto.CompactTextString(m) }
+func (*ImagesGetUrlBaseResponse) ProtoMessage()    {}
 
-func (this *ImagesGetUrlBaseResponse) GetUrl() string {
-	if this != nil && this.Url != nil {
-		return *this.Url
+func (m *ImagesGetUrlBaseResponse) GetUrl() string {
+	if m != nil && m.Url != nil {
+		return *m.Url
 	}
 	return ""
 }
@@ -809,13 +809,13 @@ type ImagesDeleteUrlBaseRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *ImagesDeleteUrlBaseRequest) Reset()         { *this = ImagesDeleteUrlBaseRequest{} }
-func (this *ImagesDeleteUrlBaseRequest) String() string { return proto.CompactTextString(this) }
-func (*ImagesDeleteUrlBaseRequest) ProtoMessage()       {}
+func (m *ImagesDeleteUrlBaseRequest) Reset()         { *m = ImagesDeleteUrlBaseRequest{} }
+func (m *ImagesDeleteUrlBaseRequest) String() string { return proto.CompactTextString(m) }
+func (*ImagesDeleteUrlBaseRequest) ProtoMessage()    {}
 
-func (this *ImagesDeleteUrlBaseRequest) GetBlobKey() string {
-	if this != nil && this.BlobKey != nil {
-		return *this.BlobKey
+func (m *ImagesDeleteUrlBaseRequest) GetBlobKey() string {
+	if m != nil && m.BlobKey != nil {
+		return *m.BlobKey
 	}
 	return ""
 }
@@ -824,9 +824,9 @@ type ImagesDeleteUrlBaseResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *ImagesDeleteUrlBaseResponse) Reset()         { *this = ImagesDeleteUrlBaseResponse{} }
-func (this *ImagesDeleteUrlBaseResponse) String() string { return proto.CompactTextString(this) }
-func (*ImagesDeleteUrlBaseResponse) ProtoMessage()       {}
+func (m *ImagesDeleteUrlBaseResponse) Reset()         { *m = ImagesDeleteUrlBaseResponse{} }
+func (m *ImagesDeleteUrlBaseResponse) String() string { return proto.CompactTextString(m) }
+func (*ImagesDeleteUrlBaseResponse) ProtoMessage()    {}
 
 func init() {
 	proto.RegisterEnum("appengine.ImagesServiceError_ErrorCode", ImagesServiceError_ErrorCode_name, ImagesServiceError_ErrorCode_value)

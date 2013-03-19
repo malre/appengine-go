@@ -5,18 +5,21 @@
 package appengine_internal
 
 import (
-	"bufio"
-	"errors"
+	"bytes"
+	"encoding/base64"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"os"
-	"strconv"
+	"strings"
 	"sync"
 
 	basepb "appengine_internal/base"
 	"appengine_internal/remote_api"
+	rpb "appengine_internal/runtime_config"
 	"code.google.com/p/goprotobuf/proto"
 )
 
@@ -28,117 +31,145 @@ func IsDevAppServer() bool {
 
 // serveHTTP serves App Engine HTTP requests.
 func serveHTTP(netw, addr string) {
-	if netw == "unix" {
-		os.Remove(addr)
-	}
-	l, err := net.Listen(netw, addr)
+	// The development server reads the HTTP port that the server is listening to
+	// from stdout.
+	conn, err := net.Listen("tcp", ":0")
 	if err != nil {
-		log.Fatal("appengine: ", err)
+		log.Fatal("appengine: couldn't listen to TCP socket: ", err)
 	}
-	err = http.Serve(l, http.HandlerFunc(handleFilteredHTTP))
+	port := conn.Addr().(*net.TCPAddr).Port
+
+	fmt.Fprintln(os.Stdout, port)
+	os.Stdout.Close()
+
+	err = http.Serve(conn, http.HandlerFunc(handleFilteredHTTP))
 	if err != nil {
 		log.Fatal("appengine: ", err)
 	}
 }
 
 func init() {
+	// If the user's application has a transitive dependency on appengine_internal
+	// then this init will be called before any user code. The user application
+	// should also not be reading from stdin.
+	c := readConfig(os.Stdin)
+	instanceConfig.AppID = string(c.AppId)
+	instanceConfig.APIPort = int(*c.ApiPort)
+	instanceConfig.VersionID = string(c.VersionId)
+	instanceConfig.InstanceID = *c.InstanceId
+	instanceConfig.Datacenter = *c.Datacenter
+
+	apiAddress = fmt.Sprintf("http://localhost:%d", instanceConfig.APIPort)
 	RegisterHTTPFunc(serveHTTP)
 }
 
 func handleFilteredHTTP(w http.ResponseWriter, r *http.Request) {
 	// Patch up RemoteAddr so it looks reasonable.
-	const remoteAddrHeader = "X-AppEngine-Remote-Addr"
-	if addr := r.Header.Get(remoteAddrHeader); addr != "" {
+	if addr := r.Header.Get("X-Appengine-Internal-Remote-Addr"); addr != "" {
 		r.RemoteAddr = addr
-		r.Header.Del(remoteAddrHeader)
 	} else {
 		// Should not normally reach here, but pick
 		// a sensible default anyway.
 		r.RemoteAddr = "127.0.0.1"
 	}
 
+	// Create a private copy of the Request that includes headers that are
+	// private to the runtime and strip those headers from the request that the
+	// user application sees.
+	creq := *r
+	r.Header = make(http.Header)
+	for name, values := range creq.Header {
+		if !strings.HasPrefix(name, "X-Appengine-Internal-") {
+			r.Header[name] = values
+		}
+	}
+	ctxsMu.Lock()
+	ctxs[r] = &context{req: &creq}
+	ctxsMu.Unlock()
+
 	http.DefaultServeMux.ServeHTTP(w, r)
-}
 
-// read and write speak a custom protocol with the appserver. Specifically, an
-// ASCII header followed by an encoded protocol buffer. The header is the
-// length of the protocol buffer, in decimal, followed by a new line character.
-// For example: "53\n".
-
-// read reads a protocol buffer from the socketAPI socket.
-func read(r *bufio.Reader, pb proto.Message) error {
-	b, err := r.ReadSlice('\n')
-	if err != nil {
-		return err
-	}
-	n, err := strconv.Atoi(string(b[:len(b)-1]))
-	if err != nil {
-		return err
-	}
-	if n < 0 {
-		return errors.New("appengine: negative message length")
-	}
-	b = make([]byte, n)
-	_, err = io.ReadFull(r, b)
-	if err != nil {
-		return err
-	}
-	return proto.Unmarshal(b, pb)
-}
-
-// write writes a protocol buffer to the socketAPI socket.
-func write(w *bufio.Writer, pb proto.Message) error {
-	b, err := proto.Marshal(pb)
-	if err != nil {
-		return err
-	}
-	_, err = w.WriteString(strconv.Itoa(len(b)))
-	if err != nil {
-		return err
-	}
-	err = w.WriteByte('\n')
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(b)
-	if err != nil {
-		return err
-	}
-	return w.Flush()
+	ctxsMu.Lock()
+	delete(ctxs, r)
+	ctxsMu.Unlock()
 }
 
 var (
-	mu       sync.Mutex
-	apiRead  *bufio.Reader
-	apiWrite *bufio.Writer
+	apiAddress    string
+	apiHTTPClient = &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+		},
+	}
+
+	ctxsMu sync.Mutex
+	ctxs   = make(map[*http.Request]*context)
+
+	instanceConfig struct {
+		AppID      string
+		VersionID  string
+		InstanceID string
+		Datacenter string
+		APIPort    int
+	}
 )
 
-// initAPI prepares the app to execute App Engine API calls,
-// forwarding them to the Appserver at the given network address.
-func initAPI(netw, addr string) {
-	c, err := net.Dial(netw, addr)
+func readConfig(r io.Reader) *rpb.Config {
+	raw, err := ioutil.ReadAll(r)
 	if err != nil {
-		log.Fatal("appengine: ", err)
+		log.Fatal("appengine: could not read from stdin: ", err)
 	}
-	apiRead, apiWrite = bufio.NewReader(c), bufio.NewWriter(c)
+
+	b := make([]byte, base64.StdEncoding.DecodedLen(len(raw)))
+	n, err := base64.StdEncoding.Decode(b, raw)
+	if err != nil {
+		log.Fatal("appengine: could not base64 decode stdin: ", err)
+	}
+	config := &rpb.Config{}
+
+	err = proto.Unmarshal(b[:n], config)
+	if err != nil {
+		log.Fatal("appengine: could not decode runtime_config: ", err)
+	}
+	return config
 }
 
-func call(service, method string, data []byte) ([]byte, error) {
-	mu.Lock()
-	defer mu.Unlock()
+// initAPI has no work to do in the development server.
+// TODO: Get rid of initAPI everywhere.
+func initAPI(netw, addr string) {
+}
 
+func call(service, method string, data []byte, requestID string) ([]byte, error) {
 	req := &remote_api.Request{
 		ServiceName: &service,
 		Method:      &method,
 		Request:     data,
+		RequestId:   &requestID,
 	}
-	if err := write(apiWrite, req); err != nil {
+
+	buf, err := proto.Marshal(req)
+	if err != nil {
 		return nil, err
 	}
+
+	resp, err := apiHTTPClient.Post(apiAddress,
+		"application/octet-stream", bytes.NewReader(buf))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
 	res := &remote_api.Response{}
-	if err := read(apiRead, res); err != nil {
+	err = proto.Unmarshal(body, res)
+	if err != nil {
 		return nil, err
 	}
+
 	if ae := res.ApplicationError; ae != nil {
 		// All Remote API application errors are API-level failures.
 		return nil, &APIError{Service: service, Detail: *ae.Detail, Code: *ae.Code}
@@ -153,7 +184,17 @@ type context struct {
 }
 
 func NewContext(req *http.Request) *context {
-	return &context{req}
+	ctxsMu.Lock()
+	defer ctxsMu.Unlock()
+	c := ctxs[req]
+
+	if c == nil {
+		// Someone passed in an http.Request that is not in-flight.
+		// We panic here rather than panicking at a later point
+		// so that backtraces will be more sensible.
+		log.Panic("appengine: NewContext passed an unknown http.Request")
+	}
+	return c
 }
 
 func (c *context) Call(service, method string, in, out ProtoMessage, opts *CallOptions) error {
@@ -174,7 +215,9 @@ func (c *context) Call(service, method string, in, out ProtoMessage, opts *CallO
 	if err != nil {
 		return err
 	}
-	res, err := call(service, method, data)
+
+	requestID := c.req.Header.Get("X-Appengine-Internal-Request-Id")
+	res, err := call(service, method, data, requestID)
 	if err != nil {
 		return err
 	}
@@ -199,5 +242,5 @@ func (c *context) Criticalf(format string, args ...interface{}) { c.logf("CRITIC
 // This may contain a partition prefix (e.g. "s~" for High Replication apps),
 // or a domain prefix (e.g. "example.com:").
 func (c *context) FullyQualifiedAppID() string {
-	return c.req.Header.Get("X-AppEngine-Inbound-AppId")
+	return instanceConfig.AppID
 }

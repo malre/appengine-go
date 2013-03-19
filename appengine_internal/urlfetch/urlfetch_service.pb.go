@@ -133,9 +133,9 @@ type URLFetchServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *URLFetchServiceError) Reset()         { *this = URLFetchServiceError{} }
-func (this *URLFetchServiceError) String() string { return proto.CompactTextString(this) }
-func (*URLFetchServiceError) ProtoMessage()       {}
+func (m *URLFetchServiceError) Reset()         { *m = URLFetchServiceError{} }
+func (m *URLFetchServiceError) String() string { return proto.CompactTextString(m) }
+func (*URLFetchServiceError) ProtoMessage()    {}
 
 type URLFetchRequest struct {
 	Method                        *URLFetchRequest_RequestMethod `protobuf:"varint,1,req,enum=appengine.URLFetchRequest_RequestMethod" json:"Method,omitempty"`
@@ -148,79 +148,80 @@ type URLFetchRequest struct {
 	XXX_unrecognized              []byte                         `json:"-"`
 }
 
-func (this *URLFetchRequest) Reset()         { *this = URLFetchRequest{} }
-func (this *URLFetchRequest) String() string { return proto.CompactTextString(this) }
-func (*URLFetchRequest) ProtoMessage()       {}
+func (m *URLFetchRequest) Reset()         { *m = URLFetchRequest{} }
+func (m *URLFetchRequest) String() string { return proto.CompactTextString(m) }
+func (*URLFetchRequest) ProtoMessage()    {}
 
 const Default_URLFetchRequest_FollowRedirects bool = true
 const Default_URLFetchRequest_MustValidateServerCertificate bool = true
 
-func (this *URLFetchRequest) GetMethod() URLFetchRequest_RequestMethod {
-	if this != nil && this.Method != nil {
-		return *this.Method
+func (m *URLFetchRequest) GetMethod() URLFetchRequest_RequestMethod {
+	if m != nil && m.Method != nil {
+		return *m.Method
 	}
 	return 0
 }
 
-func (this *URLFetchRequest) GetUrl() string {
-	if this != nil && this.Url != nil {
-		return *this.Url
+func (m *URLFetchRequest) GetUrl() string {
+	if m != nil && m.Url != nil {
+		return *m.Url
 	}
 	return ""
 }
 
-func (this *URLFetchRequest) GetHeader() []*URLFetchRequest_Header {
-	if this != nil {
-		return this.Header
+func (m *URLFetchRequest) GetHeader() []*URLFetchRequest_Header {
+	if m != nil {
+		return m.Header
 	}
 	return nil
 }
 
-func (this *URLFetchRequest) GetPayload() []byte {
-	if this != nil {
-		return this.Payload
+func (m *URLFetchRequest) GetPayload() []byte {
+	if m != nil {
+		return m.Payload
 	}
 	return nil
 }
 
-func (this *URLFetchRequest) GetFollowRedirects() bool {
-	if this != nil && this.FollowRedirects != nil {
-		return *this.FollowRedirects
+func (m *URLFetchRequest) GetFollowRedirects() bool {
+	if m != nil && m.FollowRedirects != nil {
+		return *m.FollowRedirects
 	}
 	return Default_URLFetchRequest_FollowRedirects
 }
 
-func (this *URLFetchRequest) GetDeadline() float64 {
-	if this != nil && this.Deadline != nil {
-		return *this.Deadline
+func (m *URLFetchRequest) GetDeadline() float64 {
+	if m != nil && m.Deadline != nil {
+		return *m.Deadline
 	}
 	return 0
 }
 
-func (this *URLFetchRequest) GetMustValidateServerCertificate() bool {
-	if this != nil && this.MustValidateServerCertificate != nil {
-		return *this.MustValidateServerCertificate
+func (m *URLFetchRequest) GetMustValidateServerCertificate() bool {
+	if m != nil && m.MustValidateServerCertificate != nil {
+		return *m.MustValidateServerCertificate
 	}
 	return Default_URLFetchRequest_MustValidateServerCertificate
 }
 
 type URLFetchRequest_Header struct {
-	Key   *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
-	Value *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
+	Key              *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
+	Value            *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *URLFetchRequest_Header) Reset() { *this = URLFetchRequest_Header{} }
+func (m *URLFetchRequest_Header) Reset() { *m = URLFetchRequest_Header{} }
 
-func (this *URLFetchRequest_Header) GetKey() string {
-	if this != nil && this.Key != nil {
-		return *this.Key
+func (m *URLFetchRequest_Header) GetKey() string {
+	if m != nil && m.Key != nil {
+		return *m.Key
 	}
 	return ""
 }
 
-func (this *URLFetchRequest_Header) GetValue() string {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *URLFetchRequest_Header) GetValue() string {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return ""
 }
@@ -239,102 +240,103 @@ type URLFetchResponse struct {
 	XXX_unrecognized      []byte                     `json:"-"`
 }
 
-func (this *URLFetchResponse) Reset()         { *this = URLFetchResponse{} }
-func (this *URLFetchResponse) String() string { return proto.CompactTextString(this) }
-func (*URLFetchResponse) ProtoMessage()       {}
+func (m *URLFetchResponse) Reset()         { *m = URLFetchResponse{} }
+func (m *URLFetchResponse) String() string { return proto.CompactTextString(m) }
+func (*URLFetchResponse) ProtoMessage()    {}
 
 const Default_URLFetchResponse_ContentWasTruncated bool = false
 const Default_URLFetchResponse_ApiCpuMilliseconds int64 = 0
 const Default_URLFetchResponse_ApiBytesSent int64 = 0
 const Default_URLFetchResponse_ApiBytesReceived int64 = 0
 
-func (this *URLFetchResponse) GetContent() []byte {
-	if this != nil {
-		return this.Content
+func (m *URLFetchResponse) GetContent() []byte {
+	if m != nil {
+		return m.Content
 	}
 	return nil
 }
 
-func (this *URLFetchResponse) GetStatusCode() int32 {
-	if this != nil && this.StatusCode != nil {
-		return *this.StatusCode
+func (m *URLFetchResponse) GetStatusCode() int32 {
+	if m != nil && m.StatusCode != nil {
+		return *m.StatusCode
 	}
 	return 0
 }
 
-func (this *URLFetchResponse) GetHeader() []*URLFetchResponse_Header {
-	if this != nil {
-		return this.Header
+func (m *URLFetchResponse) GetHeader() []*URLFetchResponse_Header {
+	if m != nil {
+		return m.Header
 	}
 	return nil
 }
 
-func (this *URLFetchResponse) GetContentWasTruncated() bool {
-	if this != nil && this.ContentWasTruncated != nil {
-		return *this.ContentWasTruncated
+func (m *URLFetchResponse) GetContentWasTruncated() bool {
+	if m != nil && m.ContentWasTruncated != nil {
+		return *m.ContentWasTruncated
 	}
 	return Default_URLFetchResponse_ContentWasTruncated
 }
 
-func (this *URLFetchResponse) GetExternalBytesSent() int64 {
-	if this != nil && this.ExternalBytesSent != nil {
-		return *this.ExternalBytesSent
+func (m *URLFetchResponse) GetExternalBytesSent() int64 {
+	if m != nil && m.ExternalBytesSent != nil {
+		return *m.ExternalBytesSent
 	}
 	return 0
 }
 
-func (this *URLFetchResponse) GetExternalBytesReceived() int64 {
-	if this != nil && this.ExternalBytesReceived != nil {
-		return *this.ExternalBytesReceived
+func (m *URLFetchResponse) GetExternalBytesReceived() int64 {
+	if m != nil && m.ExternalBytesReceived != nil {
+		return *m.ExternalBytesReceived
 	}
 	return 0
 }
 
-func (this *URLFetchResponse) GetFinalUrl() string {
-	if this != nil && this.FinalUrl != nil {
-		return *this.FinalUrl
+func (m *URLFetchResponse) GetFinalUrl() string {
+	if m != nil && m.FinalUrl != nil {
+		return *m.FinalUrl
 	}
 	return ""
 }
 
-func (this *URLFetchResponse) GetApiCpuMilliseconds() int64 {
-	if this != nil && this.ApiCpuMilliseconds != nil {
-		return *this.ApiCpuMilliseconds
+func (m *URLFetchResponse) GetApiCpuMilliseconds() int64 {
+	if m != nil && m.ApiCpuMilliseconds != nil {
+		return *m.ApiCpuMilliseconds
 	}
 	return Default_URLFetchResponse_ApiCpuMilliseconds
 }
 
-func (this *URLFetchResponse) GetApiBytesSent() int64 {
-	if this != nil && this.ApiBytesSent != nil {
-		return *this.ApiBytesSent
+func (m *URLFetchResponse) GetApiBytesSent() int64 {
+	if m != nil && m.ApiBytesSent != nil {
+		return *m.ApiBytesSent
 	}
 	return Default_URLFetchResponse_ApiBytesSent
 }
 
-func (this *URLFetchResponse) GetApiBytesReceived() int64 {
-	if this != nil && this.ApiBytesReceived != nil {
-		return *this.ApiBytesReceived
+func (m *URLFetchResponse) GetApiBytesReceived() int64 {
+	if m != nil && m.ApiBytesReceived != nil {
+		return *m.ApiBytesReceived
 	}
 	return Default_URLFetchResponse_ApiBytesReceived
 }
 
 type URLFetchResponse_Header struct {
-	Key   *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
-	Value *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
+	Key              *string `protobuf:"bytes,4,req" json:"Key,omitempty"`
+	Value            *string `protobuf:"bytes,5,req" json:"Value,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *URLFetchResponse_Header) Reset() { *this = URLFetchResponse_Header{} }
+func (m *URLFetchResponse_Header) Reset() { *m = URLFetchResponse_Header{} }
 
-func (this *URLFetchResponse_Header) GetKey() string {
-	if this != nil && this.Key != nil {
-		return *this.Key
+func (m *URLFetchResponse_Header) GetKey() string {
+	if m != nil && m.Key != nil {
+		return *m.Key
 	}
 	return ""
 }
 
-func (this *URLFetchResponse_Header) GetValue() string {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *URLFetchResponse_Header) GetValue() string {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return ""
 }

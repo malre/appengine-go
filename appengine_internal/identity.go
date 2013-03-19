@@ -10,3 +10,8 @@ package appengine_internal
 func AppID(fqai string) string {
 	return appID(fqai)
 }
+
+type apiContext interface {
+	Call(service, method string, in, out ProtoMessage, opts *CallOptions) error
+	Request() interface{}
+}

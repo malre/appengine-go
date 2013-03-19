@@ -64,9 +64,9 @@ type MailServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *MailServiceError) Reset()         { *this = MailServiceError{} }
-func (this *MailServiceError) String() string { return proto.CompactTextString(this) }
-func (*MailServiceError) ProtoMessage()       {}
+func (m *MailServiceError) Reset()         { *m = MailServiceError{} }
+func (m *MailServiceError) String() string { return proto.CompactTextString(m) }
+func (*MailServiceError) ProtoMessage()    {}
 
 type MailAttachment struct {
 	FileName         *string `protobuf:"bytes,1,req" json:"FileName,omitempty"`
@@ -74,20 +74,20 @@ type MailAttachment struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *MailAttachment) Reset()         { *this = MailAttachment{} }
-func (this *MailAttachment) String() string { return proto.CompactTextString(this) }
-func (*MailAttachment) ProtoMessage()       {}
+func (m *MailAttachment) Reset()         { *m = MailAttachment{} }
+func (m *MailAttachment) String() string { return proto.CompactTextString(m) }
+func (*MailAttachment) ProtoMessage()    {}
 
-func (this *MailAttachment) GetFileName() string {
-	if this != nil && this.FileName != nil {
-		return *this.FileName
+func (m *MailAttachment) GetFileName() string {
+	if m != nil && m.FileName != nil {
+		return *m.FileName
 	}
 	return ""
 }
 
-func (this *MailAttachment) GetData() []byte {
-	if this != nil {
-		return this.Data
+func (m *MailAttachment) GetData() []byte {
+	if m != nil {
+		return m.Data
 	}
 	return nil
 }
@@ -98,20 +98,20 @@ type MailHeader struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *MailHeader) Reset()         { *this = MailHeader{} }
-func (this *MailHeader) String() string { return proto.CompactTextString(this) }
-func (*MailHeader) ProtoMessage()       {}
+func (m *MailHeader) Reset()         { *m = MailHeader{} }
+func (m *MailHeader) String() string { return proto.CompactTextString(m) }
+func (*MailHeader) ProtoMessage()    {}
 
-func (this *MailHeader) GetName() string {
-	if this != nil && this.Name != nil {
-		return *this.Name
+func (m *MailHeader) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
 	}
 	return ""
 }
 
-func (this *MailHeader) GetValue() string {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *MailHeader) GetValue() string {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return ""
 }
@@ -130,76 +130,76 @@ type MailMessage struct {
 	XXX_unrecognized []byte            `json:"-"`
 }
 
-func (this *MailMessage) Reset()         { *this = MailMessage{} }
-func (this *MailMessage) String() string { return proto.CompactTextString(this) }
-func (*MailMessage) ProtoMessage()       {}
+func (m *MailMessage) Reset()         { *m = MailMessage{} }
+func (m *MailMessage) String() string { return proto.CompactTextString(m) }
+func (*MailMessage) ProtoMessage()    {}
 
-func (this *MailMessage) GetSender() string {
-	if this != nil && this.Sender != nil {
-		return *this.Sender
+func (m *MailMessage) GetSender() string {
+	if m != nil && m.Sender != nil {
+		return *m.Sender
 	}
 	return ""
 }
 
-func (this *MailMessage) GetReplyTo() string {
-	if this != nil && this.ReplyTo != nil {
-		return *this.ReplyTo
+func (m *MailMessage) GetReplyTo() string {
+	if m != nil && m.ReplyTo != nil {
+		return *m.ReplyTo
 	}
 	return ""
 }
 
-func (this *MailMessage) GetTo() []string {
-	if this != nil {
-		return this.To
+func (m *MailMessage) GetTo() []string {
+	if m != nil {
+		return m.To
 	}
 	return nil
 }
 
-func (this *MailMessage) GetCc() []string {
-	if this != nil {
-		return this.Cc
+func (m *MailMessage) GetCc() []string {
+	if m != nil {
+		return m.Cc
 	}
 	return nil
 }
 
-func (this *MailMessage) GetBcc() []string {
-	if this != nil {
-		return this.Bcc
+func (m *MailMessage) GetBcc() []string {
+	if m != nil {
+		return m.Bcc
 	}
 	return nil
 }
 
-func (this *MailMessage) GetSubject() string {
-	if this != nil && this.Subject != nil {
-		return *this.Subject
+func (m *MailMessage) GetSubject() string {
+	if m != nil && m.Subject != nil {
+		return *m.Subject
 	}
 	return ""
 }
 
-func (this *MailMessage) GetTextBody() string {
-	if this != nil && this.TextBody != nil {
-		return *this.TextBody
+func (m *MailMessage) GetTextBody() string {
+	if m != nil && m.TextBody != nil {
+		return *m.TextBody
 	}
 	return ""
 }
 
-func (this *MailMessage) GetHtmlBody() string {
-	if this != nil && this.HtmlBody != nil {
-		return *this.HtmlBody
+func (m *MailMessage) GetHtmlBody() string {
+	if m != nil && m.HtmlBody != nil {
+		return *m.HtmlBody
 	}
 	return ""
 }
 
-func (this *MailMessage) GetAttachment() []*MailAttachment {
-	if this != nil {
-		return this.Attachment
+func (m *MailMessage) GetAttachment() []*MailAttachment {
+	if m != nil {
+		return m.Attachment
 	}
 	return nil
 }
 
-func (this *MailMessage) GetHeader() []*MailHeader {
-	if this != nil {
-		return this.Header
+func (m *MailMessage) GetHeader() []*MailHeader {
+	if m != nil {
+		return m.Header
 	}
 	return nil
 }

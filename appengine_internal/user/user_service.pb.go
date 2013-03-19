@@ -64,9 +64,9 @@ type UserServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *UserServiceError) Reset()         { *this = UserServiceError{} }
-func (this *UserServiceError) String() string { return proto.CompactTextString(this) }
-func (*UserServiceError) ProtoMessage()       {}
+func (m *UserServiceError) Reset()         { *m = UserServiceError{} }
+func (m *UserServiceError) String() string { return proto.CompactTextString(m) }
+func (*UserServiceError) ProtoMessage()    {}
 
 type CreateLoginURLRequest struct {
 	DestinationUrl    *string `protobuf:"bytes,1,req,name=destination_url" json:"destination_url,omitempty"`
@@ -75,27 +75,27 @@ type CreateLoginURLRequest struct {
 	XXX_unrecognized  []byte  `json:"-"`
 }
 
-func (this *CreateLoginURLRequest) Reset()         { *this = CreateLoginURLRequest{} }
-func (this *CreateLoginURLRequest) String() string { return proto.CompactTextString(this) }
-func (*CreateLoginURLRequest) ProtoMessage()       {}
+func (m *CreateLoginURLRequest) Reset()         { *m = CreateLoginURLRequest{} }
+func (m *CreateLoginURLRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateLoginURLRequest) ProtoMessage()    {}
 
-func (this *CreateLoginURLRequest) GetDestinationUrl() string {
-	if this != nil && this.DestinationUrl != nil {
-		return *this.DestinationUrl
+func (m *CreateLoginURLRequest) GetDestinationUrl() string {
+	if m != nil && m.DestinationUrl != nil {
+		return *m.DestinationUrl
 	}
 	return ""
 }
 
-func (this *CreateLoginURLRequest) GetAuthDomain() string {
-	if this != nil && this.AuthDomain != nil {
-		return *this.AuthDomain
+func (m *CreateLoginURLRequest) GetAuthDomain() string {
+	if m != nil && m.AuthDomain != nil {
+		return *m.AuthDomain
 	}
 	return ""
 }
 
-func (this *CreateLoginURLRequest) GetFederatedIdentity() string {
-	if this != nil && this.FederatedIdentity != nil {
-		return *this.FederatedIdentity
+func (m *CreateLoginURLRequest) GetFederatedIdentity() string {
+	if m != nil && m.FederatedIdentity != nil {
+		return *m.FederatedIdentity
 	}
 	return ""
 }
@@ -105,13 +105,13 @@ type CreateLoginURLResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateLoginURLResponse) Reset()         { *this = CreateLoginURLResponse{} }
-func (this *CreateLoginURLResponse) String() string { return proto.CompactTextString(this) }
-func (*CreateLoginURLResponse) ProtoMessage()       {}
+func (m *CreateLoginURLResponse) Reset()         { *m = CreateLoginURLResponse{} }
+func (m *CreateLoginURLResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateLoginURLResponse) ProtoMessage()    {}
 
-func (this *CreateLoginURLResponse) GetLoginUrl() string {
-	if this != nil && this.LoginUrl != nil {
-		return *this.LoginUrl
+func (m *CreateLoginURLResponse) GetLoginUrl() string {
+	if m != nil && m.LoginUrl != nil {
+		return *m.LoginUrl
 	}
 	return ""
 }
@@ -122,20 +122,20 @@ type CreateLogoutURLRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateLogoutURLRequest) Reset()         { *this = CreateLogoutURLRequest{} }
-func (this *CreateLogoutURLRequest) String() string { return proto.CompactTextString(this) }
-func (*CreateLogoutURLRequest) ProtoMessage()       {}
+func (m *CreateLogoutURLRequest) Reset()         { *m = CreateLogoutURLRequest{} }
+func (m *CreateLogoutURLRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateLogoutURLRequest) ProtoMessage()    {}
 
-func (this *CreateLogoutURLRequest) GetDestinationUrl() string {
-	if this != nil && this.DestinationUrl != nil {
-		return *this.DestinationUrl
+func (m *CreateLogoutURLRequest) GetDestinationUrl() string {
+	if m != nil && m.DestinationUrl != nil {
+		return *m.DestinationUrl
 	}
 	return ""
 }
 
-func (this *CreateLogoutURLRequest) GetAuthDomain() string {
-	if this != nil && this.AuthDomain != nil {
-		return *this.AuthDomain
+func (m *CreateLogoutURLRequest) GetAuthDomain() string {
+	if m != nil && m.AuthDomain != nil {
+		return *m.AuthDomain
 	}
 	return ""
 }
@@ -145,13 +145,13 @@ type CreateLogoutURLResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateLogoutURLResponse) Reset()         { *this = CreateLogoutURLResponse{} }
-func (this *CreateLogoutURLResponse) String() string { return proto.CompactTextString(this) }
-func (*CreateLogoutURLResponse) ProtoMessage()       {}
+func (m *CreateLogoutURLResponse) Reset()         { *m = CreateLogoutURLResponse{} }
+func (m *CreateLogoutURLResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateLogoutURLResponse) ProtoMessage()    {}
 
-func (this *CreateLogoutURLResponse) GetLogoutUrl() string {
-	if this != nil && this.LogoutUrl != nil {
-		return *this.LogoutUrl
+func (m *CreateLogoutURLResponse) GetLogoutUrl() string {
+	if m != nil && m.LogoutUrl != nil {
+		return *m.LogoutUrl
 	}
 	return ""
 }
@@ -161,13 +161,13 @@ type GetOAuthUserRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *GetOAuthUserRequest) Reset()         { *this = GetOAuthUserRequest{} }
-func (this *GetOAuthUserRequest) String() string { return proto.CompactTextString(this) }
-func (*GetOAuthUserRequest) ProtoMessage()       {}
+func (m *GetOAuthUserRequest) Reset()         { *m = GetOAuthUserRequest{} }
+func (m *GetOAuthUserRequest) String() string { return proto.CompactTextString(m) }
+func (*GetOAuthUserRequest) ProtoMessage()    {}
 
-func (this *GetOAuthUserRequest) GetScope() string {
-	if this != nil && this.Scope != nil {
-		return *this.Scope
+func (m *GetOAuthUserRequest) GetScope() string {
+	if m != nil && m.Scope != nil {
+		return *m.Scope
 	}
 	return ""
 }
@@ -178,70 +178,78 @@ type GetOAuthUserResponse struct {
 	AuthDomain       *string `protobuf:"bytes,3,req,name=auth_domain" json:"auth_domain,omitempty"`
 	UserOrganization *string `protobuf:"bytes,4,opt,name=user_organization" json:"user_organization,omitempty"`
 	IsAdmin          *bool   `protobuf:"varint,5,opt,name=is_admin,def=0" json:"is_admin,omitempty"`
+	ClientId         *string `protobuf:"bytes,6,opt,name=client_id" json:"client_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *GetOAuthUserResponse) Reset()         { *this = GetOAuthUserResponse{} }
-func (this *GetOAuthUserResponse) String() string { return proto.CompactTextString(this) }
-func (*GetOAuthUserResponse) ProtoMessage()       {}
+func (m *GetOAuthUserResponse) Reset()         { *m = GetOAuthUserResponse{} }
+func (m *GetOAuthUserResponse) String() string { return proto.CompactTextString(m) }
+func (*GetOAuthUserResponse) ProtoMessage()    {}
 
 const Default_GetOAuthUserResponse_IsAdmin bool = false
 
-func (this *GetOAuthUserResponse) GetEmail() string {
-	if this != nil && this.Email != nil {
-		return *this.Email
+func (m *GetOAuthUserResponse) GetEmail() string {
+	if m != nil && m.Email != nil {
+		return *m.Email
 	}
 	return ""
 }
 
-func (this *GetOAuthUserResponse) GetUserId() string {
-	if this != nil && this.UserId != nil {
-		return *this.UserId
+func (m *GetOAuthUserResponse) GetUserId() string {
+	if m != nil && m.UserId != nil {
+		return *m.UserId
 	}
 	return ""
 }
 
-func (this *GetOAuthUserResponse) GetAuthDomain() string {
-	if this != nil && this.AuthDomain != nil {
-		return *this.AuthDomain
+func (m *GetOAuthUserResponse) GetAuthDomain() string {
+	if m != nil && m.AuthDomain != nil {
+		return *m.AuthDomain
 	}
 	return ""
 }
 
-func (this *GetOAuthUserResponse) GetUserOrganization() string {
-	if this != nil && this.UserOrganization != nil {
-		return *this.UserOrganization
+func (m *GetOAuthUserResponse) GetUserOrganization() string {
+	if m != nil && m.UserOrganization != nil {
+		return *m.UserOrganization
 	}
 	return ""
 }
 
-func (this *GetOAuthUserResponse) GetIsAdmin() bool {
-	if this != nil && this.IsAdmin != nil {
-		return *this.IsAdmin
+func (m *GetOAuthUserResponse) GetIsAdmin() bool {
+	if m != nil && m.IsAdmin != nil {
+		return *m.IsAdmin
 	}
 	return Default_GetOAuthUserResponse_IsAdmin
+}
+
+func (m *GetOAuthUserResponse) GetClientId() string {
+	if m != nil && m.ClientId != nil {
+		return *m.ClientId
+	}
+	return ""
 }
 
 type CheckOAuthSignatureRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *CheckOAuthSignatureRequest) Reset()         { *this = CheckOAuthSignatureRequest{} }
-func (this *CheckOAuthSignatureRequest) String() string { return proto.CompactTextString(this) }
-func (*CheckOAuthSignatureRequest) ProtoMessage()       {}
+func (m *CheckOAuthSignatureRequest) Reset()         { *m = CheckOAuthSignatureRequest{} }
+func (m *CheckOAuthSignatureRequest) String() string { return proto.CompactTextString(m) }
+func (*CheckOAuthSignatureRequest) ProtoMessage()    {}
 
 type CheckOAuthSignatureResponse struct {
 	OauthConsumerKey *string `protobuf:"bytes,1,req,name=oauth_consumer_key" json:"oauth_consumer_key,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CheckOAuthSignatureResponse) Reset()         { *this = CheckOAuthSignatureResponse{} }
-func (this *CheckOAuthSignatureResponse) String() string { return proto.CompactTextString(this) }
-func (*CheckOAuthSignatureResponse) ProtoMessage()       {}
+func (m *CheckOAuthSignatureResponse) Reset()         { *m = CheckOAuthSignatureResponse{} }
+func (m *CheckOAuthSignatureResponse) String() string { return proto.CompactTextString(m) }
+func (*CheckOAuthSignatureResponse) ProtoMessage()    {}
 
-func (this *CheckOAuthSignatureResponse) GetOauthConsumerKey() string {
-	if this != nil && this.OauthConsumerKey != nil {
-		return *this.OauthConsumerKey
+func (m *CheckOAuthSignatureResponse) GetOauthConsumerKey() string {
+	if m != nil && m.OauthConsumerKey != nil {
+		return *m.OauthConsumerKey
 	}
 	return ""
 }
@@ -253,27 +261,27 @@ type CreateFederatedLoginRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateFederatedLoginRequest) Reset()         { *this = CreateFederatedLoginRequest{} }
-func (this *CreateFederatedLoginRequest) String() string { return proto.CompactTextString(this) }
-func (*CreateFederatedLoginRequest) ProtoMessage()       {}
+func (m *CreateFederatedLoginRequest) Reset()         { *m = CreateFederatedLoginRequest{} }
+func (m *CreateFederatedLoginRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateFederatedLoginRequest) ProtoMessage()    {}
 
-func (this *CreateFederatedLoginRequest) GetClaimedId() string {
-	if this != nil && this.ClaimedId != nil {
-		return *this.ClaimedId
+func (m *CreateFederatedLoginRequest) GetClaimedId() string {
+	if m != nil && m.ClaimedId != nil {
+		return *m.ClaimedId
 	}
 	return ""
 }
 
-func (this *CreateFederatedLoginRequest) GetContinueUrl() string {
-	if this != nil && this.ContinueUrl != nil {
-		return *this.ContinueUrl
+func (m *CreateFederatedLoginRequest) GetContinueUrl() string {
+	if m != nil && m.ContinueUrl != nil {
+		return *m.ContinueUrl
 	}
 	return ""
 }
 
-func (this *CreateFederatedLoginRequest) GetAuthority() string {
-	if this != nil && this.Authority != nil {
-		return *this.Authority
+func (m *CreateFederatedLoginRequest) GetAuthority() string {
+	if m != nil && m.Authority != nil {
+		return *m.Authority
 	}
 	return ""
 }
@@ -283,13 +291,13 @@ type CreateFederatedLoginResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateFederatedLoginResponse) Reset()         { *this = CreateFederatedLoginResponse{} }
-func (this *CreateFederatedLoginResponse) String() string { return proto.CompactTextString(this) }
-func (*CreateFederatedLoginResponse) ProtoMessage()       {}
+func (m *CreateFederatedLoginResponse) Reset()         { *m = CreateFederatedLoginResponse{} }
+func (m *CreateFederatedLoginResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateFederatedLoginResponse) ProtoMessage()    {}
 
-func (this *CreateFederatedLoginResponse) GetRedirectedUrl() string {
-	if this != nil && this.RedirectedUrl != nil {
-		return *this.RedirectedUrl
+func (m *CreateFederatedLoginResponse) GetRedirectedUrl() string {
+	if m != nil && m.RedirectedUrl != nil {
+		return *m.RedirectedUrl
 	}
 	return ""
 }
@@ -299,13 +307,13 @@ type CreateFederatedLogoutRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateFederatedLogoutRequest) Reset()         { *this = CreateFederatedLogoutRequest{} }
-func (this *CreateFederatedLogoutRequest) String() string { return proto.CompactTextString(this) }
-func (*CreateFederatedLogoutRequest) ProtoMessage()       {}
+func (m *CreateFederatedLogoutRequest) Reset()         { *m = CreateFederatedLogoutRequest{} }
+func (m *CreateFederatedLogoutRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateFederatedLogoutRequest) ProtoMessage()    {}
 
-func (this *CreateFederatedLogoutRequest) GetDestinationUrl() string {
-	if this != nil && this.DestinationUrl != nil {
-		return *this.DestinationUrl
+func (m *CreateFederatedLogoutRequest) GetDestinationUrl() string {
+	if m != nil && m.DestinationUrl != nil {
+		return *m.DestinationUrl
 	}
 	return ""
 }
@@ -315,13 +323,13 @@ type CreateFederatedLogoutResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateFederatedLogoutResponse) Reset()         { *this = CreateFederatedLogoutResponse{} }
-func (this *CreateFederatedLogoutResponse) String() string { return proto.CompactTextString(this) }
-func (*CreateFederatedLogoutResponse) ProtoMessage()       {}
+func (m *CreateFederatedLogoutResponse) Reset()         { *m = CreateFederatedLogoutResponse{} }
+func (m *CreateFederatedLogoutResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateFederatedLogoutResponse) ProtoMessage()    {}
 
-func (this *CreateFederatedLogoutResponse) GetLogoutUrl() string {
-	if this != nil && this.LogoutUrl != nil {
-		return *this.LogoutUrl
+func (m *CreateFederatedLogoutResponse) GetLogoutUrl() string {
+	if m != nil && m.LogoutUrl != nil {
+		return *m.LogoutUrl
 	}
 	return ""
 }

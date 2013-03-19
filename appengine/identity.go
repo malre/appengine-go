@@ -35,7 +35,7 @@ func BackendInstance(c Context) (name string, index int) {
 // If index is -1, BackendHostname returns the load-balancing hostname for
 // the backend.
 func BackendHostname(c Context, name string, index int) string {
-	return appengine_internal.BackendHostname(c.Request(), name, index)
+	return appengine_internal.BackendHostname(c, name, index)
 }
 
 // DefaultVersionHostname returns the standard hostname of the default version

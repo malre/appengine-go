@@ -14,7 +14,10 @@ import (
 	pb "appengine_internal/datastore"
 )
 
-var typeOfByteSlice = reflect.TypeOf([]byte(nil))
+var (
+	typeOfByteSlice = reflect.TypeOf([]byte(nil))
+	typeOfTime      = reflect.TypeOf(time.Time{})
+)
 
 // typeMismatchReason returns a string explaining why the property p could not
 // be stored in an entity field of type v.Type().
@@ -41,18 +44,51 @@ func typeMismatchReason(p Property, v reflect.Value) string {
 	return fmt.Sprintf("type mismatch: %s versus %v", entityType, v.Type())
 }
 
-func loadProperty(codec *structCodec, structValue reflect.Value, p Property, requireSlice bool) string {
-	index, ok := codec.byName[p.Name]
-	if !ok {
-		return "no such struct field"
+type propertyLoader struct {
+	// m holds the number of times a substruct field like "Foo.Bar.Baz" has
+	// been seen so far. The map is constructed lazily.
+	m map[string]int
+}
+
+func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p Property, requireSlice bool) string {
+	var v reflect.Value
+	// Traverse a struct's struct-typed fields.
+	for name := p.Name; ; {
+		decoder, ok := codec.byName[name]
+		if !ok {
+			return "no such struct field"
+		}
+		v = structValue.Field(decoder.index)
+		if !v.IsValid() {
+			return "no such struct field"
+		}
+		if !v.CanSet() {
+			return "cannot set struct field"
+		}
+
+		if decoder.substructCodec == nil {
+			break
+		}
+
+		if v.Kind() == reflect.Slice {
+			if l.m == nil {
+				l.m = make(map[string]int)
+			}
+			index := l.m[p.Name]
+			l.m[p.Name] = index + 1
+			for v.Len() <= index {
+				v.Set(reflect.Append(v, reflect.New(v.Type().Elem()).Elem()))
+			}
+			structValue = v.Index(index)
+			requireSlice = false
+		} else {
+			structValue = v
+		}
+		// Strip the "I." from "I.X".
+		name = name[len(codec.byIndex[decoder.index].name):]
+		codec = decoder.substructCodec
 	}
-	v := structValue.Field(index)
-	if !v.IsValid() {
-		return "no such struct field"
-	}
-	if !v.CanSet() {
-		return "cannot set struct field"
-	}
+
 	var slice reflect.Value
 	if v.Kind() == reflect.Slice && v.Type() != typeOfByteSlice {
 		slice = v
@@ -149,8 +185,9 @@ func loadEntity(dst interface{}, src *pb.EntityProto) (err error) {
 
 func (s structPLS) Load(c <-chan Property) error {
 	var fieldName, reason string
+	var l propertyLoader
 	for p := range c {
-		if errStr := loadProperty(&s.codec, s.v, p, p.Multiple); errStr != "" {
+		if errStr := l.load(s.codec, s.v, p, p.Multiple); errStr != "" {
 			// We don't return early, as we try to load as many properties as possible.
 			// It is valid to load an entity into a struct that cannot fully represent it.
 			// That case returns an error, but the caller is free to ignore it.

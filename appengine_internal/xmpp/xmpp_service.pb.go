@@ -154,9 +154,9 @@ type XmppServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *XmppServiceError) Reset()         { *this = XmppServiceError{} }
-func (this *XmppServiceError) String() string { return proto.CompactTextString(this) }
-func (*XmppServiceError) ProtoMessage()       {}
+func (m *XmppServiceError) Reset()         { *m = XmppServiceError{} }
+func (m *XmppServiceError) String() string { return proto.CompactTextString(m) }
+func (*XmppServiceError) ProtoMessage()    {}
 
 type PresenceRequest struct {
 	Jid              *string `protobuf:"bytes,1,req,name=jid" json:"jid,omitempty"`
@@ -164,20 +164,20 @@ type PresenceRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *PresenceRequest) Reset()         { *this = PresenceRequest{} }
-func (this *PresenceRequest) String() string { return proto.CompactTextString(this) }
-func (*PresenceRequest) ProtoMessage()       {}
+func (m *PresenceRequest) Reset()         { *m = PresenceRequest{} }
+func (m *PresenceRequest) String() string { return proto.CompactTextString(m) }
+func (*PresenceRequest) ProtoMessage()    {}
 
-func (this *PresenceRequest) GetJid() string {
-	if this != nil && this.Jid != nil {
-		return *this.Jid
+func (m *PresenceRequest) GetJid() string {
+	if m != nil && m.Jid != nil {
+		return *m.Jid
 	}
 	return ""
 }
 
-func (this *PresenceRequest) GetFromJid() string {
-	if this != nil && this.FromJid != nil {
-		return *this.FromJid
+func (m *PresenceRequest) GetFromJid() string {
+	if m != nil && m.FromJid != nil {
+		return *m.FromJid
 	}
 	return ""
 }
@@ -189,27 +189,27 @@ type PresenceResponse struct {
 	XXX_unrecognized []byte                 `json:"-"`
 }
 
-func (this *PresenceResponse) Reset()         { *this = PresenceResponse{} }
-func (this *PresenceResponse) String() string { return proto.CompactTextString(this) }
-func (*PresenceResponse) ProtoMessage()       {}
+func (m *PresenceResponse) Reset()         { *m = PresenceResponse{} }
+func (m *PresenceResponse) String() string { return proto.CompactTextString(m) }
+func (*PresenceResponse) ProtoMessage()    {}
 
-func (this *PresenceResponse) GetIsAvailable() bool {
-	if this != nil && this.IsAvailable != nil {
-		return *this.IsAvailable
+func (m *PresenceResponse) GetIsAvailable() bool {
+	if m != nil && m.IsAvailable != nil {
+		return *m.IsAvailable
 	}
 	return false
 }
 
-func (this *PresenceResponse) GetPresence() PresenceResponse_SHOW {
-	if this != nil && this.Presence != nil {
-		return *this.Presence
+func (m *PresenceResponse) GetPresence() PresenceResponse_SHOW {
+	if m != nil && m.Presence != nil {
+		return *m.Presence
 	}
 	return 0
 }
 
-func (this *PresenceResponse) GetValid() bool {
-	if this != nil && this.Valid != nil {
-		return *this.Valid
+func (m *PresenceResponse) GetValid() bool {
+	if m != nil && m.Valid != nil {
+		return *m.Valid
 	}
 	return false
 }
@@ -220,20 +220,20 @@ type BulkPresenceRequest struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *BulkPresenceRequest) Reset()         { *this = BulkPresenceRequest{} }
-func (this *BulkPresenceRequest) String() string { return proto.CompactTextString(this) }
-func (*BulkPresenceRequest) ProtoMessage()       {}
+func (m *BulkPresenceRequest) Reset()         { *m = BulkPresenceRequest{} }
+func (m *BulkPresenceRequest) String() string { return proto.CompactTextString(m) }
+func (*BulkPresenceRequest) ProtoMessage()    {}
 
-func (this *BulkPresenceRequest) GetJid() []string {
-	if this != nil {
-		return this.Jid
+func (m *BulkPresenceRequest) GetJid() []string {
+	if m != nil {
+		return m.Jid
 	}
 	return nil
 }
 
-func (this *BulkPresenceRequest) GetFromJid() string {
-	if this != nil && this.FromJid != nil {
-		return *this.FromJid
+func (m *BulkPresenceRequest) GetFromJid() string {
+	if m != nil && m.FromJid != nil {
+		return *m.FromJid
 	}
 	return ""
 }
@@ -243,13 +243,13 @@ type BulkPresenceResponse struct {
 	XXX_unrecognized []byte              `json:"-"`
 }
 
-func (this *BulkPresenceResponse) Reset()         { *this = BulkPresenceResponse{} }
-func (this *BulkPresenceResponse) String() string { return proto.CompactTextString(this) }
-func (*BulkPresenceResponse) ProtoMessage()       {}
+func (m *BulkPresenceResponse) Reset()         { *m = BulkPresenceResponse{} }
+func (m *BulkPresenceResponse) String() string { return proto.CompactTextString(m) }
+func (*BulkPresenceResponse) ProtoMessage()    {}
 
-func (this *BulkPresenceResponse) GetPresenceResponse() []*PresenceResponse {
-	if this != nil {
-		return this.PresenceResponse
+func (m *BulkPresenceResponse) GetPresenceResponse() []*PresenceResponse {
+	if m != nil {
+		return m.PresenceResponse
 	}
 	return nil
 }
@@ -263,44 +263,44 @@ type XmppMessageRequest struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *XmppMessageRequest) Reset()         { *this = XmppMessageRequest{} }
-func (this *XmppMessageRequest) String() string { return proto.CompactTextString(this) }
-func (*XmppMessageRequest) ProtoMessage()       {}
+func (m *XmppMessageRequest) Reset()         { *m = XmppMessageRequest{} }
+func (m *XmppMessageRequest) String() string { return proto.CompactTextString(m) }
+func (*XmppMessageRequest) ProtoMessage()    {}
 
 const Default_XmppMessageRequest_RawXml bool = false
 const Default_XmppMessageRequest_Type string = "chat"
 
-func (this *XmppMessageRequest) GetJid() []string {
-	if this != nil {
-		return this.Jid
+func (m *XmppMessageRequest) GetJid() []string {
+	if m != nil {
+		return m.Jid
 	}
 	return nil
 }
 
-func (this *XmppMessageRequest) GetBody() string {
-	if this != nil && this.Body != nil {
-		return *this.Body
+func (m *XmppMessageRequest) GetBody() string {
+	if m != nil && m.Body != nil {
+		return *m.Body
 	}
 	return ""
 }
 
-func (this *XmppMessageRequest) GetRawXml() bool {
-	if this != nil && this.RawXml != nil {
-		return *this.RawXml
+func (m *XmppMessageRequest) GetRawXml() bool {
+	if m != nil && m.RawXml != nil {
+		return *m.RawXml
 	}
 	return Default_XmppMessageRequest_RawXml
 }
 
-func (this *XmppMessageRequest) GetType() string {
-	if this != nil && this.Type != nil {
-		return *this.Type
+func (m *XmppMessageRequest) GetType() string {
+	if m != nil && m.Type != nil {
+		return *m.Type
 	}
 	return Default_XmppMessageRequest_Type
 }
 
-func (this *XmppMessageRequest) GetFromJid() string {
-	if this != nil && this.FromJid != nil {
-		return *this.FromJid
+func (m *XmppMessageRequest) GetFromJid() string {
+	if m != nil && m.FromJid != nil {
+		return *m.FromJid
 	}
 	return ""
 }
@@ -310,13 +310,13 @@ type XmppMessageResponse struct {
 	XXX_unrecognized []byte                                  `json:"-"`
 }
 
-func (this *XmppMessageResponse) Reset()         { *this = XmppMessageResponse{} }
-func (this *XmppMessageResponse) String() string { return proto.CompactTextString(this) }
-func (*XmppMessageResponse) ProtoMessage()       {}
+func (m *XmppMessageResponse) Reset()         { *m = XmppMessageResponse{} }
+func (m *XmppMessageResponse) String() string { return proto.CompactTextString(m) }
+func (*XmppMessageResponse) ProtoMessage()    {}
 
-func (this *XmppMessageResponse) GetStatus() []XmppMessageResponse_XmppMessageStatus {
-	if this != nil {
-		return this.Status
+func (m *XmppMessageResponse) GetStatus() []XmppMessageResponse_XmppMessageStatus {
+	if m != nil {
+		return m.Status
 	}
 	return nil
 }
@@ -330,41 +330,41 @@ type XmppSendPresenceRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *XmppSendPresenceRequest) Reset()         { *this = XmppSendPresenceRequest{} }
-func (this *XmppSendPresenceRequest) String() string { return proto.CompactTextString(this) }
-func (*XmppSendPresenceRequest) ProtoMessage()       {}
+func (m *XmppSendPresenceRequest) Reset()         { *m = XmppSendPresenceRequest{} }
+func (m *XmppSendPresenceRequest) String() string { return proto.CompactTextString(m) }
+func (*XmppSendPresenceRequest) ProtoMessage()    {}
 
-func (this *XmppSendPresenceRequest) GetJid() string {
-	if this != nil && this.Jid != nil {
-		return *this.Jid
+func (m *XmppSendPresenceRequest) GetJid() string {
+	if m != nil && m.Jid != nil {
+		return *m.Jid
 	}
 	return ""
 }
 
-func (this *XmppSendPresenceRequest) GetType() string {
-	if this != nil && this.Type != nil {
-		return *this.Type
+func (m *XmppSendPresenceRequest) GetType() string {
+	if m != nil && m.Type != nil {
+		return *m.Type
 	}
 	return ""
 }
 
-func (this *XmppSendPresenceRequest) GetShow() string {
-	if this != nil && this.Show != nil {
-		return *this.Show
+func (m *XmppSendPresenceRequest) GetShow() string {
+	if m != nil && m.Show != nil {
+		return *m.Show
 	}
 	return ""
 }
 
-func (this *XmppSendPresenceRequest) GetStatus() string {
-	if this != nil && this.Status != nil {
-		return *this.Status
+func (m *XmppSendPresenceRequest) GetStatus() string {
+	if m != nil && m.Status != nil {
+		return *m.Status
 	}
 	return ""
 }
 
-func (this *XmppSendPresenceRequest) GetFromJid() string {
-	if this != nil && this.FromJid != nil {
-		return *this.FromJid
+func (m *XmppSendPresenceRequest) GetFromJid() string {
+	if m != nil && m.FromJid != nil {
+		return *m.FromJid
 	}
 	return ""
 }
@@ -373,9 +373,9 @@ type XmppSendPresenceResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *XmppSendPresenceResponse) Reset()         { *this = XmppSendPresenceResponse{} }
-func (this *XmppSendPresenceResponse) String() string { return proto.CompactTextString(this) }
-func (*XmppSendPresenceResponse) ProtoMessage()       {}
+func (m *XmppSendPresenceResponse) Reset()         { *m = XmppSendPresenceResponse{} }
+func (m *XmppSendPresenceResponse) String() string { return proto.CompactTextString(m) }
+func (*XmppSendPresenceResponse) ProtoMessage()    {}
 
 type XmppInviteRequest struct {
 	Jid              *string `protobuf:"bytes,1,req,name=jid" json:"jid,omitempty"`
@@ -383,20 +383,20 @@ type XmppInviteRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *XmppInviteRequest) Reset()         { *this = XmppInviteRequest{} }
-func (this *XmppInviteRequest) String() string { return proto.CompactTextString(this) }
-func (*XmppInviteRequest) ProtoMessage()       {}
+func (m *XmppInviteRequest) Reset()         { *m = XmppInviteRequest{} }
+func (m *XmppInviteRequest) String() string { return proto.CompactTextString(m) }
+func (*XmppInviteRequest) ProtoMessage()    {}
 
-func (this *XmppInviteRequest) GetJid() string {
-	if this != nil && this.Jid != nil {
-		return *this.Jid
+func (m *XmppInviteRequest) GetJid() string {
+	if m != nil && m.Jid != nil {
+		return *m.Jid
 	}
 	return ""
 }
 
-func (this *XmppInviteRequest) GetFromJid() string {
-	if this != nil && this.FromJid != nil {
-		return *this.FromJid
+func (m *XmppInviteRequest) GetFromJid() string {
+	if m != nil && m.FromJid != nil {
+		return *m.FromJid
 	}
 	return ""
 }
@@ -405,9 +405,9 @@ type XmppInviteResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *XmppInviteResponse) Reset()         { *this = XmppInviteResponse{} }
-func (this *XmppInviteResponse) String() string { return proto.CompactTextString(this) }
-func (*XmppInviteResponse) ProtoMessage()       {}
+func (m *XmppInviteResponse) Reset()         { *m = XmppInviteResponse{} }
+func (m *XmppInviteResponse) String() string { return proto.CompactTextString(m) }
+func (*XmppInviteResponse) ProtoMessage()    {}
 
 func init() {
 	proto.RegisterEnum("appengine.XmppServiceError_ErrorCode", XmppServiceError_ErrorCode_name, XmppServiceError_ErrorCode_value)

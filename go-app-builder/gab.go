@@ -30,6 +30,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 )
 
@@ -44,6 +45,7 @@ var (
 	goRoot          = flag.String("goroot", os.Getenv("GOROOT"), "Root of the Go installation.")
 	ldFlags         = flag.String("ldflags", "", "Comma-separated list of extra linker flags.")
 	logFile         = flag.String("log_file", "", "If set, a file to write messages to.")
+	noBuildFiles    = flag.String("nobuild_files", "", "Regular expression matching files to not build.")
 	pkgDupes        = flag.String("pkg_dupe_whitelist", "", "Comma-separated list of packages that are okay to duplicate.")
 	printExtras     = flag.Bool("print_extras", false, "Whether to skip building and just print extra-app files.")
 	printExtrasHash = flag.Bool("print_extras_hash", false, "Whether to skip building and just print a hash of the extra-app files.")
@@ -160,6 +162,10 @@ func buildApp(app *App) error {
 		// Use a less efficient, but stricter malloc/free.
 		"MALLOC_CHECK_=3",
 	}
+	// Since we pass -I *workDir and -L *workDir to 6g and 6l respectively,
+	// we must also pass -I/-L $GOROOT/pkg/$GOOS_$GOARCH to them before that
+	// to ensure that the $GOROOT versions of dupe packages take precedence.
+	goRootSearchPath := filepath.Join(*goRoot, "pkg", runtime.GOOS+"_"+runtime.GOARCH)
 
 	// Compile phase.
 	compiler := toolPath(*arch + "g")
@@ -172,6 +178,7 @@ func buildApp(app *App) error {
 		}
 		args := []string{
 			compiler,
+			"-I", goRootSearchPath,
 			"-I", *workDir,
 			"-o", objectFile,
 		}
@@ -191,7 +198,10 @@ func buildApp(app *App) error {
 			for _, f := range pkg.Files {
 				args = append(args, filepath.Join(base, f.Name))
 			}
-			if len(pkg.Files) > 0 && len(extra) > 0 {
+			// Don't generate synthetic extra imports for dupe packages.
+			// They won't be linked into the binary anyway,
+			// and this avoids triggering a circular import.
+			if len(pkg.Files) > 0 && len(extra) > 0 && !pkg.Dupe {
 				// synthetic extra imports
 				extraImportsStr, err := MakeExtraImports(pkg.Files[0].PackageName, extra)
 				if err != nil {
@@ -252,6 +262,7 @@ func buildApp(app *App) error {
 	binaryFile := filepath.Join(*workDir, *binaryName)
 	args := []string{
 		linker,
+		"-L", goRootSearchPath,
 		"-L", *workDir,
 		"-o", binaryFile,
 		"-w", // disable dwarf generation
@@ -304,10 +315,12 @@ func printExtraFilesHash(w io.Writer, app *App) {
 	// of all the extra files. This is sufficient information for the dev_appserver
 	// to be able to decide whether a rebuild is necessary based on GOPATH changes.
 	h := sha1.New()
+	sort.Sort(byImportPath(app.Packages)) // be deterministic
 	for _, pkg := range app.Packages {
 		if pkg.BaseDir == "" {
 			continue // app file
 		}
+		sort.Sort(byFileName(pkg.Files)) // be deterministic
 		for _, f := range pkg.Files {
 			dst := filepath.Join(pkg.BaseDir, f.Name)
 			fi, err := os.Stat(dst)

@@ -262,29 +262,29 @@ type Transaction struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *Transaction) Reset()         { *this = Transaction{} }
-func (this *Transaction) String() string { return proto.CompactTextString(this) }
-func (*Transaction) ProtoMessage()       {}
+func (m *Transaction) Reset()         { *m = Transaction{} }
+func (m *Transaction) String() string { return proto.CompactTextString(m) }
+func (*Transaction) ProtoMessage()    {}
 
 const Default_Transaction_MarkChanges bool = false
 
-func (this *Transaction) GetHandle() uint64 {
-	if this != nil && this.Handle != nil {
-		return *this.Handle
+func (m *Transaction) GetHandle() uint64 {
+	if m != nil && m.Handle != nil {
+		return *m.Handle
 	}
 	return 0
 }
 
-func (this *Transaction) GetApp() string {
-	if this != nil && this.App != nil {
-		return *this.App
+func (m *Transaction) GetApp() string {
+	if m != nil && m.App != nil {
+		return *m.App
 	}
 	return ""
 }
 
-func (this *Transaction) GetMarkChanges() bool {
-	if this != nil && this.MarkChanges != nil {
-		return *this.MarkChanges
+func (m *Transaction) GetMarkChanges() bool {
+	if m != nil && m.MarkChanges != nil {
+		return *m.MarkChanges
 	}
 	return Default_Transaction_MarkChanges
 }
@@ -293,24 +293,24 @@ type TaskQueueServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueServiceError) Reset()         { *this = TaskQueueServiceError{} }
-func (this *TaskQueueServiceError) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueServiceError) ProtoMessage()       {}
+func (m *TaskQueueServiceError) Reset()         { *m = TaskQueueServiceError{} }
+func (m *TaskQueueServiceError) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueServiceError) ProtoMessage()    {}
 
 type TaskPayload struct {
 	XXX_extensions   map[int32]proto.Extension `json:"-"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
 
-func (this *TaskPayload) Reset()         { *this = TaskPayload{} }
-func (this *TaskPayload) String() string { return proto.CompactTextString(this) }
-func (*TaskPayload) ProtoMessage()       {}
+func (m *TaskPayload) Reset()         { *m = TaskPayload{} }
+func (m *TaskPayload) String() string { return proto.CompactTextString(m) }
+func (*TaskPayload) ProtoMessage()    {}
 
-func (this *TaskPayload) Marshal() ([]byte, error) {
-	return proto.MarshalMessageSet(this.ExtensionMap())
+func (m *TaskPayload) Marshal() ([]byte, error) {
+	return proto.MarshalMessageSet(m.ExtensionMap())
 }
-func (this *TaskPayload) Unmarshal(buf []byte) error {
-	return proto.UnmarshalMessageSet(buf, this.ExtensionMap())
+func (m *TaskPayload) Unmarshal(buf []byte) error {
+	return proto.UnmarshalMessageSet(buf, m.ExtensionMap())
 }
 
 // ensure TaskPayload satisfies proto.Marshaler and proto.Unmarshaler
@@ -324,11 +324,11 @@ var extRange_TaskPayload = []proto.ExtensionRange{
 func (*TaskPayload) ExtensionRangeArray() []proto.ExtensionRange {
 	return extRange_TaskPayload
 }
-func (this *TaskPayload) ExtensionMap() map[int32]proto.Extension {
-	if this.XXX_extensions == nil {
-		this.XXX_extensions = make(map[int32]proto.Extension)
+func (m *TaskPayload) ExtensionMap() map[int32]proto.Extension {
+	if m.XXX_extensions == nil {
+		m.XXX_extensions = make(map[int32]proto.Extension)
 	}
-	return this.XXX_extensions
+	return m.XXX_extensions
 }
 
 type TaskQueueRetryParameters struct {
@@ -340,45 +340,45 @@ type TaskQueueRetryParameters struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *TaskQueueRetryParameters) Reset()         { *this = TaskQueueRetryParameters{} }
-func (this *TaskQueueRetryParameters) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueRetryParameters) ProtoMessage()       {}
+func (m *TaskQueueRetryParameters) Reset()         { *m = TaskQueueRetryParameters{} }
+func (m *TaskQueueRetryParameters) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueRetryParameters) ProtoMessage()    {}
 
 const Default_TaskQueueRetryParameters_MinBackoffSec float64 = 0.1
 const Default_TaskQueueRetryParameters_MaxBackoffSec float64 = 3600
 const Default_TaskQueueRetryParameters_MaxDoublings int32 = 16
 
-func (this *TaskQueueRetryParameters) GetRetryLimit() int32 {
-	if this != nil && this.RetryLimit != nil {
-		return *this.RetryLimit
+func (m *TaskQueueRetryParameters) GetRetryLimit() int32 {
+	if m != nil && m.RetryLimit != nil {
+		return *m.RetryLimit
 	}
 	return 0
 }
 
-func (this *TaskQueueRetryParameters) GetAgeLimitSec() int64 {
-	if this != nil && this.AgeLimitSec != nil {
-		return *this.AgeLimitSec
+func (m *TaskQueueRetryParameters) GetAgeLimitSec() int64 {
+	if m != nil && m.AgeLimitSec != nil {
+		return *m.AgeLimitSec
 	}
 	return 0
 }
 
-func (this *TaskQueueRetryParameters) GetMinBackoffSec() float64 {
-	if this != nil && this.MinBackoffSec != nil {
-		return *this.MinBackoffSec
+func (m *TaskQueueRetryParameters) GetMinBackoffSec() float64 {
+	if m != nil && m.MinBackoffSec != nil {
+		return *m.MinBackoffSec
 	}
 	return Default_TaskQueueRetryParameters_MinBackoffSec
 }
 
-func (this *TaskQueueRetryParameters) GetMaxBackoffSec() float64 {
-	if this != nil && this.MaxBackoffSec != nil {
-		return *this.MaxBackoffSec
+func (m *TaskQueueRetryParameters) GetMaxBackoffSec() float64 {
+	if m != nil && m.MaxBackoffSec != nil {
+		return *m.MaxBackoffSec
 	}
 	return Default_TaskQueueRetryParameters_MaxBackoffSec
 }
 
-func (this *TaskQueueRetryParameters) GetMaxDoublings() int32 {
-	if this != nil && this.MaxDoublings != nil {
-		return *this.MaxDoublings
+func (m *TaskQueueRetryParameters) GetMaxDoublings() int32 {
+	if m != nil && m.MaxDoublings != nil {
+		return *m.MaxDoublings
 	}
 	return Default_TaskQueueRetryParameters_MaxDoublings
 }
@@ -389,20 +389,20 @@ type TaskQueueAcl struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *TaskQueueAcl) Reset()         { *this = TaskQueueAcl{} }
-func (this *TaskQueueAcl) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueAcl) ProtoMessage()       {}
+func (m *TaskQueueAcl) Reset()         { *m = TaskQueueAcl{} }
+func (m *TaskQueueAcl) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueAcl) ProtoMessage()    {}
 
-func (this *TaskQueueAcl) GetUserEmail() [][]byte {
-	if this != nil {
-		return this.UserEmail
+func (m *TaskQueueAcl) GetUserEmail() [][]byte {
+	if m != nil {
+		return m.UserEmail
 	}
 	return nil
 }
 
-func (this *TaskQueueAcl) GetWriterEmail() [][]byte {
-	if this != nil {
-		return this.WriterEmail
+func (m *TaskQueueAcl) GetWriterEmail() [][]byte {
+	if m != nil {
+		return m.WriterEmail
 	}
 	return nil
 }
@@ -413,20 +413,20 @@ type TaskQueueHttpHeader struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueHttpHeader) Reset()         { *this = TaskQueueHttpHeader{} }
-func (this *TaskQueueHttpHeader) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueHttpHeader) ProtoMessage()       {}
+func (m *TaskQueueHttpHeader) Reset()         { *m = TaskQueueHttpHeader{} }
+func (m *TaskQueueHttpHeader) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueHttpHeader) ProtoMessage()    {}
 
-func (this *TaskQueueHttpHeader) GetKey() []byte {
-	if this != nil {
-		return this.Key
+func (m *TaskQueueHttpHeader) GetKey() []byte {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *TaskQueueHttpHeader) GetValue() []byte {
-	if this != nil {
-		return this.Value
+func (m *TaskQueueHttpHeader) GetValue() []byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
@@ -435,9 +435,9 @@ type TaskQueueMode struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueMode) Reset()         { *this = TaskQueueMode{} }
-func (this *TaskQueueMode) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueMode) ProtoMessage()       {}
+func (m *TaskQueueMode) Reset()         { *m = TaskQueueMode{} }
+func (m *TaskQueueMode) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueMode) ProtoMessage()    {}
 
 type TaskQueueAddRequest struct {
 	QueueName        []byte                             `protobuf:"bytes,1,req,name=queue_name" json:"queue_name,omitempty"`
@@ -458,156 +458,158 @@ type TaskQueueAddRequest struct {
 	XXX_unrecognized []byte                             `json:"-"`
 }
 
-func (this *TaskQueueAddRequest) Reset()         { *this = TaskQueueAddRequest{} }
-func (this *TaskQueueAddRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueAddRequest) ProtoMessage()       {}
+func (m *TaskQueueAddRequest) Reset()         { *m = TaskQueueAddRequest{} }
+func (m *TaskQueueAddRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueAddRequest) ProtoMessage()    {}
 
 const Default_TaskQueueAddRequest_Method TaskQueueAddRequest_RequestMethod = TaskQueueAddRequest_POST
 const Default_TaskQueueAddRequest_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
 
-func (this *TaskQueueAddRequest) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueueAddRequest) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest) GetTaskName() []byte {
-	if this != nil {
-		return this.TaskName
+func (m *TaskQueueAddRequest) GetTaskName() []byte {
+	if m != nil {
+		return m.TaskName
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest) GetEtaUsec() int64 {
-	if this != nil && this.EtaUsec != nil {
-		return *this.EtaUsec
+func (m *TaskQueueAddRequest) GetEtaUsec() int64 {
+	if m != nil && m.EtaUsec != nil {
+		return *m.EtaUsec
 	}
 	return 0
 }
 
-func (this *TaskQueueAddRequest) GetMethod() TaskQueueAddRequest_RequestMethod {
-	if this != nil && this.Method != nil {
-		return *this.Method
+func (m *TaskQueueAddRequest) GetMethod() TaskQueueAddRequest_RequestMethod {
+	if m != nil && m.Method != nil {
+		return *m.Method
 	}
 	return Default_TaskQueueAddRequest_Method
 }
 
-func (this *TaskQueueAddRequest) GetUrl() []byte {
-	if this != nil {
-		return this.Url
+func (m *TaskQueueAddRequest) GetUrl() []byte {
+	if m != nil {
+		return m.Url
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest) GetHeader() []*TaskQueueAddRequest_Header {
-	if this != nil {
-		return this.Header
+func (m *TaskQueueAddRequest) GetHeader() []*TaskQueueAddRequest_Header {
+	if m != nil {
+		return m.Header
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest) GetBody() []byte {
-	if this != nil {
-		return this.Body
+func (m *TaskQueueAddRequest) GetBody() []byte {
+	if m != nil {
+		return m.Body
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest) GetTransaction() *Transaction {
-	if this != nil {
-		return this.Transaction
+func (m *TaskQueueAddRequest) GetTransaction() *Transaction {
+	if m != nil {
+		return m.Transaction
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueueAddRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest) GetCrontimetable() *TaskQueueAddRequest_CronTimetable {
-	if this != nil {
-		return this.Crontimetable
+func (m *TaskQueueAddRequest) GetCrontimetable() *TaskQueueAddRequest_CronTimetable {
+	if m != nil {
+		return m.Crontimetable
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest) GetDescription() []byte {
-	if this != nil {
-		return this.Description
+func (m *TaskQueueAddRequest) GetDescription() []byte {
+	if m != nil {
+		return m.Description
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest) GetPayload() *TaskPayload {
-	if this != nil {
-		return this.Payload
+func (m *TaskQueueAddRequest) GetPayload() *TaskPayload {
+	if m != nil {
+		return m.Payload
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest) GetRetryParameters() *TaskQueueRetryParameters {
-	if this != nil {
-		return this.RetryParameters
+func (m *TaskQueueAddRequest) GetRetryParameters() *TaskQueueRetryParameters {
+	if m != nil {
+		return m.RetryParameters
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest) GetMode() TaskQueueMode_Mode {
-	if this != nil && this.Mode != nil {
-		return *this.Mode
+func (m *TaskQueueAddRequest) GetMode() TaskQueueMode_Mode {
+	if m != nil && m.Mode != nil {
+		return *m.Mode
 	}
 	return Default_TaskQueueAddRequest_Mode
 }
 
-func (this *TaskQueueAddRequest) GetTag() []byte {
-	if this != nil {
-		return this.Tag
+func (m *TaskQueueAddRequest) GetTag() []byte {
+	if m != nil {
+		return m.Tag
 	}
 	return nil
 }
 
 type TaskQueueAddRequest_Header struct {
-	Key   []byte `protobuf:"bytes,7,req,name=key" json:"key,omitempty"`
-	Value []byte `protobuf:"bytes,8,req,name=value" json:"value,omitempty"`
+	Key              []byte `protobuf:"bytes,7,req,name=key" json:"key,omitempty"`
+	Value            []byte `protobuf:"bytes,8,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueAddRequest_Header) Reset() { *this = TaskQueueAddRequest_Header{} }
+func (m *TaskQueueAddRequest_Header) Reset() { *m = TaskQueueAddRequest_Header{} }
 
-func (this *TaskQueueAddRequest_Header) GetKey() []byte {
-	if this != nil {
-		return this.Key
+func (m *TaskQueueAddRequest_Header) GetKey() []byte {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest_Header) GetValue() []byte {
-	if this != nil {
-		return this.Value
+func (m *TaskQueueAddRequest_Header) GetValue() []byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
 
 type TaskQueueAddRequest_CronTimetable struct {
-	Schedule []byte `protobuf:"bytes,13,req,name=schedule" json:"schedule,omitempty"`
-	Timezone []byte `protobuf:"bytes,14,req,name=timezone" json:"timezone,omitempty"`
+	Schedule         []byte `protobuf:"bytes,13,req,name=schedule" json:"schedule,omitempty"`
+	Timezone         []byte `protobuf:"bytes,14,req,name=timezone" json:"timezone,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueAddRequest_CronTimetable) Reset() { *this = TaskQueueAddRequest_CronTimetable{} }
+func (m *TaskQueueAddRequest_CronTimetable) Reset() { *m = TaskQueueAddRequest_CronTimetable{} }
 
-func (this *TaskQueueAddRequest_CronTimetable) GetSchedule() []byte {
-	if this != nil {
-		return this.Schedule
+func (m *TaskQueueAddRequest_CronTimetable) GetSchedule() []byte {
+	if m != nil {
+		return m.Schedule
 	}
 	return nil
 }
 
-func (this *TaskQueueAddRequest_CronTimetable) GetTimezone() []byte {
-	if this != nil {
-		return this.Timezone
+func (m *TaskQueueAddRequest_CronTimetable) GetTimezone() []byte {
+	if m != nil {
+		return m.Timezone
 	}
 	return nil
 }
@@ -617,13 +619,13 @@ type TaskQueueAddResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueAddResponse) Reset()         { *this = TaskQueueAddResponse{} }
-func (this *TaskQueueAddResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueAddResponse) ProtoMessage()       {}
+func (m *TaskQueueAddResponse) Reset()         { *m = TaskQueueAddResponse{} }
+func (m *TaskQueueAddResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueAddResponse) ProtoMessage()    {}
 
-func (this *TaskQueueAddResponse) GetChosenTaskName() []byte {
-	if this != nil {
-		return this.ChosenTaskName
+func (m *TaskQueueAddResponse) GetChosenTaskName() []byte {
+	if m != nil {
+		return m.ChosenTaskName
 	}
 	return nil
 }
@@ -633,13 +635,13 @@ type TaskQueueBulkAddRequest struct {
 	XXX_unrecognized []byte                 `json:"-"`
 }
 
-func (this *TaskQueueBulkAddRequest) Reset()         { *this = TaskQueueBulkAddRequest{} }
-func (this *TaskQueueBulkAddRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueBulkAddRequest) ProtoMessage()       {}
+func (m *TaskQueueBulkAddRequest) Reset()         { *m = TaskQueueBulkAddRequest{} }
+func (m *TaskQueueBulkAddRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueBulkAddRequest) ProtoMessage()    {}
 
-func (this *TaskQueueBulkAddRequest) GetAddRequest() []*TaskQueueAddRequest {
-	if this != nil {
-		return this.AddRequest
+func (m *TaskQueueBulkAddRequest) GetAddRequest() []*TaskQueueAddRequest {
+	if m != nil {
+		return m.AddRequest
 	}
 	return nil
 }
@@ -649,36 +651,35 @@ type TaskQueueBulkAddResponse struct {
 	XXX_unrecognized []byte                                 `json:"-"`
 }
 
-func (this *TaskQueueBulkAddResponse) Reset()         { *this = TaskQueueBulkAddResponse{} }
-func (this *TaskQueueBulkAddResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueBulkAddResponse) ProtoMessage()       {}
+func (m *TaskQueueBulkAddResponse) Reset()         { *m = TaskQueueBulkAddResponse{} }
+func (m *TaskQueueBulkAddResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueBulkAddResponse) ProtoMessage()    {}
 
-func (this *TaskQueueBulkAddResponse) GetTaskresult() []*TaskQueueBulkAddResponse_TaskResult {
-	if this != nil {
-		return this.Taskresult
+func (m *TaskQueueBulkAddResponse) GetTaskresult() []*TaskQueueBulkAddResponse_TaskResult {
+	if m != nil {
+		return m.Taskresult
 	}
 	return nil
 }
 
 type TaskQueueBulkAddResponse_TaskResult struct {
-	Result         *TaskQueueServiceError_ErrorCode `protobuf:"varint,2,req,name=result,enum=appengine.TaskQueueServiceError_ErrorCode" json:"result,omitempty"`
-	ChosenTaskName []byte                           `protobuf:"bytes,3,opt,name=chosen_task_name" json:"chosen_task_name,omitempty"`
+	Result           *TaskQueueServiceError_ErrorCode `protobuf:"varint,2,req,name=result,enum=appengine.TaskQueueServiceError_ErrorCode" json:"result,omitempty"`
+	ChosenTaskName   []byte                           `protobuf:"bytes,3,opt,name=chosen_task_name" json:"chosen_task_name,omitempty"`
+	XXX_unrecognized []byte                           `json:"-"`
 }
 
-func (this *TaskQueueBulkAddResponse_TaskResult) Reset() {
-	*this = TaskQueueBulkAddResponse_TaskResult{}
-}
+func (m *TaskQueueBulkAddResponse_TaskResult) Reset() { *m = TaskQueueBulkAddResponse_TaskResult{} }
 
-func (this *TaskQueueBulkAddResponse_TaskResult) GetResult() TaskQueueServiceError_ErrorCode {
-	if this != nil && this.Result != nil {
-		return *this.Result
+func (m *TaskQueueBulkAddResponse_TaskResult) GetResult() TaskQueueServiceError_ErrorCode {
+	if m != nil && m.Result != nil {
+		return *m.Result
 	}
 	return 0
 }
 
-func (this *TaskQueueBulkAddResponse_TaskResult) GetChosenTaskName() []byte {
-	if this != nil {
-		return this.ChosenTaskName
+func (m *TaskQueueBulkAddResponse_TaskResult) GetChosenTaskName() []byte {
+	if m != nil {
+		return m.ChosenTaskName
 	}
 	return nil
 }
@@ -690,27 +691,27 @@ type TaskQueueDeleteRequest struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *TaskQueueDeleteRequest) Reset()         { *this = TaskQueueDeleteRequest{} }
-func (this *TaskQueueDeleteRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueDeleteRequest) ProtoMessage()       {}
+func (m *TaskQueueDeleteRequest) Reset()         { *m = TaskQueueDeleteRequest{} }
+func (m *TaskQueueDeleteRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueDeleteRequest) ProtoMessage()    {}
 
-func (this *TaskQueueDeleteRequest) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueueDeleteRequest) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
 
-func (this *TaskQueueDeleteRequest) GetTaskName() [][]byte {
-	if this != nil {
-		return this.TaskName
+func (m *TaskQueueDeleteRequest) GetTaskName() [][]byte {
+	if m != nil {
+		return m.TaskName
 	}
 	return nil
 }
 
-func (this *TaskQueueDeleteRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueueDeleteRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
@@ -720,13 +721,13 @@ type TaskQueueDeleteResponse struct {
 	XXX_unrecognized []byte                            `json:"-"`
 }
 
-func (this *TaskQueueDeleteResponse) Reset()         { *this = TaskQueueDeleteResponse{} }
-func (this *TaskQueueDeleteResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueDeleteResponse) ProtoMessage()       {}
+func (m *TaskQueueDeleteResponse) Reset()         { *m = TaskQueueDeleteResponse{} }
+func (m *TaskQueueDeleteResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueDeleteResponse) ProtoMessage()    {}
 
-func (this *TaskQueueDeleteResponse) GetResult() []TaskQueueServiceError_ErrorCode {
-	if this != nil {
-		return this.Result
+func (m *TaskQueueDeleteResponse) GetResult() []TaskQueueServiceError_ErrorCode {
+	if m != nil {
+		return m.Result
 	}
 	return nil
 }
@@ -738,27 +739,27 @@ type TaskQueueForceRunRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueForceRunRequest) Reset()         { *this = TaskQueueForceRunRequest{} }
-func (this *TaskQueueForceRunRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueForceRunRequest) ProtoMessage()       {}
+func (m *TaskQueueForceRunRequest) Reset()         { *m = TaskQueueForceRunRequest{} }
+func (m *TaskQueueForceRunRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueForceRunRequest) ProtoMessage()    {}
 
-func (this *TaskQueueForceRunRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueueForceRunRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
 
-func (this *TaskQueueForceRunRequest) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueueForceRunRequest) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
 
-func (this *TaskQueueForceRunRequest) GetTaskName() []byte {
-	if this != nil {
-		return this.TaskName
+func (m *TaskQueueForceRunRequest) GetTaskName() []byte {
+	if m != nil {
+		return m.TaskName
 	}
 	return nil
 }
@@ -768,13 +769,13 @@ type TaskQueueForceRunResponse struct {
 	XXX_unrecognized []byte                           `json:"-"`
 }
 
-func (this *TaskQueueForceRunResponse) Reset()         { *this = TaskQueueForceRunResponse{} }
-func (this *TaskQueueForceRunResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueForceRunResponse) ProtoMessage()       {}
+func (m *TaskQueueForceRunResponse) Reset()         { *m = TaskQueueForceRunResponse{} }
+func (m *TaskQueueForceRunResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueForceRunResponse) ProtoMessage()    {}
 
-func (this *TaskQueueForceRunResponse) GetResult() TaskQueueServiceError_ErrorCode {
-	if this != nil && this.Result != nil {
-		return *this.Result
+func (m *TaskQueueForceRunResponse) GetResult() TaskQueueServiceError_ErrorCode {
+	if m != nil && m.Result != nil {
+		return *m.Result
 	}
 	return 0
 }
@@ -793,78 +794,78 @@ type TaskQueueUpdateQueueRequest struct {
 	XXX_unrecognized      []byte                    `json:"-"`
 }
 
-func (this *TaskQueueUpdateQueueRequest) Reset()         { *this = TaskQueueUpdateQueueRequest{} }
-func (this *TaskQueueUpdateQueueRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueUpdateQueueRequest) ProtoMessage()       {}
+func (m *TaskQueueUpdateQueueRequest) Reset()         { *m = TaskQueueUpdateQueueRequest{} }
+func (m *TaskQueueUpdateQueueRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueUpdateQueueRequest) ProtoMessage()    {}
 
 const Default_TaskQueueUpdateQueueRequest_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
 
-func (this *TaskQueueUpdateQueueRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueueUpdateQueueRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
 
-func (this *TaskQueueUpdateQueueRequest) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueueUpdateQueueRequest) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
 
-func (this *TaskQueueUpdateQueueRequest) GetBucketRefillPerSecond() float64 {
-	if this != nil && this.BucketRefillPerSecond != nil {
-		return *this.BucketRefillPerSecond
+func (m *TaskQueueUpdateQueueRequest) GetBucketRefillPerSecond() float64 {
+	if m != nil && m.BucketRefillPerSecond != nil {
+		return *m.BucketRefillPerSecond
 	}
 	return 0
 }
 
-func (this *TaskQueueUpdateQueueRequest) GetBucketCapacity() int32 {
-	if this != nil && this.BucketCapacity != nil {
-		return *this.BucketCapacity
+func (m *TaskQueueUpdateQueueRequest) GetBucketCapacity() int32 {
+	if m != nil && m.BucketCapacity != nil {
+		return *m.BucketCapacity
 	}
 	return 0
 }
 
-func (this *TaskQueueUpdateQueueRequest) GetUserSpecifiedRate() string {
-	if this != nil && this.UserSpecifiedRate != nil {
-		return *this.UserSpecifiedRate
+func (m *TaskQueueUpdateQueueRequest) GetUserSpecifiedRate() string {
+	if m != nil && m.UserSpecifiedRate != nil {
+		return *m.UserSpecifiedRate
 	}
 	return ""
 }
 
-func (this *TaskQueueUpdateQueueRequest) GetRetryParameters() *TaskQueueRetryParameters {
-	if this != nil {
-		return this.RetryParameters
+func (m *TaskQueueUpdateQueueRequest) GetRetryParameters() *TaskQueueRetryParameters {
+	if m != nil {
+		return m.RetryParameters
 	}
 	return nil
 }
 
-func (this *TaskQueueUpdateQueueRequest) GetMaxConcurrentRequests() int32 {
-	if this != nil && this.MaxConcurrentRequests != nil {
-		return *this.MaxConcurrentRequests
+func (m *TaskQueueUpdateQueueRequest) GetMaxConcurrentRequests() int32 {
+	if m != nil && m.MaxConcurrentRequests != nil {
+		return *m.MaxConcurrentRequests
 	}
 	return 0
 }
 
-func (this *TaskQueueUpdateQueueRequest) GetMode() TaskQueueMode_Mode {
-	if this != nil && this.Mode != nil {
-		return *this.Mode
+func (m *TaskQueueUpdateQueueRequest) GetMode() TaskQueueMode_Mode {
+	if m != nil && m.Mode != nil {
+		return *m.Mode
 	}
 	return Default_TaskQueueUpdateQueueRequest_Mode
 }
 
-func (this *TaskQueueUpdateQueueRequest) GetAcl() *TaskQueueAcl {
-	if this != nil {
-		return this.Acl
+func (m *TaskQueueUpdateQueueRequest) GetAcl() *TaskQueueAcl {
+	if m != nil {
+		return m.Acl
 	}
 	return nil
 }
 
-func (this *TaskQueueUpdateQueueRequest) GetHeaderOverride() []*TaskQueueHttpHeader {
-	if this != nil {
-		return this.HeaderOverride
+func (m *TaskQueueUpdateQueueRequest) GetHeaderOverride() []*TaskQueueHttpHeader {
+	if m != nil {
+		return m.HeaderOverride
 	}
 	return nil
 }
@@ -873,9 +874,9 @@ type TaskQueueUpdateQueueResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueUpdateQueueResponse) Reset()         { *this = TaskQueueUpdateQueueResponse{} }
-func (this *TaskQueueUpdateQueueResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueUpdateQueueResponse) ProtoMessage()       {}
+func (m *TaskQueueUpdateQueueResponse) Reset()         { *m = TaskQueueUpdateQueueResponse{} }
+func (m *TaskQueueUpdateQueueResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueUpdateQueueResponse) ProtoMessage()    {}
 
 type TaskQueueFetchQueuesRequest struct {
 	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
@@ -883,20 +884,20 @@ type TaskQueueFetchQueuesRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueFetchQueuesRequest) Reset()         { *this = TaskQueueFetchQueuesRequest{} }
-func (this *TaskQueueFetchQueuesRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueFetchQueuesRequest) ProtoMessage()       {}
+func (m *TaskQueueFetchQueuesRequest) Reset()         { *m = TaskQueueFetchQueuesRequest{} }
+func (m *TaskQueueFetchQueuesRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueFetchQueuesRequest) ProtoMessage()    {}
 
-func (this *TaskQueueFetchQueuesRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueueFetchQueuesRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
 
-func (this *TaskQueueFetchQueuesRequest) GetMaxRows() int32 {
-	if this != nil && this.MaxRows != nil {
-		return *this.MaxRows
+func (m *TaskQueueFetchQueuesRequest) GetMaxRows() int32 {
+	if m != nil && m.MaxRows != nil {
+		return *m.MaxRows
 	}
 	return 0
 }
@@ -906,13 +907,13 @@ type TaskQueueFetchQueuesResponse struct {
 	XXX_unrecognized []byte                                `json:"-"`
 }
 
-func (this *TaskQueueFetchQueuesResponse) Reset()         { *this = TaskQueueFetchQueuesResponse{} }
-func (this *TaskQueueFetchQueuesResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueFetchQueuesResponse) ProtoMessage()       {}
+func (m *TaskQueueFetchQueuesResponse) Reset()         { *m = TaskQueueFetchQueuesResponse{} }
+func (m *TaskQueueFetchQueuesResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueFetchQueuesResponse) ProtoMessage()    {}
 
-func (this *TaskQueueFetchQueuesResponse) GetQueue() []*TaskQueueFetchQueuesResponse_Queue {
-	if this != nil {
-		return this.Queue
+func (m *TaskQueueFetchQueuesResponse) GetQueue() []*TaskQueueFetchQueuesResponse_Queue {
+	if m != nil {
+		return m.Queue
 	}
 	return nil
 }
@@ -929,87 +930,88 @@ type TaskQueueFetchQueuesResponse_Queue struct {
 	Acl                   *TaskQueueAcl             `protobuf:"bytes,10,opt,name=acl" json:"acl,omitempty"`
 	HeaderOverride        []*TaskQueueHttpHeader    `protobuf:"bytes,11,rep,name=header_override" json:"header_override,omitempty"`
 	CreatorName           *string                   `protobuf:"bytes,12,opt,name=creator_name,def=apphosting" json:"creator_name,omitempty"`
+	XXX_unrecognized      []byte                    `json:"-"`
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) Reset() { *this = TaskQueueFetchQueuesResponse_Queue{} }
+func (m *TaskQueueFetchQueuesResponse_Queue) Reset() { *m = TaskQueueFetchQueuesResponse_Queue{} }
 
 const Default_TaskQueueFetchQueuesResponse_Queue_Paused bool = false
 const Default_TaskQueueFetchQueuesResponse_Queue_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
 const Default_TaskQueueFetchQueuesResponse_Queue_CreatorName string = "apphosting"
 
-func (this *TaskQueueFetchQueuesResponse_Queue) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueueFetchQueuesResponse_Queue) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) GetBucketRefillPerSecond() float64 {
-	if this != nil && this.BucketRefillPerSecond != nil {
-		return *this.BucketRefillPerSecond
+func (m *TaskQueueFetchQueuesResponse_Queue) GetBucketRefillPerSecond() float64 {
+	if m != nil && m.BucketRefillPerSecond != nil {
+		return *m.BucketRefillPerSecond
 	}
 	return 0
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) GetBucketCapacity() float64 {
-	if this != nil && this.BucketCapacity != nil {
-		return *this.BucketCapacity
+func (m *TaskQueueFetchQueuesResponse_Queue) GetBucketCapacity() float64 {
+	if m != nil && m.BucketCapacity != nil {
+		return *m.BucketCapacity
 	}
 	return 0
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) GetUserSpecifiedRate() string {
-	if this != nil && this.UserSpecifiedRate != nil {
-		return *this.UserSpecifiedRate
+func (m *TaskQueueFetchQueuesResponse_Queue) GetUserSpecifiedRate() string {
+	if m != nil && m.UserSpecifiedRate != nil {
+		return *m.UserSpecifiedRate
 	}
 	return ""
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) GetPaused() bool {
-	if this != nil && this.Paused != nil {
-		return *this.Paused
+func (m *TaskQueueFetchQueuesResponse_Queue) GetPaused() bool {
+	if m != nil && m.Paused != nil {
+		return *m.Paused
 	}
 	return Default_TaskQueueFetchQueuesResponse_Queue_Paused
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) GetRetryParameters() *TaskQueueRetryParameters {
-	if this != nil {
-		return this.RetryParameters
+func (m *TaskQueueFetchQueuesResponse_Queue) GetRetryParameters() *TaskQueueRetryParameters {
+	if m != nil {
+		return m.RetryParameters
 	}
 	return nil
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) GetMaxConcurrentRequests() int32 {
-	if this != nil && this.MaxConcurrentRequests != nil {
-		return *this.MaxConcurrentRequests
+func (m *TaskQueueFetchQueuesResponse_Queue) GetMaxConcurrentRequests() int32 {
+	if m != nil && m.MaxConcurrentRequests != nil {
+		return *m.MaxConcurrentRequests
 	}
 	return 0
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) GetMode() TaskQueueMode_Mode {
-	if this != nil && this.Mode != nil {
-		return *this.Mode
+func (m *TaskQueueFetchQueuesResponse_Queue) GetMode() TaskQueueMode_Mode {
+	if m != nil && m.Mode != nil {
+		return *m.Mode
 	}
 	return Default_TaskQueueFetchQueuesResponse_Queue_Mode
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) GetAcl() *TaskQueueAcl {
-	if this != nil {
-		return this.Acl
+func (m *TaskQueueFetchQueuesResponse_Queue) GetAcl() *TaskQueueAcl {
+	if m != nil {
+		return m.Acl
 	}
 	return nil
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) GetHeaderOverride() []*TaskQueueHttpHeader {
-	if this != nil {
-		return this.HeaderOverride
+func (m *TaskQueueFetchQueuesResponse_Queue) GetHeaderOverride() []*TaskQueueHttpHeader {
+	if m != nil {
+		return m.HeaderOverride
 	}
 	return nil
 }
 
-func (this *TaskQueueFetchQueuesResponse_Queue) GetCreatorName() string {
-	if this != nil && this.CreatorName != nil {
-		return *this.CreatorName
+func (m *TaskQueueFetchQueuesResponse_Queue) GetCreatorName() string {
+	if m != nil && m.CreatorName != nil {
+		return *m.CreatorName
 	}
 	return Default_TaskQueueFetchQueuesResponse_Queue_CreatorName
 }
@@ -1021,29 +1023,29 @@ type TaskQueueFetchQueueStatsRequest struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *TaskQueueFetchQueueStatsRequest) Reset()         { *this = TaskQueueFetchQueueStatsRequest{} }
-func (this *TaskQueueFetchQueueStatsRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueFetchQueueStatsRequest) ProtoMessage()       {}
+func (m *TaskQueueFetchQueueStatsRequest) Reset()         { *m = TaskQueueFetchQueueStatsRequest{} }
+func (m *TaskQueueFetchQueueStatsRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueFetchQueueStatsRequest) ProtoMessage()    {}
 
 const Default_TaskQueueFetchQueueStatsRequest_MaxNumTasks int32 = 0
 
-func (this *TaskQueueFetchQueueStatsRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueueFetchQueueStatsRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
 
-func (this *TaskQueueFetchQueueStatsRequest) GetQueueName() [][]byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueueFetchQueueStatsRequest) GetQueueName() [][]byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
 
-func (this *TaskQueueFetchQueueStatsRequest) GetMaxNumTasks() int32 {
-	if this != nil && this.MaxNumTasks != nil {
-		return *this.MaxNumTasks
+func (m *TaskQueueFetchQueueStatsRequest) GetMaxNumTasks() int32 {
+	if m != nil && m.MaxNumTasks != nil {
+		return *m.MaxNumTasks
 	}
 	return Default_TaskQueueFetchQueueStatsRequest_MaxNumTasks
 }
@@ -1057,41 +1059,41 @@ type TaskQueueScannerQueueInfo struct {
 	XXX_unrecognized        []byte   `json:"-"`
 }
 
-func (this *TaskQueueScannerQueueInfo) Reset()         { *this = TaskQueueScannerQueueInfo{} }
-func (this *TaskQueueScannerQueueInfo) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueScannerQueueInfo) ProtoMessage()       {}
+func (m *TaskQueueScannerQueueInfo) Reset()         { *m = TaskQueueScannerQueueInfo{} }
+func (m *TaskQueueScannerQueueInfo) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueScannerQueueInfo) ProtoMessage()    {}
 
-func (this *TaskQueueScannerQueueInfo) GetExecutedLastMinute() int64 {
-	if this != nil && this.ExecutedLastMinute != nil {
-		return *this.ExecutedLastMinute
+func (m *TaskQueueScannerQueueInfo) GetExecutedLastMinute() int64 {
+	if m != nil && m.ExecutedLastMinute != nil {
+		return *m.ExecutedLastMinute
 	}
 	return 0
 }
 
-func (this *TaskQueueScannerQueueInfo) GetExecutedLastHour() int64 {
-	if this != nil && this.ExecutedLastHour != nil {
-		return *this.ExecutedLastHour
+func (m *TaskQueueScannerQueueInfo) GetExecutedLastHour() int64 {
+	if m != nil && m.ExecutedLastHour != nil {
+		return *m.ExecutedLastHour
 	}
 	return 0
 }
 
-func (this *TaskQueueScannerQueueInfo) GetSamplingDurationSeconds() float64 {
-	if this != nil && this.SamplingDurationSeconds != nil {
-		return *this.SamplingDurationSeconds
+func (m *TaskQueueScannerQueueInfo) GetSamplingDurationSeconds() float64 {
+	if m != nil && m.SamplingDurationSeconds != nil {
+		return *m.SamplingDurationSeconds
 	}
 	return 0
 }
 
-func (this *TaskQueueScannerQueueInfo) GetRequestsInFlight() int32 {
-	if this != nil && this.RequestsInFlight != nil {
-		return *this.RequestsInFlight
+func (m *TaskQueueScannerQueueInfo) GetRequestsInFlight() int32 {
+	if m != nil && m.RequestsInFlight != nil {
+		return *m.RequestsInFlight
 	}
 	return 0
 }
 
-func (this *TaskQueueScannerQueueInfo) GetEnforcedRate() float64 {
-	if this != nil && this.EnforcedRate != nil {
-		return *this.EnforcedRate
+func (m *TaskQueueScannerQueueInfo) GetEnforcedRate() float64 {
+	if m != nil && m.EnforcedRate != nil {
+		return *m.EnforcedRate
 	}
 	return 0
 }
@@ -1101,44 +1103,45 @@ type TaskQueueFetchQueueStatsResponse struct {
 	XXX_unrecognized []byte                                         `json:"-"`
 }
 
-func (this *TaskQueueFetchQueueStatsResponse) Reset()         { *this = TaskQueueFetchQueueStatsResponse{} }
-func (this *TaskQueueFetchQueueStatsResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueFetchQueueStatsResponse) ProtoMessage()       {}
+func (m *TaskQueueFetchQueueStatsResponse) Reset()         { *m = TaskQueueFetchQueueStatsResponse{} }
+func (m *TaskQueueFetchQueueStatsResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueFetchQueueStatsResponse) ProtoMessage()    {}
 
-func (this *TaskQueueFetchQueueStatsResponse) GetQueuestats() []*TaskQueueFetchQueueStatsResponse_QueueStats {
-	if this != nil {
-		return this.Queuestats
+func (m *TaskQueueFetchQueueStatsResponse) GetQueuestats() []*TaskQueueFetchQueueStatsResponse_QueueStats {
+	if m != nil {
+		return m.Queuestats
 	}
 	return nil
 }
 
 type TaskQueueFetchQueueStatsResponse_QueueStats struct {
-	NumTasks      *int32                     `protobuf:"varint,2,req,name=num_tasks" json:"num_tasks,omitempty"`
-	OldestEtaUsec *int64                     `protobuf:"varint,3,req,name=oldest_eta_usec" json:"oldest_eta_usec,omitempty"`
-	ScannerInfo   *TaskQueueScannerQueueInfo `protobuf:"bytes,4,opt,name=scanner_info" json:"scanner_info,omitempty"`
+	NumTasks         *int32                     `protobuf:"varint,2,req,name=num_tasks" json:"num_tasks,omitempty"`
+	OldestEtaUsec    *int64                     `protobuf:"varint,3,req,name=oldest_eta_usec" json:"oldest_eta_usec,omitempty"`
+	ScannerInfo      *TaskQueueScannerQueueInfo `protobuf:"bytes,4,opt,name=scanner_info" json:"scanner_info,omitempty"`
+	XXX_unrecognized []byte                     `json:"-"`
 }
 
-func (this *TaskQueueFetchQueueStatsResponse_QueueStats) Reset() {
-	*this = TaskQueueFetchQueueStatsResponse_QueueStats{}
+func (m *TaskQueueFetchQueueStatsResponse_QueueStats) Reset() {
+	*m = TaskQueueFetchQueueStatsResponse_QueueStats{}
 }
 
-func (this *TaskQueueFetchQueueStatsResponse_QueueStats) GetNumTasks() int32 {
-	if this != nil && this.NumTasks != nil {
-		return *this.NumTasks
+func (m *TaskQueueFetchQueueStatsResponse_QueueStats) GetNumTasks() int32 {
+	if m != nil && m.NumTasks != nil {
+		return *m.NumTasks
 	}
 	return 0
 }
 
-func (this *TaskQueueFetchQueueStatsResponse_QueueStats) GetOldestEtaUsec() int64 {
-	if this != nil && this.OldestEtaUsec != nil {
-		return *this.OldestEtaUsec
+func (m *TaskQueueFetchQueueStatsResponse_QueueStats) GetOldestEtaUsec() int64 {
+	if m != nil && m.OldestEtaUsec != nil {
+		return *m.OldestEtaUsec
 	}
 	return 0
 }
 
-func (this *TaskQueueFetchQueueStatsResponse_QueueStats) GetScannerInfo() *TaskQueueScannerQueueInfo {
-	if this != nil {
-		return this.ScannerInfo
+func (m *TaskQueueFetchQueueStatsResponse_QueueStats) GetScannerInfo() *TaskQueueScannerQueueInfo {
+	if m != nil {
+		return m.ScannerInfo
 	}
 	return nil
 }
@@ -1150,27 +1153,27 @@ type TaskQueuePauseQueueRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueuePauseQueueRequest) Reset()         { *this = TaskQueuePauseQueueRequest{} }
-func (this *TaskQueuePauseQueueRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueuePauseQueueRequest) ProtoMessage()       {}
+func (m *TaskQueuePauseQueueRequest) Reset()         { *m = TaskQueuePauseQueueRequest{} }
+func (m *TaskQueuePauseQueueRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueuePauseQueueRequest) ProtoMessage()    {}
 
-func (this *TaskQueuePauseQueueRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueuePauseQueueRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
 
-func (this *TaskQueuePauseQueueRequest) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueuePauseQueueRequest) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
 
-func (this *TaskQueuePauseQueueRequest) GetPause() bool {
-	if this != nil && this.Pause != nil {
-		return *this.Pause
+func (m *TaskQueuePauseQueueRequest) GetPause() bool {
+	if m != nil && m.Pause != nil {
+		return *m.Pause
 	}
 	return false
 }
@@ -1179,9 +1182,9 @@ type TaskQueuePauseQueueResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueuePauseQueueResponse) Reset()         { *this = TaskQueuePauseQueueResponse{} }
-func (this *TaskQueuePauseQueueResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueuePauseQueueResponse) ProtoMessage()       {}
+func (m *TaskQueuePauseQueueResponse) Reset()         { *m = TaskQueuePauseQueueResponse{} }
+func (m *TaskQueuePauseQueueResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueuePauseQueueResponse) ProtoMessage()    {}
 
 type TaskQueuePurgeQueueRequest struct {
 	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
@@ -1189,20 +1192,20 @@ type TaskQueuePurgeQueueRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueuePurgeQueueRequest) Reset()         { *this = TaskQueuePurgeQueueRequest{} }
-func (this *TaskQueuePurgeQueueRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueuePurgeQueueRequest) ProtoMessage()       {}
+func (m *TaskQueuePurgeQueueRequest) Reset()         { *m = TaskQueuePurgeQueueRequest{} }
+func (m *TaskQueuePurgeQueueRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueuePurgeQueueRequest) ProtoMessage()    {}
 
-func (this *TaskQueuePurgeQueueRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueuePurgeQueueRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
 
-func (this *TaskQueuePurgeQueueRequest) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueuePurgeQueueRequest) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
@@ -1211,9 +1214,9 @@ type TaskQueuePurgeQueueResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueuePurgeQueueResponse) Reset()         { *this = TaskQueuePurgeQueueResponse{} }
-func (this *TaskQueuePurgeQueueResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueuePurgeQueueResponse) ProtoMessage()       {}
+func (m *TaskQueuePurgeQueueResponse) Reset()         { *m = TaskQueuePurgeQueueResponse{} }
+func (m *TaskQueuePurgeQueueResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueuePurgeQueueResponse) ProtoMessage()    {}
 
 type TaskQueueDeleteQueueRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
@@ -1221,20 +1224,20 @@ type TaskQueueDeleteQueueRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueDeleteQueueRequest) Reset()         { *this = TaskQueueDeleteQueueRequest{} }
-func (this *TaskQueueDeleteQueueRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueDeleteQueueRequest) ProtoMessage()       {}
+func (m *TaskQueueDeleteQueueRequest) Reset()         { *m = TaskQueueDeleteQueueRequest{} }
+func (m *TaskQueueDeleteQueueRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueDeleteQueueRequest) ProtoMessage()    {}
 
-func (this *TaskQueueDeleteQueueRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueueDeleteQueueRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
 
-func (this *TaskQueueDeleteQueueRequest) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueueDeleteQueueRequest) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
@@ -1243,22 +1246,22 @@ type TaskQueueDeleteQueueResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueDeleteQueueResponse) Reset()         { *this = TaskQueueDeleteQueueResponse{} }
-func (this *TaskQueueDeleteQueueResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueDeleteQueueResponse) ProtoMessage()       {}
+func (m *TaskQueueDeleteQueueResponse) Reset()         { *m = TaskQueueDeleteQueueResponse{} }
+func (m *TaskQueueDeleteQueueResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueDeleteQueueResponse) ProtoMessage()    {}
 
 type TaskQueueDeleteGroupRequest struct {
 	AppId            []byte `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueDeleteGroupRequest) Reset()         { *this = TaskQueueDeleteGroupRequest{} }
-func (this *TaskQueueDeleteGroupRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueDeleteGroupRequest) ProtoMessage()       {}
+func (m *TaskQueueDeleteGroupRequest) Reset()         { *m = TaskQueueDeleteGroupRequest{} }
+func (m *TaskQueueDeleteGroupRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueDeleteGroupRequest) ProtoMessage()    {}
 
-func (this *TaskQueueDeleteGroupRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueueDeleteGroupRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
@@ -1267,9 +1270,9 @@ type TaskQueueDeleteGroupResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueDeleteGroupResponse) Reset()         { *this = TaskQueueDeleteGroupResponse{} }
-func (this *TaskQueueDeleteGroupResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueDeleteGroupResponse) ProtoMessage()       {}
+func (m *TaskQueueDeleteGroupResponse) Reset()         { *m = TaskQueueDeleteGroupResponse{} }
+func (m *TaskQueueDeleteGroupResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueDeleteGroupResponse) ProtoMessage()    {}
 
 type TaskQueueQueryTasksRequest struct {
 	AppId            []byte `protobuf:"bytes,1,opt,name=app_id" json:"app_id,omitempty"`
@@ -1281,50 +1284,50 @@ type TaskQueueQueryTasksRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueQueryTasksRequest) Reset()         { *this = TaskQueueQueryTasksRequest{} }
-func (this *TaskQueueQueryTasksRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueQueryTasksRequest) ProtoMessage()       {}
+func (m *TaskQueueQueryTasksRequest) Reset()         { *m = TaskQueueQueryTasksRequest{} }
+func (m *TaskQueueQueryTasksRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueQueryTasksRequest) ProtoMessage()    {}
 
 const Default_TaskQueueQueryTasksRequest_MaxRows int32 = 1
 
-func (this *TaskQueueQueryTasksRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueueQueryTasksRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksRequest) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueueQueryTasksRequest) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksRequest) GetStartTaskName() []byte {
-	if this != nil {
-		return this.StartTaskName
+func (m *TaskQueueQueryTasksRequest) GetStartTaskName() []byte {
+	if m != nil {
+		return m.StartTaskName
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksRequest) GetStartEtaUsec() int64 {
-	if this != nil && this.StartEtaUsec != nil {
-		return *this.StartEtaUsec
+func (m *TaskQueueQueryTasksRequest) GetStartEtaUsec() int64 {
+	if m != nil && m.StartEtaUsec != nil {
+		return *m.StartEtaUsec
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryTasksRequest) GetStartTag() []byte {
-	if this != nil {
-		return this.StartTag
+func (m *TaskQueueQueryTasksRequest) GetStartTag() []byte {
+	if m != nil {
+		return m.StartTag
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksRequest) GetMaxRows() int32 {
-	if this != nil && this.MaxRows != nil {
-		return *this.MaxRows
+func (m *TaskQueueQueryTasksRequest) GetMaxRows() int32 {
+	if m != nil && m.MaxRows != nil {
+		return *m.MaxRows
 	}
 	return Default_TaskQueueQueryTasksRequest_MaxRows
 }
@@ -1334,13 +1337,13 @@ type TaskQueueQueryTasksResponse struct {
 	XXX_unrecognized []byte                              `json:"-"`
 }
 
-func (this *TaskQueueQueryTasksResponse) Reset()         { *this = TaskQueueQueryTasksResponse{} }
-func (this *TaskQueueQueryTasksResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueQueryTasksResponse) ProtoMessage()       {}
+func (m *TaskQueueQueryTasksResponse) Reset()         { *m = TaskQueueQueryTasksResponse{} }
+func (m *TaskQueueQueryTasksResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueQueryTasksResponse) ProtoMessage()    {}
 
-func (this *TaskQueueQueryTasksResponse) GetTask() []*TaskQueueQueryTasksResponse_Task {
-	if this != nil {
-		return this.Task
+func (m *TaskQueueQueryTasksResponse) GetTask() []*TaskQueueQueryTasksResponse_Task {
+	if m != nil {
+		return m.Task
 	}
 	return nil
 }
@@ -1363,221 +1366,225 @@ type TaskQueueQueryTasksResponse_Task struct {
 	FirstTryUsec     *int64                                          `protobuf:"varint,24,opt,name=first_try_usec" json:"first_try_usec,omitempty"`
 	Tag              []byte                                          `protobuf:"bytes,25,opt,name=tag" json:"tag,omitempty"`
 	ExecutionCount   *int32                                          `protobuf:"varint,26,opt,name=execution_count,def=0" json:"execution_count,omitempty"`
+	XXX_unrecognized []byte                                          `json:"-"`
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) Reset() { *this = TaskQueueQueryTasksResponse_Task{} }
+func (m *TaskQueueQueryTasksResponse_Task) Reset() { *m = TaskQueueQueryTasksResponse_Task{} }
 
 const Default_TaskQueueQueryTasksResponse_Task_RetryCount int32 = 0
 const Default_TaskQueueQueryTasksResponse_Task_ExecutionCount int32 = 0
 
-func (this *TaskQueueQueryTasksResponse_Task) GetTaskName() []byte {
-	if this != nil {
-		return this.TaskName
+func (m *TaskQueueQueryTasksResponse_Task) GetTaskName() []byte {
+	if m != nil {
+		return m.TaskName
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetEtaUsec() int64 {
-	if this != nil && this.EtaUsec != nil {
-		return *this.EtaUsec
+func (m *TaskQueueQueryTasksResponse_Task) GetEtaUsec() int64 {
+	if m != nil && m.EtaUsec != nil {
+		return *m.EtaUsec
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetUrl() []byte {
-	if this != nil {
-		return this.Url
+func (m *TaskQueueQueryTasksResponse_Task) GetUrl() []byte {
+	if m != nil {
+		return m.Url
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetMethod() TaskQueueQueryTasksResponse_Task_RequestMethod {
-	if this != nil && this.Method != nil {
-		return *this.Method
+func (m *TaskQueueQueryTasksResponse_Task) GetMethod() TaskQueueQueryTasksResponse_Task_RequestMethod {
+	if m != nil && m.Method != nil {
+		return *m.Method
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetRetryCount() int32 {
-	if this != nil && this.RetryCount != nil {
-		return *this.RetryCount
+func (m *TaskQueueQueryTasksResponse_Task) GetRetryCount() int32 {
+	if m != nil && m.RetryCount != nil {
+		return *m.RetryCount
 	}
 	return Default_TaskQueueQueryTasksResponse_Task_RetryCount
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetHeader() []*TaskQueueQueryTasksResponse_Task_Header {
-	if this != nil {
-		return this.Header
+func (m *TaskQueueQueryTasksResponse_Task) GetHeader() []*TaskQueueQueryTasksResponse_Task_Header {
+	if m != nil {
+		return m.Header
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetBodySize() int32 {
-	if this != nil && this.BodySize != nil {
-		return *this.BodySize
+func (m *TaskQueueQueryTasksResponse_Task) GetBodySize() int32 {
+	if m != nil && m.BodySize != nil {
+		return *m.BodySize
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetBody() []byte {
-	if this != nil {
-		return this.Body
+func (m *TaskQueueQueryTasksResponse_Task) GetBody() []byte {
+	if m != nil {
+		return m.Body
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetCreationTimeUsec() int64 {
-	if this != nil && this.CreationTimeUsec != nil {
-		return *this.CreationTimeUsec
+func (m *TaskQueueQueryTasksResponse_Task) GetCreationTimeUsec() int64 {
+	if m != nil && m.CreationTimeUsec != nil {
+		return *m.CreationTimeUsec
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetCrontimetable() *TaskQueueQueryTasksResponse_Task_CronTimetable {
-	if this != nil {
-		return this.Crontimetable
+func (m *TaskQueueQueryTasksResponse_Task) GetCrontimetable() *TaskQueueQueryTasksResponse_Task_CronTimetable {
+	if m != nil {
+		return m.Crontimetable
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetRunlog() *TaskQueueQueryTasksResponse_Task_RunLog {
-	if this != nil {
-		return this.Runlog
+func (m *TaskQueueQueryTasksResponse_Task) GetRunlog() *TaskQueueQueryTasksResponse_Task_RunLog {
+	if m != nil {
+		return m.Runlog
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetDescription() []byte {
-	if this != nil {
-		return this.Description
+func (m *TaskQueueQueryTasksResponse_Task) GetDescription() []byte {
+	if m != nil {
+		return m.Description
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetPayload() *TaskPayload {
-	if this != nil {
-		return this.Payload
+func (m *TaskQueueQueryTasksResponse_Task) GetPayload() *TaskPayload {
+	if m != nil {
+		return m.Payload
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetRetryParameters() *TaskQueueRetryParameters {
-	if this != nil {
-		return this.RetryParameters
+func (m *TaskQueueQueryTasksResponse_Task) GetRetryParameters() *TaskQueueRetryParameters {
+	if m != nil {
+		return m.RetryParameters
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetFirstTryUsec() int64 {
-	if this != nil && this.FirstTryUsec != nil {
-		return *this.FirstTryUsec
+func (m *TaskQueueQueryTasksResponse_Task) GetFirstTryUsec() int64 {
+	if m != nil && m.FirstTryUsec != nil {
+		return *m.FirstTryUsec
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetTag() []byte {
-	if this != nil {
-		return this.Tag
+func (m *TaskQueueQueryTasksResponse_Task) GetTag() []byte {
+	if m != nil {
+		return m.Tag
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task) GetExecutionCount() int32 {
-	if this != nil && this.ExecutionCount != nil {
-		return *this.ExecutionCount
+func (m *TaskQueueQueryTasksResponse_Task) GetExecutionCount() int32 {
+	if m != nil && m.ExecutionCount != nil {
+		return *m.ExecutionCount
 	}
 	return Default_TaskQueueQueryTasksResponse_Task_ExecutionCount
 }
 
 type TaskQueueQueryTasksResponse_Task_Header struct {
-	Key   []byte `protobuf:"bytes,8,req,name=key" json:"key,omitempty"`
-	Value []byte `protobuf:"bytes,9,req,name=value" json:"value,omitempty"`
+	Key              []byte `protobuf:"bytes,8,req,name=key" json:"key,omitempty"`
+	Value            []byte `protobuf:"bytes,9,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_Header) Reset() {
-	*this = TaskQueueQueryTasksResponse_Task_Header{}
+func (m *TaskQueueQueryTasksResponse_Task_Header) Reset() {
+	*m = TaskQueueQueryTasksResponse_Task_Header{}
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_Header) GetKey() []byte {
-	if this != nil {
-		return this.Key
+func (m *TaskQueueQueryTasksResponse_Task_Header) GetKey() []byte {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_Header) GetValue() []byte {
-	if this != nil {
-		return this.Value
+func (m *TaskQueueQueryTasksResponse_Task_Header) GetValue() []byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
 
 type TaskQueueQueryTasksResponse_Task_CronTimetable struct {
-	Schedule []byte `protobuf:"bytes,14,req,name=schedule" json:"schedule,omitempty"`
-	Timezone []byte `protobuf:"bytes,15,req,name=timezone" json:"timezone,omitempty"`
+	Schedule         []byte `protobuf:"bytes,14,req,name=schedule" json:"schedule,omitempty"`
+	Timezone         []byte `protobuf:"bytes,15,req,name=timezone" json:"timezone,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_CronTimetable) Reset() {
-	*this = TaskQueueQueryTasksResponse_Task_CronTimetable{}
+func (m *TaskQueueQueryTasksResponse_Task_CronTimetable) Reset() {
+	*m = TaskQueueQueryTasksResponse_Task_CronTimetable{}
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_CronTimetable) GetSchedule() []byte {
-	if this != nil {
-		return this.Schedule
+func (m *TaskQueueQueryTasksResponse_Task_CronTimetable) GetSchedule() []byte {
+	if m != nil {
+		return m.Schedule
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_CronTimetable) GetTimezone() []byte {
-	if this != nil {
-		return this.Timezone
+func (m *TaskQueueQueryTasksResponse_Task_CronTimetable) GetTimezone() []byte {
+	if m != nil {
+		return m.Timezone
 	}
 	return nil
 }
 
 type TaskQueueQueryTasksResponse_Task_RunLog struct {
-	DispatchedUsec *int64  `protobuf:"varint,17,req,name=dispatched_usec" json:"dispatched_usec,omitempty"`
-	LagUsec        *int64  `protobuf:"varint,18,req,name=lag_usec" json:"lag_usec,omitempty"`
-	ElapsedUsec    *int64  `protobuf:"varint,19,req,name=elapsed_usec" json:"elapsed_usec,omitempty"`
-	ResponseCode   *int64  `protobuf:"varint,20,opt,name=response_code" json:"response_code,omitempty"`
-	RetryReason    *string `protobuf:"bytes,27,opt,name=retry_reason" json:"retry_reason,omitempty"`
+	DispatchedUsec   *int64  `protobuf:"varint,17,req,name=dispatched_usec" json:"dispatched_usec,omitempty"`
+	LagUsec          *int64  `protobuf:"varint,18,req,name=lag_usec" json:"lag_usec,omitempty"`
+	ElapsedUsec      *int64  `protobuf:"varint,19,req,name=elapsed_usec" json:"elapsed_usec,omitempty"`
+	ResponseCode     *int64  `protobuf:"varint,20,opt,name=response_code" json:"response_code,omitempty"`
+	RetryReason      *string `protobuf:"bytes,27,opt,name=retry_reason" json:"retry_reason,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_RunLog) Reset() {
-	*this = TaskQueueQueryTasksResponse_Task_RunLog{}
+func (m *TaskQueueQueryTasksResponse_Task_RunLog) Reset() {
+	*m = TaskQueueQueryTasksResponse_Task_RunLog{}
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_RunLog) GetDispatchedUsec() int64 {
-	if this != nil && this.DispatchedUsec != nil {
-		return *this.DispatchedUsec
+func (m *TaskQueueQueryTasksResponse_Task_RunLog) GetDispatchedUsec() int64 {
+	if m != nil && m.DispatchedUsec != nil {
+		return *m.DispatchedUsec
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_RunLog) GetLagUsec() int64 {
-	if this != nil && this.LagUsec != nil {
-		return *this.LagUsec
+func (m *TaskQueueQueryTasksResponse_Task_RunLog) GetLagUsec() int64 {
+	if m != nil && m.LagUsec != nil {
+		return *m.LagUsec
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_RunLog) GetElapsedUsec() int64 {
-	if this != nil && this.ElapsedUsec != nil {
-		return *this.ElapsedUsec
+func (m *TaskQueueQueryTasksResponse_Task_RunLog) GetElapsedUsec() int64 {
+	if m != nil && m.ElapsedUsec != nil {
+		return *m.ElapsedUsec
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_RunLog) GetResponseCode() int64 {
-	if this != nil && this.ResponseCode != nil {
-		return *this.ResponseCode
+func (m *TaskQueueQueryTasksResponse_Task_RunLog) GetResponseCode() int64 {
+	if m != nil && m.ResponseCode != nil {
+		return *m.ResponseCode
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryTasksResponse_Task_RunLog) GetRetryReason() string {
-	if this != nil && this.RetryReason != nil {
-		return *this.RetryReason
+func (m *TaskQueueQueryTasksResponse_Task_RunLog) GetRetryReason() string {
+	if m != nil && m.RetryReason != nil {
+		return *m.RetryReason
 	}
 	return ""
 }
@@ -1589,27 +1596,27 @@ type TaskQueueFetchTaskRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueFetchTaskRequest) Reset()         { *this = TaskQueueFetchTaskRequest{} }
-func (this *TaskQueueFetchTaskRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueFetchTaskRequest) ProtoMessage()       {}
+func (m *TaskQueueFetchTaskRequest) Reset()         { *m = TaskQueueFetchTaskRequest{} }
+func (m *TaskQueueFetchTaskRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueFetchTaskRequest) ProtoMessage()    {}
 
-func (this *TaskQueueFetchTaskRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueueFetchTaskRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
 
-func (this *TaskQueueFetchTaskRequest) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueueFetchTaskRequest) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
 
-func (this *TaskQueueFetchTaskRequest) GetTaskName() []byte {
-	if this != nil {
-		return this.TaskName
+func (m *TaskQueueFetchTaskRequest) GetTaskName() []byte {
+	if m != nil {
+		return m.TaskName
 	}
 	return nil
 }
@@ -1619,13 +1626,13 @@ type TaskQueueFetchTaskResponse struct {
 	XXX_unrecognized []byte                       `json:"-"`
 }
 
-func (this *TaskQueueFetchTaskResponse) Reset()         { *this = TaskQueueFetchTaskResponse{} }
-func (this *TaskQueueFetchTaskResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueFetchTaskResponse) ProtoMessage()       {}
+func (m *TaskQueueFetchTaskResponse) Reset()         { *m = TaskQueueFetchTaskResponse{} }
+func (m *TaskQueueFetchTaskResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueFetchTaskResponse) ProtoMessage()    {}
 
-func (this *TaskQueueFetchTaskResponse) GetTask() *TaskQueueQueryTasksResponse {
-	if this != nil {
-		return this.Task
+func (m *TaskQueueFetchTaskResponse) GetTask() *TaskQueueQueryTasksResponse {
+	if m != nil {
+		return m.Task
 	}
 	return nil
 }
@@ -1636,20 +1643,20 @@ type TaskQueueUpdateStorageLimitRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueUpdateStorageLimitRequest) Reset()         { *this = TaskQueueUpdateStorageLimitRequest{} }
-func (this *TaskQueueUpdateStorageLimitRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueUpdateStorageLimitRequest) ProtoMessage()       {}
+func (m *TaskQueueUpdateStorageLimitRequest) Reset()         { *m = TaskQueueUpdateStorageLimitRequest{} }
+func (m *TaskQueueUpdateStorageLimitRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueUpdateStorageLimitRequest) ProtoMessage()    {}
 
-func (this *TaskQueueUpdateStorageLimitRequest) GetAppId() []byte {
-	if this != nil {
-		return this.AppId
+func (m *TaskQueueUpdateStorageLimitRequest) GetAppId() []byte {
+	if m != nil {
+		return m.AppId
 	}
 	return nil
 }
 
-func (this *TaskQueueUpdateStorageLimitRequest) GetLimit() int64 {
-	if this != nil && this.Limit != nil {
-		return *this.Limit
+func (m *TaskQueueUpdateStorageLimitRequest) GetLimit() int64 {
+	if m != nil && m.Limit != nil {
+		return *m.Limit
 	}
 	return 0
 }
@@ -1659,15 +1666,13 @@ type TaskQueueUpdateStorageLimitResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueUpdateStorageLimitResponse) Reset() {
-	*this = TaskQueueUpdateStorageLimitResponse{}
-}
-func (this *TaskQueueUpdateStorageLimitResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueUpdateStorageLimitResponse) ProtoMessage()       {}
+func (m *TaskQueueUpdateStorageLimitResponse) Reset()         { *m = TaskQueueUpdateStorageLimitResponse{} }
+func (m *TaskQueueUpdateStorageLimitResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueUpdateStorageLimitResponse) ProtoMessage()    {}
 
-func (this *TaskQueueUpdateStorageLimitResponse) GetNewLimit() int64 {
-	if this != nil && this.NewLimit != nil {
-		return *this.NewLimit
+func (m *TaskQueueUpdateStorageLimitResponse) GetNewLimit() int64 {
+	if m != nil && m.NewLimit != nil {
+		return *m.NewLimit
 	}
 	return 0
 }
@@ -1681,43 +1686,43 @@ type TaskQueueQueryAndOwnTasksRequest struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *TaskQueueQueryAndOwnTasksRequest) Reset()         { *this = TaskQueueQueryAndOwnTasksRequest{} }
-func (this *TaskQueueQueryAndOwnTasksRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueQueryAndOwnTasksRequest) ProtoMessage()       {}
+func (m *TaskQueueQueryAndOwnTasksRequest) Reset()         { *m = TaskQueueQueryAndOwnTasksRequest{} }
+func (m *TaskQueueQueryAndOwnTasksRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueQueryAndOwnTasksRequest) ProtoMessage()    {}
 
 const Default_TaskQueueQueryAndOwnTasksRequest_GroupByTag bool = false
 
-func (this *TaskQueueQueryAndOwnTasksRequest) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueueQueryAndOwnTasksRequest) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryAndOwnTasksRequest) GetLeaseSeconds() float64 {
-	if this != nil && this.LeaseSeconds != nil {
-		return *this.LeaseSeconds
+func (m *TaskQueueQueryAndOwnTasksRequest) GetLeaseSeconds() float64 {
+	if m != nil && m.LeaseSeconds != nil {
+		return *m.LeaseSeconds
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryAndOwnTasksRequest) GetMaxTasks() int64 {
-	if this != nil && this.MaxTasks != nil {
-		return *this.MaxTasks
+func (m *TaskQueueQueryAndOwnTasksRequest) GetMaxTasks() int64 {
+	if m != nil && m.MaxTasks != nil {
+		return *m.MaxTasks
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryAndOwnTasksRequest) GetGroupByTag() bool {
-	if this != nil && this.GroupByTag != nil {
-		return *this.GroupByTag
+func (m *TaskQueueQueryAndOwnTasksRequest) GetGroupByTag() bool {
+	if m != nil && m.GroupByTag != nil {
+		return *m.GroupByTag
 	}
 	return Default_TaskQueueQueryAndOwnTasksRequest_GroupByTag
 }
 
-func (this *TaskQueueQueryAndOwnTasksRequest) GetTag() []byte {
-	if this != nil {
-		return this.Tag
+func (m *TaskQueueQueryAndOwnTasksRequest) GetTag() []byte {
+	if m != nil {
+		return m.Tag
 	}
 	return nil
 }
@@ -1727,62 +1732,63 @@ type TaskQueueQueryAndOwnTasksResponse struct {
 	XXX_unrecognized []byte                                    `json:"-"`
 }
 
-func (this *TaskQueueQueryAndOwnTasksResponse) Reset()         { *this = TaskQueueQueryAndOwnTasksResponse{} }
-func (this *TaskQueueQueryAndOwnTasksResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueQueryAndOwnTasksResponse) ProtoMessage()       {}
+func (m *TaskQueueQueryAndOwnTasksResponse) Reset()         { *m = TaskQueueQueryAndOwnTasksResponse{} }
+func (m *TaskQueueQueryAndOwnTasksResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueQueryAndOwnTasksResponse) ProtoMessage()    {}
 
-func (this *TaskQueueQueryAndOwnTasksResponse) GetTask() []*TaskQueueQueryAndOwnTasksResponse_Task {
-	if this != nil {
-		return this.Task
+func (m *TaskQueueQueryAndOwnTasksResponse) GetTask() []*TaskQueueQueryAndOwnTasksResponse_Task {
+	if m != nil {
+		return m.Task
 	}
 	return nil
 }
 
 type TaskQueueQueryAndOwnTasksResponse_Task struct {
-	TaskName   []byte `protobuf:"bytes,2,req,name=task_name" json:"task_name,omitempty"`
-	EtaUsec    *int64 `protobuf:"varint,3,req,name=eta_usec" json:"eta_usec,omitempty"`
-	RetryCount *int32 `protobuf:"varint,4,opt,name=retry_count,def=0" json:"retry_count,omitempty"`
-	Body       []byte `protobuf:"bytes,5,opt,name=body" json:"body,omitempty"`
-	Tag        []byte `protobuf:"bytes,6,opt,name=tag" json:"tag,omitempty"`
+	TaskName         []byte `protobuf:"bytes,2,req,name=task_name" json:"task_name,omitempty"`
+	EtaUsec          *int64 `protobuf:"varint,3,req,name=eta_usec" json:"eta_usec,omitempty"`
+	RetryCount       *int32 `protobuf:"varint,4,opt,name=retry_count,def=0" json:"retry_count,omitempty"`
+	Body             []byte `protobuf:"bytes,5,opt,name=body" json:"body,omitempty"`
+	Tag              []byte `protobuf:"bytes,6,opt,name=tag" json:"tag,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueQueryAndOwnTasksResponse_Task) Reset() {
-	*this = TaskQueueQueryAndOwnTasksResponse_Task{}
+func (m *TaskQueueQueryAndOwnTasksResponse_Task) Reset() {
+	*m = TaskQueueQueryAndOwnTasksResponse_Task{}
 }
 
 const Default_TaskQueueQueryAndOwnTasksResponse_Task_RetryCount int32 = 0
 
-func (this *TaskQueueQueryAndOwnTasksResponse_Task) GetTaskName() []byte {
-	if this != nil {
-		return this.TaskName
+func (m *TaskQueueQueryAndOwnTasksResponse_Task) GetTaskName() []byte {
+	if m != nil {
+		return m.TaskName
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryAndOwnTasksResponse_Task) GetEtaUsec() int64 {
-	if this != nil && this.EtaUsec != nil {
-		return *this.EtaUsec
+func (m *TaskQueueQueryAndOwnTasksResponse_Task) GetEtaUsec() int64 {
+	if m != nil && m.EtaUsec != nil {
+		return *m.EtaUsec
 	}
 	return 0
 }
 
-func (this *TaskQueueQueryAndOwnTasksResponse_Task) GetRetryCount() int32 {
-	if this != nil && this.RetryCount != nil {
-		return *this.RetryCount
+func (m *TaskQueueQueryAndOwnTasksResponse_Task) GetRetryCount() int32 {
+	if m != nil && m.RetryCount != nil {
+		return *m.RetryCount
 	}
 	return Default_TaskQueueQueryAndOwnTasksResponse_Task_RetryCount
 }
 
-func (this *TaskQueueQueryAndOwnTasksResponse_Task) GetBody() []byte {
-	if this != nil {
-		return this.Body
+func (m *TaskQueueQueryAndOwnTasksResponse_Task) GetBody() []byte {
+	if m != nil {
+		return m.Body
 	}
 	return nil
 }
 
-func (this *TaskQueueQueryAndOwnTasksResponse_Task) GetTag() []byte {
-	if this != nil {
-		return this.Tag
+func (m *TaskQueueQueryAndOwnTasksResponse_Task) GetTag() []byte {
+	if m != nil {
+		return m.Tag
 	}
 	return nil
 }
@@ -1795,34 +1801,34 @@ type TaskQueueModifyTaskLeaseRequest struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *TaskQueueModifyTaskLeaseRequest) Reset()         { *this = TaskQueueModifyTaskLeaseRequest{} }
-func (this *TaskQueueModifyTaskLeaseRequest) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueModifyTaskLeaseRequest) ProtoMessage()       {}
+func (m *TaskQueueModifyTaskLeaseRequest) Reset()         { *m = TaskQueueModifyTaskLeaseRequest{} }
+func (m *TaskQueueModifyTaskLeaseRequest) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueModifyTaskLeaseRequest) ProtoMessage()    {}
 
-func (this *TaskQueueModifyTaskLeaseRequest) GetQueueName() []byte {
-	if this != nil {
-		return this.QueueName
+func (m *TaskQueueModifyTaskLeaseRequest) GetQueueName() []byte {
+	if m != nil {
+		return m.QueueName
 	}
 	return nil
 }
 
-func (this *TaskQueueModifyTaskLeaseRequest) GetTaskName() []byte {
-	if this != nil {
-		return this.TaskName
+func (m *TaskQueueModifyTaskLeaseRequest) GetTaskName() []byte {
+	if m != nil {
+		return m.TaskName
 	}
 	return nil
 }
 
-func (this *TaskQueueModifyTaskLeaseRequest) GetEtaUsec() int64 {
-	if this != nil && this.EtaUsec != nil {
-		return *this.EtaUsec
+func (m *TaskQueueModifyTaskLeaseRequest) GetEtaUsec() int64 {
+	if m != nil && m.EtaUsec != nil {
+		return *m.EtaUsec
 	}
 	return 0
 }
 
-func (this *TaskQueueModifyTaskLeaseRequest) GetLeaseSeconds() float64 {
-	if this != nil && this.LeaseSeconds != nil {
-		return *this.LeaseSeconds
+func (m *TaskQueueModifyTaskLeaseRequest) GetLeaseSeconds() float64 {
+	if m != nil && m.LeaseSeconds != nil {
+		return *m.LeaseSeconds
 	}
 	return 0
 }
@@ -1832,13 +1838,13 @@ type TaskQueueModifyTaskLeaseResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TaskQueueModifyTaskLeaseResponse) Reset()         { *this = TaskQueueModifyTaskLeaseResponse{} }
-func (this *TaskQueueModifyTaskLeaseResponse) String() string { return proto.CompactTextString(this) }
-func (*TaskQueueModifyTaskLeaseResponse) ProtoMessage()       {}
+func (m *TaskQueueModifyTaskLeaseResponse) Reset()         { *m = TaskQueueModifyTaskLeaseResponse{} }
+func (m *TaskQueueModifyTaskLeaseResponse) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueModifyTaskLeaseResponse) ProtoMessage()    {}
 
-func (this *TaskQueueModifyTaskLeaseResponse) GetUpdatedEtaUsec() int64 {
-	if this != nil && this.UpdatedEtaUsec != nil {
-		return *this.UpdatedEtaUsec
+func (m *TaskQueueModifyTaskLeaseResponse) GetUpdatedEtaUsec() int64 {
+	if m != nil && m.UpdatedEtaUsec != nil {
+		return *m.UpdatedEtaUsec
 	}
 	return 0
 }

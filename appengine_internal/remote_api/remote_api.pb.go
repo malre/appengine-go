@@ -20,34 +20,34 @@ type Request struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *Request) Reset()         { *this = Request{} }
-func (this *Request) String() string { return proto.CompactTextString(this) }
-func (*Request) ProtoMessage()       {}
+func (m *Request) Reset()         { *m = Request{} }
+func (m *Request) String() string { return proto.CompactTextString(m) }
+func (*Request) ProtoMessage()    {}
 
-func (this *Request) GetServiceName() string {
-	if this != nil && this.ServiceName != nil {
-		return *this.ServiceName
+func (m *Request) GetServiceName() string {
+	if m != nil && m.ServiceName != nil {
+		return *m.ServiceName
 	}
 	return ""
 }
 
-func (this *Request) GetMethod() string {
-	if this != nil && this.Method != nil {
-		return *this.Method
+func (m *Request) GetMethod() string {
+	if m != nil && m.Method != nil {
+		return *m.Method
 	}
 	return ""
 }
 
-func (this *Request) GetRequest() []byte {
-	if this != nil {
-		return this.Request
+func (m *Request) GetRequest() []byte {
+	if m != nil {
+		return m.Request
 	}
 	return nil
 }
 
-func (this *Request) GetRequestId() string {
-	if this != nil && this.RequestId != nil {
-		return *this.RequestId
+func (m *Request) GetRequestId() string {
+	if m != nil && m.RequestId != nil {
+		return *m.RequestId
 	}
 	return ""
 }
@@ -58,20 +58,20 @@ type ApplicationError struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *ApplicationError) Reset()         { *this = ApplicationError{} }
-func (this *ApplicationError) String() string { return proto.CompactTextString(this) }
-func (*ApplicationError) ProtoMessage()       {}
+func (m *ApplicationError) Reset()         { *m = ApplicationError{} }
+func (m *ApplicationError) String() string { return proto.CompactTextString(m) }
+func (*ApplicationError) ProtoMessage()    {}
 
-func (this *ApplicationError) GetCode() int32 {
-	if this != nil && this.Code != nil {
-		return *this.Code
+func (m *ApplicationError) GetCode() int32 {
+	if m != nil && m.Code != nil {
+		return *m.Code
 	}
 	return 0
 }
 
-func (this *ApplicationError) GetDetail() string {
-	if this != nil && this.Detail != nil {
-		return *this.Detail
+func (m *ApplicationError) GetDetail() string {
+	if m != nil && m.Detail != nil {
+		return *m.Detail
 	}
 	return ""
 }
@@ -84,34 +84,34 @@ type Response struct {
 	XXX_unrecognized []byte            `json:"-"`
 }
 
-func (this *Response) Reset()         { *this = Response{} }
-func (this *Response) String() string { return proto.CompactTextString(this) }
-func (*Response) ProtoMessage()       {}
+func (m *Response) Reset()         { *m = Response{} }
+func (m *Response) String() string { return proto.CompactTextString(m) }
+func (*Response) ProtoMessage()    {}
 
-func (this *Response) GetResponse() []byte {
-	if this != nil {
-		return this.Response
+func (m *Response) GetResponse() []byte {
+	if m != nil {
+		return m.Response
 	}
 	return nil
 }
 
-func (this *Response) GetException() []byte {
-	if this != nil {
-		return this.Exception
+func (m *Response) GetException() []byte {
+	if m != nil {
+		return m.Exception
 	}
 	return nil
 }
 
-func (this *Response) GetApplicationError() *ApplicationError {
-	if this != nil {
-		return this.ApplicationError
+func (m *Response) GetApplicationError() *ApplicationError {
+	if m != nil {
+		return m.ApplicationError
 	}
 	return nil
 }
 
-func (this *Response) GetJavaException() []byte {
-	if this != nil {
-		return this.JavaException
+func (m *Response) GetJavaException() []byte {
+	if m != nil {
+		return m.JavaException
 	}
 	return nil
 }

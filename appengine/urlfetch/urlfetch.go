@@ -12,7 +12,9 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"appengine"
@@ -102,6 +104,18 @@ var methodAcceptsRequestBody = map[string]bool{
 	"PATCH": true,
 }
 
+// urlString returns a valid string given a URL. This function is necessary because
+// the String method of URL doesn't correctly handle URLs with non-empty Opaque values.
+// See http://code.google.com/p/go/issues/detail?id=4860.
+func urlString(u *url.URL) string {
+	if u.Opaque == "" || strings.HasPrefix(u.Opaque, "//") {
+		return u.String()
+	}
+	aux := *u
+	aux.Opaque = "//" + aux.Host + aux.Opaque
+	return aux.String()
+}
+
 // RoundTrip issues a single HTTP request and returns its response. Per the
 // http.RoundTripper interface, RoundTrip only returns an error if there
 // was an unsupported request or the URL Fetch proxy fails.
@@ -118,7 +132,7 @@ func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err error)
 
 	freq := &pb.URLFetchRequest{
 		Method:                        &method,
-		Url:                           proto.String(req.URL.String()),
+		Url:                           proto.String(urlString(req.URL)),
 		FollowRedirects:               proto.Bool(false), // http.Client's responsibility
 		MustValidateServerCertificate: proto.Bool(!t.AllowInvalidServerCertificate),
 	}

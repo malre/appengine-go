@@ -484,22 +484,22 @@ type Action struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *Action) Reset()         { *this = Action{} }
-func (this *Action) String() string { return proto.CompactTextString(this) }
-func (*Action) ProtoMessage()       {}
+func (m *Action) Reset()         { *m = Action{} }
+func (m *Action) String() string { return proto.CompactTextString(m) }
+func (*Action) ProtoMessage()    {}
 
 type StringProto struct {
 	Value            *string `protobuf:"bytes,1,req,name=value" json:"value,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *StringProto) Reset()         { *this = StringProto{} }
-func (this *StringProto) String() string { return proto.CompactTextString(this) }
-func (*StringProto) ProtoMessage()       {}
+func (m *StringProto) Reset()         { *m = StringProto{} }
+func (m *StringProto) String() string { return proto.CompactTextString(m) }
+func (*StringProto) ProtoMessage()    {}
 
-func (this *StringProto) GetValue() string {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *StringProto) GetValue() string {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return ""
 }
@@ -509,13 +509,13 @@ type Integer32Proto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *Integer32Proto) Reset()         { *this = Integer32Proto{} }
-func (this *Integer32Proto) String() string { return proto.CompactTextString(this) }
-func (*Integer32Proto) ProtoMessage()       {}
+func (m *Integer32Proto) Reset()         { *m = Integer32Proto{} }
+func (m *Integer32Proto) String() string { return proto.CompactTextString(m) }
+func (*Integer32Proto) ProtoMessage()    {}
 
-func (this *Integer32Proto) GetValue() int32 {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *Integer32Proto) GetValue() int32 {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return 0
 }
@@ -525,13 +525,13 @@ type Integer64Proto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *Integer64Proto) Reset()         { *this = Integer64Proto{} }
-func (this *Integer64Proto) String() string { return proto.CompactTextString(this) }
-func (*Integer64Proto) ProtoMessage()       {}
+func (m *Integer64Proto) Reset()         { *m = Integer64Proto{} }
+func (m *Integer64Proto) String() string { return proto.CompactTextString(m) }
+func (*Integer64Proto) ProtoMessage()    {}
 
-func (this *Integer64Proto) GetValue() int64 {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *Integer64Proto) GetValue() int64 {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return 0
 }
@@ -541,13 +541,13 @@ type BoolProto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *BoolProto) Reset()         { *this = BoolProto{} }
-func (this *BoolProto) String() string { return proto.CompactTextString(this) }
-func (*BoolProto) ProtoMessage()       {}
+func (m *BoolProto) Reset()         { *m = BoolProto{} }
+func (m *BoolProto) String() string { return proto.CompactTextString(m) }
+func (*BoolProto) ProtoMessage()    {}
 
-func (this *BoolProto) GetValue() bool {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *BoolProto) GetValue() bool {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return false
 }
@@ -557,13 +557,13 @@ type DoubleProto struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *DoubleProto) Reset()         { *this = DoubleProto{} }
-func (this *DoubleProto) String() string { return proto.CompactTextString(this) }
-func (*DoubleProto) ProtoMessage()       {}
+func (m *DoubleProto) Reset()         { *m = DoubleProto{} }
+func (m *DoubleProto) String() string { return proto.CompactTextString(m) }
+func (*DoubleProto) ProtoMessage()    {}
 
-func (this *DoubleProto) GetValue() float64 {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *DoubleProto) GetValue() float64 {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return 0
 }
@@ -573,13 +573,13 @@ type BytesProto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *BytesProto) Reset()         { *this = BytesProto{} }
-func (this *BytesProto) String() string { return proto.CompactTextString(this) }
-func (*BytesProto) ProtoMessage()       {}
+func (m *BytesProto) Reset()         { *m = BytesProto{} }
+func (m *BytesProto) String() string { return proto.CompactTextString(m) }
+func (*BytesProto) ProtoMessage()    {}
 
-func (this *BytesProto) GetValue() []byte {
-	if this != nil {
-		return this.Value
+func (m *BytesProto) GetValue() []byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
@@ -588,9 +588,9 @@ type VoidProto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *VoidProto) Reset()         { *this = VoidProto{} }
-func (this *VoidProto) String() string { return proto.CompactTextString(this) }
-func (*VoidProto) ProtoMessage()       {}
+func (m *VoidProto) Reset()         { *m = VoidProto{} }
+func (m *VoidProto) String() string { return proto.CompactTextString(m) }
+func (*VoidProto) ProtoMessage()    {}
 
 type PropertyValue struct {
 	Int64Value       *int64                        `protobuf:"varint,1,opt,name=int64Value" json:"int64Value,omitempty"`
@@ -603,76 +603,77 @@ type PropertyValue struct {
 	XXX_unrecognized []byte                        `json:"-"`
 }
 
-func (this *PropertyValue) Reset()         { *this = PropertyValue{} }
-func (this *PropertyValue) String() string { return proto.CompactTextString(this) }
-func (*PropertyValue) ProtoMessage()       {}
+func (m *PropertyValue) Reset()         { *m = PropertyValue{} }
+func (m *PropertyValue) String() string { return proto.CompactTextString(m) }
+func (*PropertyValue) ProtoMessage()    {}
 
-func (this *PropertyValue) GetInt64Value() int64 {
-	if this != nil && this.Int64Value != nil {
-		return *this.Int64Value
+func (m *PropertyValue) GetInt64Value() int64 {
+	if m != nil && m.Int64Value != nil {
+		return *m.Int64Value
 	}
 	return 0
 }
 
-func (this *PropertyValue) GetBooleanValue() bool {
-	if this != nil && this.BooleanValue != nil {
-		return *this.BooleanValue
+func (m *PropertyValue) GetBooleanValue() bool {
+	if m != nil && m.BooleanValue != nil {
+		return *m.BooleanValue
 	}
 	return false
 }
 
-func (this *PropertyValue) GetStringValue() string {
-	if this != nil && this.StringValue != nil {
-		return *this.StringValue
+func (m *PropertyValue) GetStringValue() string {
+	if m != nil && m.StringValue != nil {
+		return *m.StringValue
 	}
 	return ""
 }
 
-func (this *PropertyValue) GetDoubleValue() float64 {
-	if this != nil && this.DoubleValue != nil {
-		return *this.DoubleValue
+func (m *PropertyValue) GetDoubleValue() float64 {
+	if m != nil && m.DoubleValue != nil {
+		return *m.DoubleValue
 	}
 	return 0
 }
 
-func (this *PropertyValue) GetPointvalue() *PropertyValue_PointValue {
-	if this != nil {
-		return this.Pointvalue
+func (m *PropertyValue) GetPointvalue() *PropertyValue_PointValue {
+	if m != nil {
+		return m.Pointvalue
 	}
 	return nil
 }
 
-func (this *PropertyValue) GetUservalue() *PropertyValue_UserValue {
-	if this != nil {
-		return this.Uservalue
+func (m *PropertyValue) GetUservalue() *PropertyValue_UserValue {
+	if m != nil {
+		return m.Uservalue
 	}
 	return nil
 }
 
-func (this *PropertyValue) GetReferencevalue() *PropertyValue_ReferenceValue {
-	if this != nil {
-		return this.Referencevalue
+func (m *PropertyValue) GetReferencevalue() *PropertyValue_ReferenceValue {
+	if m != nil {
+		return m.Referencevalue
 	}
 	return nil
 }
 
 type PropertyValue_PointValue struct {
-	X *float64 `protobuf:"fixed64,6,req,name=x" json:"x,omitempty"`
-	Y *float64 `protobuf:"fixed64,7,req,name=y" json:"y,omitempty"`
+	X                *float64 `protobuf:"fixed64,6,req,name=x" json:"x,omitempty"`
+	Y                *float64 `protobuf:"fixed64,7,req,name=y" json:"y,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *PropertyValue_PointValue) Reset() { *this = PropertyValue_PointValue{} }
+func (m *PropertyValue_PointValue) Reset() { *m = PropertyValue_PointValue{} }
 
-func (this *PropertyValue_PointValue) GetX() float64 {
-	if this != nil && this.X != nil {
-		return *this.X
+func (m *PropertyValue_PointValue) GetX() float64 {
+	if m != nil && m.X != nil {
+		return *m.X
 	}
 	return 0
 }
 
-func (this *PropertyValue_PointValue) GetY() float64 {
-	if this != nil && this.Y != nil {
-		return *this.Y
+func (m *PropertyValue_PointValue) GetY() float64 {
+	if m != nil && m.Y != nil {
+		return *m.Y
 	}
 	return 0
 }
@@ -685,115 +686,118 @@ type PropertyValue_UserValue struct {
 	ObfuscatedGaiaid  *string `protobuf:"bytes,19,opt,name=obfuscated_gaiaid" json:"obfuscated_gaiaid,omitempty"`
 	FederatedIdentity *string `protobuf:"bytes,21,opt,name=federated_identity" json:"federated_identity,omitempty"`
 	FederatedProvider *string `protobuf:"bytes,22,opt,name=federated_provider" json:"federated_provider,omitempty"`
+	XXX_unrecognized  []byte  `json:"-"`
 }
 
-func (this *PropertyValue_UserValue) Reset() { *this = PropertyValue_UserValue{} }
+func (m *PropertyValue_UserValue) Reset() { *m = PropertyValue_UserValue{} }
 
-func (this *PropertyValue_UserValue) GetEmail() string {
-	if this != nil && this.Email != nil {
-		return *this.Email
+func (m *PropertyValue_UserValue) GetEmail() string {
+	if m != nil && m.Email != nil {
+		return *m.Email
 	}
 	return ""
 }
 
-func (this *PropertyValue_UserValue) GetAuthDomain() string {
-	if this != nil && this.AuthDomain != nil {
-		return *this.AuthDomain
+func (m *PropertyValue_UserValue) GetAuthDomain() string {
+	if m != nil && m.AuthDomain != nil {
+		return *m.AuthDomain
 	}
 	return ""
 }
 
-func (this *PropertyValue_UserValue) GetNickname() string {
-	if this != nil && this.Nickname != nil {
-		return *this.Nickname
+func (m *PropertyValue_UserValue) GetNickname() string {
+	if m != nil && m.Nickname != nil {
+		return *m.Nickname
 	}
 	return ""
 }
 
-func (this *PropertyValue_UserValue) GetGaiaid() int64 {
-	if this != nil && this.Gaiaid != nil {
-		return *this.Gaiaid
+func (m *PropertyValue_UserValue) GetGaiaid() int64 {
+	if m != nil && m.Gaiaid != nil {
+		return *m.Gaiaid
 	}
 	return 0
 }
 
-func (this *PropertyValue_UserValue) GetObfuscatedGaiaid() string {
-	if this != nil && this.ObfuscatedGaiaid != nil {
-		return *this.ObfuscatedGaiaid
+func (m *PropertyValue_UserValue) GetObfuscatedGaiaid() string {
+	if m != nil && m.ObfuscatedGaiaid != nil {
+		return *m.ObfuscatedGaiaid
 	}
 	return ""
 }
 
-func (this *PropertyValue_UserValue) GetFederatedIdentity() string {
-	if this != nil && this.FederatedIdentity != nil {
-		return *this.FederatedIdentity
+func (m *PropertyValue_UserValue) GetFederatedIdentity() string {
+	if m != nil && m.FederatedIdentity != nil {
+		return *m.FederatedIdentity
 	}
 	return ""
 }
 
-func (this *PropertyValue_UserValue) GetFederatedProvider() string {
-	if this != nil && this.FederatedProvider != nil {
-		return *this.FederatedProvider
+func (m *PropertyValue_UserValue) GetFederatedProvider() string {
+	if m != nil && m.FederatedProvider != nil {
+		return *m.FederatedProvider
 	}
 	return ""
 }
 
 type PropertyValue_ReferenceValue struct {
-	App         *string                                     `protobuf:"bytes,13,req,name=app" json:"app,omitempty"`
-	NameSpace   *string                                     `protobuf:"bytes,20,opt,name=name_space" json:"name_space,omitempty"`
-	Pathelement []*PropertyValue_ReferenceValue_PathElement `protobuf:"group,14,rep,name=PathElement" json:"pathelement,omitempty"`
+	App              *string                                     `protobuf:"bytes,13,req,name=app" json:"app,omitempty"`
+	NameSpace        *string                                     `protobuf:"bytes,20,opt,name=name_space" json:"name_space,omitempty"`
+	Pathelement      []*PropertyValue_ReferenceValue_PathElement `protobuf:"group,14,rep,name=PathElement" json:"pathelement,omitempty"`
+	XXX_unrecognized []byte                                      `json:"-"`
 }
 
-func (this *PropertyValue_ReferenceValue) Reset() { *this = PropertyValue_ReferenceValue{} }
+func (m *PropertyValue_ReferenceValue) Reset() { *m = PropertyValue_ReferenceValue{} }
 
-func (this *PropertyValue_ReferenceValue) GetApp() string {
-	if this != nil && this.App != nil {
-		return *this.App
+func (m *PropertyValue_ReferenceValue) GetApp() string {
+	if m != nil && m.App != nil {
+		return *m.App
 	}
 	return ""
 }
 
-func (this *PropertyValue_ReferenceValue) GetNameSpace() string {
-	if this != nil && this.NameSpace != nil {
-		return *this.NameSpace
+func (m *PropertyValue_ReferenceValue) GetNameSpace() string {
+	if m != nil && m.NameSpace != nil {
+		return *m.NameSpace
 	}
 	return ""
 }
 
-func (this *PropertyValue_ReferenceValue) GetPathelement() []*PropertyValue_ReferenceValue_PathElement {
-	if this != nil {
-		return this.Pathelement
+func (m *PropertyValue_ReferenceValue) GetPathelement() []*PropertyValue_ReferenceValue_PathElement {
+	if m != nil {
+		return m.Pathelement
 	}
 	return nil
 }
 
 type PropertyValue_ReferenceValue_PathElement struct {
-	Type *string `protobuf:"bytes,15,req,name=type" json:"type,omitempty"`
-	Id   *int64  `protobuf:"varint,16,opt,name=id" json:"id,omitempty"`
-	Name *string `protobuf:"bytes,17,opt,name=name" json:"name,omitempty"`
+	Type             *string `protobuf:"bytes,15,req,name=type" json:"type,omitempty"`
+	Id               *int64  `protobuf:"varint,16,opt,name=id" json:"id,omitempty"`
+	Name             *string `protobuf:"bytes,17,opt,name=name" json:"name,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *PropertyValue_ReferenceValue_PathElement) Reset() {
-	*this = PropertyValue_ReferenceValue_PathElement{}
+func (m *PropertyValue_ReferenceValue_PathElement) Reset() {
+	*m = PropertyValue_ReferenceValue_PathElement{}
 }
 
-func (this *PropertyValue_ReferenceValue_PathElement) GetType() string {
-	if this != nil && this.Type != nil {
-		return *this.Type
+func (m *PropertyValue_ReferenceValue_PathElement) GetType() string {
+	if m != nil && m.Type != nil {
+		return *m.Type
 	}
 	return ""
 }
 
-func (this *PropertyValue_ReferenceValue_PathElement) GetId() int64 {
-	if this != nil && this.Id != nil {
-		return *this.Id
+func (m *PropertyValue_ReferenceValue_PathElement) GetId() int64 {
+	if m != nil && m.Id != nil {
+		return *m.Id
 	}
 	return 0
 }
 
-func (this *PropertyValue_ReferenceValue_PathElement) GetName() string {
-	if this != nil && this.Name != nil {
-		return *this.Name
+func (m *PropertyValue_ReferenceValue_PathElement) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
 	}
 	return ""
 }
@@ -810,66 +814,66 @@ type Property struct {
 	XXX_unrecognized      []byte                          `json:"-"`
 }
 
-func (this *Property) Reset()         { *this = Property{} }
-func (this *Property) String() string { return proto.CompactTextString(this) }
-func (*Property) ProtoMessage()       {}
+func (m *Property) Reset()         { *m = Property{} }
+func (m *Property) String() string { return proto.CompactTextString(m) }
+func (*Property) ProtoMessage()    {}
 
 const Default_Property_Meaning Property_Meaning = Property_NO_MEANING
 const Default_Property_Searchable bool = false
 const Default_Property_Locale string = "en"
 
-func (this *Property) GetMeaning() Property_Meaning {
-	if this != nil && this.Meaning != nil {
-		return *this.Meaning
+func (m *Property) GetMeaning() Property_Meaning {
+	if m != nil && m.Meaning != nil {
+		return *m.Meaning
 	}
 	return Default_Property_Meaning
 }
 
-func (this *Property) GetMeaningUri() string {
-	if this != nil && this.MeaningUri != nil {
-		return *this.MeaningUri
+func (m *Property) GetMeaningUri() string {
+	if m != nil && m.MeaningUri != nil {
+		return *m.MeaningUri
 	}
 	return ""
 }
 
-func (this *Property) GetName() string {
-	if this != nil && this.Name != nil {
-		return *this.Name
+func (m *Property) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
 	}
 	return ""
 }
 
-func (this *Property) GetValue() *PropertyValue {
-	if this != nil {
-		return this.Value
+func (m *Property) GetValue() *PropertyValue {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
 
-func (this *Property) GetMultiple() bool {
-	if this != nil && this.Multiple != nil {
-		return *this.Multiple
+func (m *Property) GetMultiple() bool {
+	if m != nil && m.Multiple != nil {
+		return *m.Multiple
 	}
 	return false
 }
 
-func (this *Property) GetSearchable() bool {
-	if this != nil && this.Searchable != nil {
-		return *this.Searchable
+func (m *Property) GetSearchable() bool {
+	if m != nil && m.Searchable != nil {
+		return *m.Searchable
 	}
 	return Default_Property_Searchable
 }
 
-func (this *Property) GetFtsTokenizationOption() Property_FtsTokenizationOption {
-	if this != nil && this.FtsTokenizationOption != nil {
-		return *this.FtsTokenizationOption
+func (m *Property) GetFtsTokenizationOption() Property_FtsTokenizationOption {
+	if m != nil && m.FtsTokenizationOption != nil {
+		return *m.FtsTokenizationOption
 	}
 	return 0
 }
 
-func (this *Property) GetLocale() string {
-	if this != nil && this.Locale != nil {
-		return *this.Locale
+func (m *Property) GetLocale() string {
+	if m != nil && m.Locale != nil {
+		return *m.Locale
 	}
 	return Default_Property_Locale
 }
@@ -879,42 +883,43 @@ type Path struct {
 	XXX_unrecognized []byte          `json:"-"`
 }
 
-func (this *Path) Reset()         { *this = Path{} }
-func (this *Path) String() string { return proto.CompactTextString(this) }
-func (*Path) ProtoMessage()       {}
+func (m *Path) Reset()         { *m = Path{} }
+func (m *Path) String() string { return proto.CompactTextString(m) }
+func (*Path) ProtoMessage()    {}
 
-func (this *Path) GetElement() []*Path_Element {
-	if this != nil {
-		return this.Element
+func (m *Path) GetElement() []*Path_Element {
+	if m != nil {
+		return m.Element
 	}
 	return nil
 }
 
 type Path_Element struct {
-	Type *string `protobuf:"bytes,2,req,name=type" json:"type,omitempty"`
-	Id   *int64  `protobuf:"varint,3,opt,name=id" json:"id,omitempty"`
-	Name *string `protobuf:"bytes,4,opt,name=name" json:"name,omitempty"`
+	Type             *string `protobuf:"bytes,2,req,name=type" json:"type,omitempty"`
+	Id               *int64  `protobuf:"varint,3,opt,name=id" json:"id,omitempty"`
+	Name             *string `protobuf:"bytes,4,opt,name=name" json:"name,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *Path_Element) Reset() { *this = Path_Element{} }
+func (m *Path_Element) Reset() { *m = Path_Element{} }
 
-func (this *Path_Element) GetType() string {
-	if this != nil && this.Type != nil {
-		return *this.Type
+func (m *Path_Element) GetType() string {
+	if m != nil && m.Type != nil {
+		return *m.Type
 	}
 	return ""
 }
 
-func (this *Path_Element) GetId() int64 {
-	if this != nil && this.Id != nil {
-		return *this.Id
+func (m *Path_Element) GetId() int64 {
+	if m != nil && m.Id != nil {
+		return *m.Id
 	}
 	return 0
 }
 
-func (this *Path_Element) GetName() string {
-	if this != nil && this.Name != nil {
-		return *this.Name
+func (m *Path_Element) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
 	}
 	return ""
 }
@@ -926,27 +931,27 @@ type Reference struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *Reference) Reset()         { *this = Reference{} }
-func (this *Reference) String() string { return proto.CompactTextString(this) }
-func (*Reference) ProtoMessage()       {}
+func (m *Reference) Reset()         { *m = Reference{} }
+func (m *Reference) String() string { return proto.CompactTextString(m) }
+func (*Reference) ProtoMessage()    {}
 
-func (this *Reference) GetApp() string {
-	if this != nil && this.App != nil {
-		return *this.App
+func (m *Reference) GetApp() string {
+	if m != nil && m.App != nil {
+		return *m.App
 	}
 	return ""
 }
 
-func (this *Reference) GetNameSpace() string {
-	if this != nil && this.NameSpace != nil {
-		return *this.NameSpace
+func (m *Reference) GetNameSpace() string {
+	if m != nil && m.NameSpace != nil {
+		return *m.NameSpace
 	}
 	return ""
 }
 
-func (this *Reference) GetPath() *Path {
-	if this != nil {
-		return this.Path
+func (m *Reference) GetPath() *Path {
+	if m != nil {
+		return m.Path
 	}
 	return nil
 }
@@ -962,55 +967,55 @@ type User struct {
 	XXX_unrecognized  []byte  `json:"-"`
 }
 
-func (this *User) Reset()         { *this = User{} }
-func (this *User) String() string { return proto.CompactTextString(this) }
-func (*User) ProtoMessage()       {}
+func (m *User) Reset()         { *m = User{} }
+func (m *User) String() string { return proto.CompactTextString(m) }
+func (*User) ProtoMessage()    {}
 
-func (this *User) GetEmail() string {
-	if this != nil && this.Email != nil {
-		return *this.Email
+func (m *User) GetEmail() string {
+	if m != nil && m.Email != nil {
+		return *m.Email
 	}
 	return ""
 }
 
-func (this *User) GetAuthDomain() string {
-	if this != nil && this.AuthDomain != nil {
-		return *this.AuthDomain
+func (m *User) GetAuthDomain() string {
+	if m != nil && m.AuthDomain != nil {
+		return *m.AuthDomain
 	}
 	return ""
 }
 
-func (this *User) GetNickname() string {
-	if this != nil && this.Nickname != nil {
-		return *this.Nickname
+func (m *User) GetNickname() string {
+	if m != nil && m.Nickname != nil {
+		return *m.Nickname
 	}
 	return ""
 }
 
-func (this *User) GetGaiaid() int64 {
-	if this != nil && this.Gaiaid != nil {
-		return *this.Gaiaid
+func (m *User) GetGaiaid() int64 {
+	if m != nil && m.Gaiaid != nil {
+		return *m.Gaiaid
 	}
 	return 0
 }
 
-func (this *User) GetObfuscatedGaiaid() string {
-	if this != nil && this.ObfuscatedGaiaid != nil {
-		return *this.ObfuscatedGaiaid
+func (m *User) GetObfuscatedGaiaid() string {
+	if m != nil && m.ObfuscatedGaiaid != nil {
+		return *m.ObfuscatedGaiaid
 	}
 	return ""
 }
 
-func (this *User) GetFederatedIdentity() string {
-	if this != nil && this.FederatedIdentity != nil {
-		return *this.FederatedIdentity
+func (m *User) GetFederatedIdentity() string {
+	if m != nil && m.FederatedIdentity != nil {
+		return *m.FederatedIdentity
 	}
 	return ""
 }
 
-func (this *User) GetFederatedProvider() string {
-	if this != nil && this.FederatedProvider != nil {
-		return *this.FederatedProvider
+func (m *User) GetFederatedProvider() string {
+	if m != nil && m.FederatedProvider != nil {
+		return *m.FederatedProvider
 	}
 	return ""
 }
@@ -1027,62 +1032,62 @@ type EntityProto struct {
 	XXX_unrecognized []byte            `json:"-"`
 }
 
-func (this *EntityProto) Reset()         { *this = EntityProto{} }
-func (this *EntityProto) String() string { return proto.CompactTextString(this) }
-func (*EntityProto) ProtoMessage()       {}
+func (m *EntityProto) Reset()         { *m = EntityProto{} }
+func (m *EntityProto) String() string { return proto.CompactTextString(m) }
+func (*EntityProto) ProtoMessage()    {}
 
-func (this *EntityProto) GetKey() *Reference {
-	if this != nil {
-		return this.Key
+func (m *EntityProto) GetKey() *Reference {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *EntityProto) GetEntityGroup() *Path {
-	if this != nil {
-		return this.EntityGroup
+func (m *EntityProto) GetEntityGroup() *Path {
+	if m != nil {
+		return m.EntityGroup
 	}
 	return nil
 }
 
-func (this *EntityProto) GetOwner() *User {
-	if this != nil {
-		return this.Owner
+func (m *EntityProto) GetOwner() *User {
+	if m != nil {
+		return m.Owner
 	}
 	return nil
 }
 
-func (this *EntityProto) GetKind() EntityProto_Kind {
-	if this != nil && this.Kind != nil {
-		return *this.Kind
+func (m *EntityProto) GetKind() EntityProto_Kind {
+	if m != nil && m.Kind != nil {
+		return *m.Kind
 	}
 	return 0
 }
 
-func (this *EntityProto) GetKindUri() string {
-	if this != nil && this.KindUri != nil {
-		return *this.KindUri
+func (m *EntityProto) GetKindUri() string {
+	if m != nil && m.KindUri != nil {
+		return *m.KindUri
 	}
 	return ""
 }
 
-func (this *EntityProto) GetProperty() []*Property {
-	if this != nil {
-		return this.Property
+func (m *EntityProto) GetProperty() []*Property {
+	if m != nil {
+		return m.Property
 	}
 	return nil
 }
 
-func (this *EntityProto) GetRawProperty() []*Property {
-	if this != nil {
-		return this.RawProperty
+func (m *EntityProto) GetRawProperty() []*Property {
+	if m != nil {
+		return m.RawProperty
 	}
 	return nil
 }
 
-func (this *EntityProto) GetRank() int32 {
-	if this != nil && this.Rank != nil {
-		return *this.Rank
+func (m *EntityProto) GetRank() int32 {
+	if m != nil && m.Rank != nil {
+		return *m.Rank
 	}
 	return 0
 }
@@ -1093,20 +1098,20 @@ type CompositeProperty struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *CompositeProperty) Reset()         { *this = CompositeProperty{} }
-func (this *CompositeProperty) String() string { return proto.CompactTextString(this) }
-func (*CompositeProperty) ProtoMessage()       {}
+func (m *CompositeProperty) Reset()         { *m = CompositeProperty{} }
+func (m *CompositeProperty) String() string { return proto.CompactTextString(m) }
+func (*CompositeProperty) ProtoMessage()    {}
 
-func (this *CompositeProperty) GetIndexId() int64 {
-	if this != nil && this.IndexId != nil {
-		return *this.IndexId
+func (m *CompositeProperty) GetIndexId() int64 {
+	if m != nil && m.IndexId != nil {
+		return *m.IndexId
 	}
 	return 0
 }
 
-func (this *CompositeProperty) GetValue() []string {
-	if this != nil {
-		return this.Value
+func (m *CompositeProperty) GetValue() []string {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
@@ -1118,50 +1123,51 @@ type Index struct {
 	XXX_unrecognized []byte            `json:"-"`
 }
 
-func (this *Index) Reset()         { *this = Index{} }
-func (this *Index) String() string { return proto.CompactTextString(this) }
-func (*Index) ProtoMessage()       {}
+func (m *Index) Reset()         { *m = Index{} }
+func (m *Index) String() string { return proto.CompactTextString(m) }
+func (*Index) ProtoMessage()    {}
 
-func (this *Index) GetEntityType() string {
-	if this != nil && this.EntityType != nil {
-		return *this.EntityType
+func (m *Index) GetEntityType() string {
+	if m != nil && m.EntityType != nil {
+		return *m.EntityType
 	}
 	return ""
 }
 
-func (this *Index) GetAncestor() bool {
-	if this != nil && this.Ancestor != nil {
-		return *this.Ancestor
+func (m *Index) GetAncestor() bool {
+	if m != nil && m.Ancestor != nil {
+		return *m.Ancestor
 	}
 	return false
 }
 
-func (this *Index) GetProperty() []*Index_Property {
-	if this != nil {
-		return this.Property
+func (m *Index) GetProperty() []*Index_Property {
+	if m != nil {
+		return m.Property
 	}
 	return nil
 }
 
 type Index_Property struct {
-	Name      *string                   `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
-	Direction *Index_Property_Direction `protobuf:"varint,4,opt,name=direction,enum=datastore.Index_Property_Direction,def=1" json:"direction,omitempty"`
+	Name             *string                   `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
+	Direction        *Index_Property_Direction `protobuf:"varint,4,opt,name=direction,enum=datastore.Index_Property_Direction,def=1" json:"direction,omitempty"`
+	XXX_unrecognized []byte                    `json:"-"`
 }
 
-func (this *Index_Property) Reset() { *this = Index_Property{} }
+func (m *Index_Property) Reset() { *m = Index_Property{} }
 
 const Default_Index_Property_Direction Index_Property_Direction = Index_Property_ASCENDING
 
-func (this *Index_Property) GetName() string {
-	if this != nil && this.Name != nil {
-		return *this.Name
+func (m *Index_Property) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
 	}
 	return ""
 }
 
-func (this *Index_Property) GetDirection() Index_Property_Direction {
-	if this != nil && this.Direction != nil {
-		return *this.Direction
+func (m *Index_Property) GetDirection() Index_Property_Direction {
+	if m != nil && m.Direction != nil {
+		return *m.Direction
 	}
 	return Default_Index_Property_Direction
 }
@@ -1175,45 +1181,103 @@ type CompositeIndex struct {
 	XXX_unrecognized  []byte                `json:"-"`
 }
 
-func (this *CompositeIndex) Reset()         { *this = CompositeIndex{} }
-func (this *CompositeIndex) String() string { return proto.CompactTextString(this) }
-func (*CompositeIndex) ProtoMessage()       {}
+func (m *CompositeIndex) Reset()         { *m = CompositeIndex{} }
+func (m *CompositeIndex) String() string { return proto.CompactTextString(m) }
+func (*CompositeIndex) ProtoMessage()    {}
 
 const Default_CompositeIndex_OnlyUseIfRequired bool = false
 
-func (this *CompositeIndex) GetAppId() string {
-	if this != nil && this.AppId != nil {
-		return *this.AppId
+func (m *CompositeIndex) GetAppId() string {
+	if m != nil && m.AppId != nil {
+		return *m.AppId
 	}
 	return ""
 }
 
-func (this *CompositeIndex) GetId() int64 {
-	if this != nil && this.Id != nil {
-		return *this.Id
+func (m *CompositeIndex) GetId() int64 {
+	if m != nil && m.Id != nil {
+		return *m.Id
 	}
 	return 0
 }
 
-func (this *CompositeIndex) GetDefinition() *Index {
-	if this != nil {
-		return this.Definition
+func (m *CompositeIndex) GetDefinition() *Index {
+	if m != nil {
+		return m.Definition
 	}
 	return nil
 }
 
-func (this *CompositeIndex) GetState() CompositeIndex_State {
-	if this != nil && this.State != nil {
-		return *this.State
+func (m *CompositeIndex) GetState() CompositeIndex_State {
+	if m != nil && m.State != nil {
+		return *m.State
 	}
 	return 0
 }
 
-func (this *CompositeIndex) GetOnlyUseIfRequired() bool {
-	if this != nil && this.OnlyUseIfRequired != nil {
-		return *this.OnlyUseIfRequired
+func (m *CompositeIndex) GetOnlyUseIfRequired() bool {
+	if m != nil && m.OnlyUseIfRequired != nil {
+		return *m.OnlyUseIfRequired
 	}
 	return Default_CompositeIndex_OnlyUseIfRequired
+}
+
+type IndexPostfix struct {
+	IndexValue       []*IndexPostfix_IndexValue `protobuf:"bytes,1,rep,name=index_value" json:"index_value,omitempty"`
+	Key              *Reference                 `protobuf:"bytes,2,opt,name=key" json:"key,omitempty"`
+	Before           *bool                      `protobuf:"varint,3,opt,name=before,def=1" json:"before,omitempty"`
+	XXX_unrecognized []byte                     `json:"-"`
+}
+
+func (m *IndexPostfix) Reset()         { *m = IndexPostfix{} }
+func (m *IndexPostfix) String() string { return proto.CompactTextString(m) }
+func (*IndexPostfix) ProtoMessage()    {}
+
+const Default_IndexPostfix_Before bool = true
+
+func (m *IndexPostfix) GetIndexValue() []*IndexPostfix_IndexValue {
+	if m != nil {
+		return m.IndexValue
+	}
+	return nil
+}
+
+func (m *IndexPostfix) GetKey() *Reference {
+	if m != nil {
+		return m.Key
+	}
+	return nil
+}
+
+func (m *IndexPostfix) GetBefore() bool {
+	if m != nil && m.Before != nil {
+		return *m.Before
+	}
+	return Default_IndexPostfix_Before
+}
+
+type IndexPostfix_IndexValue struct {
+	PropertyName     *string        `protobuf:"bytes,1,req,name=property_name" json:"property_name,omitempty"`
+	Value            *PropertyValue `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte         `json:"-"`
+}
+
+func (m *IndexPostfix_IndexValue) Reset()         { *m = IndexPostfix_IndexValue{} }
+func (m *IndexPostfix_IndexValue) String() string { return proto.CompactTextString(m) }
+func (*IndexPostfix_IndexValue) ProtoMessage()    {}
+
+func (m *IndexPostfix_IndexValue) GetPropertyName() string {
+	if m != nil && m.PropertyName != nil {
+		return *m.PropertyName
+	}
+	return ""
+}
+
+func (m *IndexPostfix_IndexValue) GetValue() *PropertyValue {
+	if m != nil {
+		return m.Value
+	}
+	return nil
 }
 
 type Snapshot struct {
@@ -1221,13 +1285,13 @@ type Snapshot struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *Snapshot) Reset()         { *this = Snapshot{} }
-func (this *Snapshot) String() string { return proto.CompactTextString(this) }
-func (*Snapshot) ProtoMessage()       {}
+func (m *Snapshot) Reset()         { *m = Snapshot{} }
+func (m *Snapshot) String() string { return proto.CompactTextString(m) }
+func (*Snapshot) ProtoMessage()    {}
 
-func (this *Snapshot) GetTs() int64 {
-	if this != nil && this.Ts != nil {
-		return *this.Ts
+func (m *Snapshot) GetTs() int64 {
+	if m != nil && m.Ts != nil {
+		return *m.Ts
 	}
 	return 0
 }
@@ -1239,29 +1303,29 @@ type Transaction struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *Transaction) Reset()         { *this = Transaction{} }
-func (this *Transaction) String() string { return proto.CompactTextString(this) }
-func (*Transaction) ProtoMessage()       {}
+func (m *Transaction) Reset()         { *m = Transaction{} }
+func (m *Transaction) String() string { return proto.CompactTextString(m) }
+func (*Transaction) ProtoMessage()    {}
 
 const Default_Transaction_MarkChanges bool = false
 
-func (this *Transaction) GetHandle() uint64 {
-	if this != nil && this.Handle != nil {
-		return *this.Handle
+func (m *Transaction) GetHandle() uint64 {
+	if m != nil && m.Handle != nil {
+		return *m.Handle
 	}
 	return 0
 }
 
-func (this *Transaction) GetApp() string {
-	if this != nil && this.App != nil {
-		return *this.App
+func (m *Transaction) GetApp() string {
+	if m != nil && m.App != nil {
+		return *m.App
 	}
 	return ""
 }
 
-func (this *Transaction) GetMarkChanges() bool {
-	if this != nil && this.MarkChanges != nil {
-		return *this.MarkChanges
+func (m *Transaction) GetMarkChanges() bool {
+	if m != nil && m.MarkChanges != nil {
+		return *m.MarkChanges
 	}
 	return Default_Transaction_MarkChanges
 }
@@ -1292,233 +1356,244 @@ type Query struct {
 	Distinct            *bool             `protobuf:"varint,24,opt,name=distinct" json:"distinct,omitempty"`
 	MinSafeTimeSeconds  *int64            `protobuf:"varint,35,opt,name=min_safe_time_seconds" json:"min_safe_time_seconds,omitempty"`
 	SafeReplicaName     []string          `protobuf:"bytes,36,rep,name=safe_replica_name" json:"safe_replica_name,omitempty"`
+	PersistOffset       *bool             `protobuf:"varint,37,opt,name=persist_offset,def=0" json:"persist_offset,omitempty"`
 	XXX_unrecognized    []byte            `json:"-"`
 }
 
-func (this *Query) Reset()         { *this = Query{} }
-func (this *Query) String() string { return proto.CompactTextString(this) }
-func (*Query) ProtoMessage()       {}
+func (m *Query) Reset()         { *m = Query{} }
+func (m *Query) String() string { return proto.CompactTextString(m) }
+func (*Query) ProtoMessage()    {}
 
 const Default_Query_Offset int32 = 0
 const Default_Query_RequirePerfectPlan bool = false
 const Default_Query_KeysOnly bool = false
 const Default_Query_Compile bool = false
+const Default_Query_PersistOffset bool = false
 
-func (this *Query) GetApp() string {
-	if this != nil && this.App != nil {
-		return *this.App
+func (m *Query) GetApp() string {
+	if m != nil && m.App != nil {
+		return *m.App
 	}
 	return ""
 }
 
-func (this *Query) GetNameSpace() string {
-	if this != nil && this.NameSpace != nil {
-		return *this.NameSpace
+func (m *Query) GetNameSpace() string {
+	if m != nil && m.NameSpace != nil {
+		return *m.NameSpace
 	}
 	return ""
 }
 
-func (this *Query) GetKind() string {
-	if this != nil && this.Kind != nil {
-		return *this.Kind
+func (m *Query) GetKind() string {
+	if m != nil && m.Kind != nil {
+		return *m.Kind
 	}
 	return ""
 }
 
-func (this *Query) GetAncestor() *Reference {
-	if this != nil {
-		return this.Ancestor
+func (m *Query) GetAncestor() *Reference {
+	if m != nil {
+		return m.Ancestor
 	}
 	return nil
 }
 
-func (this *Query) GetFilter() []*Query_Filter {
-	if this != nil {
-		return this.Filter
+func (m *Query) GetFilter() []*Query_Filter {
+	if m != nil {
+		return m.Filter
 	}
 	return nil
 }
 
-func (this *Query) GetSearchQuery() string {
-	if this != nil && this.SearchQuery != nil {
-		return *this.SearchQuery
+func (m *Query) GetSearchQuery() string {
+	if m != nil && m.SearchQuery != nil {
+		return *m.SearchQuery
 	}
 	return ""
 }
 
-func (this *Query) GetOrder() []*Query_Order {
-	if this != nil {
-		return this.Order
+func (m *Query) GetOrder() []*Query_Order {
+	if m != nil {
+		return m.Order
 	}
 	return nil
 }
 
-func (this *Query) GetHint() Query_Hint {
-	if this != nil && this.Hint != nil {
-		return *this.Hint
+func (m *Query) GetHint() Query_Hint {
+	if m != nil && m.Hint != nil {
+		return *m.Hint
 	}
 	return 0
 }
 
-func (this *Query) GetCount() int32 {
-	if this != nil && this.Count != nil {
-		return *this.Count
+func (m *Query) GetCount() int32 {
+	if m != nil && m.Count != nil {
+		return *m.Count
 	}
 	return 0
 }
 
-func (this *Query) GetOffset() int32 {
-	if this != nil && this.Offset != nil {
-		return *this.Offset
+func (m *Query) GetOffset() int32 {
+	if m != nil && m.Offset != nil {
+		return *m.Offset
 	}
 	return Default_Query_Offset
 }
 
-func (this *Query) GetLimit() int32 {
-	if this != nil && this.Limit != nil {
-		return *this.Limit
+func (m *Query) GetLimit() int32 {
+	if m != nil && m.Limit != nil {
+		return *m.Limit
 	}
 	return 0
 }
 
-func (this *Query) GetCompiledCursor() *CompiledCursor {
-	if this != nil {
-		return this.CompiledCursor
+func (m *Query) GetCompiledCursor() *CompiledCursor {
+	if m != nil {
+		return m.CompiledCursor
 	}
 	return nil
 }
 
-func (this *Query) GetEndCompiledCursor() *CompiledCursor {
-	if this != nil {
-		return this.EndCompiledCursor
+func (m *Query) GetEndCompiledCursor() *CompiledCursor {
+	if m != nil {
+		return m.EndCompiledCursor
 	}
 	return nil
 }
 
-func (this *Query) GetCompositeIndex() []*CompositeIndex {
-	if this != nil {
-		return this.CompositeIndex
+func (m *Query) GetCompositeIndex() []*CompositeIndex {
+	if m != nil {
+		return m.CompositeIndex
 	}
 	return nil
 }
 
-func (this *Query) GetRequirePerfectPlan() bool {
-	if this != nil && this.RequirePerfectPlan != nil {
-		return *this.RequirePerfectPlan
+func (m *Query) GetRequirePerfectPlan() bool {
+	if m != nil && m.RequirePerfectPlan != nil {
+		return *m.RequirePerfectPlan
 	}
 	return Default_Query_RequirePerfectPlan
 }
 
-func (this *Query) GetKeysOnly() bool {
-	if this != nil && this.KeysOnly != nil {
-		return *this.KeysOnly
+func (m *Query) GetKeysOnly() bool {
+	if m != nil && m.KeysOnly != nil {
+		return *m.KeysOnly
 	}
 	return Default_Query_KeysOnly
 }
 
-func (this *Query) GetTransaction() *Transaction {
-	if this != nil {
-		return this.Transaction
+func (m *Query) GetTransaction() *Transaction {
+	if m != nil {
+		return m.Transaction
 	}
 	return nil
 }
 
-func (this *Query) GetCompile() bool {
-	if this != nil && this.Compile != nil {
-		return *this.Compile
+func (m *Query) GetCompile() bool {
+	if m != nil && m.Compile != nil {
+		return *m.Compile
 	}
 	return Default_Query_Compile
 }
 
-func (this *Query) GetFailoverMs() int64 {
-	if this != nil && this.FailoverMs != nil {
-		return *this.FailoverMs
+func (m *Query) GetFailoverMs() int64 {
+	if m != nil && m.FailoverMs != nil {
+		return *m.FailoverMs
 	}
 	return 0
 }
 
-func (this *Query) GetStrong() bool {
-	if this != nil && this.Strong != nil {
-		return *this.Strong
+func (m *Query) GetStrong() bool {
+	if m != nil && m.Strong != nil {
+		return *m.Strong
 	}
 	return false
 }
 
-func (this *Query) GetPropertyName() []string {
-	if this != nil {
-		return this.PropertyName
+func (m *Query) GetPropertyName() []string {
+	if m != nil {
+		return m.PropertyName
 	}
 	return nil
 }
 
-func (this *Query) GetGroupByPropertyName() []string {
-	if this != nil {
-		return this.GroupByPropertyName
+func (m *Query) GetGroupByPropertyName() []string {
+	if m != nil {
+		return m.GroupByPropertyName
 	}
 	return nil
 }
 
-func (this *Query) GetDistinct() bool {
-	if this != nil && this.Distinct != nil {
-		return *this.Distinct
+func (m *Query) GetDistinct() bool {
+	if m != nil && m.Distinct != nil {
+		return *m.Distinct
 	}
 	return false
 }
 
-func (this *Query) GetMinSafeTimeSeconds() int64 {
-	if this != nil && this.MinSafeTimeSeconds != nil {
-		return *this.MinSafeTimeSeconds
+func (m *Query) GetMinSafeTimeSeconds() int64 {
+	if m != nil && m.MinSafeTimeSeconds != nil {
+		return *m.MinSafeTimeSeconds
 	}
 	return 0
 }
 
-func (this *Query) GetSafeReplicaName() []string {
-	if this != nil {
-		return this.SafeReplicaName
+func (m *Query) GetSafeReplicaName() []string {
+	if m != nil {
+		return m.SafeReplicaName
 	}
 	return nil
+}
+
+func (m *Query) GetPersistOffset() bool {
+	if m != nil && m.PersistOffset != nil {
+		return *m.PersistOffset
+	}
+	return Default_Query_PersistOffset
 }
 
 type Query_Filter struct {
-	Op       *Query_Filter_Operator `protobuf:"varint,6,req,name=op,enum=datastore.Query_Filter_Operator" json:"op,omitempty"`
-	Property []*Property            `protobuf:"bytes,14,rep,name=property" json:"property,omitempty"`
+	Op               *Query_Filter_Operator `protobuf:"varint,6,req,name=op,enum=datastore.Query_Filter_Operator" json:"op,omitempty"`
+	Property         []*Property            `protobuf:"bytes,14,rep,name=property" json:"property,omitempty"`
+	XXX_unrecognized []byte                 `json:"-"`
 }
 
-func (this *Query_Filter) Reset() { *this = Query_Filter{} }
+func (m *Query_Filter) Reset() { *m = Query_Filter{} }
 
-func (this *Query_Filter) GetOp() Query_Filter_Operator {
-	if this != nil && this.Op != nil {
-		return *this.Op
+func (m *Query_Filter) GetOp() Query_Filter_Operator {
+	if m != nil && m.Op != nil {
+		return *m.Op
 	}
 	return 0
 }
 
-func (this *Query_Filter) GetProperty() []*Property {
-	if this != nil {
-		return this.Property
+func (m *Query_Filter) GetProperty() []*Property {
+	if m != nil {
+		return m.Property
 	}
 	return nil
 }
 
 type Query_Order struct {
-	Property  *string                `protobuf:"bytes,10,req,name=property" json:"property,omitempty"`
-	Direction *Query_Order_Direction `protobuf:"varint,11,opt,name=direction,enum=datastore.Query_Order_Direction,def=1" json:"direction,omitempty"`
+	Property         *string                `protobuf:"bytes,10,req,name=property" json:"property,omitempty"`
+	Direction        *Query_Order_Direction `protobuf:"varint,11,opt,name=direction,enum=datastore.Query_Order_Direction,def=1" json:"direction,omitempty"`
+	XXX_unrecognized []byte                 `json:"-"`
 }
 
-func (this *Query_Order) Reset() { *this = Query_Order{} }
+func (m *Query_Order) Reset() { *m = Query_Order{} }
 
 const Default_Query_Order_Direction Query_Order_Direction = Query_Order_ASCENDING
 
-func (this *Query_Order) GetProperty() string {
-	if this != nil && this.Property != nil {
-		return *this.Property
+func (m *Query_Order) GetProperty() string {
+	if m != nil && m.Property != nil {
+		return *m.Property
 	}
 	return ""
 }
 
-func (this *Query_Order) GetDirection() Query_Order_Direction {
-	if this != nil && this.Direction != nil {
-		return *this.Direction
+func (m *Query_Order) GetDirection() Query_Order_Direction {
+	if m != nil && m.Direction != nil {
+		return *m.Direction
 	}
 	return Default_Query_Order_Direction
 }
@@ -1536,71 +1611,71 @@ type CompiledQuery struct {
 	XXX_unrecognized  []byte                         `json:"-"`
 }
 
-func (this *CompiledQuery) Reset()         { *this = CompiledQuery{} }
-func (this *CompiledQuery) String() string { return proto.CompactTextString(this) }
-func (*CompiledQuery) ProtoMessage()       {}
+func (m *CompiledQuery) Reset()         { *m = CompiledQuery{} }
+func (m *CompiledQuery) String() string { return proto.CompactTextString(m) }
+func (*CompiledQuery) ProtoMessage()    {}
 
 const Default_CompiledQuery_Offset int32 = 0
 
-func (this *CompiledQuery) GetPrimaryscan() *CompiledQuery_PrimaryScan {
-	if this != nil {
-		return this.Primaryscan
+func (m *CompiledQuery) GetPrimaryscan() *CompiledQuery_PrimaryScan {
+	if m != nil {
+		return m.Primaryscan
 	}
 	return nil
 }
 
-func (this *CompiledQuery) GetMergejoinscan() []*CompiledQuery_MergeJoinScan {
-	if this != nil {
-		return this.Mergejoinscan
+func (m *CompiledQuery) GetMergejoinscan() []*CompiledQuery_MergeJoinScan {
+	if m != nil {
+		return m.Mergejoinscan
 	}
 	return nil
 }
 
-func (this *CompiledQuery) GetIndexDef() *Index {
-	if this != nil {
-		return this.IndexDef
+func (m *CompiledQuery) GetIndexDef() *Index {
+	if m != nil {
+		return m.IndexDef
 	}
 	return nil
 }
 
-func (this *CompiledQuery) GetOffset() int32 {
-	if this != nil && this.Offset != nil {
-		return *this.Offset
+func (m *CompiledQuery) GetOffset() int32 {
+	if m != nil && m.Offset != nil {
+		return *m.Offset
 	}
 	return Default_CompiledQuery_Offset
 }
 
-func (this *CompiledQuery) GetLimit() int32 {
-	if this != nil && this.Limit != nil {
-		return *this.Limit
+func (m *CompiledQuery) GetLimit() int32 {
+	if m != nil && m.Limit != nil {
+		return *m.Limit
 	}
 	return 0
 }
 
-func (this *CompiledQuery) GetKeysOnly() bool {
-	if this != nil && this.KeysOnly != nil {
-		return *this.KeysOnly
+func (m *CompiledQuery) GetKeysOnly() bool {
+	if m != nil && m.KeysOnly != nil {
+		return *m.KeysOnly
 	}
 	return false
 }
 
-func (this *CompiledQuery) GetPropertyName() []string {
-	if this != nil {
-		return this.PropertyName
+func (m *CompiledQuery) GetPropertyName() []string {
+	if m != nil {
+		return m.PropertyName
 	}
 	return nil
 }
 
-func (this *CompiledQuery) GetDistinctInfixSize() int32 {
-	if this != nil && this.DistinctInfixSize != nil {
-		return *this.DistinctInfixSize
+func (m *CompiledQuery) GetDistinctInfixSize() int32 {
+	if m != nil && m.DistinctInfixSize != nil {
+		return *m.DistinctInfixSize
 	}
 	return 0
 }
 
-func (this *CompiledQuery) GetEntityfilter() *CompiledQuery_EntityFilter {
-	if this != nil {
-		return this.Entityfilter
+func (m *CompiledQuery) GetEntityfilter() *CompiledQuery_EntityFilter {
+	if m != nil {
+		return m.Entityfilter
 	}
 	return nil
 }
@@ -1614,124 +1689,127 @@ type CompiledQuery_PrimaryScan struct {
 	StartPostfixValue          []string `protobuf:"bytes,22,rep,name=start_postfix_value" json:"start_postfix_value,omitempty"`
 	EndPostfixValue            []string `protobuf:"bytes,23,rep,name=end_postfix_value" json:"end_postfix_value,omitempty"`
 	EndUnappliedLogTimestampUs *int64   `protobuf:"varint,19,opt,name=end_unapplied_log_timestamp_us" json:"end_unapplied_log_timestamp_us,omitempty"`
+	XXX_unrecognized           []byte   `json:"-"`
 }
 
-func (this *CompiledQuery_PrimaryScan) Reset() { *this = CompiledQuery_PrimaryScan{} }
+func (m *CompiledQuery_PrimaryScan) Reset() { *m = CompiledQuery_PrimaryScan{} }
 
-func (this *CompiledQuery_PrimaryScan) GetIndexName() string {
-	if this != nil && this.IndexName != nil {
-		return *this.IndexName
+func (m *CompiledQuery_PrimaryScan) GetIndexName() string {
+	if m != nil && m.IndexName != nil {
+		return *m.IndexName
 	}
 	return ""
 }
 
-func (this *CompiledQuery_PrimaryScan) GetStartKey() string {
-	if this != nil && this.StartKey != nil {
-		return *this.StartKey
+func (m *CompiledQuery_PrimaryScan) GetStartKey() string {
+	if m != nil && m.StartKey != nil {
+		return *m.StartKey
 	}
 	return ""
 }
 
-func (this *CompiledQuery_PrimaryScan) GetStartInclusive() bool {
-	if this != nil && this.StartInclusive != nil {
-		return *this.StartInclusive
+func (m *CompiledQuery_PrimaryScan) GetStartInclusive() bool {
+	if m != nil && m.StartInclusive != nil {
+		return *m.StartInclusive
 	}
 	return false
 }
 
-func (this *CompiledQuery_PrimaryScan) GetEndKey() string {
-	if this != nil && this.EndKey != nil {
-		return *this.EndKey
+func (m *CompiledQuery_PrimaryScan) GetEndKey() string {
+	if m != nil && m.EndKey != nil {
+		return *m.EndKey
 	}
 	return ""
 }
 
-func (this *CompiledQuery_PrimaryScan) GetEndInclusive() bool {
-	if this != nil && this.EndInclusive != nil {
-		return *this.EndInclusive
+func (m *CompiledQuery_PrimaryScan) GetEndInclusive() bool {
+	if m != nil && m.EndInclusive != nil {
+		return *m.EndInclusive
 	}
 	return false
 }
 
-func (this *CompiledQuery_PrimaryScan) GetStartPostfixValue() []string {
-	if this != nil {
-		return this.StartPostfixValue
+func (m *CompiledQuery_PrimaryScan) GetStartPostfixValue() []string {
+	if m != nil {
+		return m.StartPostfixValue
 	}
 	return nil
 }
 
-func (this *CompiledQuery_PrimaryScan) GetEndPostfixValue() []string {
-	if this != nil {
-		return this.EndPostfixValue
+func (m *CompiledQuery_PrimaryScan) GetEndPostfixValue() []string {
+	if m != nil {
+		return m.EndPostfixValue
 	}
 	return nil
 }
 
-func (this *CompiledQuery_PrimaryScan) GetEndUnappliedLogTimestampUs() int64 {
-	if this != nil && this.EndUnappliedLogTimestampUs != nil {
-		return *this.EndUnappliedLogTimestampUs
+func (m *CompiledQuery_PrimaryScan) GetEndUnappliedLogTimestampUs() int64 {
+	if m != nil && m.EndUnappliedLogTimestampUs != nil {
+		return *m.EndUnappliedLogTimestampUs
 	}
 	return 0
 }
 
 type CompiledQuery_MergeJoinScan struct {
-	IndexName   *string  `protobuf:"bytes,8,req,name=index_name" json:"index_name,omitempty"`
-	PrefixValue []string `protobuf:"bytes,9,rep,name=prefix_value" json:"prefix_value,omitempty"`
-	ValuePrefix *bool    `protobuf:"varint,20,opt,name=value_prefix,def=0" json:"value_prefix,omitempty"`
+	IndexName        *string  `protobuf:"bytes,8,req,name=index_name" json:"index_name,omitempty"`
+	PrefixValue      []string `protobuf:"bytes,9,rep,name=prefix_value" json:"prefix_value,omitempty"`
+	ValuePrefix      *bool    `protobuf:"varint,20,opt,name=value_prefix,def=0" json:"value_prefix,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *CompiledQuery_MergeJoinScan) Reset() { *this = CompiledQuery_MergeJoinScan{} }
+func (m *CompiledQuery_MergeJoinScan) Reset() { *m = CompiledQuery_MergeJoinScan{} }
 
 const Default_CompiledQuery_MergeJoinScan_ValuePrefix bool = false
 
-func (this *CompiledQuery_MergeJoinScan) GetIndexName() string {
-	if this != nil && this.IndexName != nil {
-		return *this.IndexName
+func (m *CompiledQuery_MergeJoinScan) GetIndexName() string {
+	if m != nil && m.IndexName != nil {
+		return *m.IndexName
 	}
 	return ""
 }
 
-func (this *CompiledQuery_MergeJoinScan) GetPrefixValue() []string {
-	if this != nil {
-		return this.PrefixValue
+func (m *CompiledQuery_MergeJoinScan) GetPrefixValue() []string {
+	if m != nil {
+		return m.PrefixValue
 	}
 	return nil
 }
 
-func (this *CompiledQuery_MergeJoinScan) GetValuePrefix() bool {
-	if this != nil && this.ValuePrefix != nil {
-		return *this.ValuePrefix
+func (m *CompiledQuery_MergeJoinScan) GetValuePrefix() bool {
+	if m != nil && m.ValuePrefix != nil {
+		return *m.ValuePrefix
 	}
 	return Default_CompiledQuery_MergeJoinScan_ValuePrefix
 }
 
 type CompiledQuery_EntityFilter struct {
-	Distinct *bool      `protobuf:"varint,14,opt,name=distinct,def=0" json:"distinct,omitempty"`
-	Kind     *string    `protobuf:"bytes,17,opt,name=kind" json:"kind,omitempty"`
-	Ancestor *Reference `protobuf:"bytes,18,opt,name=ancestor" json:"ancestor,omitempty"`
+	Distinct         *bool      `protobuf:"varint,14,opt,name=distinct,def=0" json:"distinct,omitempty"`
+	Kind             *string    `protobuf:"bytes,17,opt,name=kind" json:"kind,omitempty"`
+	Ancestor         *Reference `protobuf:"bytes,18,opt,name=ancestor" json:"ancestor,omitempty"`
+	XXX_unrecognized []byte     `json:"-"`
 }
 
-func (this *CompiledQuery_EntityFilter) Reset() { *this = CompiledQuery_EntityFilter{} }
+func (m *CompiledQuery_EntityFilter) Reset() { *m = CompiledQuery_EntityFilter{} }
 
 const Default_CompiledQuery_EntityFilter_Distinct bool = false
 
-func (this *CompiledQuery_EntityFilter) GetDistinct() bool {
-	if this != nil && this.Distinct != nil {
-		return *this.Distinct
+func (m *CompiledQuery_EntityFilter) GetDistinct() bool {
+	if m != nil && m.Distinct != nil {
+		return *m.Distinct
 	}
 	return Default_CompiledQuery_EntityFilter_Distinct
 }
 
-func (this *CompiledQuery_EntityFilter) GetKind() string {
-	if this != nil && this.Kind != nil {
-		return *this.Kind
+func (m *CompiledQuery_EntityFilter) GetKind() string {
+	if m != nil && m.Kind != nil {
+		return *m.Kind
 	}
 	return ""
 }
 
-func (this *CompiledQuery_EntityFilter) GetAncestor() *Reference {
-	if this != nil {
-		return this.Ancestor
+func (m *CompiledQuery_EntityFilter) GetAncestor() *Reference {
+	if m != nil {
+		return m.Ancestor
 	}
 	return nil
 }
@@ -1742,80 +1820,82 @@ type CompiledCursor struct {
 	XXX_unrecognized []byte                     `json:"-"`
 }
 
-func (this *CompiledCursor) Reset()         { *this = CompiledCursor{} }
-func (this *CompiledCursor) String() string { return proto.CompactTextString(this) }
-func (*CompiledCursor) ProtoMessage()       {}
+func (m *CompiledCursor) Reset()         { *m = CompiledCursor{} }
+func (m *CompiledCursor) String() string { return proto.CompactTextString(m) }
+func (*CompiledCursor) ProtoMessage()    {}
 
-func (this *CompiledCursor) GetMultiqueryIndex() int32 {
-	if this != nil && this.MultiqueryIndex != nil {
-		return *this.MultiqueryIndex
+func (m *CompiledCursor) GetMultiqueryIndex() int32 {
+	if m != nil && m.MultiqueryIndex != nil {
+		return *m.MultiqueryIndex
 	}
 	return 0
 }
 
-func (this *CompiledCursor) GetPosition() []*CompiledCursor_Position {
-	if this != nil {
-		return this.Position
+func (m *CompiledCursor) GetPosition() []*CompiledCursor_Position {
+	if m != nil {
+		return m.Position
 	}
 	return nil
 }
 
 type CompiledCursor_Position struct {
-	StartKey       *string                               `protobuf:"bytes,27,opt,name=start_key" json:"start_key,omitempty"`
-	Indexvalue     []*CompiledCursor_Position_IndexValue `protobuf:"group,29,rep,name=IndexValue" json:"indexvalue,omitempty"`
-	Key            *Reference                            `protobuf:"bytes,32,opt,name=key" json:"key,omitempty"`
-	StartInclusive *bool                                 `protobuf:"varint,28,opt,name=start_inclusive,def=1" json:"start_inclusive,omitempty"`
+	StartKey         *string                               `protobuf:"bytes,27,opt,name=start_key" json:"start_key,omitempty"`
+	Indexvalue       []*CompiledCursor_Position_IndexValue `protobuf:"group,29,rep,name=IndexValue" json:"indexvalue,omitempty"`
+	Key              *Reference                            `protobuf:"bytes,32,opt,name=key" json:"key,omitempty"`
+	StartInclusive   *bool                                 `protobuf:"varint,28,opt,name=start_inclusive,def=1" json:"start_inclusive,omitempty"`
+	XXX_unrecognized []byte                                `json:"-"`
 }
 
-func (this *CompiledCursor_Position) Reset() { *this = CompiledCursor_Position{} }
+func (m *CompiledCursor_Position) Reset() { *m = CompiledCursor_Position{} }
 
 const Default_CompiledCursor_Position_StartInclusive bool = true
 
-func (this *CompiledCursor_Position) GetStartKey() string {
-	if this != nil && this.StartKey != nil {
-		return *this.StartKey
+func (m *CompiledCursor_Position) GetStartKey() string {
+	if m != nil && m.StartKey != nil {
+		return *m.StartKey
 	}
 	return ""
 }
 
-func (this *CompiledCursor_Position) GetIndexvalue() []*CompiledCursor_Position_IndexValue {
-	if this != nil {
-		return this.Indexvalue
+func (m *CompiledCursor_Position) GetIndexvalue() []*CompiledCursor_Position_IndexValue {
+	if m != nil {
+		return m.Indexvalue
 	}
 	return nil
 }
 
-func (this *CompiledCursor_Position) GetKey() *Reference {
-	if this != nil {
-		return this.Key
+func (m *CompiledCursor_Position) GetKey() *Reference {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *CompiledCursor_Position) GetStartInclusive() bool {
-	if this != nil && this.StartInclusive != nil {
-		return *this.StartInclusive
+func (m *CompiledCursor_Position) GetStartInclusive() bool {
+	if m != nil && m.StartInclusive != nil {
+		return *m.StartInclusive
 	}
 	return Default_CompiledCursor_Position_StartInclusive
 }
 
 type CompiledCursor_Position_IndexValue struct {
-	Property *string        `protobuf:"bytes,30,opt,name=property" json:"property,omitempty"`
-	Value    *PropertyValue `protobuf:"bytes,31,req,name=value" json:"value,omitempty"`
+	Property         *string        `protobuf:"bytes,30,opt,name=property" json:"property,omitempty"`
+	Value            *PropertyValue `protobuf:"bytes,31,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte         `json:"-"`
 }
 
-func (this *CompiledCursor_Position_IndexValue) Reset() { *this = CompiledCursor_Position_IndexValue{} }
+func (m *CompiledCursor_Position_IndexValue) Reset() { *m = CompiledCursor_Position_IndexValue{} }
 
-func (this *CompiledCursor_Position_IndexValue) GetProperty() string {
-	if this != nil && this.Property != nil {
-		return *this.Property
+func (m *CompiledCursor_Position_IndexValue) GetProperty() string {
+	if m != nil && m.Property != nil {
+		return *m.Property
 	}
 	return ""
 }
 
-func (this *CompiledCursor_Position_IndexValue) GetValue() *PropertyValue {
-	if this != nil {
-		return this.Value
+func (m *CompiledCursor_Position_IndexValue) GetValue() *PropertyValue {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
@@ -1826,20 +1906,20 @@ type Cursor struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *Cursor) Reset()         { *this = Cursor{} }
-func (this *Cursor) String() string { return proto.CompactTextString(this) }
-func (*Cursor) ProtoMessage()       {}
+func (m *Cursor) Reset()         { *m = Cursor{} }
+func (m *Cursor) String() string { return proto.CompactTextString(m) }
+func (*Cursor) ProtoMessage()    {}
 
-func (this *Cursor) GetCursor() uint64 {
-	if this != nil && this.Cursor != nil {
-		return *this.Cursor
+func (m *Cursor) GetCursor() uint64 {
+	if m != nil && m.Cursor != nil {
+		return *m.Cursor
 	}
 	return 0
 }
 
-func (this *Cursor) GetApp() string {
-	if this != nil && this.App != nil {
-		return *this.App
+func (m *Cursor) GetApp() string {
+	if m != nil && m.App != nil {
+		return *m.App
 	}
 	return ""
 }
@@ -1848,9 +1928,9 @@ type Error struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *Error) Reset()         { *this = Error{} }
-func (this *Error) String() string { return proto.CompactTextString(this) }
-func (*Error) ProtoMessage()       {}
+func (m *Error) Reset()         { *m = Error{} }
+func (m *Error) String() string { return proto.CompactTextString(m) }
+func (*Error) ProtoMessage()    {}
 
 type Cost struct {
 	IndexWrites      *int32           `protobuf:"varint,1,opt,name=index_writes" json:"index_writes,omitempty"`
@@ -1861,41 +1941,41 @@ type Cost struct {
 	XXX_unrecognized []byte           `json:"-"`
 }
 
-func (this *Cost) Reset()         { *this = Cost{} }
-func (this *Cost) String() string { return proto.CompactTextString(this) }
-func (*Cost) ProtoMessage()       {}
+func (m *Cost) Reset()         { *m = Cost{} }
+func (m *Cost) String() string { return proto.CompactTextString(m) }
+func (*Cost) ProtoMessage()    {}
 
-func (this *Cost) GetIndexWrites() int32 {
-	if this != nil && this.IndexWrites != nil {
-		return *this.IndexWrites
+func (m *Cost) GetIndexWrites() int32 {
+	if m != nil && m.IndexWrites != nil {
+		return *m.IndexWrites
 	}
 	return 0
 }
 
-func (this *Cost) GetIndexWriteBytes() int32 {
-	if this != nil && this.IndexWriteBytes != nil {
-		return *this.IndexWriteBytes
+func (m *Cost) GetIndexWriteBytes() int32 {
+	if m != nil && m.IndexWriteBytes != nil {
+		return *m.IndexWriteBytes
 	}
 	return 0
 }
 
-func (this *Cost) GetEntityWrites() int32 {
-	if this != nil && this.EntityWrites != nil {
-		return *this.EntityWrites
+func (m *Cost) GetEntityWrites() int32 {
+	if m != nil && m.EntityWrites != nil {
+		return *m.EntityWrites
 	}
 	return 0
 }
 
-func (this *Cost) GetEntityWriteBytes() int32 {
-	if this != nil && this.EntityWriteBytes != nil {
-		return *this.EntityWriteBytes
+func (m *Cost) GetEntityWriteBytes() int32 {
+	if m != nil && m.EntityWriteBytes != nil {
+		return *m.EntityWriteBytes
 	}
 	return 0
 }
 
-func (this *Cost) GetCommitcost() *Cost_CommitCost {
-	if this != nil {
-		return this.Commitcost
+func (m *Cost) GetCommitcost() *Cost_CommitCost {
+	if m != nil {
+		return m.Commitcost
 	}
 	return nil
 }
@@ -1903,20 +1983,21 @@ func (this *Cost) GetCommitcost() *Cost_CommitCost {
 type Cost_CommitCost struct {
 	RequestedEntityPuts    *int32 `protobuf:"varint,6,opt,name=requested_entity_puts" json:"requested_entity_puts,omitempty"`
 	RequestedEntityDeletes *int32 `protobuf:"varint,7,opt,name=requested_entity_deletes" json:"requested_entity_deletes,omitempty"`
+	XXX_unrecognized       []byte `json:"-"`
 }
 
-func (this *Cost_CommitCost) Reset() { *this = Cost_CommitCost{} }
+func (m *Cost_CommitCost) Reset() { *m = Cost_CommitCost{} }
 
-func (this *Cost_CommitCost) GetRequestedEntityPuts() int32 {
-	if this != nil && this.RequestedEntityPuts != nil {
-		return *this.RequestedEntityPuts
+func (m *Cost_CommitCost) GetRequestedEntityPuts() int32 {
+	if m != nil && m.RequestedEntityPuts != nil {
+		return *m.RequestedEntityPuts
 	}
 	return 0
 }
 
-func (this *Cost_CommitCost) GetRequestedEntityDeletes() int32 {
-	if this != nil && this.RequestedEntityDeletes != nil {
-		return *this.RequestedEntityDeletes
+func (m *Cost_CommitCost) GetRequestedEntityDeletes() int32 {
+	if m != nil && m.RequestedEntityDeletes != nil {
+		return *m.RequestedEntityDeletes
 	}
 	return 0
 }
@@ -1930,43 +2011,43 @@ type GetRequest struct {
 	XXX_unrecognized []byte       `json:"-"`
 }
 
-func (this *GetRequest) Reset()         { *this = GetRequest{} }
-func (this *GetRequest) String() string { return proto.CompactTextString(this) }
-func (*GetRequest) ProtoMessage()       {}
+func (m *GetRequest) Reset()         { *m = GetRequest{} }
+func (m *GetRequest) String() string { return proto.CompactTextString(m) }
+func (*GetRequest) ProtoMessage()    {}
 
 const Default_GetRequest_AllowDeferred bool = false
 
-func (this *GetRequest) GetKey() []*Reference {
-	if this != nil {
-		return this.Key
+func (m *GetRequest) GetKey() []*Reference {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *GetRequest) GetTransaction() *Transaction {
-	if this != nil {
-		return this.Transaction
+func (m *GetRequest) GetTransaction() *Transaction {
+	if m != nil {
+		return m.Transaction
 	}
 	return nil
 }
 
-func (this *GetRequest) GetFailoverMs() int64 {
-	if this != nil && this.FailoverMs != nil {
-		return *this.FailoverMs
+func (m *GetRequest) GetFailoverMs() int64 {
+	if m != nil && m.FailoverMs != nil {
+		return *m.FailoverMs
 	}
 	return 0
 }
 
-func (this *GetRequest) GetStrong() bool {
-	if this != nil && this.Strong != nil {
-		return *this.Strong
+func (m *GetRequest) GetStrong() bool {
+	if m != nil && m.Strong != nil {
+		return *m.Strong
 	}
 	return false
 }
 
-func (this *GetRequest) GetAllowDeferred() bool {
-	if this != nil && this.AllowDeferred != nil {
-		return *this.AllowDeferred
+func (m *GetRequest) GetAllowDeferred() bool {
+	if m != nil && m.AllowDeferred != nil {
+		return *m.AllowDeferred
 	}
 	return Default_GetRequest_AllowDeferred
 }
@@ -1977,49 +2058,50 @@ type GetResponse struct {
 	XXX_unrecognized []byte                `json:"-"`
 }
 
-func (this *GetResponse) Reset()         { *this = GetResponse{} }
-func (this *GetResponse) String() string { return proto.CompactTextString(this) }
-func (*GetResponse) ProtoMessage()       {}
+func (m *GetResponse) Reset()         { *m = GetResponse{} }
+func (m *GetResponse) String() string { return proto.CompactTextString(m) }
+func (*GetResponse) ProtoMessage()    {}
 
-func (this *GetResponse) GetEntity() []*GetResponse_Entity {
-	if this != nil {
-		return this.Entity
+func (m *GetResponse) GetEntity() []*GetResponse_Entity {
+	if m != nil {
+		return m.Entity
 	}
 	return nil
 }
 
-func (this *GetResponse) GetDeferred() []*Reference {
-	if this != nil {
-		return this.Deferred
+func (m *GetResponse) GetDeferred() []*Reference {
+	if m != nil {
+		return m.Deferred
 	}
 	return nil
 }
 
 type GetResponse_Entity struct {
-	Entity  *EntityProto `protobuf:"bytes,2,opt,name=entity" json:"entity,omitempty"`
-	Key     *Reference   `protobuf:"bytes,4,opt,name=key" json:"key,omitempty"`
-	Version *int64       `protobuf:"varint,3,opt,name=version" json:"version,omitempty"`
+	Entity           *EntityProto `protobuf:"bytes,2,opt,name=entity" json:"entity,omitempty"`
+	Key              *Reference   `protobuf:"bytes,4,opt,name=key" json:"key,omitempty"`
+	Version          *int64       `protobuf:"varint,3,opt,name=version" json:"version,omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
 }
 
-func (this *GetResponse_Entity) Reset() { *this = GetResponse_Entity{} }
+func (m *GetResponse_Entity) Reset() { *m = GetResponse_Entity{} }
 
-func (this *GetResponse_Entity) GetEntity() *EntityProto {
-	if this != nil {
-		return this.Entity
+func (m *GetResponse_Entity) GetEntity() *EntityProto {
+	if m != nil {
+		return m.Entity
 	}
 	return nil
 }
 
-func (this *GetResponse_Entity) GetKey() *Reference {
-	if this != nil {
-		return this.Key
+func (m *GetResponse_Entity) GetKey() *Reference {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *GetResponse_Entity) GetVersion() int64 {
-	if this != nil && this.Version != nil {
-		return *this.Version
+func (m *GetResponse_Entity) GetVersion() int64 {
+	if m != nil && m.Version != nil {
+		return *m.Version
 	}
 	return 0
 }
@@ -2035,59 +2117,59 @@ type PutRequest struct {
 	XXX_unrecognized []byte            `json:"-"`
 }
 
-func (this *PutRequest) Reset()         { *this = PutRequest{} }
-func (this *PutRequest) String() string { return proto.CompactTextString(this) }
-func (*PutRequest) ProtoMessage()       {}
+func (m *PutRequest) Reset()         { *m = PutRequest{} }
+func (m *PutRequest) String() string { return proto.CompactTextString(m) }
+func (*PutRequest) ProtoMessage()    {}
 
 const Default_PutRequest_Trusted bool = false
 const Default_PutRequest_Force bool = false
 const Default_PutRequest_MarkChanges bool = false
 
-func (this *PutRequest) GetEntity() []*EntityProto {
-	if this != nil {
-		return this.Entity
+func (m *PutRequest) GetEntity() []*EntityProto {
+	if m != nil {
+		return m.Entity
 	}
 	return nil
 }
 
-func (this *PutRequest) GetTransaction() *Transaction {
-	if this != nil {
-		return this.Transaction
+func (m *PutRequest) GetTransaction() *Transaction {
+	if m != nil {
+		return m.Transaction
 	}
 	return nil
 }
 
-func (this *PutRequest) GetCompositeIndex() []*CompositeIndex {
-	if this != nil {
-		return this.CompositeIndex
+func (m *PutRequest) GetCompositeIndex() []*CompositeIndex {
+	if m != nil {
+		return m.CompositeIndex
 	}
 	return nil
 }
 
-func (this *PutRequest) GetTrusted() bool {
-	if this != nil && this.Trusted != nil {
-		return *this.Trusted
+func (m *PutRequest) GetTrusted() bool {
+	if m != nil && m.Trusted != nil {
+		return *m.Trusted
 	}
 	return Default_PutRequest_Trusted
 }
 
-func (this *PutRequest) GetForce() bool {
-	if this != nil && this.Force != nil {
-		return *this.Force
+func (m *PutRequest) GetForce() bool {
+	if m != nil && m.Force != nil {
+		return *m.Force
 	}
 	return Default_PutRequest_Force
 }
 
-func (this *PutRequest) GetMarkChanges() bool {
-	if this != nil && this.MarkChanges != nil {
-		return *this.MarkChanges
+func (m *PutRequest) GetMarkChanges() bool {
+	if m != nil && m.MarkChanges != nil {
+		return *m.MarkChanges
 	}
 	return Default_PutRequest_MarkChanges
 }
 
-func (this *PutRequest) GetSnapshot() []*Snapshot {
-	if this != nil {
-		return this.Snapshot
+func (m *PutRequest) GetSnapshot() []*Snapshot {
+	if m != nil {
+		return m.Snapshot
 	}
 	return nil
 }
@@ -2099,27 +2181,27 @@ type PutResponse struct {
 	XXX_unrecognized []byte       `json:"-"`
 }
 
-func (this *PutResponse) Reset()         { *this = PutResponse{} }
-func (this *PutResponse) String() string { return proto.CompactTextString(this) }
-func (*PutResponse) ProtoMessage()       {}
+func (m *PutResponse) Reset()         { *m = PutResponse{} }
+func (m *PutResponse) String() string { return proto.CompactTextString(m) }
+func (*PutResponse) ProtoMessage()    {}
 
-func (this *PutResponse) GetKey() []*Reference {
-	if this != nil {
-		return this.Key
+func (m *PutResponse) GetKey() []*Reference {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *PutResponse) GetCost() *Cost {
-	if this != nil {
-		return this.Cost
+func (m *PutResponse) GetCost() *Cost {
+	if m != nil {
+		return m.Cost
 	}
 	return nil
 }
 
-func (this *PutResponse) GetVersion() []int64 {
-	if this != nil {
-		return this.Version
+func (m *PutResponse) GetVersion() []int64 {
+	if m != nil {
+		return m.Version
 	}
 	return nil
 }
@@ -2132,36 +2214,36 @@ type TouchRequest struct {
 	XXX_unrecognized []byte            `json:"-"`
 }
 
-func (this *TouchRequest) Reset()         { *this = TouchRequest{} }
-func (this *TouchRequest) String() string { return proto.CompactTextString(this) }
-func (*TouchRequest) ProtoMessage()       {}
+func (m *TouchRequest) Reset()         { *m = TouchRequest{} }
+func (m *TouchRequest) String() string { return proto.CompactTextString(m) }
+func (*TouchRequest) ProtoMessage()    {}
 
 const Default_TouchRequest_Force bool = false
 
-func (this *TouchRequest) GetKey() []*Reference {
-	if this != nil {
-		return this.Key
+func (m *TouchRequest) GetKey() []*Reference {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *TouchRequest) GetCompositeIndex() []*CompositeIndex {
-	if this != nil {
-		return this.CompositeIndex
+func (m *TouchRequest) GetCompositeIndex() []*CompositeIndex {
+	if m != nil {
+		return m.CompositeIndex
 	}
 	return nil
 }
 
-func (this *TouchRequest) GetForce() bool {
-	if this != nil && this.Force != nil {
-		return *this.Force
+func (m *TouchRequest) GetForce() bool {
+	if m != nil && m.Force != nil {
+		return *m.Force
 	}
 	return Default_TouchRequest_Force
 }
 
-func (this *TouchRequest) GetSnapshot() []*Snapshot {
-	if this != nil {
-		return this.Snapshot
+func (m *TouchRequest) GetSnapshot() []*Snapshot {
+	if m != nil {
+		return m.Snapshot
 	}
 	return nil
 }
@@ -2171,13 +2253,13 @@ type TouchResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *TouchResponse) Reset()         { *this = TouchResponse{} }
-func (this *TouchResponse) String() string { return proto.CompactTextString(this) }
-func (*TouchResponse) ProtoMessage()       {}
+func (m *TouchResponse) Reset()         { *m = TouchResponse{} }
+func (m *TouchResponse) String() string { return proto.CompactTextString(m) }
+func (*TouchResponse) ProtoMessage()    {}
 
-func (this *TouchResponse) GetCost() *Cost {
-	if this != nil {
-		return this.Cost
+func (m *TouchResponse) GetCost() *Cost {
+	if m != nil {
+		return m.Cost
 	}
 	return nil
 }
@@ -2192,52 +2274,52 @@ type DeleteRequest struct {
 	XXX_unrecognized []byte       `json:"-"`
 }
 
-func (this *DeleteRequest) Reset()         { *this = DeleteRequest{} }
-func (this *DeleteRequest) String() string { return proto.CompactTextString(this) }
-func (*DeleteRequest) ProtoMessage()       {}
+func (m *DeleteRequest) Reset()         { *m = DeleteRequest{} }
+func (m *DeleteRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteRequest) ProtoMessage()    {}
 
 const Default_DeleteRequest_Trusted bool = false
 const Default_DeleteRequest_Force bool = false
 const Default_DeleteRequest_MarkChanges bool = false
 
-func (this *DeleteRequest) GetKey() []*Reference {
-	if this != nil {
-		return this.Key
+func (m *DeleteRequest) GetKey() []*Reference {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *DeleteRequest) GetTransaction() *Transaction {
-	if this != nil {
-		return this.Transaction
+func (m *DeleteRequest) GetTransaction() *Transaction {
+	if m != nil {
+		return m.Transaction
 	}
 	return nil
 }
 
-func (this *DeleteRequest) GetTrusted() bool {
-	if this != nil && this.Trusted != nil {
-		return *this.Trusted
+func (m *DeleteRequest) GetTrusted() bool {
+	if m != nil && m.Trusted != nil {
+		return *m.Trusted
 	}
 	return Default_DeleteRequest_Trusted
 }
 
-func (this *DeleteRequest) GetForce() bool {
-	if this != nil && this.Force != nil {
-		return *this.Force
+func (m *DeleteRequest) GetForce() bool {
+	if m != nil && m.Force != nil {
+		return *m.Force
 	}
 	return Default_DeleteRequest_Force
 }
 
-func (this *DeleteRequest) GetMarkChanges() bool {
-	if this != nil && this.MarkChanges != nil {
-		return *this.MarkChanges
+func (m *DeleteRequest) GetMarkChanges() bool {
+	if m != nil && m.MarkChanges != nil {
+		return *m.MarkChanges
 	}
 	return Default_DeleteRequest_MarkChanges
 }
 
-func (this *DeleteRequest) GetSnapshot() []*Snapshot {
-	if this != nil {
-		return this.Snapshot
+func (m *DeleteRequest) GetSnapshot() []*Snapshot {
+	if m != nil {
+		return m.Snapshot
 	}
 	return nil
 }
@@ -2248,20 +2330,20 @@ type DeleteResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *DeleteResponse) Reset()         { *this = DeleteResponse{} }
-func (this *DeleteResponse) String() string { return proto.CompactTextString(this) }
-func (*DeleteResponse) ProtoMessage()       {}
+func (m *DeleteResponse) Reset()         { *m = DeleteResponse{} }
+func (m *DeleteResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteResponse) ProtoMessage()    {}
 
-func (this *DeleteResponse) GetCost() *Cost {
-	if this != nil {
-		return this.Cost
+func (m *DeleteResponse) GetCost() *Cost {
+	if m != nil {
+		return m.Cost
 	}
 	return nil
 }
 
-func (this *DeleteResponse) GetVersion() []int64 {
-	if this != nil {
-		return this.Version
+func (m *DeleteResponse) GetVersion() []int64 {
+	if m != nil {
+		return m.Version
 	}
 	return nil
 }
@@ -2274,37 +2356,37 @@ type NextRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *NextRequest) Reset()         { *this = NextRequest{} }
-func (this *NextRequest) String() string { return proto.CompactTextString(this) }
-func (*NextRequest) ProtoMessage()       {}
+func (m *NextRequest) Reset()         { *m = NextRequest{} }
+func (m *NextRequest) String() string { return proto.CompactTextString(m) }
+func (*NextRequest) ProtoMessage()    {}
 
 const Default_NextRequest_Offset int32 = 0
 const Default_NextRequest_Compile bool = false
 
-func (this *NextRequest) GetCursor() *Cursor {
-	if this != nil {
-		return this.Cursor
+func (m *NextRequest) GetCursor() *Cursor {
+	if m != nil {
+		return m.Cursor
 	}
 	return nil
 }
 
-func (this *NextRequest) GetCount() int32 {
-	if this != nil && this.Count != nil {
-		return *this.Count
+func (m *NextRequest) GetCount() int32 {
+	if m != nil && m.Count != nil {
+		return *m.Count
 	}
 	return 0
 }
 
-func (this *NextRequest) GetOffset() int32 {
-	if this != nil && this.Offset != nil {
-		return *this.Offset
+func (m *NextRequest) GetOffset() int32 {
+	if m != nil && m.Offset != nil {
+		return *m.Offset
 	}
 	return Default_NextRequest_Offset
 }
 
-func (this *NextRequest) GetCompile() bool {
-	if this != nil && this.Compile != nil {
-		return *this.Compile
+func (m *NextRequest) GetCompile() bool {
+	if m != nil && m.Compile != nil {
+		return *m.Compile
 	}
 	return Default_NextRequest_Compile
 }
@@ -2323,76 +2405,76 @@ type QueryResult struct {
 	XXX_unrecognized []byte            `json:"-"`
 }
 
-func (this *QueryResult) Reset()         { *this = QueryResult{} }
-func (this *QueryResult) String() string { return proto.CompactTextString(this) }
-func (*QueryResult) ProtoMessage()       {}
+func (m *QueryResult) Reset()         { *m = QueryResult{} }
+func (m *QueryResult) String() string { return proto.CompactTextString(m) }
+func (*QueryResult) ProtoMessage()    {}
 
-func (this *QueryResult) GetCursor() *Cursor {
-	if this != nil {
-		return this.Cursor
+func (m *QueryResult) GetCursor() *Cursor {
+	if m != nil {
+		return m.Cursor
 	}
 	return nil
 }
 
-func (this *QueryResult) GetResult() []*EntityProto {
-	if this != nil {
-		return this.Result
+func (m *QueryResult) GetResult() []*EntityProto {
+	if m != nil {
+		return m.Result
 	}
 	return nil
 }
 
-func (this *QueryResult) GetSkippedResults() int32 {
-	if this != nil && this.SkippedResults != nil {
-		return *this.SkippedResults
+func (m *QueryResult) GetSkippedResults() int32 {
+	if m != nil && m.SkippedResults != nil {
+		return *m.SkippedResults
 	}
 	return 0
 }
 
-func (this *QueryResult) GetMoreResults() bool {
-	if this != nil && this.MoreResults != nil {
-		return *this.MoreResults
+func (m *QueryResult) GetMoreResults() bool {
+	if m != nil && m.MoreResults != nil {
+		return *m.MoreResults
 	}
 	return false
 }
 
-func (this *QueryResult) GetKeysOnly() bool {
-	if this != nil && this.KeysOnly != nil {
-		return *this.KeysOnly
+func (m *QueryResult) GetKeysOnly() bool {
+	if m != nil && m.KeysOnly != nil {
+		return *m.KeysOnly
 	}
 	return false
 }
 
-func (this *QueryResult) GetIndexOnly() bool {
-	if this != nil && this.IndexOnly != nil {
-		return *this.IndexOnly
+func (m *QueryResult) GetIndexOnly() bool {
+	if m != nil && m.IndexOnly != nil {
+		return *m.IndexOnly
 	}
 	return false
 }
 
-func (this *QueryResult) GetSmallOps() bool {
-	if this != nil && this.SmallOps != nil {
-		return *this.SmallOps
+func (m *QueryResult) GetSmallOps() bool {
+	if m != nil && m.SmallOps != nil {
+		return *m.SmallOps
 	}
 	return false
 }
 
-func (this *QueryResult) GetCompiledQuery() *CompiledQuery {
-	if this != nil {
-		return this.CompiledQuery
+func (m *QueryResult) GetCompiledQuery() *CompiledQuery {
+	if m != nil {
+		return m.CompiledQuery
 	}
 	return nil
 }
 
-func (this *QueryResult) GetCompiledCursor() *CompiledCursor {
-	if this != nil {
-		return this.CompiledCursor
+func (m *QueryResult) GetCompiledCursor() *CompiledCursor {
+	if m != nil {
+		return m.CompiledCursor
 	}
 	return nil
 }
 
-func (this *QueryResult) GetIndex() []*CompositeIndex {
-	if this != nil {
-		return this.Index
+func (m *QueryResult) GetIndex() []*CompositeIndex {
+	if m != nil {
+		return m.Index
 	}
 	return nil
 }
@@ -2404,27 +2486,27 @@ type AllocateIdsRequest struct {
 	XXX_unrecognized []byte     `json:"-"`
 }
 
-func (this *AllocateIdsRequest) Reset()         { *this = AllocateIdsRequest{} }
-func (this *AllocateIdsRequest) String() string { return proto.CompactTextString(this) }
-func (*AllocateIdsRequest) ProtoMessage()       {}
+func (m *AllocateIdsRequest) Reset()         { *m = AllocateIdsRequest{} }
+func (m *AllocateIdsRequest) String() string { return proto.CompactTextString(m) }
+func (*AllocateIdsRequest) ProtoMessage()    {}
 
-func (this *AllocateIdsRequest) GetModelKey() *Reference {
-	if this != nil {
-		return this.ModelKey
+func (m *AllocateIdsRequest) GetModelKey() *Reference {
+	if m != nil {
+		return m.ModelKey
 	}
 	return nil
 }
 
-func (this *AllocateIdsRequest) GetSize() int64 {
-	if this != nil && this.Size != nil {
-		return *this.Size
+func (m *AllocateIdsRequest) GetSize() int64 {
+	if m != nil && m.Size != nil {
+		return *m.Size
 	}
 	return 0
 }
 
-func (this *AllocateIdsRequest) GetMax() int64 {
-	if this != nil && this.Max != nil {
-		return *this.Max
+func (m *AllocateIdsRequest) GetMax() int64 {
+	if m != nil && m.Max != nil {
+		return *m.Max
 	}
 	return 0
 }
@@ -2435,20 +2517,20 @@ type AllocateIdsResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *AllocateIdsResponse) Reset()         { *this = AllocateIdsResponse{} }
-func (this *AllocateIdsResponse) String() string { return proto.CompactTextString(this) }
-func (*AllocateIdsResponse) ProtoMessage()       {}
+func (m *AllocateIdsResponse) Reset()         { *m = AllocateIdsResponse{} }
+func (m *AllocateIdsResponse) String() string { return proto.CompactTextString(m) }
+func (*AllocateIdsResponse) ProtoMessage()    {}
 
-func (this *AllocateIdsResponse) GetStart() int64 {
-	if this != nil && this.Start != nil {
-		return *this.Start
+func (m *AllocateIdsResponse) GetStart() int64 {
+	if m != nil && m.Start != nil {
+		return *m.Start
 	}
 	return 0
 }
 
-func (this *AllocateIdsResponse) GetEnd() int64 {
-	if this != nil && this.End != nil {
-		return *this.End
+func (m *AllocateIdsResponse) GetEnd() int64 {
+	if m != nil && m.End != nil {
+		return *m.End
 	}
 	return 0
 }
@@ -2458,13 +2540,13 @@ type CompositeIndices struct {
 	XXX_unrecognized []byte            `json:"-"`
 }
 
-func (this *CompositeIndices) Reset()         { *this = CompositeIndices{} }
-func (this *CompositeIndices) String() string { return proto.CompactTextString(this) }
-func (*CompositeIndices) ProtoMessage()       {}
+func (m *CompositeIndices) Reset()         { *m = CompositeIndices{} }
+func (m *CompositeIndices) String() string { return proto.CompactTextString(m) }
+func (*CompositeIndices) ProtoMessage()    {}
 
-func (this *CompositeIndices) GetIndex() []*CompositeIndex {
-	if this != nil {
-		return this.Index
+func (m *CompositeIndices) GetIndex() []*CompositeIndex {
+	if m != nil {
+		return m.Index
 	}
 	return nil
 }
@@ -2475,20 +2557,20 @@ type AddActionsRequest struct {
 	XXX_unrecognized []byte       `json:"-"`
 }
 
-func (this *AddActionsRequest) Reset()         { *this = AddActionsRequest{} }
-func (this *AddActionsRequest) String() string { return proto.CompactTextString(this) }
-func (*AddActionsRequest) ProtoMessage()       {}
+func (m *AddActionsRequest) Reset()         { *m = AddActionsRequest{} }
+func (m *AddActionsRequest) String() string { return proto.CompactTextString(m) }
+func (*AddActionsRequest) ProtoMessage()    {}
 
-func (this *AddActionsRequest) GetTransaction() *Transaction {
-	if this != nil {
-		return this.Transaction
+func (m *AddActionsRequest) GetTransaction() *Transaction {
+	if m != nil {
+		return m.Transaction
 	}
 	return nil
 }
 
-func (this *AddActionsRequest) GetAction() []*Action {
-	if this != nil {
-		return this.Action
+func (m *AddActionsRequest) GetAction() []*Action {
+	if m != nil {
+		return m.Action
 	}
 	return nil
 }
@@ -2497,9 +2579,9 @@ type AddActionsResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *AddActionsResponse) Reset()         { *this = AddActionsResponse{} }
-func (this *AddActionsResponse) String() string { return proto.CompactTextString(this) }
-func (*AddActionsResponse) ProtoMessage()       {}
+func (m *AddActionsResponse) Reset()         { *m = AddActionsResponse{} }
+func (m *AddActionsResponse) String() string { return proto.CompactTextString(m) }
+func (*AddActionsResponse) ProtoMessage()    {}
 
 type BeginTransactionRequest struct {
 	App              *string `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
@@ -2507,22 +2589,22 @@ type BeginTransactionRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *BeginTransactionRequest) Reset()         { *this = BeginTransactionRequest{} }
-func (this *BeginTransactionRequest) String() string { return proto.CompactTextString(this) }
-func (*BeginTransactionRequest) ProtoMessage()       {}
+func (m *BeginTransactionRequest) Reset()         { *m = BeginTransactionRequest{} }
+func (m *BeginTransactionRequest) String() string { return proto.CompactTextString(m) }
+func (*BeginTransactionRequest) ProtoMessage()    {}
 
 const Default_BeginTransactionRequest_AllowMultipleEg bool = false
 
-func (this *BeginTransactionRequest) GetApp() string {
-	if this != nil && this.App != nil {
-		return *this.App
+func (m *BeginTransactionRequest) GetApp() string {
+	if m != nil && m.App != nil {
+		return *m.App
 	}
 	return ""
 }
 
-func (this *BeginTransactionRequest) GetAllowMultipleEg() bool {
-	if this != nil && this.AllowMultipleEg != nil {
-		return *this.AllowMultipleEg
+func (m *BeginTransactionRequest) GetAllowMultipleEg() bool {
+	if m != nil && m.AllowMultipleEg != nil {
+		return *m.AllowMultipleEg
 	}
 	return Default_BeginTransactionRequest_AllowMultipleEg
 }
@@ -2533,41 +2615,42 @@ type CommitResponse struct {
 	XXX_unrecognized []byte                    `json:"-"`
 }
 
-func (this *CommitResponse) Reset()         { *this = CommitResponse{} }
-func (this *CommitResponse) String() string { return proto.CompactTextString(this) }
-func (*CommitResponse) ProtoMessage()       {}
+func (m *CommitResponse) Reset()         { *m = CommitResponse{} }
+func (m *CommitResponse) String() string { return proto.CompactTextString(m) }
+func (*CommitResponse) ProtoMessage()    {}
 
-func (this *CommitResponse) GetCost() *Cost {
-	if this != nil {
-		return this.Cost
+func (m *CommitResponse) GetCost() *Cost {
+	if m != nil {
+		return m.Cost
 	}
 	return nil
 }
 
-func (this *CommitResponse) GetVersion() []*CommitResponse_Version {
-	if this != nil {
-		return this.Version
+func (m *CommitResponse) GetVersion() []*CommitResponse_Version {
+	if m != nil {
+		return m.Version
 	}
 	return nil
 }
 
 type CommitResponse_Version struct {
-	RootEntityKey *Reference `protobuf:"bytes,4,req,name=root_entity_key" json:"root_entity_key,omitempty"`
-	Version       *int64     `protobuf:"varint,5,req,name=version" json:"version,omitempty"`
+	RootEntityKey    *Reference `protobuf:"bytes,4,req,name=root_entity_key" json:"root_entity_key,omitempty"`
+	Version          *int64     `protobuf:"varint,5,req,name=version" json:"version,omitempty"`
+	XXX_unrecognized []byte     `json:"-"`
 }
 
-func (this *CommitResponse_Version) Reset() { *this = CommitResponse_Version{} }
+func (m *CommitResponse_Version) Reset() { *m = CommitResponse_Version{} }
 
-func (this *CommitResponse_Version) GetRootEntityKey() *Reference {
-	if this != nil {
-		return this.RootEntityKey
+func (m *CommitResponse_Version) GetRootEntityKey() *Reference {
+	if m != nil {
+		return m.RootEntityKey
 	}
 	return nil
 }
 
-func (this *CommitResponse_Version) GetVersion() int64 {
-	if this != nil && this.Version != nil {
-		return *this.Version
+func (m *CommitResponse_Version) GetVersion() int64 {
+	if m != nil && m.Version != nil {
+		return *m.Version
 	}
 	return 0
 }

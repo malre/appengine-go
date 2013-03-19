@@ -353,13 +353,13 @@ type StringProto struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *StringProto) Reset()         { *this = StringProto{} }
-func (this *StringProto) String() string { return proto.CompactTextString(this) }
-func (*StringProto) ProtoMessage()       {}
+func (m *StringProto) Reset()         { *m = StringProto{} }
+func (m *StringProto) String() string { return proto.CompactTextString(m) }
+func (*StringProto) ProtoMessage()    {}
 
-func (this *StringProto) GetValue() string {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *StringProto) GetValue() string {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return ""
 }
@@ -369,13 +369,13 @@ type Integer32Proto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *Integer32Proto) Reset()         { *this = Integer32Proto{} }
-func (this *Integer32Proto) String() string { return proto.CompactTextString(this) }
-func (*Integer32Proto) ProtoMessage()       {}
+func (m *Integer32Proto) Reset()         { *m = Integer32Proto{} }
+func (m *Integer32Proto) String() string { return proto.CompactTextString(m) }
+func (*Integer32Proto) ProtoMessage()    {}
 
-func (this *Integer32Proto) GetValue() int32 {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *Integer32Proto) GetValue() int32 {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return 0
 }
@@ -385,13 +385,13 @@ type Integer64Proto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *Integer64Proto) Reset()         { *this = Integer64Proto{} }
-func (this *Integer64Proto) String() string { return proto.CompactTextString(this) }
-func (*Integer64Proto) ProtoMessage()       {}
+func (m *Integer64Proto) Reset()         { *m = Integer64Proto{} }
+func (m *Integer64Proto) String() string { return proto.CompactTextString(m) }
+func (*Integer64Proto) ProtoMessage()    {}
 
-func (this *Integer64Proto) GetValue() int64 {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *Integer64Proto) GetValue() int64 {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return 0
 }
@@ -401,13 +401,13 @@ type BoolProto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *BoolProto) Reset()         { *this = BoolProto{} }
-func (this *BoolProto) String() string { return proto.CompactTextString(this) }
-func (*BoolProto) ProtoMessage()       {}
+func (m *BoolProto) Reset()         { *m = BoolProto{} }
+func (m *BoolProto) String() string { return proto.CompactTextString(m) }
+func (*BoolProto) ProtoMessage()    {}
 
-func (this *BoolProto) GetValue() bool {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *BoolProto) GetValue() bool {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return false
 }
@@ -417,13 +417,13 @@ type DoubleProto struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *DoubleProto) Reset()         { *this = DoubleProto{} }
-func (this *DoubleProto) String() string { return proto.CompactTextString(this) }
-func (*DoubleProto) ProtoMessage()       {}
+func (m *DoubleProto) Reset()         { *m = DoubleProto{} }
+func (m *DoubleProto) String() string { return proto.CompactTextString(m) }
+func (*DoubleProto) ProtoMessage()    {}
 
-func (this *DoubleProto) GetValue() float64 {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *DoubleProto) GetValue() float64 {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return 0
 }
@@ -433,13 +433,13 @@ type BytesProto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *BytesProto) Reset()         { *this = BytesProto{} }
-func (this *BytesProto) String() string { return proto.CompactTextString(this) }
-func (*BytesProto) ProtoMessage()       {}
+func (m *BytesProto) Reset()         { *m = BytesProto{} }
+func (m *BytesProto) String() string { return proto.CompactTextString(m) }
+func (*BytesProto) ProtoMessage()    {}
 
-func (this *BytesProto) GetValue() []byte {
-	if this != nil {
-		return this.Value
+func (m *BytesProto) GetValue() []byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
@@ -448,17 +448,17 @@ type VoidProto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *VoidProto) Reset()         { *this = VoidProto{} }
-func (this *VoidProto) String() string { return proto.CompactTextString(this) }
-func (*VoidProto) ProtoMessage()       {}
+func (m *VoidProto) Reset()         { *m = VoidProto{} }
+func (m *VoidProto) String() string { return proto.CompactTextString(m) }
+func (*VoidProto) ProtoMessage()    {}
 
 type FileServiceErrors struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *FileServiceErrors) Reset()         { *this = FileServiceErrors{} }
-func (this *FileServiceErrors) String() string { return proto.CompactTextString(this) }
-func (*FileServiceErrors) ProtoMessage()       {}
+func (m *FileServiceErrors) Reset()         { *m = FileServiceErrors{} }
+func (m *FileServiceErrors) String() string { return proto.CompactTextString(m) }
+func (*FileServiceErrors) ProtoMessage()    {}
 
 type KeyValue struct {
 	Key              []byte `protobuf:"bytes,1,req,name=key" json:"key,omitempty"`
@@ -466,20 +466,20 @@ type KeyValue struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *KeyValue) Reset()         { *this = KeyValue{} }
-func (this *KeyValue) String() string { return proto.CompactTextString(this) }
-func (*KeyValue) ProtoMessage()       {}
+func (m *KeyValue) Reset()         { *m = KeyValue{} }
+func (m *KeyValue) String() string { return proto.CompactTextString(m) }
+func (*KeyValue) ProtoMessage()    {}
 
-func (this *KeyValue) GetKey() []byte {
-	if this != nil {
-		return this.Key
+func (m *KeyValue) GetKey() []byte {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *KeyValue) GetValue() []byte {
-	if this != nil {
-		return this.Value
+func (m *KeyValue) GetValue() []byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
@@ -491,29 +491,29 @@ type KeyValues struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *KeyValues) Reset()         { *this = KeyValues{} }
-func (this *KeyValues) String() string { return proto.CompactTextString(this) }
-func (*KeyValues) ProtoMessage()       {}
+func (m *KeyValues) Reset()         { *m = KeyValues{} }
+func (m *KeyValues) String() string { return proto.CompactTextString(m) }
+func (*KeyValues) ProtoMessage()    {}
 
 const Default_KeyValues_Partial bool = false
 
-func (this *KeyValues) GetKey() []byte {
-	if this != nil {
-		return this.Key
+func (m *KeyValues) GetKey() []byte {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *KeyValues) GetValue() [][]byte {
-	if this != nil {
-		return this.Value
+func (m *KeyValues) GetValue() [][]byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
 
-func (this *KeyValues) GetPartial() bool {
-	if this != nil && this.Partial != nil {
-		return *this.Partial
+func (m *KeyValues) GetPartial() bool {
+	if m != nil && m.Partial != nil {
+		return *m.Partial
 	}
 	return Default_KeyValues_Partial
 }
@@ -522,9 +522,9 @@ type FileContentType struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *FileContentType) Reset()         { *this = FileContentType{} }
-func (this *FileContentType) String() string { return proto.CompactTextString(this) }
-func (*FileContentType) ProtoMessage()       {}
+func (m *FileContentType) Reset()         { *m = FileContentType{} }
+func (m *FileContentType) String() string { return proto.CompactTextString(m) }
+func (*FileContentType) ProtoMessage()    {}
 
 type CreateRequest struct {
 	Filesystem            *string                      `protobuf:"bytes,1,req,name=filesystem" json:"filesystem,omitempty"`
@@ -535,41 +535,41 @@ type CreateRequest struct {
 	XXX_unrecognized      []byte                       `json:"-"`
 }
 
-func (this *CreateRequest) Reset()         { *this = CreateRequest{} }
-func (this *CreateRequest) String() string { return proto.CompactTextString(this) }
-func (*CreateRequest) ProtoMessage()       {}
+func (m *CreateRequest) Reset()         { *m = CreateRequest{} }
+func (m *CreateRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateRequest) ProtoMessage()    {}
 
-func (this *CreateRequest) GetFilesystem() string {
-	if this != nil && this.Filesystem != nil {
-		return *this.Filesystem
+func (m *CreateRequest) GetFilesystem() string {
+	if m != nil && m.Filesystem != nil {
+		return *m.Filesystem
 	}
 	return ""
 }
 
-func (this *CreateRequest) GetContentType() FileContentType_ContentType {
-	if this != nil && this.ContentType != nil {
-		return *this.ContentType
+func (m *CreateRequest) GetContentType() FileContentType_ContentType {
+	if m != nil && m.ContentType != nil {
+		return *m.ContentType
 	}
 	return 0
 }
 
-func (this *CreateRequest) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *CreateRequest) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
 
-func (this *CreateRequest) GetParameters() []*CreateRequest_Parameter {
-	if this != nil {
-		return this.Parameters
+func (m *CreateRequest) GetParameters() []*CreateRequest_Parameter {
+	if m != nil {
+		return m.Parameters
 	}
 	return nil
 }
 
-func (this *CreateRequest) GetExpirationTimeSeconds() int64 {
-	if this != nil && this.ExpirationTimeSeconds != nil {
-		return *this.ExpirationTimeSeconds
+func (m *CreateRequest) GetExpirationTimeSeconds() int64 {
+	if m != nil && m.ExpirationTimeSeconds != nil {
+		return *m.ExpirationTimeSeconds
 	}
 	return 0
 }
@@ -580,20 +580,20 @@ type CreateRequest_Parameter struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateRequest_Parameter) Reset()         { *this = CreateRequest_Parameter{} }
-func (this *CreateRequest_Parameter) String() string { return proto.CompactTextString(this) }
-func (*CreateRequest_Parameter) ProtoMessage()       {}
+func (m *CreateRequest_Parameter) Reset()         { *m = CreateRequest_Parameter{} }
+func (m *CreateRequest_Parameter) String() string { return proto.CompactTextString(m) }
+func (*CreateRequest_Parameter) ProtoMessage()    {}
 
-func (this *CreateRequest_Parameter) GetName() string {
-	if this != nil && this.Name != nil {
-		return *this.Name
+func (m *CreateRequest_Parameter) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
 	}
 	return ""
 }
 
-func (this *CreateRequest_Parameter) GetValue() string {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *CreateRequest_Parameter) GetValue() string {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return ""
 }
@@ -603,13 +603,13 @@ type CreateResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateResponse) Reset()         { *this = CreateResponse{} }
-func (this *CreateResponse) String() string { return proto.CompactTextString(this) }
-func (*CreateResponse) ProtoMessage()       {}
+func (m *CreateResponse) Reset()         { *m = CreateResponse{} }
+func (m *CreateResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateResponse) ProtoMessage()    {}
 
-func (this *CreateResponse) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *CreateResponse) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
@@ -624,52 +624,52 @@ type OpenRequest struct {
 	XXX_unrecognized     []byte                       `json:"-"`
 }
 
-func (this *OpenRequest) Reset()         { *this = OpenRequest{} }
-func (this *OpenRequest) String() string { return proto.CompactTextString(this) }
-func (*OpenRequest) ProtoMessage()       {}
+func (m *OpenRequest) Reset()         { *m = OpenRequest{} }
+func (m *OpenRequest) String() string { return proto.CompactTextString(m) }
+func (*OpenRequest) ProtoMessage()    {}
 
 const Default_OpenRequest_ExclusiveLock bool = false
 const Default_OpenRequest_BufferedOutput bool = false
 const Default_OpenRequest_OpenLeaseTimeSeconds int32 = 30
 
-func (this *OpenRequest) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *OpenRequest) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
 
-func (this *OpenRequest) GetContentType() FileContentType_ContentType {
-	if this != nil && this.ContentType != nil {
-		return *this.ContentType
+func (m *OpenRequest) GetContentType() FileContentType_ContentType {
+	if m != nil && m.ContentType != nil {
+		return *m.ContentType
 	}
 	return 0
 }
 
-func (this *OpenRequest) GetOpenMode() OpenRequest_OpenMode {
-	if this != nil && this.OpenMode != nil {
-		return *this.OpenMode
+func (m *OpenRequest) GetOpenMode() OpenRequest_OpenMode {
+	if m != nil && m.OpenMode != nil {
+		return *m.OpenMode
 	}
 	return 0
 }
 
-func (this *OpenRequest) GetExclusiveLock() bool {
-	if this != nil && this.ExclusiveLock != nil {
-		return *this.ExclusiveLock
+func (m *OpenRequest) GetExclusiveLock() bool {
+	if m != nil && m.ExclusiveLock != nil {
+		return *m.ExclusiveLock
 	}
 	return Default_OpenRequest_ExclusiveLock
 }
 
-func (this *OpenRequest) GetBufferedOutput() bool {
-	if this != nil && this.BufferedOutput != nil {
-		return *this.BufferedOutput
+func (m *OpenRequest) GetBufferedOutput() bool {
+	if m != nil && m.BufferedOutput != nil {
+		return *m.BufferedOutput
 	}
 	return Default_OpenRequest_BufferedOutput
 }
 
-func (this *OpenRequest) GetOpenLeaseTimeSeconds() int32 {
-	if this != nil && this.OpenLeaseTimeSeconds != nil {
-		return *this.OpenLeaseTimeSeconds
+func (m *OpenRequest) GetOpenLeaseTimeSeconds() int32 {
+	if m != nil && m.OpenLeaseTimeSeconds != nil {
+		return *m.OpenLeaseTimeSeconds
 	}
 	return Default_OpenRequest_OpenLeaseTimeSeconds
 }
@@ -678,9 +678,9 @@ type OpenResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *OpenResponse) Reset()         { *this = OpenResponse{} }
-func (this *OpenResponse) String() string { return proto.CompactTextString(this) }
-func (*OpenResponse) ProtoMessage()       {}
+func (m *OpenResponse) Reset()         { *m = OpenResponse{} }
+func (m *OpenResponse) String() string { return proto.CompactTextString(m) }
+func (*OpenResponse) ProtoMessage()    {}
 
 type CloseRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
@@ -688,22 +688,22 @@ type CloseRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CloseRequest) Reset()         { *this = CloseRequest{} }
-func (this *CloseRequest) String() string { return proto.CompactTextString(this) }
-func (*CloseRequest) ProtoMessage()       {}
+func (m *CloseRequest) Reset()         { *m = CloseRequest{} }
+func (m *CloseRequest) String() string { return proto.CompactTextString(m) }
+func (*CloseRequest) ProtoMessage()    {}
 
 const Default_CloseRequest_Finalize bool = false
 
-func (this *CloseRequest) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *CloseRequest) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
 
-func (this *CloseRequest) GetFinalize() bool {
-	if this != nil && this.Finalize != nil {
-		return *this.Finalize
+func (m *CloseRequest) GetFinalize() bool {
+	if m != nil && m.Finalize != nil {
+		return *m.Finalize
 	}
 	return Default_CloseRequest_Finalize
 }
@@ -712,9 +712,9 @@ type CloseResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *CloseResponse) Reset()         { *this = CloseResponse{} }
-func (this *CloseResponse) String() string { return proto.CompactTextString(this) }
-func (*CloseResponse) ProtoMessage()       {}
+func (m *CloseResponse) Reset()         { *m = CloseResponse{} }
+func (m *CloseResponse) String() string { return proto.CompactTextString(m) }
+func (*CloseResponse) ProtoMessage()    {}
 
 type FileStat struct {
 	Filename         *string                      `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
@@ -726,48 +726,48 @@ type FileStat struct {
 	XXX_unrecognized []byte                       `json:"-"`
 }
 
-func (this *FileStat) Reset()         { *this = FileStat{} }
-func (this *FileStat) String() string { return proto.CompactTextString(this) }
-func (*FileStat) ProtoMessage()       {}
+func (m *FileStat) Reset()         { *m = FileStat{} }
+func (m *FileStat) String() string { return proto.CompactTextString(m) }
+func (*FileStat) ProtoMessage()    {}
 
-func (this *FileStat) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *FileStat) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
 
-func (this *FileStat) GetContentType() FileContentType_ContentType {
-	if this != nil && this.ContentType != nil {
-		return *this.ContentType
+func (m *FileStat) GetContentType() FileContentType_ContentType {
+	if m != nil && m.ContentType != nil {
+		return *m.ContentType
 	}
 	return 0
 }
 
-func (this *FileStat) GetFinalized() bool {
-	if this != nil && this.Finalized != nil {
-		return *this.Finalized
+func (m *FileStat) GetFinalized() bool {
+	if m != nil && m.Finalized != nil {
+		return *m.Finalized
 	}
 	return false
 }
 
-func (this *FileStat) GetLength() int64 {
-	if this != nil && this.Length != nil {
-		return *this.Length
+func (m *FileStat) GetLength() int64 {
+	if m != nil && m.Length != nil {
+		return *m.Length
 	}
 	return 0
 }
 
-func (this *FileStat) GetCtime() int64 {
-	if this != nil && this.Ctime != nil {
-		return *this.Ctime
+func (m *FileStat) GetCtime() int64 {
+	if m != nil && m.Ctime != nil {
+		return *m.Ctime
 	}
 	return 0
 }
 
-func (this *FileStat) GetMtime() int64 {
-	if this != nil && this.Mtime != nil {
-		return *this.Mtime
+func (m *FileStat) GetMtime() int64 {
+	if m != nil && m.Mtime != nil {
+		return *m.Mtime
 	}
 	return 0
 }
@@ -778,20 +778,20 @@ type StatRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *StatRequest) Reset()         { *this = StatRequest{} }
-func (this *StatRequest) String() string { return proto.CompactTextString(this) }
-func (*StatRequest) ProtoMessage()       {}
+func (m *StatRequest) Reset()         { *m = StatRequest{} }
+func (m *StatRequest) String() string { return proto.CompactTextString(m) }
+func (*StatRequest) ProtoMessage()    {}
 
-func (this *StatRequest) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *StatRequest) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
 
-func (this *StatRequest) GetFileGlob() string {
-	if this != nil && this.FileGlob != nil {
-		return *this.FileGlob
+func (m *StatRequest) GetFileGlob() string {
+	if m != nil && m.FileGlob != nil {
+		return *m.FileGlob
 	}
 	return ""
 }
@@ -802,22 +802,22 @@ type StatResponse struct {
 	XXX_unrecognized []byte      `json:"-"`
 }
 
-func (this *StatResponse) Reset()         { *this = StatResponse{} }
-func (this *StatResponse) String() string { return proto.CompactTextString(this) }
-func (*StatResponse) ProtoMessage()       {}
+func (m *StatResponse) Reset()         { *m = StatResponse{} }
+func (m *StatResponse) String() string { return proto.CompactTextString(m) }
+func (*StatResponse) ProtoMessage()    {}
 
 const Default_StatResponse_MoreFilesFound bool = false
 
-func (this *StatResponse) GetStat() []*FileStat {
-	if this != nil {
-		return this.Stat
+func (m *StatResponse) GetStat() []*FileStat {
+	if m != nil {
+		return m.Stat
 	}
 	return nil
 }
 
-func (this *StatResponse) GetMoreFilesFound() bool {
-	if this != nil && this.MoreFilesFound != nil {
-		return *this.MoreFilesFound
+func (m *StatResponse) GetMoreFilesFound() bool {
+	if m != nil && m.MoreFilesFound != nil {
+		return *m.MoreFilesFound
 	}
 	return Default_StatResponse_MoreFilesFound
 }
@@ -829,27 +829,27 @@ type AppendRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *AppendRequest) Reset()         { *this = AppendRequest{} }
-func (this *AppendRequest) String() string { return proto.CompactTextString(this) }
-func (*AppendRequest) ProtoMessage()       {}
+func (m *AppendRequest) Reset()         { *m = AppendRequest{} }
+func (m *AppendRequest) String() string { return proto.CompactTextString(m) }
+func (*AppendRequest) ProtoMessage()    {}
 
-func (this *AppendRequest) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *AppendRequest) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
 
-func (this *AppendRequest) GetData() []byte {
-	if this != nil {
-		return this.Data
+func (m *AppendRequest) GetData() []byte {
+	if m != nil {
+		return m.Data
 	}
 	return nil
 }
 
-func (this *AppendRequest) GetSequenceKey() string {
-	if this != nil && this.SequenceKey != nil {
-		return *this.SequenceKey
+func (m *AppendRequest) GetSequenceKey() string {
+	if m != nil && m.SequenceKey != nil {
+		return *m.SequenceKey
 	}
 	return ""
 }
@@ -858,22 +858,22 @@ type AppendResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *AppendResponse) Reset()         { *this = AppendResponse{} }
-func (this *AppendResponse) String() string { return proto.CompactTextString(this) }
-func (*AppendResponse) ProtoMessage()       {}
+func (m *AppendResponse) Reset()         { *m = AppendResponse{} }
+func (m *AppendResponse) String() string { return proto.CompactTextString(m) }
+func (*AppendResponse) ProtoMessage()    {}
 
 type DeleteRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *DeleteRequest) Reset()         { *this = DeleteRequest{} }
-func (this *DeleteRequest) String() string { return proto.CompactTextString(this) }
-func (*DeleteRequest) ProtoMessage()       {}
+func (m *DeleteRequest) Reset()         { *m = DeleteRequest{} }
+func (m *DeleteRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteRequest) ProtoMessage()    {}
 
-func (this *DeleteRequest) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *DeleteRequest) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
@@ -882,9 +882,9 @@ type DeleteResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *DeleteResponse) Reset()         { *this = DeleteResponse{} }
-func (this *DeleteResponse) String() string { return proto.CompactTextString(this) }
-func (*DeleteResponse) ProtoMessage()       {}
+func (m *DeleteResponse) Reset()         { *m = DeleteResponse{} }
+func (m *DeleteResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteResponse) ProtoMessage()    {}
 
 type ReadRequest struct {
 	Filename         *string `protobuf:"bytes,1,req,name=filename" json:"filename,omitempty"`
@@ -893,27 +893,27 @@ type ReadRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *ReadRequest) Reset()         { *this = ReadRequest{} }
-func (this *ReadRequest) String() string { return proto.CompactTextString(this) }
-func (*ReadRequest) ProtoMessage()       {}
+func (m *ReadRequest) Reset()         { *m = ReadRequest{} }
+func (m *ReadRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadRequest) ProtoMessage()    {}
 
-func (this *ReadRequest) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *ReadRequest) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
 
-func (this *ReadRequest) GetPos() int64 {
-	if this != nil && this.Pos != nil {
-		return *this.Pos
+func (m *ReadRequest) GetPos() int64 {
+	if m != nil && m.Pos != nil {
+		return *m.Pos
 	}
 	return 0
 }
 
-func (this *ReadRequest) GetMaxBytes() int64 {
-	if this != nil && this.MaxBytes != nil {
-		return *this.MaxBytes
+func (m *ReadRequest) GetMaxBytes() int64 {
+	if m != nil && m.MaxBytes != nil {
+		return *m.MaxBytes
 	}
 	return 0
 }
@@ -923,13 +923,13 @@ type ReadResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *ReadResponse) Reset()         { *this = ReadResponse{} }
-func (this *ReadResponse) String() string { return proto.CompactTextString(this) }
-func (*ReadResponse) ProtoMessage()       {}
+func (m *ReadResponse) Reset()         { *m = ReadResponse{} }
+func (m *ReadResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadResponse) ProtoMessage()    {}
 
-func (this *ReadResponse) GetData() []byte {
-	if this != nil {
-		return this.Data
+func (m *ReadResponse) GetData() []byte {
+	if m != nil {
+		return m.Data
 	}
 	return nil
 }
@@ -942,34 +942,34 @@ type ReadKeyValueRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *ReadKeyValueRequest) Reset()         { *this = ReadKeyValueRequest{} }
-func (this *ReadKeyValueRequest) String() string { return proto.CompactTextString(this) }
-func (*ReadKeyValueRequest) ProtoMessage()       {}
+func (m *ReadKeyValueRequest) Reset()         { *m = ReadKeyValueRequest{} }
+func (m *ReadKeyValueRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadKeyValueRequest) ProtoMessage()    {}
 
-func (this *ReadKeyValueRequest) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *ReadKeyValueRequest) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
 
-func (this *ReadKeyValueRequest) GetStartKey() []byte {
-	if this != nil {
-		return this.StartKey
+func (m *ReadKeyValueRequest) GetStartKey() []byte {
+	if m != nil {
+		return m.StartKey
 	}
 	return nil
 }
 
-func (this *ReadKeyValueRequest) GetMaxBytes() int64 {
-	if this != nil && this.MaxBytes != nil {
-		return *this.MaxBytes
+func (m *ReadKeyValueRequest) GetMaxBytes() int64 {
+	if m != nil && m.MaxBytes != nil {
+		return *m.MaxBytes
 	}
 	return 0
 }
 
-func (this *ReadKeyValueRequest) GetValuePos() int64 {
-	if this != nil && this.ValuePos != nil {
-		return *this.ValuePos
+func (m *ReadKeyValueRequest) GetValuePos() int64 {
+	if m != nil && m.ValuePos != nil {
+		return *m.ValuePos
 	}
 	return 0
 }
@@ -981,27 +981,27 @@ type ReadKeyValueResponse struct {
 	XXX_unrecognized []byte                           `json:"-"`
 }
 
-func (this *ReadKeyValueResponse) Reset()         { *this = ReadKeyValueResponse{} }
-func (this *ReadKeyValueResponse) String() string { return proto.CompactTextString(this) }
-func (*ReadKeyValueResponse) ProtoMessage()       {}
+func (m *ReadKeyValueResponse) Reset()         { *m = ReadKeyValueResponse{} }
+func (m *ReadKeyValueResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadKeyValueResponse) ProtoMessage()    {}
 
-func (this *ReadKeyValueResponse) GetData() []*ReadKeyValueResponse_KeyValue {
-	if this != nil {
-		return this.Data
+func (m *ReadKeyValueResponse) GetData() []*ReadKeyValueResponse_KeyValue {
+	if m != nil {
+		return m.Data
 	}
 	return nil
 }
 
-func (this *ReadKeyValueResponse) GetNextKey() []byte {
-	if this != nil {
-		return this.NextKey
+func (m *ReadKeyValueResponse) GetNextKey() []byte {
+	if m != nil {
+		return m.NextKey
 	}
 	return nil
 }
 
-func (this *ReadKeyValueResponse) GetTruncatedValue() bool {
-	if this != nil && this.TruncatedValue != nil {
-		return *this.TruncatedValue
+func (m *ReadKeyValueResponse) GetTruncatedValue() bool {
+	if m != nil && m.TruncatedValue != nil {
+		return *m.TruncatedValue
 	}
 	return false
 }
@@ -1012,20 +1012,20 @@ type ReadKeyValueResponse_KeyValue struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *ReadKeyValueResponse_KeyValue) Reset()         { *this = ReadKeyValueResponse_KeyValue{} }
-func (this *ReadKeyValueResponse_KeyValue) String() string { return proto.CompactTextString(this) }
-func (*ReadKeyValueResponse_KeyValue) ProtoMessage()       {}
+func (m *ReadKeyValueResponse_KeyValue) Reset()         { *m = ReadKeyValueResponse_KeyValue{} }
+func (m *ReadKeyValueResponse_KeyValue) String() string { return proto.CompactTextString(m) }
+func (*ReadKeyValueResponse_KeyValue) ProtoMessage()    {}
 
-func (this *ReadKeyValueResponse_KeyValue) GetKey() []byte {
-	if this != nil {
-		return this.Key
+func (m *ReadKeyValueResponse_KeyValue) GetKey() []byte {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *ReadKeyValueResponse_KeyValue) GetValue() []byte {
-	if this != nil {
-		return this.Value
+func (m *ReadKeyValueResponse_KeyValue) GetValue() []byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
@@ -1034,9 +1034,9 @@ type ShuffleEnums struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *ShuffleEnums) Reset()         { *this = ShuffleEnums{} }
-func (this *ShuffleEnums) String() string { return proto.CompactTextString(this) }
-func (*ShuffleEnums) ProtoMessage()       {}
+func (m *ShuffleEnums) Reset()         { *m = ShuffleEnums{} }
+func (m *ShuffleEnums) String() string { return proto.CompactTextString(m) }
+func (*ShuffleEnums) ProtoMessage()    {}
 
 type ShuffleInputSpecification struct {
 	Format           *ShuffleEnums_InputFormat `protobuf:"varint,1,opt,name=format,enum=files.ShuffleEnums_InputFormat,def=1" json:"format,omitempty"`
@@ -1044,22 +1044,22 @@ type ShuffleInputSpecification struct {
 	XXX_unrecognized []byte                    `json:"-"`
 }
 
-func (this *ShuffleInputSpecification) Reset()         { *this = ShuffleInputSpecification{} }
-func (this *ShuffleInputSpecification) String() string { return proto.CompactTextString(this) }
-func (*ShuffleInputSpecification) ProtoMessage()       {}
+func (m *ShuffleInputSpecification) Reset()         { *m = ShuffleInputSpecification{} }
+func (m *ShuffleInputSpecification) String() string { return proto.CompactTextString(m) }
+func (*ShuffleInputSpecification) ProtoMessage()    {}
 
 const Default_ShuffleInputSpecification_Format ShuffleEnums_InputFormat = ShuffleEnums_RECORDS_KEY_VALUE_PROTO_INPUT
 
-func (this *ShuffleInputSpecification) GetFormat() ShuffleEnums_InputFormat {
-	if this != nil && this.Format != nil {
-		return *this.Format
+func (m *ShuffleInputSpecification) GetFormat() ShuffleEnums_InputFormat {
+	if m != nil && m.Format != nil {
+		return *m.Format
 	}
 	return Default_ShuffleInputSpecification_Format
 }
 
-func (this *ShuffleInputSpecification) GetPath() string {
-	if this != nil && this.Path != nil {
-		return *this.Path
+func (m *ShuffleInputSpecification) GetPath() string {
+	if m != nil && m.Path != nil {
+		return *m.Path
 	}
 	return ""
 }
@@ -1070,22 +1070,22 @@ type ShuffleOutputSpecification struct {
 	XXX_unrecognized []byte                     `json:"-"`
 }
 
-func (this *ShuffleOutputSpecification) Reset()         { *this = ShuffleOutputSpecification{} }
-func (this *ShuffleOutputSpecification) String() string { return proto.CompactTextString(this) }
-func (*ShuffleOutputSpecification) ProtoMessage()       {}
+func (m *ShuffleOutputSpecification) Reset()         { *m = ShuffleOutputSpecification{} }
+func (m *ShuffleOutputSpecification) String() string { return proto.CompactTextString(m) }
+func (*ShuffleOutputSpecification) ProtoMessage()    {}
 
 const Default_ShuffleOutputSpecification_Format ShuffleEnums_OutputFormat = ShuffleEnums_RECORDS_KEY_MULTI_VALUE_PROTO_OUTPUT
 
-func (this *ShuffleOutputSpecification) GetFormat() ShuffleEnums_OutputFormat {
-	if this != nil && this.Format != nil {
-		return *this.Format
+func (m *ShuffleOutputSpecification) GetFormat() ShuffleEnums_OutputFormat {
+	if m != nil && m.Format != nil {
+		return *m.Format
 	}
 	return Default_ShuffleOutputSpecification_Format
 }
 
-func (this *ShuffleOutputSpecification) GetPath() []string {
-	if this != nil {
-		return this.Path
+func (m *ShuffleOutputSpecification) GetPath() []string {
+	if m != nil {
+		return m.Path
 	}
 	return nil
 }
@@ -1099,41 +1099,41 @@ type ShuffleRequest struct {
 	XXX_unrecognized []byte                       `json:"-"`
 }
 
-func (this *ShuffleRequest) Reset()         { *this = ShuffleRequest{} }
-func (this *ShuffleRequest) String() string { return proto.CompactTextString(this) }
-func (*ShuffleRequest) ProtoMessage()       {}
+func (m *ShuffleRequest) Reset()         { *m = ShuffleRequest{} }
+func (m *ShuffleRequest) String() string { return proto.CompactTextString(m) }
+func (*ShuffleRequest) ProtoMessage()    {}
 
-func (this *ShuffleRequest) GetShuffleName() string {
-	if this != nil && this.ShuffleName != nil {
-		return *this.ShuffleName
+func (m *ShuffleRequest) GetShuffleName() string {
+	if m != nil && m.ShuffleName != nil {
+		return *m.ShuffleName
 	}
 	return ""
 }
 
-func (this *ShuffleRequest) GetInput() []*ShuffleInputSpecification {
-	if this != nil {
-		return this.Input
+func (m *ShuffleRequest) GetInput() []*ShuffleInputSpecification {
+	if m != nil {
+		return m.Input
 	}
 	return nil
 }
 
-func (this *ShuffleRequest) GetOutput() *ShuffleOutputSpecification {
-	if this != nil {
-		return this.Output
+func (m *ShuffleRequest) GetOutput() *ShuffleOutputSpecification {
+	if m != nil {
+		return m.Output
 	}
 	return nil
 }
 
-func (this *ShuffleRequest) GetShuffleSizeBytes() int64 {
-	if this != nil && this.ShuffleSizeBytes != nil {
-		return *this.ShuffleSizeBytes
+func (m *ShuffleRequest) GetShuffleSizeBytes() int64 {
+	if m != nil && m.ShuffleSizeBytes != nil {
+		return *m.ShuffleSizeBytes
 	}
 	return 0
 }
 
-func (this *ShuffleRequest) GetCallback() *ShuffleRequest_Callback {
-	if this != nil {
-		return this.Callback
+func (m *ShuffleRequest) GetCallback() *ShuffleRequest_Callback {
+	if m != nil {
+		return m.Callback
 	}
 	return nil
 }
@@ -1146,37 +1146,37 @@ type ShuffleRequest_Callback struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *ShuffleRequest_Callback) Reset()         { *this = ShuffleRequest_Callback{} }
-func (this *ShuffleRequest_Callback) String() string { return proto.CompactTextString(this) }
-func (*ShuffleRequest_Callback) ProtoMessage()       {}
+func (m *ShuffleRequest_Callback) Reset()         { *m = ShuffleRequest_Callback{} }
+func (m *ShuffleRequest_Callback) String() string { return proto.CompactTextString(m) }
+func (*ShuffleRequest_Callback) ProtoMessage()    {}
 
 const Default_ShuffleRequest_Callback_Method string = "POST"
 const Default_ShuffleRequest_Callback_Queue string = "default"
 
-func (this *ShuffleRequest_Callback) GetUrl() string {
-	if this != nil && this.Url != nil {
-		return *this.Url
+func (m *ShuffleRequest_Callback) GetUrl() string {
+	if m != nil && m.Url != nil {
+		return *m.Url
 	}
 	return ""
 }
 
-func (this *ShuffleRequest_Callback) GetAppVersionId() string {
-	if this != nil && this.AppVersionId != nil {
-		return *this.AppVersionId
+func (m *ShuffleRequest_Callback) GetAppVersionId() string {
+	if m != nil && m.AppVersionId != nil {
+		return *m.AppVersionId
 	}
 	return ""
 }
 
-func (this *ShuffleRequest_Callback) GetMethod() string {
-	if this != nil && this.Method != nil {
-		return *this.Method
+func (m *ShuffleRequest_Callback) GetMethod() string {
+	if m != nil && m.Method != nil {
+		return *m.Method
 	}
 	return Default_ShuffleRequest_Callback_Method
 }
 
-func (this *ShuffleRequest_Callback) GetQueue() string {
-	if this != nil && this.Queue != nil {
-		return *this.Queue
+func (m *ShuffleRequest_Callback) GetQueue() string {
+	if m != nil && m.Queue != nil {
+		return *m.Queue
 	}
 	return Default_ShuffleRequest_Callback_Queue
 }
@@ -1185,22 +1185,22 @@ type ShuffleResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *ShuffleResponse) Reset()         { *this = ShuffleResponse{} }
-func (this *ShuffleResponse) String() string { return proto.CompactTextString(this) }
-func (*ShuffleResponse) ProtoMessage()       {}
+func (m *ShuffleResponse) Reset()         { *m = ShuffleResponse{} }
+func (m *ShuffleResponse) String() string { return proto.CompactTextString(m) }
+func (*ShuffleResponse) ProtoMessage()    {}
 
 type GetShuffleStatusRequest struct {
 	ShuffleName      *string `protobuf:"bytes,1,req,name=shuffle_name" json:"shuffle_name,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *GetShuffleStatusRequest) Reset()         { *this = GetShuffleStatusRequest{} }
-func (this *GetShuffleStatusRequest) String() string { return proto.CompactTextString(this) }
-func (*GetShuffleStatusRequest) ProtoMessage()       {}
+func (m *GetShuffleStatusRequest) Reset()         { *m = GetShuffleStatusRequest{} }
+func (m *GetShuffleStatusRequest) String() string { return proto.CompactTextString(m) }
+func (*GetShuffleStatusRequest) ProtoMessage()    {}
 
-func (this *GetShuffleStatusRequest) GetShuffleName() string {
-	if this != nil && this.ShuffleName != nil {
-		return *this.ShuffleName
+func (m *GetShuffleStatusRequest) GetShuffleName() string {
+	if m != nil && m.ShuffleName != nil {
+		return *m.ShuffleName
 	}
 	return ""
 }
@@ -1211,20 +1211,20 @@ type GetShuffleStatusResponse struct {
 	XXX_unrecognized []byte               `json:"-"`
 }
 
-func (this *GetShuffleStatusResponse) Reset()         { *this = GetShuffleStatusResponse{} }
-func (this *GetShuffleStatusResponse) String() string { return proto.CompactTextString(this) }
-func (*GetShuffleStatusResponse) ProtoMessage()       {}
+func (m *GetShuffleStatusResponse) Reset()         { *m = GetShuffleStatusResponse{} }
+func (m *GetShuffleStatusResponse) String() string { return proto.CompactTextString(m) }
+func (*GetShuffleStatusResponse) ProtoMessage()    {}
 
-func (this *GetShuffleStatusResponse) GetStatus() ShuffleEnums_Status {
-	if this != nil && this.Status != nil {
-		return *this.Status
+func (m *GetShuffleStatusResponse) GetStatus() ShuffleEnums_Status {
+	if m != nil && m.Status != nil {
+		return *m.Status
 	}
 	return 0
 }
 
-func (this *GetShuffleStatusResponse) GetDescription() string {
-	if this != nil && this.Description != nil {
-		return *this.Description
+func (m *GetShuffleStatusResponse) GetDescription() string {
+	if m != nil && m.Description != nil {
+		return *m.Description
 	}
 	return ""
 }
@@ -1233,9 +1233,9 @@ type GetCapabilitiesRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *GetCapabilitiesRequest) Reset()         { *this = GetCapabilitiesRequest{} }
-func (this *GetCapabilitiesRequest) String() string { return proto.CompactTextString(this) }
-func (*GetCapabilitiesRequest) ProtoMessage()       {}
+func (m *GetCapabilitiesRequest) Reset()         { *m = GetCapabilitiesRequest{} }
+func (m *GetCapabilitiesRequest) String() string { return proto.CompactTextString(m) }
+func (*GetCapabilitiesRequest) ProtoMessage()    {}
 
 type GetCapabilitiesResponse struct {
 	Filesystem       []string `protobuf:"bytes,1,rep,name=filesystem" json:"filesystem,omitempty"`
@@ -1243,20 +1243,20 @@ type GetCapabilitiesResponse struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *GetCapabilitiesResponse) Reset()         { *this = GetCapabilitiesResponse{} }
-func (this *GetCapabilitiesResponse) String() string { return proto.CompactTextString(this) }
-func (*GetCapabilitiesResponse) ProtoMessage()       {}
+func (m *GetCapabilitiesResponse) Reset()         { *m = GetCapabilitiesResponse{} }
+func (m *GetCapabilitiesResponse) String() string { return proto.CompactTextString(m) }
+func (*GetCapabilitiesResponse) ProtoMessage()    {}
 
-func (this *GetCapabilitiesResponse) GetFilesystem() []string {
-	if this != nil {
-		return this.Filesystem
+func (m *GetCapabilitiesResponse) GetFilesystem() []string {
+	if m != nil {
+		return m.Filesystem
 	}
 	return nil
 }
 
-func (this *GetCapabilitiesResponse) GetShuffleAvailable() bool {
-	if this != nil && this.ShuffleAvailable != nil {
-		return *this.ShuffleAvailable
+func (m *GetCapabilitiesResponse) GetShuffleAvailable() bool {
+	if m != nil && m.ShuffleAvailable != nil {
+		return *m.ShuffleAvailable
 	}
 	return false
 }
@@ -1266,13 +1266,13 @@ type FinalizeRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *FinalizeRequest) Reset()         { *this = FinalizeRequest{} }
-func (this *FinalizeRequest) String() string { return proto.CompactTextString(this) }
-func (*FinalizeRequest) ProtoMessage()       {}
+func (m *FinalizeRequest) Reset()         { *m = FinalizeRequest{} }
+func (m *FinalizeRequest) String() string { return proto.CompactTextString(m) }
+func (*FinalizeRequest) ProtoMessage()    {}
 
-func (this *FinalizeRequest) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *FinalizeRequest) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
@@ -1281,30 +1281,30 @@ type FinalizeResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *FinalizeResponse) Reset()         { *this = FinalizeResponse{} }
-func (this *FinalizeResponse) String() string { return proto.CompactTextString(this) }
-func (*FinalizeResponse) ProtoMessage()       {}
+func (m *FinalizeResponse) Reset()         { *m = FinalizeResponse{} }
+func (m *FinalizeResponse) String() string { return proto.CompactTextString(m) }
+func (*FinalizeResponse) ProtoMessage()    {}
 
 type GetDefaultGsBucketNameRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *GetDefaultGsBucketNameRequest) Reset()         { *this = GetDefaultGsBucketNameRequest{} }
-func (this *GetDefaultGsBucketNameRequest) String() string { return proto.CompactTextString(this) }
-func (*GetDefaultGsBucketNameRequest) ProtoMessage()       {}
+func (m *GetDefaultGsBucketNameRequest) Reset()         { *m = GetDefaultGsBucketNameRequest{} }
+func (m *GetDefaultGsBucketNameRequest) String() string { return proto.CompactTextString(m) }
+func (*GetDefaultGsBucketNameRequest) ProtoMessage()    {}
 
 type GetDefaultGsBucketNameResponse struct {
 	DefaultGsBucketName *string `protobuf:"bytes,1,opt,name=default_gs_bucket_name" json:"default_gs_bucket_name,omitempty"`
 	XXX_unrecognized    []byte  `json:"-"`
 }
 
-func (this *GetDefaultGsBucketNameResponse) Reset()         { *this = GetDefaultGsBucketNameResponse{} }
-func (this *GetDefaultGsBucketNameResponse) String() string { return proto.CompactTextString(this) }
-func (*GetDefaultGsBucketNameResponse) ProtoMessage()       {}
+func (m *GetDefaultGsBucketNameResponse) Reset()         { *m = GetDefaultGsBucketNameResponse{} }
+func (m *GetDefaultGsBucketNameResponse) String() string { return proto.CompactTextString(m) }
+func (*GetDefaultGsBucketNameResponse) ProtoMessage()    {}
 
-func (this *GetDefaultGsBucketNameResponse) GetDefaultGsBucketName() string {
-	if this != nil && this.DefaultGsBucketName != nil {
-		return *this.DefaultGsBucketName
+func (m *GetDefaultGsBucketNameResponse) GetDefaultGsBucketName() string {
+	if m != nil && m.DefaultGsBucketName != nil {
+		return *m.DefaultGsBucketName
 	}
 	return ""
 }
@@ -1317,34 +1317,34 @@ type ListDirRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *ListDirRequest) Reset()         { *this = ListDirRequest{} }
-func (this *ListDirRequest) String() string { return proto.CompactTextString(this) }
-func (*ListDirRequest) ProtoMessage()       {}
+func (m *ListDirRequest) Reset()         { *m = ListDirRequest{} }
+func (m *ListDirRequest) String() string { return proto.CompactTextString(m) }
+func (*ListDirRequest) ProtoMessage()    {}
 
-func (this *ListDirRequest) GetPath() string {
-	if this != nil && this.Path != nil {
-		return *this.Path
+func (m *ListDirRequest) GetPath() string {
+	if m != nil && m.Path != nil {
+		return *m.Path
 	}
 	return ""
 }
 
-func (this *ListDirRequest) GetMarker() string {
-	if this != nil && this.Marker != nil {
-		return *this.Marker
+func (m *ListDirRequest) GetMarker() string {
+	if m != nil && m.Marker != nil {
+		return *m.Marker
 	}
 	return ""
 }
 
-func (this *ListDirRequest) GetMaxKeys() int64 {
-	if this != nil && this.MaxKeys != nil {
-		return *this.MaxKeys
+func (m *ListDirRequest) GetMaxKeys() int64 {
+	if m != nil && m.MaxKeys != nil {
+		return *m.MaxKeys
 	}
 	return 0
 }
 
-func (this *ListDirRequest) GetPrefix() string {
-	if this != nil && this.Prefix != nil {
-		return *this.Prefix
+func (m *ListDirRequest) GetPrefix() string {
+	if m != nil && m.Prefix != nil {
+		return *m.Prefix
 	}
 	return ""
 }
@@ -1354,13 +1354,13 @@ type ListDirResponse struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *ListDirResponse) Reset()         { *this = ListDirResponse{} }
-func (this *ListDirResponse) String() string { return proto.CompactTextString(this) }
-func (*ListDirResponse) ProtoMessage()       {}
+func (m *ListDirResponse) Reset()         { *m = ListDirResponse{} }
+func (m *ListDirResponse) String() string { return proto.CompactTextString(m) }
+func (*ListDirResponse) ProtoMessage()    {}
 
-func (this *ListDirResponse) GetFilenames() []string {
-	if this != nil {
-		return this.Filenames
+func (m *ListDirResponse) GetFilenames() []string {
+	if m != nil {
+		return m.Filenames
 	}
 	return nil
 }

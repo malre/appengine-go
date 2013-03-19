@@ -86,21 +86,27 @@ func (l *PropertyList) Save(c chan<- Property) error {
 	return nil
 }
 
-// validPropertyName returns whether s is a valid Go field name.
-func validPropertyName(s string) bool {
-	if s == "" {
+// validPropertyName returns whether name consists of one or more valid Go
+// identifiers joined by ".".
+func validPropertyName(name string) bool {
+	if name == "" {
 		return false
 	}
-	first := true
-	for _, c := range s {
-		if first {
-			first = false
-			if c != '_' && !unicode.IsLetter(c) {
-				return false
-			}
-		} else {
-			if c != '_' && !unicode.IsLetter(c) && !unicode.IsDigit(c) {
-				return false
+	for _, s := range strings.Split(name, ".") {
+		if s == "" {
+			return false
+		}
+		first := true
+		for _, c := range s {
+			if first {
+				first = false
+				if c != '_' && !unicode.IsLetter(c) {
+					return false
+				}
+			} else {
+				if c != '_' && !unicode.IsLetter(c) && !unicode.IsDigit(c) {
+					return false
+				}
 			}
 		}
 	}
@@ -121,26 +127,44 @@ type structTag struct {
 type structCodec struct {
 	// byIndex gives the structTag for the i'th field.
 	byIndex []structTag
-	// byName gives the field index for the structTag with the given name.
-	byName map[string]int
+	// byName gives the field codec for the structTag with the given name.
+	byName map[string]fieldCodec
+	// hasSlice is whether a struct or any of its nested or embedded structs
+	// has a slice-typed field (other than []byte).
+	hasSlice bool
+}
+
+// fieldCodec is a struct field's index and, if that struct field's type is
+// itself a struct, that substruct's structCodec.
+type fieldCodec struct {
+	index          int
+	substructCodec *structCodec
 }
 
 // structCodecs collects the structCodecs that have already been calculated.
 var (
 	structCodecsMutex sync.Mutex
-	structCodecs      = make(map[reflect.Type]structCodec)
+	structCodecs      = make(map[reflect.Type]*structCodec)
 )
 
 // getStructCodec returns the structCodec for the given struct type.
-func getStructCodec(t reflect.Type) (structCodec, error) {
+func getStructCodec(t reflect.Type) (*structCodec, error) {
 	structCodecsMutex.Lock()
 	defer structCodecsMutex.Unlock()
+	return getStructCodecLocked(t)
+}
+
+// getStructCodecLocked implements getStructCodec. The structCodecsMutex must
+// be held when calling this function.
+func getStructCodecLocked(t reflect.Type) (*structCodec, error) {
 	c, ok := structCodecs[t]
 	if ok {
 		return c, nil
 	}
-	c.byIndex = make([]structTag, t.NumField())
-	c.byName = make(map[string]int)
+	c = &structCodec{
+		byIndex: make([]structTag, t.NumField()),
+		byName:  make(map[string]fieldCodec),
+	}
 	for i := range c.byIndex {
 		f := t.Field(i)
 		name, opts := f.Tag.Get("datastore"), ""
@@ -148,21 +172,59 @@ func getStructCodec(t reflect.Type) (structCodec, error) {
 			name, opts = name[:i], name[i+1:]
 		}
 		if name == "" {
-			name = f.Name
+			if !f.Anonymous {
+				name = f.Name
+			}
 		} else if name == "-" {
 			c.byIndex[i] = structTag{name: name}
 			continue
 		} else if !validPropertyName(name) {
-			return structCodec{}, fmt.Errorf("datastore: struct tag has invalid property name: %q", name)
+			return nil, fmt.Errorf("datastore: struct tag has invalid property name: %q", name)
 		}
-		if _, ok := c.byName[name]; ok {
-			return structCodec{}, fmt.Errorf("datastore: struct tag has repeated property name: %q", name)
+
+		substructType, fIsSlice := reflect.Type(nil), false
+		switch f.Type.Kind() {
+		case reflect.Struct:
+			substructType = f.Type
+		case reflect.Slice:
+			if f.Type.Elem().Kind() == reflect.Struct {
+				substructType = f.Type.Elem()
+			}
+			fIsSlice = f.Type != typeOfByteSlice
+			c.hasSlice = c.hasSlice || fIsSlice
 		}
+
+		if substructType != nil && substructType != typeOfTime {
+			if name != "" {
+				name = name + "."
+			}
+			sub, err := getStructCodecLocked(substructType)
+			if err != nil {
+				return nil, err
+			}
+			if fIsSlice && sub.hasSlice {
+				return nil, fmt.Errorf(
+					"datastore: flattening nested structs leads to a slice of slices: field %q", f.Name)
+			}
+			c.hasSlice = c.hasSlice || sub.hasSlice
+			for relName := range sub.byName {
+				absName := name + relName
+				if _, ok := c.byName[absName]; ok {
+					return nil, fmt.Errorf("datastore: struct tag has repeated property name: %q", absName)
+				}
+				c.byName[absName] = fieldCodec{index: i, substructCodec: sub}
+			}
+		} else {
+			if _, ok := c.byName[name]; ok {
+				return nil, fmt.Errorf("datastore: struct tag has repeated property name: %q", name)
+			}
+			c.byName[name] = fieldCodec{index: i}
+		}
+
 		c.byIndex[i] = structTag{
 			name:    name,
 			noIndex: opts == "noindex",
 		}
-		c.byName[name] = i
 	}
 	structCodecs[t] = c
 	return c, nil
@@ -171,7 +233,7 @@ func getStructCodec(t reflect.Type) (structCodec, error) {
 // structPLS adapts a struct to be a PropertyLoadSaver.
 type structPLS struct {
 	v     reflect.Value
-	codec structCodec
+	codec *structCodec
 }
 
 // newStructPLS returns a PropertyLoadSaver for the struct pointer p.

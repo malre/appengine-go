@@ -17,13 +17,13 @@ type StringProto struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *StringProto) Reset()         { *this = StringProto{} }
-func (this *StringProto) String() string { return proto.CompactTextString(this) }
-func (*StringProto) ProtoMessage()       {}
+func (m *StringProto) Reset()         { *m = StringProto{} }
+func (m *StringProto) String() string { return proto.CompactTextString(m) }
+func (*StringProto) ProtoMessage()    {}
 
-func (this *StringProto) GetValue() string {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *StringProto) GetValue() string {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return ""
 }
@@ -33,13 +33,13 @@ type Integer32Proto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *Integer32Proto) Reset()         { *this = Integer32Proto{} }
-func (this *Integer32Proto) String() string { return proto.CompactTextString(this) }
-func (*Integer32Proto) ProtoMessage()       {}
+func (m *Integer32Proto) Reset()         { *m = Integer32Proto{} }
+func (m *Integer32Proto) String() string { return proto.CompactTextString(m) }
+func (*Integer32Proto) ProtoMessage()    {}
 
-func (this *Integer32Proto) GetValue() int32 {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *Integer32Proto) GetValue() int32 {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return 0
 }
@@ -49,13 +49,13 @@ type Integer64Proto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *Integer64Proto) Reset()         { *this = Integer64Proto{} }
-func (this *Integer64Proto) String() string { return proto.CompactTextString(this) }
-func (*Integer64Proto) ProtoMessage()       {}
+func (m *Integer64Proto) Reset()         { *m = Integer64Proto{} }
+func (m *Integer64Proto) String() string { return proto.CompactTextString(m) }
+func (*Integer64Proto) ProtoMessage()    {}
 
-func (this *Integer64Proto) GetValue() int64 {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *Integer64Proto) GetValue() int64 {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return 0
 }
@@ -65,13 +65,13 @@ type BoolProto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *BoolProto) Reset()         { *this = BoolProto{} }
-func (this *BoolProto) String() string { return proto.CompactTextString(this) }
-func (*BoolProto) ProtoMessage()       {}
+func (m *BoolProto) Reset()         { *m = BoolProto{} }
+func (m *BoolProto) String() string { return proto.CompactTextString(m) }
+func (*BoolProto) ProtoMessage()    {}
 
-func (this *BoolProto) GetValue() bool {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *BoolProto) GetValue() bool {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return false
 }
@@ -81,13 +81,13 @@ type DoubleProto struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *DoubleProto) Reset()         { *this = DoubleProto{} }
-func (this *DoubleProto) String() string { return proto.CompactTextString(this) }
-func (*DoubleProto) ProtoMessage()       {}
+func (m *DoubleProto) Reset()         { *m = DoubleProto{} }
+func (m *DoubleProto) String() string { return proto.CompactTextString(m) }
+func (*DoubleProto) ProtoMessage()    {}
 
-func (this *DoubleProto) GetValue() float64 {
-	if this != nil && this.Value != nil {
-		return *this.Value
+func (m *DoubleProto) GetValue() float64 {
+	if m != nil && m.Value != nil {
+		return *m.Value
 	}
 	return 0
 }
@@ -97,13 +97,13 @@ type BytesProto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *BytesProto) Reset()         { *this = BytesProto{} }
-func (this *BytesProto) String() string { return proto.CompactTextString(this) }
-func (*BytesProto) ProtoMessage()       {}
+func (m *BytesProto) Reset()         { *m = BytesProto{} }
+func (m *BytesProto) String() string { return proto.CompactTextString(m) }
+func (*BytesProto) ProtoMessage()    {}
 
-func (this *BytesProto) GetValue() []byte {
-	if this != nil {
-		return this.Value
+func (m *BytesProto) GetValue() []byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
@@ -112,9 +112,9 @@ type VoidProto struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *VoidProto) Reset()         { *this = VoidProto{} }
-func (this *VoidProto) String() string { return proto.CompactTextString(this) }
-func (*VoidProto) ProtoMessage()       {}
+func (m *VoidProto) Reset()         { *m = VoidProto{} }
+func (m *VoidProto) String() string { return proto.CompactTextString(m) }
+func (*VoidProto) ProtoMessage()    {}
 
 func init() {
 }

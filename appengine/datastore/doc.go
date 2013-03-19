@@ -29,7 +29,11 @@ Valid value types are:
   - time.Time,
   - appengine.BlobKey,
   - []byte (up to 1 megabyte in length),
+  - structs whose fields are all valid value types,
   - slices of any of the above.
+
+Slices of structs are valid, as are structs that contain slices. However, if
+one struct contains another, then at most one of those can be repeated.
 
 The Get and Put functions load and save an entity's contents. An entity's
 contents are typically represented by a struct pointer.
@@ -90,11 +94,12 @@ caller whether this error is fatal, recoverable or ignorable.
 By default, for struct pointers, all properties are potentially indexed, and
 the property name is the same as the field name (and hence must start with an
 upper case letter). Fields may have a `datastore:"name,options"` tag. The tag
-name is the property name, which may start with a lower case letter. An empty
-tag name means to just use the field name. A "-" tag name means that the
-datastore will ignore that field. If options is "noindex" then the field will
-not be indexed. If the options is "" then the comma may be omitted. There are
-no other recognized options.
+name is the property name, which must be one or more valid Go identifiers
+joined by ".", but may start with a lower case letter. An empty tag name means
+to just use the field name. A "-" tag name means that the datastore will
+ignore that field. If options is "noindex" then the field will not be indexed.
+If the options is "" then the comma may be omitted. There are no other
+recognized options.
 
 Example code:
 
@@ -103,7 +108,7 @@ Example code:
 	// D's tag is equivalent to having no tag at all (E).
 	// I is ignored entirely by the datastore.
 	// J has tag information for both the datastore and json packages.
-	type TaggedStructExample struct {
+	type TaggedStruct struct {
 		A int `datastore:"a,noindex"`
 		B int `datastore:"b"`
 		C int `datastore:",noindex"`
@@ -112,6 +117,51 @@ Example code:
 		I int `datastore:"-"`
 		J int `datastore:",noindex" json:"j"`
 	}
+
+
+Structured Properties
+
+If the struct pointed to contains other structs, then the nested or embedded
+structs are flattened. For example, given these definitions:
+
+	type Inner1 struct {
+		W int32
+		X string
+	}
+
+	type Inner2 struct {
+		Y float64
+	}
+
+	type Inner3 struct {
+		Z bool
+	}
+
+	type Outer struct {
+		A int16
+		I []Inner1
+		J Inner2
+		Inner3
+	}
+
+then an Outer's properties would be equivalent to those of:
+
+	type OuterEquivalent struct {
+		A     int16
+		IDotW []int32  `datastore:"I.W"`
+		IDotX []string `datastore:"I.X"`
+		JDotY float64  `datastore:"J.Y"`
+		Z     bool
+	}
+
+If Outer's embedded Inner3 field was tagged as `datastore:"Foo"` then the
+equivalent field would instead be: FooDotZ bool `datastore:"Foo.Z"`.
+
+If an outer struct is tagged "noindex" then all of its implicit flattened
+fields are effectively "noindex".
+
+
+The PropertyLoadSaver Interface
 
 An entity's contents can also be represented by any type that implements the
 PropertyLoadSaver interface. This type may be a struct pointer, but it does

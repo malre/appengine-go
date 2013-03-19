@@ -105,20 +105,20 @@ type CapabilityConfigList struct {
 	XXX_unrecognized []byte              `json:"-"`
 }
 
-func (this *CapabilityConfigList) Reset()         { *this = CapabilityConfigList{} }
-func (this *CapabilityConfigList) String() string { return proto.CompactTextString(this) }
-func (*CapabilityConfigList) ProtoMessage()       {}
+func (m *CapabilityConfigList) Reset()         { *m = CapabilityConfigList{} }
+func (m *CapabilityConfigList) String() string { return proto.CompactTextString(m) }
+func (*CapabilityConfigList) ProtoMessage()    {}
 
-func (this *CapabilityConfigList) GetConfig() []*CapabilityConfig {
-	if this != nil {
-		return this.Config
+func (m *CapabilityConfigList) GetConfig() []*CapabilityConfig {
+	if m != nil {
+		return m.Config
 	}
 	return nil
 }
 
-func (this *CapabilityConfigList) GetDefaultConfig() *CapabilityConfig {
-	if this != nil {
-		return this.DefaultConfig
+func (m *CapabilityConfigList) GetDefaultConfig() *CapabilityConfig {
+	if m != nil {
+		return m.DefaultConfig
 	}
 	return nil
 }
@@ -134,57 +134,57 @@ type CapabilityConfig struct {
 	XXX_unrecognized []byte                   `json:"-"`
 }
 
-func (this *CapabilityConfig) Reset()         { *this = CapabilityConfig{} }
-func (this *CapabilityConfig) String() string { return proto.CompactTextString(this) }
-func (*CapabilityConfig) ProtoMessage()       {}
+func (m *CapabilityConfig) Reset()         { *m = CapabilityConfig{} }
+func (m *CapabilityConfig) String() string { return proto.CompactTextString(m) }
+func (*CapabilityConfig) ProtoMessage()    {}
 
 const Default_CapabilityConfig_Status CapabilityConfig_Status = CapabilityConfig_UNKNOWN
 
-func (this *CapabilityConfig) GetPackage() string {
-	if this != nil && this.Package != nil {
-		return *this.Package
+func (m *CapabilityConfig) GetPackage() string {
+	if m != nil && m.Package != nil {
+		return *m.Package
 	}
 	return ""
 }
 
-func (this *CapabilityConfig) GetCapability() string {
-	if this != nil && this.Capability != nil {
-		return *this.Capability
+func (m *CapabilityConfig) GetCapability() string {
+	if m != nil && m.Capability != nil {
+		return *m.Capability
 	}
 	return ""
 }
 
-func (this *CapabilityConfig) GetStatus() CapabilityConfig_Status {
-	if this != nil && this.Status != nil {
-		return *this.Status
+func (m *CapabilityConfig) GetStatus() CapabilityConfig_Status {
+	if m != nil && m.Status != nil {
+		return *m.Status
 	}
 	return Default_CapabilityConfig_Status
 }
 
-func (this *CapabilityConfig) GetScheduledTime() string {
-	if this != nil && this.ScheduledTime != nil {
-		return *this.ScheduledTime
+func (m *CapabilityConfig) GetScheduledTime() string {
+	if m != nil && m.ScheduledTime != nil {
+		return *m.ScheduledTime
 	}
 	return ""
 }
 
-func (this *CapabilityConfig) GetInternalMessage() string {
-	if this != nil && this.InternalMessage != nil {
-		return *this.InternalMessage
+func (m *CapabilityConfig) GetInternalMessage() string {
+	if m != nil && m.InternalMessage != nil {
+		return *m.InternalMessage
 	}
 	return ""
 }
 
-func (this *CapabilityConfig) GetAdminMessage() string {
-	if this != nil && this.AdminMessage != nil {
-		return *this.AdminMessage
+func (m *CapabilityConfig) GetAdminMessage() string {
+	if m != nil && m.AdminMessage != nil {
+		return *m.AdminMessage
 	}
 	return ""
 }
 
-func (this *CapabilityConfig) GetErrorMessage() string {
-	if this != nil && this.ErrorMessage != nil {
-		return *this.ErrorMessage
+func (m *CapabilityConfig) GetErrorMessage() string {
+	if m != nil && m.ErrorMessage != nil {
+		return *m.ErrorMessage
 	}
 	return ""
 }
@@ -196,27 +196,27 @@ type IsEnabledRequest struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *IsEnabledRequest) Reset()         { *this = IsEnabledRequest{} }
-func (this *IsEnabledRequest) String() string { return proto.CompactTextString(this) }
-func (*IsEnabledRequest) ProtoMessage()       {}
+func (m *IsEnabledRequest) Reset()         { *m = IsEnabledRequest{} }
+func (m *IsEnabledRequest) String() string { return proto.CompactTextString(m) }
+func (*IsEnabledRequest) ProtoMessage()    {}
 
-func (this *IsEnabledRequest) GetPackage() string {
-	if this != nil && this.Package != nil {
-		return *this.Package
+func (m *IsEnabledRequest) GetPackage() string {
+	if m != nil && m.Package != nil {
+		return *m.Package
 	}
 	return ""
 }
 
-func (this *IsEnabledRequest) GetCapability() []string {
-	if this != nil {
-		return this.Capability
+func (m *IsEnabledRequest) GetCapability() []string {
+	if m != nil {
+		return m.Capability
 	}
 	return nil
 }
 
-func (this *IsEnabledRequest) GetCall() []string {
-	if this != nil {
-		return this.Call
+func (m *IsEnabledRequest) GetCall() []string {
+	if m != nil {
+		return m.Call
 	}
 	return nil
 }
@@ -228,27 +228,27 @@ type IsEnabledResponse struct {
 	XXX_unrecognized   []byte                           `json:"-"`
 }
 
-func (this *IsEnabledResponse) Reset()         { *this = IsEnabledResponse{} }
-func (this *IsEnabledResponse) String() string { return proto.CompactTextString(this) }
-func (*IsEnabledResponse) ProtoMessage()       {}
+func (m *IsEnabledResponse) Reset()         { *m = IsEnabledResponse{} }
+func (m *IsEnabledResponse) String() string { return proto.CompactTextString(m) }
+func (*IsEnabledResponse) ProtoMessage()    {}
 
-func (this *IsEnabledResponse) GetSummaryStatus() IsEnabledResponse_SummaryStatus {
-	if this != nil && this.SummaryStatus != nil {
-		return *this.SummaryStatus
+func (m *IsEnabledResponse) GetSummaryStatus() IsEnabledResponse_SummaryStatus {
+	if m != nil && m.SummaryStatus != nil {
+		return *m.SummaryStatus
 	}
 	return 0
 }
 
-func (this *IsEnabledResponse) GetTimeUntilScheduled() int64 {
-	if this != nil && this.TimeUntilScheduled != nil {
-		return *this.TimeUntilScheduled
+func (m *IsEnabledResponse) GetTimeUntilScheduled() int64 {
+	if m != nil && m.TimeUntilScheduled != nil {
+		return *m.TimeUntilScheduled
 	}
 	return 0
 }
 
-func (this *IsEnabledResponse) GetConfig() []*CapabilityConfig {
-	if this != nil {
-		return this.Config
+func (m *IsEnabledResponse) GetConfig() []*CapabilityConfig {
+	if m != nil {
+		return m.Config
 	}
 	return nil
 }

@@ -64,9 +64,9 @@ type ChannelServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *ChannelServiceError) Reset()         { *this = ChannelServiceError{} }
-func (this *ChannelServiceError) String() string { return proto.CompactTextString(this) }
-func (*ChannelServiceError) ProtoMessage()       {}
+func (m *ChannelServiceError) Reset()         { *m = ChannelServiceError{} }
+func (m *ChannelServiceError) String() string { return proto.CompactTextString(m) }
+func (*ChannelServiceError) ProtoMessage()    {}
 
 type CreateChannelRequest struct {
 	ApplicationKey   *string `protobuf:"bytes,1,req,name=application_key" json:"application_key,omitempty"`
@@ -74,20 +74,20 @@ type CreateChannelRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateChannelRequest) Reset()         { *this = CreateChannelRequest{} }
-func (this *CreateChannelRequest) String() string { return proto.CompactTextString(this) }
-func (*CreateChannelRequest) ProtoMessage()       {}
+func (m *CreateChannelRequest) Reset()         { *m = CreateChannelRequest{} }
+func (m *CreateChannelRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateChannelRequest) ProtoMessage()    {}
 
-func (this *CreateChannelRequest) GetApplicationKey() string {
-	if this != nil && this.ApplicationKey != nil {
-		return *this.ApplicationKey
+func (m *CreateChannelRequest) GetApplicationKey() string {
+	if m != nil && m.ApplicationKey != nil {
+		return *m.ApplicationKey
 	}
 	return ""
 }
 
-func (this *CreateChannelRequest) GetDurationMinutes() int32 {
-	if this != nil && this.DurationMinutes != nil {
-		return *this.DurationMinutes
+func (m *CreateChannelRequest) GetDurationMinutes() int32 {
+	if m != nil && m.DurationMinutes != nil {
+		return *m.DurationMinutes
 	}
 	return 0
 }
@@ -98,20 +98,20 @@ type CreateChannelResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateChannelResponse) Reset()         { *this = CreateChannelResponse{} }
-func (this *CreateChannelResponse) String() string { return proto.CompactTextString(this) }
-func (*CreateChannelResponse) ProtoMessage()       {}
+func (m *CreateChannelResponse) Reset()         { *m = CreateChannelResponse{} }
+func (m *CreateChannelResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateChannelResponse) ProtoMessage()    {}
 
-func (this *CreateChannelResponse) GetToken() string {
-	if this != nil && this.Token != nil {
-		return *this.Token
+func (m *CreateChannelResponse) GetToken() string {
+	if m != nil && m.Token != nil {
+		return *m.Token
 	}
 	return ""
 }
 
-func (this *CreateChannelResponse) GetDurationMinutes() int32 {
-	if this != nil && this.DurationMinutes != nil {
-		return *this.DurationMinutes
+func (m *CreateChannelResponse) GetDurationMinutes() int32 {
+	if m != nil && m.DurationMinutes != nil {
+		return *m.DurationMinutes
 	}
 	return 0
 }
@@ -122,20 +122,20 @@ type SendMessageRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *SendMessageRequest) Reset()         { *this = SendMessageRequest{} }
-func (this *SendMessageRequest) String() string { return proto.CompactTextString(this) }
-func (*SendMessageRequest) ProtoMessage()       {}
+func (m *SendMessageRequest) Reset()         { *m = SendMessageRequest{} }
+func (m *SendMessageRequest) String() string { return proto.CompactTextString(m) }
+func (*SendMessageRequest) ProtoMessage()    {}
 
-func (this *SendMessageRequest) GetApplicationKey() string {
-	if this != nil && this.ApplicationKey != nil {
-		return *this.ApplicationKey
+func (m *SendMessageRequest) GetApplicationKey() string {
+	if m != nil && m.ApplicationKey != nil {
+		return *m.ApplicationKey
 	}
 	return ""
 }
 
-func (this *SendMessageRequest) GetMessage() string {
-	if this != nil && this.Message != nil {
-		return *this.Message
+func (m *SendMessageRequest) GetMessage() string {
+	if m != nil && m.Message != nil {
+		return *m.Message
 	}
 	return ""
 }
@@ -145,13 +145,13 @@ type ChannelPresenceRequest struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *ChannelPresenceRequest) Reset()         { *this = ChannelPresenceRequest{} }
-func (this *ChannelPresenceRequest) String() string { return proto.CompactTextString(this) }
-func (*ChannelPresenceRequest) ProtoMessage()       {}
+func (m *ChannelPresenceRequest) Reset()         { *m = ChannelPresenceRequest{} }
+func (m *ChannelPresenceRequest) String() string { return proto.CompactTextString(m) }
+func (*ChannelPresenceRequest) ProtoMessage()    {}
 
-func (this *ChannelPresenceRequest) GetApplicationKey() []string {
-	if this != nil {
-		return this.ApplicationKey
+func (m *ChannelPresenceRequest) GetApplicationKey() []string {
+	if m != nil {
+		return m.ApplicationKey
 	}
 	return nil
 }
@@ -161,13 +161,13 @@ type ChannelPresenceResponse struct {
 	XXX_unrecognized []byte                                 `json:"-"`
 }
 
-func (this *ChannelPresenceResponse) Reset()         { *this = ChannelPresenceResponse{} }
-func (this *ChannelPresenceResponse) String() string { return proto.CompactTextString(this) }
-func (*ChannelPresenceResponse) ProtoMessage()       {}
+func (m *ChannelPresenceResponse) Reset()         { *m = ChannelPresenceResponse{} }
+func (m *ChannelPresenceResponse) String() string { return proto.CompactTextString(m) }
+func (*ChannelPresenceResponse) ProtoMessage()    {}
 
-func (this *ChannelPresenceResponse) GetQueryResult() []*ChannelPresenceResponse_QueryResult {
-	if this != nil {
-		return this.QueryResult
+func (m *ChannelPresenceResponse) GetQueryResult() []*ChannelPresenceResponse_QueryResult {
+	if m != nil {
+		return m.QueryResult
 	}
 	return nil
 }
@@ -179,29 +179,27 @@ type ChannelPresenceResponse_QueryResult struct {
 	XXX_unrecognized []byte                         `json:"-"`
 }
 
-func (this *ChannelPresenceResponse_QueryResult) Reset() {
-	*this = ChannelPresenceResponse_QueryResult{}
-}
-func (this *ChannelPresenceResponse_QueryResult) String() string { return proto.CompactTextString(this) }
-func (*ChannelPresenceResponse_QueryResult) ProtoMessage()       {}
+func (m *ChannelPresenceResponse_QueryResult) Reset()         { *m = ChannelPresenceResponse_QueryResult{} }
+func (m *ChannelPresenceResponse_QueryResult) String() string { return proto.CompactTextString(m) }
+func (*ChannelPresenceResponse_QueryResult) ProtoMessage()    {}
 
-func (this *ChannelPresenceResponse_QueryResult) GetApplicationKey() string {
-	if this != nil && this.ApplicationKey != nil {
-		return *this.ApplicationKey
+func (m *ChannelPresenceResponse_QueryResult) GetApplicationKey() string {
+	if m != nil && m.ApplicationKey != nil {
+		return *m.ApplicationKey
 	}
 	return ""
 }
 
-func (this *ChannelPresenceResponse_QueryResult) GetIsAvailable() bool {
-	if this != nil && this.IsAvailable != nil {
-		return *this.IsAvailable
+func (m *ChannelPresenceResponse_QueryResult) GetIsAvailable() bool {
+	if m != nil && m.IsAvailable != nil {
+		return *m.IsAvailable
 	}
 	return false
 }
 
-func (this *ChannelPresenceResponse_QueryResult) GetErrorCode() ChannelServiceError_ErrorCode {
-	if this != nil && this.ErrorCode != nil {
-		return *this.ErrorCode
+func (m *ChannelPresenceResponse_QueryResult) GetErrorCode() ChannelServiceError_ErrorCode {
+	if m != nil && m.ErrorCode != nil {
+		return *m.ErrorCode
 	}
 	return 0
 }

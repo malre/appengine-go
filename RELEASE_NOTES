@@ -3,6 +3,14 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.7.6 - March 2013
+==========================
+appengine/datastore:
+  - Support nested and embedded structs.
+dev_appserver:
+  - Update to version 2. Amongst other things, it can now serve concurrent HTTP
+    requests.
+
 Version 1.7.5 - February 2013
 =============================
 appengine:

@@ -163,14 +163,19 @@ var appPackagesInitialized = make(chan struct{})
 // The "myapp/packageX" packages are expected to register HTTP handlers
 // in their init functions.
 func Main() {
+	var httpNet, httpAddr, apiNet, apiAddr string
+
 	close(appPackagesInitialized)
+
 	// Check flags.
 	flag.Parse()
-	if *addrHTTP == "" || *addrAPI == "" {
-		log.Panic("appengine_internal.Main should not be called directly. It should only be called from the App Engine App Server.")
+	if !IsDevAppServer() {
+		if *addrHTTP == "" || *addrAPI == "" {
+			log.Panic("appengine_internal.Main called without address flags.")
+		}
+		httpNet, httpAddr = parseAddr(*addrHTTP)
+		apiNet, apiAddr = parseAddr(*addrAPI)
 	}
-	httpNet, httpAddr := parseAddr(*addrHTTP)
-	apiNet, apiAddr := parseAddr(*addrAPI)
 
 	// Forward App Engine API calls to the appserver.
 	initAPI(apiNet, apiAddr)

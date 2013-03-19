@@ -292,17 +292,17 @@ type MemcacheShardingStrategy struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *MemcacheShardingStrategy) Reset()         { *this = MemcacheShardingStrategy{} }
-func (this *MemcacheShardingStrategy) String() string { return proto.CompactTextString(this) }
-func (*MemcacheShardingStrategy) ProtoMessage()       {}
+func (m *MemcacheShardingStrategy) Reset()         { *m = MemcacheShardingStrategy{} }
+func (m *MemcacheShardingStrategy) String() string { return proto.CompactTextString(m) }
+func (*MemcacheShardingStrategy) ProtoMessage()    {}
 
 type MemcacheServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *MemcacheServiceError) Reset()         { *this = MemcacheServiceError{} }
-func (this *MemcacheServiceError) String() string { return proto.CompactTextString(this) }
-func (*MemcacheServiceError) ProtoMessage()       {}
+func (m *MemcacheServiceError) Reset()         { *m = MemcacheServiceError{} }
+func (m *MemcacheServiceError) String() string { return proto.CompactTextString(m) }
+func (*MemcacheServiceError) ProtoMessage()    {}
 
 type AppOverride struct {
 	AppId                    *string                        `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
@@ -313,41 +313,41 @@ type AppOverride struct {
 	XXX_unrecognized         []byte                         `json:"-"`
 }
 
-func (this *AppOverride) Reset()         { *this = AppOverride{} }
-func (this *AppOverride) String() string { return proto.CompactTextString(this) }
-func (*AppOverride) ProtoMessage()       {}
+func (m *AppOverride) Reset()         { *m = AppOverride{} }
+func (m *AppOverride) String() string { return proto.CompactTextString(m) }
+func (*AppOverride) ProtoMessage()    {}
 
-func (this *AppOverride) GetAppId() string {
-	if this != nil && this.AppId != nil {
-		return *this.AppId
+func (m *AppOverride) GetAppId() string {
+	if m != nil && m.AppId != nil {
+		return *m.AppId
 	}
 	return ""
 }
 
-func (this *AppOverride) GetNumMemcachegBackends() int32 {
-	if this != nil && this.NumMemcachegBackends != nil {
-		return *this.NumMemcachegBackends
+func (m *AppOverride) GetNumMemcachegBackends() int32 {
+	if m != nil && m.NumMemcachegBackends != nil {
+		return *m.NumMemcachegBackends
 	}
 	return 0
 }
 
-func (this *AppOverride) GetIgnoreShardlock() bool {
-	if this != nil && this.IgnoreShardlock != nil {
-		return *this.IgnoreShardlock
+func (m *AppOverride) GetIgnoreShardlock() bool {
+	if m != nil && m.IgnoreShardlock != nil {
+		return *m.IgnoreShardlock
 	}
 	return false
 }
 
-func (this *AppOverride) GetMemcachePoolHint() string {
-	if this != nil && this.MemcachePoolHint != nil {
-		return *this.MemcachePoolHint
+func (m *AppOverride) GetMemcachePoolHint() string {
+	if m != nil && m.MemcachePoolHint != nil {
+		return *m.MemcachePoolHint
 	}
 	return ""
 }
 
-func (this *AppOverride) GetMemcacheShardingStrategy() MemcacheShardingStrategy_Enum {
-	if this != nil && this.MemcacheShardingStrategy != nil {
-		return *this.MemcacheShardingStrategy
+func (m *AppOverride) GetMemcacheShardingStrategy() MemcacheShardingStrategy_Enum {
+	if m != nil && m.MemcacheShardingStrategy != nil {
+		return *m.MemcacheShardingStrategy
 	}
 	return 0
 }
@@ -360,34 +360,34 @@ type MemcacheGetRequest struct {
 	XXX_unrecognized []byte       `json:"-"`
 }
 
-func (this *MemcacheGetRequest) Reset()         { *this = MemcacheGetRequest{} }
-func (this *MemcacheGetRequest) String() string { return proto.CompactTextString(this) }
-func (*MemcacheGetRequest) ProtoMessage()       {}
+func (m *MemcacheGetRequest) Reset()         { *m = MemcacheGetRequest{} }
+func (m *MemcacheGetRequest) String() string { return proto.CompactTextString(m) }
+func (*MemcacheGetRequest) ProtoMessage()    {}
 
-func (this *MemcacheGetRequest) GetKey() [][]byte {
-	if this != nil {
-		return this.Key
+func (m *MemcacheGetRequest) GetKey() [][]byte {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *MemcacheGetRequest) GetNameSpace() string {
-	if this != nil && this.NameSpace != nil {
-		return *this.NameSpace
+func (m *MemcacheGetRequest) GetNameSpace() string {
+	if m != nil && m.NameSpace != nil {
+		return *m.NameSpace
 	}
 	return ""
 }
 
-func (this *MemcacheGetRequest) GetForCas() bool {
-	if this != nil && this.ForCas != nil {
-		return *this.ForCas
+func (m *MemcacheGetRequest) GetForCas() bool {
+	if m != nil && m.ForCas != nil {
+		return *m.ForCas
 	}
 	return false
 }
 
-func (this *MemcacheGetRequest) GetOverride() *AppOverride {
-	if this != nil {
-		return this.Override
+func (m *MemcacheGetRequest) GetOverride() *AppOverride {
+	if m != nil {
+		return m.Override
 	}
 	return nil
 }
@@ -397,13 +397,13 @@ type MemcacheGetResponse struct {
 	XXX_unrecognized []byte                      `json:"-"`
 }
 
-func (this *MemcacheGetResponse) Reset()         { *this = MemcacheGetResponse{} }
-func (this *MemcacheGetResponse) String() string { return proto.CompactTextString(this) }
-func (*MemcacheGetResponse) ProtoMessage()       {}
+func (m *MemcacheGetResponse) Reset()         { *m = MemcacheGetResponse{} }
+func (m *MemcacheGetResponse) String() string { return proto.CompactTextString(m) }
+func (*MemcacheGetResponse) ProtoMessage()    {}
 
-func (this *MemcacheGetResponse) GetItem() []*MemcacheGetResponse_Item {
-	if this != nil {
-		return this.Item
+func (m *MemcacheGetResponse) GetItem() []*MemcacheGetResponse_Item {
+	if m != nil {
+		return m.Item
 	}
 	return nil
 }
@@ -414,41 +414,42 @@ type MemcacheGetResponse_Item struct {
 	Flags            *uint32 `protobuf:"fixed32,4,opt,name=flags" json:"flags,omitempty"`
 	CasId            *uint64 `protobuf:"fixed64,5,opt,name=cas_id" json:"cas_id,omitempty"`
 	ExpiresInSeconds *int32  `protobuf:"varint,6,opt,name=expires_in_seconds" json:"expires_in_seconds,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *MemcacheGetResponse_Item) Reset() { *this = MemcacheGetResponse_Item{} }
+func (m *MemcacheGetResponse_Item) Reset() { *m = MemcacheGetResponse_Item{} }
 
-func (this *MemcacheGetResponse_Item) GetKey() []byte {
-	if this != nil {
-		return this.Key
+func (m *MemcacheGetResponse_Item) GetKey() []byte {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *MemcacheGetResponse_Item) GetValue() []byte {
-	if this != nil {
-		return this.Value
+func (m *MemcacheGetResponse_Item) GetValue() []byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
 
-func (this *MemcacheGetResponse_Item) GetFlags() uint32 {
-	if this != nil && this.Flags != nil {
-		return *this.Flags
+func (m *MemcacheGetResponse_Item) GetFlags() uint32 {
+	if m != nil && m.Flags != nil {
+		return *m.Flags
 	}
 	return 0
 }
 
-func (this *MemcacheGetResponse_Item) GetCasId() uint64 {
-	if this != nil && this.CasId != nil {
-		return *this.CasId
+func (m *MemcacheGetResponse_Item) GetCasId() uint64 {
+	if m != nil && m.CasId != nil {
+		return *m.CasId
 	}
 	return 0
 }
 
-func (this *MemcacheGetResponse_Item) GetExpiresInSeconds() int32 {
-	if this != nil && this.ExpiresInSeconds != nil {
-		return *this.ExpiresInSeconds
+func (m *MemcacheGetResponse_Item) GetExpiresInSeconds() int32 {
+	if m != nil && m.ExpiresInSeconds != nil {
+		return *m.ExpiresInSeconds
 	}
 	return 0
 }
@@ -460,91 +461,92 @@ type MemcacheSetRequest struct {
 	XXX_unrecognized []byte                     `json:"-"`
 }
 
-func (this *MemcacheSetRequest) Reset()         { *this = MemcacheSetRequest{} }
-func (this *MemcacheSetRequest) String() string { return proto.CompactTextString(this) }
-func (*MemcacheSetRequest) ProtoMessage()       {}
+func (m *MemcacheSetRequest) Reset()         { *m = MemcacheSetRequest{} }
+func (m *MemcacheSetRequest) String() string { return proto.CompactTextString(m) }
+func (*MemcacheSetRequest) ProtoMessage()    {}
 
-func (this *MemcacheSetRequest) GetItem() []*MemcacheSetRequest_Item {
-	if this != nil {
-		return this.Item
+func (m *MemcacheSetRequest) GetItem() []*MemcacheSetRequest_Item {
+	if m != nil {
+		return m.Item
 	}
 	return nil
 }
 
-func (this *MemcacheSetRequest) GetNameSpace() string {
-	if this != nil && this.NameSpace != nil {
-		return *this.NameSpace
+func (m *MemcacheSetRequest) GetNameSpace() string {
+	if m != nil && m.NameSpace != nil {
+		return *m.NameSpace
 	}
 	return ""
 }
 
-func (this *MemcacheSetRequest) GetOverride() *AppOverride {
-	if this != nil {
-		return this.Override
+func (m *MemcacheSetRequest) GetOverride() *AppOverride {
+	if m != nil {
+		return m.Override
 	}
 	return nil
 }
 
 type MemcacheSetRequest_Item struct {
-	Key            []byte                        `protobuf:"bytes,2,req,name=key" json:"key,omitempty"`
-	Value          []byte                        `protobuf:"bytes,3,req,name=value" json:"value,omitempty"`
-	Flags          *uint32                       `protobuf:"fixed32,4,opt,name=flags" json:"flags,omitempty"`
-	SetPolicy      *MemcacheSetRequest_SetPolicy `protobuf:"varint,5,opt,name=set_policy,enum=appengine.MemcacheSetRequest_SetPolicy,def=1" json:"set_policy,omitempty"`
-	ExpirationTime *uint32                       `protobuf:"fixed32,6,opt,name=expiration_time,def=0" json:"expiration_time,omitempty"`
-	CasId          *uint64                       `protobuf:"fixed64,8,opt,name=cas_id" json:"cas_id,omitempty"`
-	ForCas         *bool                         `protobuf:"varint,9,opt,name=for_cas" json:"for_cas,omitempty"`
+	Key              []byte                        `protobuf:"bytes,2,req,name=key" json:"key,omitempty"`
+	Value            []byte                        `protobuf:"bytes,3,req,name=value" json:"value,omitempty"`
+	Flags            *uint32                       `protobuf:"fixed32,4,opt,name=flags" json:"flags,omitempty"`
+	SetPolicy        *MemcacheSetRequest_SetPolicy `protobuf:"varint,5,opt,name=set_policy,enum=appengine.MemcacheSetRequest_SetPolicy,def=1" json:"set_policy,omitempty"`
+	ExpirationTime   *uint32                       `protobuf:"fixed32,6,opt,name=expiration_time,def=0" json:"expiration_time,omitempty"`
+	CasId            *uint64                       `protobuf:"fixed64,8,opt,name=cas_id" json:"cas_id,omitempty"`
+	ForCas           *bool                         `protobuf:"varint,9,opt,name=for_cas" json:"for_cas,omitempty"`
+	XXX_unrecognized []byte                        `json:"-"`
 }
 
-func (this *MemcacheSetRequest_Item) Reset() { *this = MemcacheSetRequest_Item{} }
+func (m *MemcacheSetRequest_Item) Reset() { *m = MemcacheSetRequest_Item{} }
 
 const Default_MemcacheSetRequest_Item_SetPolicy MemcacheSetRequest_SetPolicy = MemcacheSetRequest_SET
 const Default_MemcacheSetRequest_Item_ExpirationTime uint32 = 0
 
-func (this *MemcacheSetRequest_Item) GetKey() []byte {
-	if this != nil {
-		return this.Key
+func (m *MemcacheSetRequest_Item) GetKey() []byte {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *MemcacheSetRequest_Item) GetValue() []byte {
-	if this != nil {
-		return this.Value
+func (m *MemcacheSetRequest_Item) GetValue() []byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
 
-func (this *MemcacheSetRequest_Item) GetFlags() uint32 {
-	if this != nil && this.Flags != nil {
-		return *this.Flags
+func (m *MemcacheSetRequest_Item) GetFlags() uint32 {
+	if m != nil && m.Flags != nil {
+		return *m.Flags
 	}
 	return 0
 }
 
-func (this *MemcacheSetRequest_Item) GetSetPolicy() MemcacheSetRequest_SetPolicy {
-	if this != nil && this.SetPolicy != nil {
-		return *this.SetPolicy
+func (m *MemcacheSetRequest_Item) GetSetPolicy() MemcacheSetRequest_SetPolicy {
+	if m != nil && m.SetPolicy != nil {
+		return *m.SetPolicy
 	}
 	return Default_MemcacheSetRequest_Item_SetPolicy
 }
 
-func (this *MemcacheSetRequest_Item) GetExpirationTime() uint32 {
-	if this != nil && this.ExpirationTime != nil {
-		return *this.ExpirationTime
+func (m *MemcacheSetRequest_Item) GetExpirationTime() uint32 {
+	if m != nil && m.ExpirationTime != nil {
+		return *m.ExpirationTime
 	}
 	return Default_MemcacheSetRequest_Item_ExpirationTime
 }
 
-func (this *MemcacheSetRequest_Item) GetCasId() uint64 {
-	if this != nil && this.CasId != nil {
-		return *this.CasId
+func (m *MemcacheSetRequest_Item) GetCasId() uint64 {
+	if m != nil && m.CasId != nil {
+		return *m.CasId
 	}
 	return 0
 }
 
-func (this *MemcacheSetRequest_Item) GetForCas() bool {
-	if this != nil && this.ForCas != nil {
-		return *this.ForCas
+func (m *MemcacheSetRequest_Item) GetForCas() bool {
+	if m != nil && m.ForCas != nil {
+		return *m.ForCas
 	}
 	return false
 }
@@ -554,13 +556,13 @@ type MemcacheSetResponse struct {
 	XXX_unrecognized []byte                              `json:"-"`
 }
 
-func (this *MemcacheSetResponse) Reset()         { *this = MemcacheSetResponse{} }
-func (this *MemcacheSetResponse) String() string { return proto.CompactTextString(this) }
-func (*MemcacheSetResponse) ProtoMessage()       {}
+func (m *MemcacheSetResponse) Reset()         { *m = MemcacheSetResponse{} }
+func (m *MemcacheSetResponse) String() string { return proto.CompactTextString(m) }
+func (*MemcacheSetResponse) ProtoMessage()    {}
 
-func (this *MemcacheSetResponse) GetSetStatus() []MemcacheSetResponse_SetStatusCode {
-	if this != nil {
-		return this.SetStatus
+func (m *MemcacheSetResponse) GetSetStatus() []MemcacheSetResponse_SetStatusCode {
+	if m != nil {
+		return m.SetStatus
 	}
 	return nil
 }
@@ -572,50 +574,51 @@ type MemcacheDeleteRequest struct {
 	XXX_unrecognized []byte                        `json:"-"`
 }
 
-func (this *MemcacheDeleteRequest) Reset()         { *this = MemcacheDeleteRequest{} }
-func (this *MemcacheDeleteRequest) String() string { return proto.CompactTextString(this) }
-func (*MemcacheDeleteRequest) ProtoMessage()       {}
+func (m *MemcacheDeleteRequest) Reset()         { *m = MemcacheDeleteRequest{} }
+func (m *MemcacheDeleteRequest) String() string { return proto.CompactTextString(m) }
+func (*MemcacheDeleteRequest) ProtoMessage()    {}
 
-func (this *MemcacheDeleteRequest) GetItem() []*MemcacheDeleteRequest_Item {
-	if this != nil {
-		return this.Item
+func (m *MemcacheDeleteRequest) GetItem() []*MemcacheDeleteRequest_Item {
+	if m != nil {
+		return m.Item
 	}
 	return nil
 }
 
-func (this *MemcacheDeleteRequest) GetNameSpace() string {
-	if this != nil && this.NameSpace != nil {
-		return *this.NameSpace
+func (m *MemcacheDeleteRequest) GetNameSpace() string {
+	if m != nil && m.NameSpace != nil {
+		return *m.NameSpace
 	}
 	return ""
 }
 
-func (this *MemcacheDeleteRequest) GetOverride() *AppOverride {
-	if this != nil {
-		return this.Override
+func (m *MemcacheDeleteRequest) GetOverride() *AppOverride {
+	if m != nil {
+		return m.Override
 	}
 	return nil
 }
 
 type MemcacheDeleteRequest_Item struct {
-	Key        []byte  `protobuf:"bytes,2,req,name=key" json:"key,omitempty"`
-	DeleteTime *uint32 `protobuf:"fixed32,3,opt,name=delete_time,def=0" json:"delete_time,omitempty"`
+	Key              []byte  `protobuf:"bytes,2,req,name=key" json:"key,omitempty"`
+	DeleteTime       *uint32 `protobuf:"fixed32,3,opt,name=delete_time,def=0" json:"delete_time,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *MemcacheDeleteRequest_Item) Reset() { *this = MemcacheDeleteRequest_Item{} }
+func (m *MemcacheDeleteRequest_Item) Reset() { *m = MemcacheDeleteRequest_Item{} }
 
 const Default_MemcacheDeleteRequest_Item_DeleteTime uint32 = 0
 
-func (this *MemcacheDeleteRequest_Item) GetKey() []byte {
-	if this != nil {
-		return this.Key
+func (m *MemcacheDeleteRequest_Item) GetKey() []byte {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *MemcacheDeleteRequest_Item) GetDeleteTime() uint32 {
-	if this != nil && this.DeleteTime != nil {
-		return *this.DeleteTime
+func (m *MemcacheDeleteRequest_Item) GetDeleteTime() uint32 {
+	if m != nil && m.DeleteTime != nil {
+		return *m.DeleteTime
 	}
 	return Default_MemcacheDeleteRequest_Item_DeleteTime
 }
@@ -625,13 +628,13 @@ type MemcacheDeleteResponse struct {
 	XXX_unrecognized []byte                                    `json:"-"`
 }
 
-func (this *MemcacheDeleteResponse) Reset()         { *this = MemcacheDeleteResponse{} }
-func (this *MemcacheDeleteResponse) String() string { return proto.CompactTextString(this) }
-func (*MemcacheDeleteResponse) ProtoMessage()       {}
+func (m *MemcacheDeleteResponse) Reset()         { *m = MemcacheDeleteResponse{} }
+func (m *MemcacheDeleteResponse) String() string { return proto.CompactTextString(m) }
+func (*MemcacheDeleteResponse) ProtoMessage()    {}
 
-func (this *MemcacheDeleteResponse) GetDeleteStatus() []MemcacheDeleteResponse_DeleteStatusCode {
-	if this != nil {
-		return this.DeleteStatus
+func (m *MemcacheDeleteResponse) GetDeleteStatus() []MemcacheDeleteResponse_DeleteStatusCode {
+	if m != nil {
+		return m.DeleteStatus
 	}
 	return nil
 }
@@ -647,58 +650,58 @@ type MemcacheIncrementRequest struct {
 	XXX_unrecognized []byte                              `json:"-"`
 }
 
-func (this *MemcacheIncrementRequest) Reset()         { *this = MemcacheIncrementRequest{} }
-func (this *MemcacheIncrementRequest) String() string { return proto.CompactTextString(this) }
-func (*MemcacheIncrementRequest) ProtoMessage()       {}
+func (m *MemcacheIncrementRequest) Reset()         { *m = MemcacheIncrementRequest{} }
+func (m *MemcacheIncrementRequest) String() string { return proto.CompactTextString(m) }
+func (*MemcacheIncrementRequest) ProtoMessage()    {}
 
 const Default_MemcacheIncrementRequest_Delta uint64 = 1
 const Default_MemcacheIncrementRequest_Direction MemcacheIncrementRequest_Direction = MemcacheIncrementRequest_INCREMENT
 
-func (this *MemcacheIncrementRequest) GetKey() []byte {
-	if this != nil {
-		return this.Key
+func (m *MemcacheIncrementRequest) GetKey() []byte {
+	if m != nil {
+		return m.Key
 	}
 	return nil
 }
 
-func (this *MemcacheIncrementRequest) GetNameSpace() string {
-	if this != nil && this.NameSpace != nil {
-		return *this.NameSpace
+func (m *MemcacheIncrementRequest) GetNameSpace() string {
+	if m != nil && m.NameSpace != nil {
+		return *m.NameSpace
 	}
 	return ""
 }
 
-func (this *MemcacheIncrementRequest) GetDelta() uint64 {
-	if this != nil && this.Delta != nil {
-		return *this.Delta
+func (m *MemcacheIncrementRequest) GetDelta() uint64 {
+	if m != nil && m.Delta != nil {
+		return *m.Delta
 	}
 	return Default_MemcacheIncrementRequest_Delta
 }
 
-func (this *MemcacheIncrementRequest) GetDirection() MemcacheIncrementRequest_Direction {
-	if this != nil && this.Direction != nil {
-		return *this.Direction
+func (m *MemcacheIncrementRequest) GetDirection() MemcacheIncrementRequest_Direction {
+	if m != nil && m.Direction != nil {
+		return *m.Direction
 	}
 	return Default_MemcacheIncrementRequest_Direction
 }
 
-func (this *MemcacheIncrementRequest) GetInitialValue() uint64 {
-	if this != nil && this.InitialValue != nil {
-		return *this.InitialValue
+func (m *MemcacheIncrementRequest) GetInitialValue() uint64 {
+	if m != nil && m.InitialValue != nil {
+		return *m.InitialValue
 	}
 	return 0
 }
 
-func (this *MemcacheIncrementRequest) GetInitialFlags() uint32 {
-	if this != nil && this.InitialFlags != nil {
-		return *this.InitialFlags
+func (m *MemcacheIncrementRequest) GetInitialFlags() uint32 {
+	if m != nil && m.InitialFlags != nil {
+		return *m.InitialFlags
 	}
 	return 0
 }
 
-func (this *MemcacheIncrementRequest) GetOverride() *AppOverride {
-	if this != nil {
-		return this.Override
+func (m *MemcacheIncrementRequest) GetOverride() *AppOverride {
+	if m != nil {
+		return m.Override
 	}
 	return nil
 }
@@ -709,20 +712,20 @@ type MemcacheIncrementResponse struct {
 	XXX_unrecognized []byte                                         `json:"-"`
 }
 
-func (this *MemcacheIncrementResponse) Reset()         { *this = MemcacheIncrementResponse{} }
-func (this *MemcacheIncrementResponse) String() string { return proto.CompactTextString(this) }
-func (*MemcacheIncrementResponse) ProtoMessage()       {}
+func (m *MemcacheIncrementResponse) Reset()         { *m = MemcacheIncrementResponse{} }
+func (m *MemcacheIncrementResponse) String() string { return proto.CompactTextString(m) }
+func (*MemcacheIncrementResponse) ProtoMessage()    {}
 
-func (this *MemcacheIncrementResponse) GetNewValue() uint64 {
-	if this != nil && this.NewValue != nil {
-		return *this.NewValue
+func (m *MemcacheIncrementResponse) GetNewValue() uint64 {
+	if m != nil && m.NewValue != nil {
+		return *m.NewValue
 	}
 	return 0
 }
 
-func (this *MemcacheIncrementResponse) GetIncrementStatus() MemcacheIncrementResponse_IncrementStatusCode {
-	if this != nil && this.IncrementStatus != nil {
-		return *this.IncrementStatus
+func (m *MemcacheIncrementResponse) GetIncrementStatus() MemcacheIncrementResponse_IncrementStatusCode {
+	if m != nil && m.IncrementStatus != nil {
+		return *m.IncrementStatus
 	}
 	return 0
 }
@@ -734,27 +737,27 @@ type MemcacheBatchIncrementRequest struct {
 	XXX_unrecognized []byte                      `json:"-"`
 }
 
-func (this *MemcacheBatchIncrementRequest) Reset()         { *this = MemcacheBatchIncrementRequest{} }
-func (this *MemcacheBatchIncrementRequest) String() string { return proto.CompactTextString(this) }
-func (*MemcacheBatchIncrementRequest) ProtoMessage()       {}
+func (m *MemcacheBatchIncrementRequest) Reset()         { *m = MemcacheBatchIncrementRequest{} }
+func (m *MemcacheBatchIncrementRequest) String() string { return proto.CompactTextString(m) }
+func (*MemcacheBatchIncrementRequest) ProtoMessage()    {}
 
-func (this *MemcacheBatchIncrementRequest) GetNameSpace() string {
-	if this != nil && this.NameSpace != nil {
-		return *this.NameSpace
+func (m *MemcacheBatchIncrementRequest) GetNameSpace() string {
+	if m != nil && m.NameSpace != nil {
+		return *m.NameSpace
 	}
 	return ""
 }
 
-func (this *MemcacheBatchIncrementRequest) GetItem() []*MemcacheIncrementRequest {
-	if this != nil {
-		return this.Item
+func (m *MemcacheBatchIncrementRequest) GetItem() []*MemcacheIncrementRequest {
+	if m != nil {
+		return m.Item
 	}
 	return nil
 }
 
-func (this *MemcacheBatchIncrementRequest) GetOverride() *AppOverride {
-	if this != nil {
-		return this.Override
+func (m *MemcacheBatchIncrementRequest) GetOverride() *AppOverride {
+	if m != nil {
+		return m.Override
 	}
 	return nil
 }
@@ -764,13 +767,13 @@ type MemcacheBatchIncrementResponse struct {
 	XXX_unrecognized []byte                       `json:"-"`
 }
 
-func (this *MemcacheBatchIncrementResponse) Reset()         { *this = MemcacheBatchIncrementResponse{} }
-func (this *MemcacheBatchIncrementResponse) String() string { return proto.CompactTextString(this) }
-func (*MemcacheBatchIncrementResponse) ProtoMessage()       {}
+func (m *MemcacheBatchIncrementResponse) Reset()         { *m = MemcacheBatchIncrementResponse{} }
+func (m *MemcacheBatchIncrementResponse) String() string { return proto.CompactTextString(m) }
+func (*MemcacheBatchIncrementResponse) ProtoMessage()    {}
 
-func (this *MemcacheBatchIncrementResponse) GetItem() []*MemcacheIncrementResponse {
-	if this != nil {
-		return this.Item
+func (m *MemcacheBatchIncrementResponse) GetItem() []*MemcacheIncrementResponse {
+	if m != nil {
+		return m.Item
 	}
 	return nil
 }
@@ -780,13 +783,13 @@ type MemcacheFlushRequest struct {
 	XXX_unrecognized []byte       `json:"-"`
 }
 
-func (this *MemcacheFlushRequest) Reset()         { *this = MemcacheFlushRequest{} }
-func (this *MemcacheFlushRequest) String() string { return proto.CompactTextString(this) }
-func (*MemcacheFlushRequest) ProtoMessage()       {}
+func (m *MemcacheFlushRequest) Reset()         { *m = MemcacheFlushRequest{} }
+func (m *MemcacheFlushRequest) String() string { return proto.CompactTextString(m) }
+func (*MemcacheFlushRequest) ProtoMessage()    {}
 
-func (this *MemcacheFlushRequest) GetOverride() *AppOverride {
-	if this != nil {
-		return this.Override
+func (m *MemcacheFlushRequest) GetOverride() *AppOverride {
+	if m != nil {
+		return m.Override
 	}
 	return nil
 }
@@ -795,22 +798,22 @@ type MemcacheFlushResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *MemcacheFlushResponse) Reset()         { *this = MemcacheFlushResponse{} }
-func (this *MemcacheFlushResponse) String() string { return proto.CompactTextString(this) }
-func (*MemcacheFlushResponse) ProtoMessage()       {}
+func (m *MemcacheFlushResponse) Reset()         { *m = MemcacheFlushResponse{} }
+func (m *MemcacheFlushResponse) String() string { return proto.CompactTextString(m) }
+func (*MemcacheFlushResponse) ProtoMessage()    {}
 
 type MemcacheStatsRequest struct {
 	Override         *AppOverride `protobuf:"bytes,1,opt,name=override" json:"override,omitempty"`
 	XXX_unrecognized []byte       `json:"-"`
 }
 
-func (this *MemcacheStatsRequest) Reset()         { *this = MemcacheStatsRequest{} }
-func (this *MemcacheStatsRequest) String() string { return proto.CompactTextString(this) }
-func (*MemcacheStatsRequest) ProtoMessage()       {}
+func (m *MemcacheStatsRequest) Reset()         { *m = MemcacheStatsRequest{} }
+func (m *MemcacheStatsRequest) String() string { return proto.CompactTextString(m) }
+func (*MemcacheStatsRequest) ProtoMessage()    {}
 
-func (this *MemcacheStatsRequest) GetOverride() *AppOverride {
-	if this != nil {
-		return this.Override
+func (m *MemcacheStatsRequest) GetOverride() *AppOverride {
+	if m != nil {
+		return m.Override
 	}
 	return nil
 }
@@ -825,48 +828,48 @@ type MergedNamespaceStats struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *MergedNamespaceStats) Reset()         { *this = MergedNamespaceStats{} }
-func (this *MergedNamespaceStats) String() string { return proto.CompactTextString(this) }
-func (*MergedNamespaceStats) ProtoMessage()       {}
+func (m *MergedNamespaceStats) Reset()         { *m = MergedNamespaceStats{} }
+func (m *MergedNamespaceStats) String() string { return proto.CompactTextString(m) }
+func (*MergedNamespaceStats) ProtoMessage()    {}
 
-func (this *MergedNamespaceStats) GetHits() uint64 {
-	if this != nil && this.Hits != nil {
-		return *this.Hits
+func (m *MergedNamespaceStats) GetHits() uint64 {
+	if m != nil && m.Hits != nil {
+		return *m.Hits
 	}
 	return 0
 }
 
-func (this *MergedNamespaceStats) GetMisses() uint64 {
-	if this != nil && this.Misses != nil {
-		return *this.Misses
+func (m *MergedNamespaceStats) GetMisses() uint64 {
+	if m != nil && m.Misses != nil {
+		return *m.Misses
 	}
 	return 0
 }
 
-func (this *MergedNamespaceStats) GetByteHits() uint64 {
-	if this != nil && this.ByteHits != nil {
-		return *this.ByteHits
+func (m *MergedNamespaceStats) GetByteHits() uint64 {
+	if m != nil && m.ByteHits != nil {
+		return *m.ByteHits
 	}
 	return 0
 }
 
-func (this *MergedNamespaceStats) GetItems() uint64 {
-	if this != nil && this.Items != nil {
-		return *this.Items
+func (m *MergedNamespaceStats) GetItems() uint64 {
+	if m != nil && m.Items != nil {
+		return *m.Items
 	}
 	return 0
 }
 
-func (this *MergedNamespaceStats) GetBytes() uint64 {
-	if this != nil && this.Bytes != nil {
-		return *this.Bytes
+func (m *MergedNamespaceStats) GetBytes() uint64 {
+	if m != nil && m.Bytes != nil {
+		return *m.Bytes
 	}
 	return 0
 }
 
-func (this *MergedNamespaceStats) GetOldestItemAge() uint32 {
-	if this != nil && this.OldestItemAge != nil {
-		return *this.OldestItemAge
+func (m *MergedNamespaceStats) GetOldestItemAge() uint32 {
+	if m != nil && m.OldestItemAge != nil {
+		return *m.OldestItemAge
 	}
 	return 0
 }
@@ -876,13 +879,13 @@ type MemcacheStatsResponse struct {
 	XXX_unrecognized []byte                `json:"-"`
 }
 
-func (this *MemcacheStatsResponse) Reset()         { *this = MemcacheStatsResponse{} }
-func (this *MemcacheStatsResponse) String() string { return proto.CompactTextString(this) }
-func (*MemcacheStatsResponse) ProtoMessage()       {}
+func (m *MemcacheStatsResponse) Reset()         { *m = MemcacheStatsResponse{} }
+func (m *MemcacheStatsResponse) String() string { return proto.CompactTextString(m) }
+func (*MemcacheStatsResponse) ProtoMessage()    {}
 
-func (this *MemcacheStatsResponse) GetStats() *MergedNamespaceStats {
-	if this != nil {
-		return this.Stats
+func (m *MemcacheStatsResponse) GetStats() *MergedNamespaceStats {
+	if m != nil {
+		return m.Stats
 	}
 	return nil
 }
@@ -894,27 +897,27 @@ type MemcacheGrabTailRequest struct {
 	XXX_unrecognized []byte       `json:"-"`
 }
 
-func (this *MemcacheGrabTailRequest) Reset()         { *this = MemcacheGrabTailRequest{} }
-func (this *MemcacheGrabTailRequest) String() string { return proto.CompactTextString(this) }
-func (*MemcacheGrabTailRequest) ProtoMessage()       {}
+func (m *MemcacheGrabTailRequest) Reset()         { *m = MemcacheGrabTailRequest{} }
+func (m *MemcacheGrabTailRequest) String() string { return proto.CompactTextString(m) }
+func (*MemcacheGrabTailRequest) ProtoMessage()    {}
 
-func (this *MemcacheGrabTailRequest) GetItemCount() int32 {
-	if this != nil && this.ItemCount != nil {
-		return *this.ItemCount
+func (m *MemcacheGrabTailRequest) GetItemCount() int32 {
+	if m != nil && m.ItemCount != nil {
+		return *m.ItemCount
 	}
 	return 0
 }
 
-func (this *MemcacheGrabTailRequest) GetNameSpace() string {
-	if this != nil && this.NameSpace != nil {
-		return *this.NameSpace
+func (m *MemcacheGrabTailRequest) GetNameSpace() string {
+	if m != nil && m.NameSpace != nil {
+		return *m.NameSpace
 	}
 	return ""
 }
 
-func (this *MemcacheGrabTailRequest) GetOverride() *AppOverride {
-	if this != nil {
-		return this.Override
+func (m *MemcacheGrabTailRequest) GetOverride() *AppOverride {
+	if m != nil {
+		return m.Override
 	}
 	return nil
 }
@@ -924,34 +927,35 @@ type MemcacheGrabTailResponse struct {
 	XXX_unrecognized []byte                           `json:"-"`
 }
 
-func (this *MemcacheGrabTailResponse) Reset()         { *this = MemcacheGrabTailResponse{} }
-func (this *MemcacheGrabTailResponse) String() string { return proto.CompactTextString(this) }
-func (*MemcacheGrabTailResponse) ProtoMessage()       {}
+func (m *MemcacheGrabTailResponse) Reset()         { *m = MemcacheGrabTailResponse{} }
+func (m *MemcacheGrabTailResponse) String() string { return proto.CompactTextString(m) }
+func (*MemcacheGrabTailResponse) ProtoMessage()    {}
 
-func (this *MemcacheGrabTailResponse) GetItem() []*MemcacheGrabTailResponse_Item {
-	if this != nil {
-		return this.Item
+func (m *MemcacheGrabTailResponse) GetItem() []*MemcacheGrabTailResponse_Item {
+	if m != nil {
+		return m.Item
 	}
 	return nil
 }
 
 type MemcacheGrabTailResponse_Item struct {
-	Value []byte  `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
-	Flags *uint32 `protobuf:"fixed32,3,opt,name=flags" json:"flags,omitempty"`
+	Value            []byte  `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
+	Flags            *uint32 `protobuf:"fixed32,3,opt,name=flags" json:"flags,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *MemcacheGrabTailResponse_Item) Reset() { *this = MemcacheGrabTailResponse_Item{} }
+func (m *MemcacheGrabTailResponse_Item) Reset() { *m = MemcacheGrabTailResponse_Item{} }
 
-func (this *MemcacheGrabTailResponse_Item) GetValue() []byte {
-	if this != nil {
-		return this.Value
+func (m *MemcacheGrabTailResponse_Item) GetValue() []byte {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
 
-func (this *MemcacheGrabTailResponse_Item) GetFlags() uint32 {
-	if this != nil && this.Flags != nil {
-		return *this.Flags
+func (m *MemcacheGrabTailResponse_Item) GetFlags() uint32 {
+	if m != nil && m.Flags != nil {
+		return *m.Flags
 	}
 	return 0
 }

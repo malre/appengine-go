@@ -23,6 +23,7 @@ const (
 	AppIdentityServiceError_UNKNOWN_ERROR             AppIdentityServiceError_ErrorCode = 1003
 	AppIdentityServiceError_GAIAMINT_NOT_INITIAILIZED AppIdentityServiceError_ErrorCode = 1004
 	AppIdentityServiceError_NOT_ALLOWED               AppIdentityServiceError_ErrorCode = 1005
+	AppIdentityServiceError_NOT_IMPLEMENTED           AppIdentityServiceError_ErrorCode = 1006
 )
 
 var AppIdentityServiceError_ErrorCode_name = map[int32]string{
@@ -34,6 +35,7 @@ var AppIdentityServiceError_ErrorCode_name = map[int32]string{
 	1003: "UNKNOWN_ERROR",
 	1004: "GAIAMINT_NOT_INITIAILIZED",
 	1005: "NOT_ALLOWED",
+	1006: "NOT_IMPLEMENTED",
 }
 var AppIdentityServiceError_ErrorCode_value = map[string]int32{
 	"SUCCESS":                   0,
@@ -44,6 +46,7 @@ var AppIdentityServiceError_ErrorCode_value = map[string]int32{
 	"UNKNOWN_ERROR":             1003,
 	"GAIAMINT_NOT_INITIAILIZED": 1004,
 	"NOT_ALLOWED":               1005,
+	"NOT_IMPLEMENTED":           1006,
 }
 
 func (x AppIdentityServiceError_ErrorCode) Enum() *AppIdentityServiceError_ErrorCode {
@@ -70,22 +73,22 @@ type AppIdentityServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *AppIdentityServiceError) Reset()         { *this = AppIdentityServiceError{} }
-func (this *AppIdentityServiceError) String() string { return proto.CompactTextString(this) }
-func (*AppIdentityServiceError) ProtoMessage()       {}
+func (m *AppIdentityServiceError) Reset()         { *m = AppIdentityServiceError{} }
+func (m *AppIdentityServiceError) String() string { return proto.CompactTextString(m) }
+func (*AppIdentityServiceError) ProtoMessage()    {}
 
 type SignForAppRequest struct {
 	BytesToSign      []byte `protobuf:"bytes,1,opt,name=bytes_to_sign" json:"bytes_to_sign,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *SignForAppRequest) Reset()         { *this = SignForAppRequest{} }
-func (this *SignForAppRequest) String() string { return proto.CompactTextString(this) }
-func (*SignForAppRequest) ProtoMessage()       {}
+func (m *SignForAppRequest) Reset()         { *m = SignForAppRequest{} }
+func (m *SignForAppRequest) String() string { return proto.CompactTextString(m) }
+func (*SignForAppRequest) ProtoMessage()    {}
 
-func (this *SignForAppRequest) GetBytesToSign() []byte {
-	if this != nil {
-		return this.BytesToSign
+func (m *SignForAppRequest) GetBytesToSign() []byte {
+	if m != nil {
+		return m.BytesToSign
 	}
 	return nil
 }
@@ -96,20 +99,20 @@ type SignForAppResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *SignForAppResponse) Reset()         { *this = SignForAppResponse{} }
-func (this *SignForAppResponse) String() string { return proto.CompactTextString(this) }
-func (*SignForAppResponse) ProtoMessage()       {}
+func (m *SignForAppResponse) Reset()         { *m = SignForAppResponse{} }
+func (m *SignForAppResponse) String() string { return proto.CompactTextString(m) }
+func (*SignForAppResponse) ProtoMessage()    {}
 
-func (this *SignForAppResponse) GetKeyName() string {
-	if this != nil && this.KeyName != nil {
-		return *this.KeyName
+func (m *SignForAppResponse) GetKeyName() string {
+	if m != nil && m.KeyName != nil {
+		return *m.KeyName
 	}
 	return ""
 }
 
-func (this *SignForAppResponse) GetSignatureBytes() []byte {
-	if this != nil {
-		return this.SignatureBytes
+func (m *SignForAppResponse) GetSignatureBytes() []byte {
+	if m != nil {
+		return m.SignatureBytes
 	}
 	return nil
 }
@@ -118,9 +121,9 @@ type GetPublicCertificateForAppRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *GetPublicCertificateForAppRequest) Reset()         { *this = GetPublicCertificateForAppRequest{} }
-func (this *GetPublicCertificateForAppRequest) String() string { return proto.CompactTextString(this) }
-func (*GetPublicCertificateForAppRequest) ProtoMessage()       {}
+func (m *GetPublicCertificateForAppRequest) Reset()         { *m = GetPublicCertificateForAppRequest{} }
+func (m *GetPublicCertificateForAppRequest) String() string { return proto.CompactTextString(m) }
+func (*GetPublicCertificateForAppRequest) ProtoMessage()    {}
 
 type PublicCertificate struct {
 	KeyName            *string `protobuf:"bytes,1,opt,name=key_name" json:"key_name,omitempty"`
@@ -128,20 +131,20 @@ type PublicCertificate struct {
 	XXX_unrecognized   []byte  `json:"-"`
 }
 
-func (this *PublicCertificate) Reset()         { *this = PublicCertificate{} }
-func (this *PublicCertificate) String() string { return proto.CompactTextString(this) }
-func (*PublicCertificate) ProtoMessage()       {}
+func (m *PublicCertificate) Reset()         { *m = PublicCertificate{} }
+func (m *PublicCertificate) String() string { return proto.CompactTextString(m) }
+func (*PublicCertificate) ProtoMessage()    {}
 
-func (this *PublicCertificate) GetKeyName() string {
-	if this != nil && this.KeyName != nil {
-		return *this.KeyName
+func (m *PublicCertificate) GetKeyName() string {
+	if m != nil && m.KeyName != nil {
+		return *m.KeyName
 	}
 	return ""
 }
 
-func (this *PublicCertificate) GetX509CertificatePem() string {
-	if this != nil && this.X509CertificatePem != nil {
-		return *this.X509CertificatePem
+func (m *PublicCertificate) GetX509CertificatePem() string {
+	if m != nil && m.X509CertificatePem != nil {
+		return *m.X509CertificatePem
 	}
 	return ""
 }
@@ -152,20 +155,20 @@ type GetPublicCertificateForAppResponse struct {
 	XXX_unrecognized           []byte               `json:"-"`
 }
 
-func (this *GetPublicCertificateForAppResponse) Reset()         { *this = GetPublicCertificateForAppResponse{} }
-func (this *GetPublicCertificateForAppResponse) String() string { return proto.CompactTextString(this) }
-func (*GetPublicCertificateForAppResponse) ProtoMessage()       {}
+func (m *GetPublicCertificateForAppResponse) Reset()         { *m = GetPublicCertificateForAppResponse{} }
+func (m *GetPublicCertificateForAppResponse) String() string { return proto.CompactTextString(m) }
+func (*GetPublicCertificateForAppResponse) ProtoMessage()    {}
 
-func (this *GetPublicCertificateForAppResponse) GetPublicCertificateList() []*PublicCertificate {
-	if this != nil {
-		return this.PublicCertificateList
+func (m *GetPublicCertificateForAppResponse) GetPublicCertificateList() []*PublicCertificate {
+	if m != nil {
+		return m.PublicCertificateList
 	}
 	return nil
 }
 
-func (this *GetPublicCertificateForAppResponse) GetMaxClientCacheTimeInSecond() int64 {
-	if this != nil && this.MaxClientCacheTimeInSecond != nil {
-		return *this.MaxClientCacheTimeInSecond
+func (m *GetPublicCertificateForAppResponse) GetMaxClientCacheTimeInSecond() int64 {
+	if m != nil && m.MaxClientCacheTimeInSecond != nil {
+		return *m.MaxClientCacheTimeInSecond
 	}
 	return 0
 }
@@ -174,22 +177,22 @@ type GetServiceAccountNameRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *GetServiceAccountNameRequest) Reset()         { *this = GetServiceAccountNameRequest{} }
-func (this *GetServiceAccountNameRequest) String() string { return proto.CompactTextString(this) }
-func (*GetServiceAccountNameRequest) ProtoMessage()       {}
+func (m *GetServiceAccountNameRequest) Reset()         { *m = GetServiceAccountNameRequest{} }
+func (m *GetServiceAccountNameRequest) String() string { return proto.CompactTextString(m) }
+func (*GetServiceAccountNameRequest) ProtoMessage()    {}
 
 type GetServiceAccountNameResponse struct {
 	ServiceAccountName *string `protobuf:"bytes,1,opt,name=service_account_name" json:"service_account_name,omitempty"`
 	XXX_unrecognized   []byte  `json:"-"`
 }
 
-func (this *GetServiceAccountNameResponse) Reset()         { *this = GetServiceAccountNameResponse{} }
-func (this *GetServiceAccountNameResponse) String() string { return proto.CompactTextString(this) }
-func (*GetServiceAccountNameResponse) ProtoMessage()       {}
+func (m *GetServiceAccountNameResponse) Reset()         { *m = GetServiceAccountNameResponse{} }
+func (m *GetServiceAccountNameResponse) String() string { return proto.CompactTextString(m) }
+func (*GetServiceAccountNameResponse) ProtoMessage()    {}
 
-func (this *GetServiceAccountNameResponse) GetServiceAccountName() string {
-	if this != nil && this.ServiceAccountName != nil {
-		return *this.ServiceAccountName
+func (m *GetServiceAccountNameResponse) GetServiceAccountName() string {
+	if m != nil && m.ServiceAccountName != nil {
+		return *m.ServiceAccountName
 	}
 	return ""
 }
@@ -200,20 +203,20 @@ type GetAccessTokenRequest struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *GetAccessTokenRequest) Reset()         { *this = GetAccessTokenRequest{} }
-func (this *GetAccessTokenRequest) String() string { return proto.CompactTextString(this) }
-func (*GetAccessTokenRequest) ProtoMessage()       {}
+func (m *GetAccessTokenRequest) Reset()         { *m = GetAccessTokenRequest{} }
+func (m *GetAccessTokenRequest) String() string { return proto.CompactTextString(m) }
+func (*GetAccessTokenRequest) ProtoMessage()    {}
 
-func (this *GetAccessTokenRequest) GetScope() []string {
-	if this != nil {
-		return this.Scope
+func (m *GetAccessTokenRequest) GetScope() []string {
+	if m != nil {
+		return m.Scope
 	}
 	return nil
 }
 
-func (this *GetAccessTokenRequest) GetServiceAccountId() int64 {
-	if this != nil && this.ServiceAccountId != nil {
-		return *this.ServiceAccountId
+func (m *GetAccessTokenRequest) GetServiceAccountId() int64 {
+	if m != nil && m.ServiceAccountId != nil {
+		return *m.ServiceAccountId
 	}
 	return 0
 }
@@ -224,20 +227,20 @@ type GetAccessTokenResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *GetAccessTokenResponse) Reset()         { *this = GetAccessTokenResponse{} }
-func (this *GetAccessTokenResponse) String() string { return proto.CompactTextString(this) }
-func (*GetAccessTokenResponse) ProtoMessage()       {}
+func (m *GetAccessTokenResponse) Reset()         { *m = GetAccessTokenResponse{} }
+func (m *GetAccessTokenResponse) String() string { return proto.CompactTextString(m) }
+func (*GetAccessTokenResponse) ProtoMessage()    {}
 
-func (this *GetAccessTokenResponse) GetAccessToken() string {
-	if this != nil && this.AccessToken != nil {
-		return *this.AccessToken
+func (m *GetAccessTokenResponse) GetAccessToken() string {
+	if m != nil && m.AccessToken != nil {
+		return *m.AccessToken
 	}
 	return ""
 }
 
-func (this *GetAccessTokenResponse) GetExpirationTime() int64 {
-	if this != nil && this.ExpirationTime != nil {
-		return *this.ExpirationTime
+func (m *GetAccessTokenResponse) GetExpirationTime() int64 {
+	if m != nil && m.ExpirationTime != nil {
+		return *m.ExpirationTime
 	}
 	return 0
 }

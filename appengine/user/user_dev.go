@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	hEmail             = "X-AppEngine-Inbound-User-Email"
-	hFederatedIdentity = "X-AppEngine-Inbound-User-Federated-Identity"
-	hFederatedProvider = "X-AppEngine-Inbound-User-Federated-Provider"
-	hID                = "X-AppEngine-Inbound-User-Id"
-	hIsAdmin           = "X-AppEngine-Inbound-User-Is-Admin"
+	hEmail             = "X-AppEngine-Internal-User-Email"
+	hFederatedIdentity = "X-AppEngine-Internal-User-Federated-Identity"
+	hFederatedProvider = "X-AppEngine-Internal-User-Federated-Provider"
+	hID                = "X-AppEngine-Internal-User-Id"
+	hIsAdmin           = "X-AppEngine-Internal-User-Is-Admin"
 )
 
 func current(c appengine.Context) *User {

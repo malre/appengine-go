@@ -73,9 +73,9 @@ type BlobstoreServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *BlobstoreServiceError) Reset()         { *this = BlobstoreServiceError{} }
-func (this *BlobstoreServiceError) String() string { return proto.CompactTextString(this) }
-func (*BlobstoreServiceError) ProtoMessage()       {}
+func (m *BlobstoreServiceError) Reset()         { *m = BlobstoreServiceError{} }
+func (m *BlobstoreServiceError) String() string { return proto.CompactTextString(m) }
+func (*BlobstoreServiceError) ProtoMessage()    {}
 
 type CreateUploadURLRequest struct {
 	SuccessPath               *string `protobuf:"bytes,1,req,name=success_path" json:"success_path,omitempty"`
@@ -85,34 +85,34 @@ type CreateUploadURLRequest struct {
 	XXX_unrecognized          []byte  `json:"-"`
 }
 
-func (this *CreateUploadURLRequest) Reset()         { *this = CreateUploadURLRequest{} }
-func (this *CreateUploadURLRequest) String() string { return proto.CompactTextString(this) }
-func (*CreateUploadURLRequest) ProtoMessage()       {}
+func (m *CreateUploadURLRequest) Reset()         { *m = CreateUploadURLRequest{} }
+func (m *CreateUploadURLRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateUploadURLRequest) ProtoMessage()    {}
 
-func (this *CreateUploadURLRequest) GetSuccessPath() string {
-	if this != nil && this.SuccessPath != nil {
-		return *this.SuccessPath
+func (m *CreateUploadURLRequest) GetSuccessPath() string {
+	if m != nil && m.SuccessPath != nil {
+		return *m.SuccessPath
 	}
 	return ""
 }
 
-func (this *CreateUploadURLRequest) GetMaxUploadSizeBytes() int64 {
-	if this != nil && this.MaxUploadSizeBytes != nil {
-		return *this.MaxUploadSizeBytes
+func (m *CreateUploadURLRequest) GetMaxUploadSizeBytes() int64 {
+	if m != nil && m.MaxUploadSizeBytes != nil {
+		return *m.MaxUploadSizeBytes
 	}
 	return 0
 }
 
-func (this *CreateUploadURLRequest) GetMaxUploadSizePerBlobBytes() int64 {
-	if this != nil && this.MaxUploadSizePerBlobBytes != nil {
-		return *this.MaxUploadSizePerBlobBytes
+func (m *CreateUploadURLRequest) GetMaxUploadSizePerBlobBytes() int64 {
+	if m != nil && m.MaxUploadSizePerBlobBytes != nil {
+		return *m.MaxUploadSizePerBlobBytes
 	}
 	return 0
 }
 
-func (this *CreateUploadURLRequest) GetGsBucketName() string {
-	if this != nil && this.GsBucketName != nil {
-		return *this.GsBucketName
+func (m *CreateUploadURLRequest) GetGsBucketName() string {
+	if m != nil && m.GsBucketName != nil {
+		return *m.GsBucketName
 	}
 	return ""
 }
@@ -122,13 +122,13 @@ type CreateUploadURLResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateUploadURLResponse) Reset()         { *this = CreateUploadURLResponse{} }
-func (this *CreateUploadURLResponse) String() string { return proto.CompactTextString(this) }
-func (*CreateUploadURLResponse) ProtoMessage()       {}
+func (m *CreateUploadURLResponse) Reset()         { *m = CreateUploadURLResponse{} }
+func (m *CreateUploadURLResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateUploadURLResponse) ProtoMessage()    {}
 
-func (this *CreateUploadURLResponse) GetUrl() string {
-	if this != nil && this.Url != nil {
-		return *this.Url
+func (m *CreateUploadURLResponse) GetUrl() string {
+	if m != nil && m.Url != nil {
+		return *m.Url
 	}
 	return ""
 }
@@ -138,13 +138,13 @@ type DeleteBlobRequest struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *DeleteBlobRequest) Reset()         { *this = DeleteBlobRequest{} }
-func (this *DeleteBlobRequest) String() string { return proto.CompactTextString(this) }
-func (*DeleteBlobRequest) ProtoMessage()       {}
+func (m *DeleteBlobRequest) Reset()         { *m = DeleteBlobRequest{} }
+func (m *DeleteBlobRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteBlobRequest) ProtoMessage()    {}
 
-func (this *DeleteBlobRequest) GetBlobKey() []string {
-	if this != nil {
-		return this.BlobKey
+func (m *DeleteBlobRequest) GetBlobKey() []string {
+	if m != nil {
+		return m.BlobKey
 	}
 	return nil
 }
@@ -156,27 +156,27 @@ type FetchDataRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *FetchDataRequest) Reset()         { *this = FetchDataRequest{} }
-func (this *FetchDataRequest) String() string { return proto.CompactTextString(this) }
-func (*FetchDataRequest) ProtoMessage()       {}
+func (m *FetchDataRequest) Reset()         { *m = FetchDataRequest{} }
+func (m *FetchDataRequest) String() string { return proto.CompactTextString(m) }
+func (*FetchDataRequest) ProtoMessage()    {}
 
-func (this *FetchDataRequest) GetBlobKey() string {
-	if this != nil && this.BlobKey != nil {
-		return *this.BlobKey
+func (m *FetchDataRequest) GetBlobKey() string {
+	if m != nil && m.BlobKey != nil {
+		return *m.BlobKey
 	}
 	return ""
 }
 
-func (this *FetchDataRequest) GetStartIndex() int64 {
-	if this != nil && this.StartIndex != nil {
-		return *this.StartIndex
+func (m *FetchDataRequest) GetStartIndex() int64 {
+	if m != nil && m.StartIndex != nil {
+		return *m.StartIndex
 	}
 	return 0
 }
 
-func (this *FetchDataRequest) GetEndIndex() int64 {
-	if this != nil && this.EndIndex != nil {
-		return *this.EndIndex
+func (m *FetchDataRequest) GetEndIndex() int64 {
+	if m != nil && m.EndIndex != nil {
+		return *m.EndIndex
 	}
 	return 0
 }
@@ -186,13 +186,13 @@ type FetchDataResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *FetchDataResponse) Reset()         { *this = FetchDataResponse{} }
-func (this *FetchDataResponse) String() string { return proto.CompactTextString(this) }
-func (*FetchDataResponse) ProtoMessage()       {}
+func (m *FetchDataResponse) Reset()         { *m = FetchDataResponse{} }
+func (m *FetchDataResponse) String() string { return proto.CompactTextString(m) }
+func (*FetchDataResponse) ProtoMessage()    {}
 
-func (this *FetchDataResponse) GetData() []byte {
-	if this != nil {
-		return this.Data
+func (m *FetchDataResponse) GetData() []byte {
+	if m != nil {
+		return m.Data
 	}
 	return nil
 }
@@ -204,27 +204,27 @@ type CloneBlobRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *CloneBlobRequest) Reset()         { *this = CloneBlobRequest{} }
-func (this *CloneBlobRequest) String() string { return proto.CompactTextString(this) }
-func (*CloneBlobRequest) ProtoMessage()       {}
+func (m *CloneBlobRequest) Reset()         { *m = CloneBlobRequest{} }
+func (m *CloneBlobRequest) String() string { return proto.CompactTextString(m) }
+func (*CloneBlobRequest) ProtoMessage()    {}
 
-func (this *CloneBlobRequest) GetBlobKey() []byte {
-	if this != nil {
-		return this.BlobKey
+func (m *CloneBlobRequest) GetBlobKey() []byte {
+	if m != nil {
+		return m.BlobKey
 	}
 	return nil
 }
 
-func (this *CloneBlobRequest) GetMimeType() []byte {
-	if this != nil {
-		return this.MimeType
+func (m *CloneBlobRequest) GetMimeType() []byte {
+	if m != nil {
+		return m.MimeType
 	}
 	return nil
 }
 
-func (this *CloneBlobRequest) GetTargetAppId() []byte {
-	if this != nil {
-		return this.TargetAppId
+func (m *CloneBlobRequest) GetTargetAppId() []byte {
+	if m != nil {
+		return m.TargetAppId
 	}
 	return nil
 }
@@ -234,13 +234,13 @@ type CloneBlobResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *CloneBlobResponse) Reset()         { *this = CloneBlobResponse{} }
-func (this *CloneBlobResponse) String() string { return proto.CompactTextString(this) }
-func (*CloneBlobResponse) ProtoMessage()       {}
+func (m *CloneBlobResponse) Reset()         { *m = CloneBlobResponse{} }
+func (m *CloneBlobResponse) String() string { return proto.CompactTextString(m) }
+func (*CloneBlobResponse) ProtoMessage()    {}
 
-func (this *CloneBlobResponse) GetBlobKey() []byte {
-	if this != nil {
-		return this.BlobKey
+func (m *CloneBlobResponse) GetBlobKey() []byte {
+	if m != nil {
+		return m.BlobKey
 	}
 	return nil
 }
@@ -250,13 +250,13 @@ type DecodeBlobKeyRequest struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *DecodeBlobKeyRequest) Reset()         { *this = DecodeBlobKeyRequest{} }
-func (this *DecodeBlobKeyRequest) String() string { return proto.CompactTextString(this) }
-func (*DecodeBlobKeyRequest) ProtoMessage()       {}
+func (m *DecodeBlobKeyRequest) Reset()         { *m = DecodeBlobKeyRequest{} }
+func (m *DecodeBlobKeyRequest) String() string { return proto.CompactTextString(m) }
+func (*DecodeBlobKeyRequest) ProtoMessage()    {}
 
-func (this *DecodeBlobKeyRequest) GetBlobKey() []string {
-	if this != nil {
-		return this.BlobKey
+func (m *DecodeBlobKeyRequest) GetBlobKey() []string {
+	if m != nil {
+		return m.BlobKey
 	}
 	return nil
 }
@@ -266,13 +266,13 @@ type DecodeBlobKeyResponse struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *DecodeBlobKeyResponse) Reset()         { *this = DecodeBlobKeyResponse{} }
-func (this *DecodeBlobKeyResponse) String() string { return proto.CompactTextString(this) }
-func (*DecodeBlobKeyResponse) ProtoMessage()       {}
+func (m *DecodeBlobKeyResponse) Reset()         { *m = DecodeBlobKeyResponse{} }
+func (m *DecodeBlobKeyResponse) String() string { return proto.CompactTextString(m) }
+func (*DecodeBlobKeyResponse) ProtoMessage()    {}
 
-func (this *DecodeBlobKeyResponse) GetDecoded() []string {
-	if this != nil {
-		return this.Decoded
+func (m *DecodeBlobKeyResponse) GetDecoded() []string {
+	if m != nil {
+		return m.Decoded
 	}
 	return nil
 }
@@ -282,17 +282,13 @@ type CreateEncodedGoogleStorageKeyRequest struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateEncodedGoogleStorageKeyRequest) Reset() {
-	*this = CreateEncodedGoogleStorageKeyRequest{}
-}
-func (this *CreateEncodedGoogleStorageKeyRequest) String() string {
-	return proto.CompactTextString(this)
-}
-func (*CreateEncodedGoogleStorageKeyRequest) ProtoMessage() {}
+func (m *CreateEncodedGoogleStorageKeyRequest) Reset()         { *m = CreateEncodedGoogleStorageKeyRequest{} }
+func (m *CreateEncodedGoogleStorageKeyRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateEncodedGoogleStorageKeyRequest) ProtoMessage()    {}
 
-func (this *CreateEncodedGoogleStorageKeyRequest) GetFilename() string {
-	if this != nil && this.Filename != nil {
-		return *this.Filename
+func (m *CreateEncodedGoogleStorageKeyRequest) GetFilename() string {
+	if m != nil && m.Filename != nil {
+		return *m.Filename
 	}
 	return ""
 }
@@ -302,17 +298,13 @@ type CreateEncodedGoogleStorageKeyResponse struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *CreateEncodedGoogleStorageKeyResponse) Reset() {
-	*this = CreateEncodedGoogleStorageKeyResponse{}
-}
-func (this *CreateEncodedGoogleStorageKeyResponse) String() string {
-	return proto.CompactTextString(this)
-}
-func (*CreateEncodedGoogleStorageKeyResponse) ProtoMessage() {}
+func (m *CreateEncodedGoogleStorageKeyResponse) Reset()         { *m = CreateEncodedGoogleStorageKeyResponse{} }
+func (m *CreateEncodedGoogleStorageKeyResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateEncodedGoogleStorageKeyResponse) ProtoMessage()    {}
 
-func (this *CreateEncodedGoogleStorageKeyResponse) GetBlobKey() string {
-	if this != nil && this.BlobKey != nil {
-		return *this.BlobKey
+func (m *CreateEncodedGoogleStorageKeyResponse) GetBlobKey() string {
+	if m != nil && m.BlobKey != nil {
+		return *m.BlobKey
 	}
 	return ""
 }

@@ -39,6 +39,7 @@ type Package struct {
 	BaseDir      string     // what the file names are relative to, if outside app
 	Dependencies []*Package // the packages that this directly depends upon, in no particular order
 	HasInit      bool       // whether the package has any init functions
+	Dupe         bool       // whether the package is is a duplicate
 }
 
 func (p *Package) String() string {
@@ -62,6 +63,13 @@ type File struct {
 func (f *File) String() string {
 	return fmt.Sprintf("%+v", *f)
 }
+
+// Implement sort.Interface for []*File.
+type byFileName []*File
+
+func (s byFileName) Len() int           { return len(s) }
+func (s byFileName) Less(i, j int) bool { return s[i].Name < s[j].Name }
+func (s byFileName) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 // vfs is a tiny VFS overlay that exposes a subset of files in a tree.
 type vfs struct {
@@ -171,8 +179,11 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		if p.ImportPath == "main" {
 			return nil, errors.New("top-level main package is forbidden")
 		}
-		if !allowedDupes[p.ImportPath] && isStandardPackage(p.ImportPath) {
-			return nil, fmt.Errorf("package %q has the same name as a standard package", p.ImportPath)
+		if isStandardPackage(p.ImportPath) {
+			if !allowedDupes[p.ImportPath] {
+				return nil, fmt.Errorf("package %q has the same name as a standard package", p.ImportPath)
+			}
+			p.Dupe = true
 		}
 		for _, f := range files {
 			if f.HasInit {
@@ -188,7 +199,17 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 	}
 
 	if *goPath != "" {
-		addFromGOPATH(app)
+		var re *regexp.Regexp
+		var err error
+		if *noBuildFiles != "" {
+			re, err = regexp.Compile(*noBuildFiles)
+			if err != nil {
+				return nil, fmt.Errorf("bad -nobuild_files: %v", err)
+			}
+		}
+		if err := addFromGOPATH(app, re); err != nil {
+			return nil, err
+		}
 	}
 
 	// Populate dependency lists.
@@ -221,7 +242,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 }
 
 // addFromGOPATH adds packages from GOPATH that are needed by the app.
-func addFromGOPATH(app *App) {
+func addFromGOPATH(app *App, noBuild *regexp.Regexp) error {
 	warned := make(map[string]bool)
 	for i := 0; i < len(app.Packages); i++ { // app.Packages is grown during this loop
 		p := app.Packages[i]
@@ -239,15 +260,21 @@ func addFromGOPATH(app *App) {
 					continue
 				}
 
-				files := make([]*File, len(pkg.GoFiles))
-				for i, f := range pkg.GoFiles {
-					files[i] = &File{
+				files := make([]*File, 0, len(pkg.GoFiles))
+				for _, f := range pkg.GoFiles {
+					if noBuild != nil && noBuild.MatchString(filepath.Join(path, f)) {
+						continue
+					}
+					files = append(files, &File{
 						Name:        f,
 						PackageName: pkg.Name,
 						// NOTE: This is inaccurate, but it is sufficient to
 						// record all the package imports for each file.
 						ImportPaths: pkg.Imports,
-					}
+					})
+				}
+				if len(files) == 0 {
+					return fmt.Errorf("package %s required, but all its files were excluded by nobuild_files", path)
 				}
 				p := &Package{
 					ImportPath: path,
@@ -259,6 +286,7 @@ func addFromGOPATH(app *App) {
 			}
 		}
 	}
+	return nil
 }
 
 // isInit returns whether the given function declaration is a true init function.

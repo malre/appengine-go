@@ -5,27 +5,39 @@
 package appengine_internal
 
 import (
-	"net"
+	"log"
 	"net/http"
-	"os"
 	"strconv"
+
+	"code.google.com/p/goprotobuf/proto"
+
+	pb "appengine_internal/servers"
 )
 
 // These functions are the dev implementations of the wrapper functions
 // in ../appengine/identity.go. See that file for commentary.
 
 const (
-	hVersionId = "X-AppEngine-Inbound-Version-Id"
-	hRequestId = "X-AppEngine-Request-Log-Id"
+	hRequestLogId = "X-AppEngine-Internal-Request-Log-Id"
 )
 
-func BackendHostname(req interface{}, name string, index int) string {
-	ev := "BACKEND_PORT." + name
-	if index != -1 {
-		ev += "." + strconv.Itoa(index)
+func BackendHostname(c apiContext, name string, index int) string {
+	// TODO: Use the servers API when one exists.
+	req := &pb.GetHostnameRequest{
+		Server: proto.String(name),
 	}
-	host, _, _ := net.SplitHostPort(DefaultVersionHostname(req))
-	return host + ":" + os.Getenv(ev)
+	if index != -1 {
+		req.Instance = proto.String(strconv.Itoa(index))
+	}
+	res := &pb.GetHostnameResponse{}
+
+	if err := c.Call("servers", "GetHostname", req, res, nil); err != nil {
+		log.Printf("appengine: call to servers.GetHostname (name=%s, index=%d) failed: %s",
+			name, index, err)
+		return "" // The API doesn't allow for error returns.
+	}
+
+	return *res.Hostname
 }
 
 func DefaultVersionHostname(req interface{}) string {
@@ -33,7 +45,7 @@ func DefaultVersionHostname(req interface{}) string {
 }
 
 func BackendInstance() int {
-	i, err := strconv.Atoi(os.Getenv("INSTANCE_ID"))
+	i, err := strconv.Atoi(InstanceID())
 	if err != nil {
 		return -1
 	}
@@ -41,22 +53,21 @@ func BackendInstance() int {
 }
 
 func VersionID(req interface{}) string {
-	return req.(*http.Request).Header.Get(hVersionId)
+	return instanceConfig.VersionID
 }
 
 func InstanceID() string {
-	// No instance ID in dev.
-	return ""
+	return instanceConfig.InstanceID
 }
 
 func Datacenter() string {
-	return "dc1"
+	return instanceConfig.Datacenter
 }
 
 func ServerSoftware() string {
-	return os.Getenv("SERVER_SOFTWARE")
+	return "Development/2.0"
 }
 
 func RequestID(req interface{}) string {
-	return req.(*http.Request).Header.Get(hRequestId)
+	return req.(*http.Request).Header.Get(hRequestLogId)
 }

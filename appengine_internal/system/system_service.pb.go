@@ -58,9 +58,9 @@ type SystemServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *SystemServiceError) Reset()         { *this = SystemServiceError{} }
-func (this *SystemServiceError) String() string { return proto.CompactTextString(this) }
-func (*SystemServiceError) ProtoMessage()       {}
+func (m *SystemServiceError) Reset()         { *m = SystemServiceError{} }
+func (m *SystemServiceError) String() string { return proto.CompactTextString(m) }
+func (*SystemServiceError) ProtoMessage()    {}
 
 type SystemStat struct {
 	Current          *float64 `protobuf:"fixed64,1,opt,name=current" json:"current,omitempty"`
@@ -72,48 +72,48 @@ type SystemStat struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (this *SystemStat) Reset()         { *this = SystemStat{} }
-func (this *SystemStat) String() string { return proto.CompactTextString(this) }
-func (*SystemStat) ProtoMessage()       {}
+func (m *SystemStat) Reset()         { *m = SystemStat{} }
+func (m *SystemStat) String() string { return proto.CompactTextString(m) }
+func (*SystemStat) ProtoMessage()    {}
 
-func (this *SystemStat) GetCurrent() float64 {
-	if this != nil && this.Current != nil {
-		return *this.Current
+func (m *SystemStat) GetCurrent() float64 {
+	if m != nil && m.Current != nil {
+		return *m.Current
 	}
 	return 0
 }
 
-func (this *SystemStat) GetAverage1M() float64 {
-	if this != nil && this.Average1M != nil {
-		return *this.Average1M
+func (m *SystemStat) GetAverage1M() float64 {
+	if m != nil && m.Average1M != nil {
+		return *m.Average1M
 	}
 	return 0
 }
 
-func (this *SystemStat) GetAverage10M() float64 {
-	if this != nil && this.Average10M != nil {
-		return *this.Average10M
+func (m *SystemStat) GetAverage10M() float64 {
+	if m != nil && m.Average10M != nil {
+		return *m.Average10M
 	}
 	return 0
 }
 
-func (this *SystemStat) GetTotal() float64 {
-	if this != nil && this.Total != nil {
-		return *this.Total
+func (m *SystemStat) GetTotal() float64 {
+	if m != nil && m.Total != nil {
+		return *m.Total
 	}
 	return 0
 }
 
-func (this *SystemStat) GetRate1M() float64 {
-	if this != nil && this.Rate1M != nil {
-		return *this.Rate1M
+func (m *SystemStat) GetRate1M() float64 {
+	if m != nil && m.Rate1M != nil {
+		return *m.Rate1M
 	}
 	return 0
 }
 
-func (this *SystemStat) GetRate10M() float64 {
-	if this != nil && this.Rate10M != nil {
-		return *this.Rate10M
+func (m *SystemStat) GetRate10M() float64 {
+	if m != nil && m.Rate10M != nil {
+		return *m.Rate10M
 	}
 	return 0
 }
@@ -122,9 +122,9 @@ type GetSystemStatsRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *GetSystemStatsRequest) Reset()         { *this = GetSystemStatsRequest{} }
-func (this *GetSystemStatsRequest) String() string { return proto.CompactTextString(this) }
-func (*GetSystemStatsRequest) ProtoMessage()       {}
+func (m *GetSystemStatsRequest) Reset()         { *m = GetSystemStatsRequest{} }
+func (m *GetSystemStatsRequest) String() string { return proto.CompactTextString(m) }
+func (*GetSystemStatsRequest) ProtoMessage()    {}
 
 type GetSystemStatsResponse struct {
 	Cpu              *SystemStat `protobuf:"bytes,1,opt,name=cpu" json:"cpu,omitempty"`
@@ -132,20 +132,20 @@ type GetSystemStatsResponse struct {
 	XXX_unrecognized []byte      `json:"-"`
 }
 
-func (this *GetSystemStatsResponse) Reset()         { *this = GetSystemStatsResponse{} }
-func (this *GetSystemStatsResponse) String() string { return proto.CompactTextString(this) }
-func (*GetSystemStatsResponse) ProtoMessage()       {}
+func (m *GetSystemStatsResponse) Reset()         { *m = GetSystemStatsResponse{} }
+func (m *GetSystemStatsResponse) String() string { return proto.CompactTextString(m) }
+func (*GetSystemStatsResponse) ProtoMessage()    {}
 
-func (this *GetSystemStatsResponse) GetCpu() *SystemStat {
-	if this != nil {
-		return this.Cpu
+func (m *GetSystemStatsResponse) GetCpu() *SystemStat {
+	if m != nil {
+		return m.Cpu
 	}
 	return nil
 }
 
-func (this *GetSystemStatsResponse) GetMemory() *SystemStat {
-	if this != nil {
-		return this.Memory
+func (m *GetSystemStatsResponse) GetMemory() *SystemStat {
+	if m != nil {
+		return m.Memory
 	}
 	return nil
 }
@@ -154,22 +154,22 @@ type StartBackgroundRequestRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (this *StartBackgroundRequestRequest) Reset()         { *this = StartBackgroundRequestRequest{} }
-func (this *StartBackgroundRequestRequest) String() string { return proto.CompactTextString(this) }
-func (*StartBackgroundRequestRequest) ProtoMessage()       {}
+func (m *StartBackgroundRequestRequest) Reset()         { *m = StartBackgroundRequestRequest{} }
+func (m *StartBackgroundRequestRequest) String() string { return proto.CompactTextString(m) }
+func (*StartBackgroundRequestRequest) ProtoMessage()    {}
 
 type StartBackgroundRequestResponse struct {
 	RequestId        *string `protobuf:"bytes,1,opt,name=request_id" json:"request_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (this *StartBackgroundRequestResponse) Reset()         { *this = StartBackgroundRequestResponse{} }
-func (this *StartBackgroundRequestResponse) String() string { return proto.CompactTextString(this) }
-func (*StartBackgroundRequestResponse) ProtoMessage()       {}
+func (m *StartBackgroundRequestResponse) Reset()         { *m = StartBackgroundRequestResponse{} }
+func (m *StartBackgroundRequestResponse) String() string { return proto.CompactTextString(m) }
+func (*StartBackgroundRequestResponse) ProtoMessage()    {}
 
-func (this *StartBackgroundRequestResponse) GetRequestId() string {
-	if this != nil && this.RequestId != nil {
-		return *this.RequestId
+func (m *StartBackgroundRequestResponse) GetRequestId() string {
+	if m != nil && m.RequestId != nil {
+		return *m.RequestId
 	}
 	return ""
 }

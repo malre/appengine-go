@@ -147,6 +147,15 @@ func saveStructProperty(c chan<- Property, name string, noIndex, multiple bool, 
 			p.Value = v.String()
 		case reflect.Float32, reflect.Float64:
 			p.Value = v.Float()
+		case reflect.Struct:
+			if !v.CanAddr() {
+				return fmt.Errorf("datastore: unsupported struct field: value is unaddressable")
+			}
+			sub, err := newStructPLS(v.Addr().Interface())
+			if err != nil {
+				return fmt.Errorf("datastore: unsupported struct field: %v", err)
+			}
+			return sub.(structPLS).save(c, name, noIndex, multiple)
 		}
 	}
 	if p.Value == nil {
@@ -158,25 +167,34 @@ func saveStructProperty(c chan<- Property, name string, noIndex, multiple bool, 
 
 func (s structPLS) Save(c chan<- Property) error {
 	defer close(c)
+	return s.save(c, "", false, false)
+}
+
+func (s structPLS) save(c chan<- Property, prefix string, noIndex, multiple bool) error {
 	for i, t := range s.codec.byIndex {
 		if t.name == "-" {
 			continue
+		}
+		name := t.name
+		if prefix != "" {
+			name = prefix + name
 		}
 		v := s.v.Field(i)
 		if !v.IsValid() || !v.CanSet() {
 			continue
 		}
+		noIndex1 := noIndex || t.noIndex
 		// For slice fields that aren't []byte, save each element.
 		if v.Kind() == reflect.Slice && v.Type() != typeOfByteSlice {
 			for j := 0; j < v.Len(); j++ {
-				if err := saveStructProperty(c, t.name, t.noIndex, true, v.Index(j)); err != nil {
+				if err := saveStructProperty(c, name, noIndex1, true, v.Index(j)); err != nil {
 					return err
 				}
 			}
 			continue
 		}
 		// Otherwise, save the field itself.
-		if err := saveStructProperty(c, t.name, t.noIndex, false, v); err != nil {
+		if err := saveStructProperty(c, name, noIndex1, multiple, v); err != nil {
 			return err
 		}
 	}
