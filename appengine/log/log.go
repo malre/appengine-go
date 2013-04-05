@@ -84,11 +84,12 @@ type AppLog struct {
 
 // Record contains all the information for a single web request.
 type Record struct {
-	AppID     string
-	VersionID string
-	RequestID []byte
-	IP        string
-	Nickname  string
+	AppID            string
+	VersionID        string
+	RequestID        []byte
+	IP               string
+	Nickname         string
+	AppEngineRelease string
 
 	// The time when this request started.
 	StartTime time.Time
@@ -193,6 +194,7 @@ func protoToRecord(rl *log_proto.RequestLog) *Record {
 		Offset:            offset,
 		IP:                *rl.Ip,
 		Nickname:          rl.GetNickname(),
+		AppEngineRelease:  string(rl.GetAppEngineRelease()),
 		StartTime:         time.Unix(0, *rl.StartTime*1e3),
 		EndTime:           time.Unix(0, *rl.EndTime*1e3),
 		Latency:           time.Duration(*rl.Latency) * time.Microsecond,

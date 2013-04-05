@@ -16,8 +16,6 @@ taskqueue operation is to add a single POST task, NewPOSTTask makes it easy.
 */
 package taskqueue
 
-// TODO: Queue management.
-
 import (
 	"errors"
 	"fmt"

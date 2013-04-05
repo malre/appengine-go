@@ -21,11 +21,11 @@ type Config struct {
 	Libraries        []*Library    `protobuf:"bytes,6,rep,name=libraries" json:"libraries,omitempty"`
 	SkipFiles        *string       `protobuf:"bytes,7,opt,name=skip_files,def=^$" json:"skip_files,omitempty"`
 	StaticFiles      *string       `protobuf:"bytes,8,opt,name=static_files,def=^$" json:"static_files,omitempty"`
-	PythonConfig     *PythonConfig `protobuf:"bytes,14,opt,name=python_config" json:"python_config,omitempty"`
 	Environ          []*Environ    `protobuf:"bytes,10,rep,name=environ" json:"environ,omitempty"`
 	CloudSqlConfig   *CloudSQL     `protobuf:"bytes,11,opt,name=cloud_sql_config" json:"cloud_sql_config,omitempty"`
 	Datacenter       *string       `protobuf:"bytes,12,req,name=datacenter" json:"datacenter,omitempty"`
 	InstanceId       *string       `protobuf:"bytes,13,req,name=instance_id" json:"instance_id,omitempty"`
+	PythonConfig     *PythonConfig `protobuf:"bytes,14,opt,name=python_config" json:"python_config,omitempty"`
 	StderrLogLevel   *int64        `protobuf:"varint,15,opt,name=stderr_log_level,def=1" json:"stderr_log_level,omitempty"`
 	XXX_unrecognized []byte        `json:"-"`
 }
@@ -95,13 +95,6 @@ func (m *Config) GetStaticFiles() string {
 	return Default_Config_StaticFiles
 }
 
-func (m *Config) GetPythonConfig() *PythonConfig {
-	if m != nil {
-		return m.PythonConfig
-	}
-	return nil
-}
-
 func (m *Config) GetEnviron() []*Environ {
 	if m != nil {
 		return m.Environ
@@ -128,6 +121,13 @@ func (m *Config) GetInstanceId() string {
 		return *m.InstanceId
 	}
 	return ""
+}
+
+func (m *Config) GetPythonConfig() *PythonConfig {
+	if m != nil {
+		return m.PythonConfig
+	}
+	return nil
 }
 
 func (m *Config) GetStderrLogLevel() int64 {

@@ -90,6 +90,16 @@ func DefaultBucketName(c appengine.Context) (string, error) {
 	return *res.DefaultGsBucketName, nil
 }
 
+// Delete deletes a file.
+func Delete(c appengine.Context, filename string) error {
+	req := &filepb.DeleteRequest{
+		Filename: &filename,
+	}
+	res := new(filepb.DeleteResponse)
+	// No fields in response to check.
+	return c.Call("file", "Delete", req, res, nil)
+}
+
 func init() {
 	appengine_internal.RegisterErrorCodeMap("blobstore", blobpb.BlobstoreServiceError_ErrorCode_name)
 	appengine_internal.RegisterErrorCodeMap("file", filepb.FileServiceErrors_ErrorCode_name)

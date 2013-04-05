@@ -166,6 +166,9 @@ func buildApp(app *App) error {
 	// we must also pass -I/-L $GOROOT/pkg/$GOOS_$GOARCH to them before that
 	// to ensure that the $GOROOT versions of dupe packages take precedence.
 	goRootSearchPath := filepath.Join(*goRoot, "pkg", runtime.GOOS+"_"+runtime.GOARCH)
+	// Anything in fallback will be used only if it's missing from the app and GOROOT,
+	// and the app imports it. This is a transitional mechanism only.
+	fallbackSearchPath := filepath.Join(*goRoot, "pkg", "fallback")
 
 	// Compile phase.
 	compiler := toolPath(*arch + "g")
@@ -180,6 +183,7 @@ func buildApp(app *App) error {
 			compiler,
 			"-I", goRootSearchPath,
 			"-I", *workDir,
+			"-I", fallbackSearchPath,
 			"-o", objectFile,
 		}
 		if !*unsafe {
@@ -264,6 +268,7 @@ func buildApp(app *App) error {
 		linker,
 		"-L", goRootSearchPath,
 		"-L", *workDir,
+		"-L", fallbackSearchPath,
 		"-o", binaryFile,
 		"-w", // disable dwarf generation
 	}

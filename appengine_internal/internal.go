@@ -81,6 +81,9 @@ func (e *APIError) Error() string {
 	s := fmt.Sprintf("API error %d", e.Code)
 	if m, ok := errorCodeMaps[e.Service]; ok {
 		s += " (" + e.Service + ": " + m[e.Code] + ")"
+	} else {
+		// Shouldn't happen, but provide a bit more detail if it does.
+		s = e.Service + " " + s
 	}
 	if e.Detail != "" {
 		s += ": " + e.Detail

@@ -205,7 +205,7 @@ func Increment(c appengine.Context, key string, delta int64, initialValue uint64
 // already exists in memcache and doesn't take an initial value.
 // IncrementExisting can save work if calculating the initial value is
 // expensive.
-// ErrCacheMiss is returned if the specified item can not be found.
+// An error is returned if the specified item can not be found.
 func IncrementExisting(c appengine.Context, key string, delta int64) (newValue uint64, err error) {
 	return incr(c, key, delta, nil)
 }
