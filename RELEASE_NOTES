@@ -3,6 +3,16 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.8.0 - May 2013
+========================
+appengine/blobstore:
+  - Add BlobKeyForFile function.
+appengine/mail:
+  - Add SendToAdmins function.
+appengine/taskqueue:
+  - Permit "" as an alias for the default queue throughout.
+  - Deprecate the maxTasks argument of QueueStats; it is now ignored.
+
 Version 1.7.7 - April 2013
 ==========================
 appengine/file:

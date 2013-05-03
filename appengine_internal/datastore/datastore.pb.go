@@ -480,6 +480,42 @@ func (x *Error_ErrorCode) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type PutRequest_AutoIdPolicy int32
+
+const (
+	PutRequest_CURRENT    PutRequest_AutoIdPolicy = 0
+	PutRequest_SEQUENTIAL PutRequest_AutoIdPolicy = 1
+)
+
+var PutRequest_AutoIdPolicy_name = map[int32]string{
+	0: "CURRENT",
+	1: "SEQUENTIAL",
+}
+var PutRequest_AutoIdPolicy_value = map[string]int32{
+	"CURRENT":    0,
+	"SEQUENTIAL": 1,
+}
+
+func (x PutRequest_AutoIdPolicy) Enum() *PutRequest_AutoIdPolicy {
+	p := new(PutRequest_AutoIdPolicy)
+	*p = x
+	return p
+}
+func (x PutRequest_AutoIdPolicy) String() string {
+	return proto.EnumName(PutRequest_AutoIdPolicy_name, int32(x))
+}
+func (x PutRequest_AutoIdPolicy) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.String())
+}
+func (x *PutRequest_AutoIdPolicy) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(PutRequest_AutoIdPolicy_value, data, "PutRequest_AutoIdPolicy")
+	if err != nil {
+		return err
+	}
+	*x = PutRequest_AutoIdPolicy(value)
+	return nil
+}
+
 type Action struct {
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -662,7 +698,9 @@ type PropertyValue_PointValue struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (m *PropertyValue_PointValue) Reset() { *m = PropertyValue_PointValue{} }
+func (m *PropertyValue_PointValue) Reset()         { *m = PropertyValue_PointValue{} }
+func (m *PropertyValue_PointValue) String() string { return proto.CompactTextString(m) }
+func (*PropertyValue_PointValue) ProtoMessage()    {}
 
 func (m *PropertyValue_PointValue) GetX() float64 {
 	if m != nil && m.X != nil {
@@ -689,7 +727,9 @@ type PropertyValue_UserValue struct {
 	XXX_unrecognized  []byte  `json:"-"`
 }
 
-func (m *PropertyValue_UserValue) Reset() { *m = PropertyValue_UserValue{} }
+func (m *PropertyValue_UserValue) Reset()         { *m = PropertyValue_UserValue{} }
+func (m *PropertyValue_UserValue) String() string { return proto.CompactTextString(m) }
+func (*PropertyValue_UserValue) ProtoMessage()    {}
 
 func (m *PropertyValue_UserValue) GetEmail() string {
 	if m != nil && m.Email != nil {
@@ -747,7 +787,9 @@ type PropertyValue_ReferenceValue struct {
 	XXX_unrecognized []byte                                      `json:"-"`
 }
 
-func (m *PropertyValue_ReferenceValue) Reset() { *m = PropertyValue_ReferenceValue{} }
+func (m *PropertyValue_ReferenceValue) Reset()         { *m = PropertyValue_ReferenceValue{} }
+func (m *PropertyValue_ReferenceValue) String() string { return proto.CompactTextString(m) }
+func (*PropertyValue_ReferenceValue) ProtoMessage()    {}
 
 func (m *PropertyValue_ReferenceValue) GetApp() string {
 	if m != nil && m.App != nil {
@@ -780,6 +822,8 @@ type PropertyValue_ReferenceValue_PathElement struct {
 func (m *PropertyValue_ReferenceValue_PathElement) Reset() {
 	*m = PropertyValue_ReferenceValue_PathElement{}
 }
+func (m *PropertyValue_ReferenceValue_PathElement) String() string { return proto.CompactTextString(m) }
+func (*PropertyValue_ReferenceValue_PathElement) ProtoMessage()    {}
 
 func (m *PropertyValue_ReferenceValue_PathElement) GetType() string {
 	if m != nil && m.Type != nil {
@@ -901,7 +945,9 @@ type Path_Element struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (m *Path_Element) Reset() { *m = Path_Element{} }
+func (m *Path_Element) Reset()         { *m = Path_Element{} }
+func (m *Path_Element) String() string { return proto.CompactTextString(m) }
+func (*Path_Element) ProtoMessage()    {}
 
 func (m *Path_Element) GetType() string {
 	if m != nil && m.Type != nil {
@@ -1154,7 +1200,9 @@ type Index_Property struct {
 	XXX_unrecognized []byte                    `json:"-"`
 }
 
-func (m *Index_Property) Reset() { *m = Index_Property{} }
+func (m *Index_Property) Reset()         { *m = Index_Property{} }
+func (m *Index_Property) String() string { return proto.CompactTextString(m) }
+func (*Index_Property) ProtoMessage()    {}
 
 const Default_Index_Property_Direction Index_Property_Direction = Index_Property_ASCENDING
 
@@ -1558,7 +1606,9 @@ type Query_Filter struct {
 	XXX_unrecognized []byte                 `json:"-"`
 }
 
-func (m *Query_Filter) Reset() { *m = Query_Filter{} }
+func (m *Query_Filter) Reset()         { *m = Query_Filter{} }
+func (m *Query_Filter) String() string { return proto.CompactTextString(m) }
+func (*Query_Filter) ProtoMessage()    {}
 
 func (m *Query_Filter) GetOp() Query_Filter_Operator {
 	if m != nil && m.Op != nil {
@@ -1580,7 +1630,9 @@ type Query_Order struct {
 	XXX_unrecognized []byte                 `json:"-"`
 }
 
-func (m *Query_Order) Reset() { *m = Query_Order{} }
+func (m *Query_Order) Reset()         { *m = Query_Order{} }
+func (m *Query_Order) String() string { return proto.CompactTextString(m) }
+func (*Query_Order) ProtoMessage()    {}
 
 const Default_Query_Order_Direction Query_Order_Direction = Query_Order_ASCENDING
 
@@ -1692,7 +1744,9 @@ type CompiledQuery_PrimaryScan struct {
 	XXX_unrecognized           []byte   `json:"-"`
 }
 
-func (m *CompiledQuery_PrimaryScan) Reset() { *m = CompiledQuery_PrimaryScan{} }
+func (m *CompiledQuery_PrimaryScan) Reset()         { *m = CompiledQuery_PrimaryScan{} }
+func (m *CompiledQuery_PrimaryScan) String() string { return proto.CompactTextString(m) }
+func (*CompiledQuery_PrimaryScan) ProtoMessage()    {}
 
 func (m *CompiledQuery_PrimaryScan) GetIndexName() string {
 	if m != nil && m.IndexName != nil {
@@ -1757,7 +1811,9 @@ type CompiledQuery_MergeJoinScan struct {
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (m *CompiledQuery_MergeJoinScan) Reset() { *m = CompiledQuery_MergeJoinScan{} }
+func (m *CompiledQuery_MergeJoinScan) Reset()         { *m = CompiledQuery_MergeJoinScan{} }
+func (m *CompiledQuery_MergeJoinScan) String() string { return proto.CompactTextString(m) }
+func (*CompiledQuery_MergeJoinScan) ProtoMessage()    {}
 
 const Default_CompiledQuery_MergeJoinScan_ValuePrefix bool = false
 
@@ -1789,7 +1845,9 @@ type CompiledQuery_EntityFilter struct {
 	XXX_unrecognized []byte     `json:"-"`
 }
 
-func (m *CompiledQuery_EntityFilter) Reset() { *m = CompiledQuery_EntityFilter{} }
+func (m *CompiledQuery_EntityFilter) Reset()         { *m = CompiledQuery_EntityFilter{} }
+func (m *CompiledQuery_EntityFilter) String() string { return proto.CompactTextString(m) }
+func (*CompiledQuery_EntityFilter) ProtoMessage()    {}
 
 const Default_CompiledQuery_EntityFilter_Distinct bool = false
 
@@ -1846,7 +1904,9 @@ type CompiledCursor_Position struct {
 	XXX_unrecognized []byte                                `json:"-"`
 }
 
-func (m *CompiledCursor_Position) Reset() { *m = CompiledCursor_Position{} }
+func (m *CompiledCursor_Position) Reset()         { *m = CompiledCursor_Position{} }
+func (m *CompiledCursor_Position) String() string { return proto.CompactTextString(m) }
+func (*CompiledCursor_Position) ProtoMessage()    {}
 
 const Default_CompiledCursor_Position_StartInclusive bool = true
 
@@ -1884,7 +1944,9 @@ type CompiledCursor_Position_IndexValue struct {
 	XXX_unrecognized []byte         `json:"-"`
 }
 
-func (m *CompiledCursor_Position_IndexValue) Reset() { *m = CompiledCursor_Position_IndexValue{} }
+func (m *CompiledCursor_Position_IndexValue) Reset()         { *m = CompiledCursor_Position_IndexValue{} }
+func (m *CompiledCursor_Position_IndexValue) String() string { return proto.CompactTextString(m) }
+func (*CompiledCursor_Position_IndexValue) ProtoMessage()    {}
 
 func (m *CompiledCursor_Position_IndexValue) GetProperty() string {
 	if m != nil && m.Property != nil {
@@ -1986,7 +2048,9 @@ type Cost_CommitCost struct {
 	XXX_unrecognized       []byte `json:"-"`
 }
 
-func (m *Cost_CommitCost) Reset() { *m = Cost_CommitCost{} }
+func (m *Cost_CommitCost) Reset()         { *m = Cost_CommitCost{} }
+func (m *Cost_CommitCost) String() string { return proto.CompactTextString(m) }
+func (*Cost_CommitCost) ProtoMessage()    {}
 
 func (m *Cost_CommitCost) GetRequestedEntityPuts() int32 {
 	if m != nil && m.RequestedEntityPuts != nil {
@@ -2083,7 +2147,9 @@ type GetResponse_Entity struct {
 	XXX_unrecognized []byte       `json:"-"`
 }
 
-func (m *GetResponse_Entity) Reset() { *m = GetResponse_Entity{} }
+func (m *GetResponse_Entity) Reset()         { *m = GetResponse_Entity{} }
+func (m *GetResponse_Entity) String() string { return proto.CompactTextString(m) }
+func (*GetResponse_Entity) ProtoMessage()    {}
 
 func (m *GetResponse_Entity) GetEntity() *EntityProto {
 	if m != nil {
@@ -2107,14 +2173,15 @@ func (m *GetResponse_Entity) GetVersion() int64 {
 }
 
 type PutRequest struct {
-	Entity           []*EntityProto    `protobuf:"bytes,1,rep,name=entity" json:"entity,omitempty"`
-	Transaction      *Transaction      `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
-	CompositeIndex   []*CompositeIndex `protobuf:"bytes,3,rep,name=composite_index" json:"composite_index,omitempty"`
-	Trusted          *bool             `protobuf:"varint,4,opt,name=trusted,def=0" json:"trusted,omitempty"`
-	Force            *bool             `protobuf:"varint,7,opt,name=force,def=0" json:"force,omitempty"`
-	MarkChanges      *bool             `protobuf:"varint,8,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
-	Snapshot         []*Snapshot       `protobuf:"bytes,9,rep,name=snapshot" json:"snapshot,omitempty"`
-	XXX_unrecognized []byte            `json:"-"`
+	Entity           []*EntityProto           `protobuf:"bytes,1,rep,name=entity" json:"entity,omitempty"`
+	Transaction      *Transaction             `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
+	CompositeIndex   []*CompositeIndex        `protobuf:"bytes,3,rep,name=composite_index" json:"composite_index,omitempty"`
+	Trusted          *bool                    `protobuf:"varint,4,opt,name=trusted,def=0" json:"trusted,omitempty"`
+	Force            *bool                    `protobuf:"varint,7,opt,name=force,def=0" json:"force,omitempty"`
+	MarkChanges      *bool                    `protobuf:"varint,8,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
+	Snapshot         []*Snapshot              `protobuf:"bytes,9,rep,name=snapshot" json:"snapshot,omitempty"`
+	AutoIdPolicy     *PutRequest_AutoIdPolicy `protobuf:"varint,10,opt,name=auto_id_policy,enum=datastore.PutRequest_AutoIdPolicy,def=0" json:"auto_id_policy,omitempty"`
+	XXX_unrecognized []byte                   `json:"-"`
 }
 
 func (m *PutRequest) Reset()         { *m = PutRequest{} }
@@ -2124,6 +2191,7 @@ func (*PutRequest) ProtoMessage()    {}
 const Default_PutRequest_Trusted bool = false
 const Default_PutRequest_Force bool = false
 const Default_PutRequest_MarkChanges bool = false
+const Default_PutRequest_AutoIdPolicy PutRequest_AutoIdPolicy = PutRequest_CURRENT
 
 func (m *PutRequest) GetEntity() []*EntityProto {
 	if m != nil {
@@ -2172,6 +2240,13 @@ func (m *PutRequest) GetSnapshot() []*Snapshot {
 		return m.Snapshot
 	}
 	return nil
+}
+
+func (m *PutRequest) GetAutoIdPolicy() PutRequest_AutoIdPolicy {
+	if m != nil && m.AutoIdPolicy != nil {
+		return *m.AutoIdPolicy
+	}
+	return Default_PutRequest_AutoIdPolicy
 }
 
 type PutResponse struct {
@@ -2639,7 +2714,9 @@ type CommitResponse_Version struct {
 	XXX_unrecognized []byte     `json:"-"`
 }
 
-func (m *CommitResponse_Version) Reset() { *m = CommitResponse_Version{} }
+func (m *CommitResponse_Version) Reset()         { *m = CommitResponse_Version{} }
+func (m *CommitResponse_Version) String() string { return proto.CompactTextString(m) }
+func (*CommitResponse_Version) ProtoMessage()    {}
 
 func (m *CommitResponse_Version) GetRootEntityKey() *Reference {
 	if m != nil {
@@ -2666,4 +2743,5 @@ func init() {
 	proto.RegisterEnum("datastore.Query_Filter_Operator", Query_Filter_Operator_name, Query_Filter_Operator_value)
 	proto.RegisterEnum("datastore.Query_Order_Direction", Query_Order_Direction_name, Query_Order_Direction_value)
 	proto.RegisterEnum("datastore.Error_ErrorCode", Error_ErrorCode_name, Error_ErrorCode_value)
+	proto.RegisterEnum("datastore.PutRequest_AutoIdPolicy", PutRequest_AutoIdPolicy_name, PutRequest_AutoIdPolicy_value)
 }

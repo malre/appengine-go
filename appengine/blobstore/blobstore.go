@@ -455,3 +455,16 @@ func (w *Writer) keyOldWay(handle string) (appengine.BlobKey, error) {
 	}
 	return appengine.BlobKey(key.StringID()), w.closeErr
 }
+
+// BlobKeyForFile returns a BlobKey for a Google Storage file.
+// The filename should be of the form "/gs/bucket_name/object_name".
+func BlobKeyForFile(c appengine.Context, filename string) (appengine.BlobKey, error) {
+	req := &blobpb.CreateEncodedGoogleStorageKeyRequest{
+		Filename: &filename,
+	}
+	res := &blobpb.CreateEncodedGoogleStorageKeyResponse{}
+	if err := c.Call("blobstore", "CreateEncodedGoogleStorageKey", req, res, nil); err != nil {
+		return "", err
+	}
+	return appengine.BlobKey(*res.BlobKey), nil
+}

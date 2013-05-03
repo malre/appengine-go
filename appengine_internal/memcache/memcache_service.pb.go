@@ -417,7 +417,9 @@ type MemcacheGetResponse_Item struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (m *MemcacheGetResponse_Item) Reset() { *m = MemcacheGetResponse_Item{} }
+func (m *MemcacheGetResponse_Item) Reset()         { *m = MemcacheGetResponse_Item{} }
+func (m *MemcacheGetResponse_Item) String() string { return proto.CompactTextString(m) }
+func (*MemcacheGetResponse_Item) ProtoMessage()    {}
 
 func (m *MemcacheGetResponse_Item) GetKey() []byte {
 	if m != nil {
@@ -497,7 +499,9 @@ type MemcacheSetRequest_Item struct {
 	XXX_unrecognized []byte                        `json:"-"`
 }
 
-func (m *MemcacheSetRequest_Item) Reset() { *m = MemcacheSetRequest_Item{} }
+func (m *MemcacheSetRequest_Item) Reset()         { *m = MemcacheSetRequest_Item{} }
+func (m *MemcacheSetRequest_Item) String() string { return proto.CompactTextString(m) }
+func (*MemcacheSetRequest_Item) ProtoMessage()    {}
 
 const Default_MemcacheSetRequest_Item_SetPolicy MemcacheSetRequest_SetPolicy = MemcacheSetRequest_SET
 const Default_MemcacheSetRequest_Item_ExpirationTime uint32 = 0
@@ -605,7 +609,9 @@ type MemcacheDeleteRequest_Item struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (m *MemcacheDeleteRequest_Item) Reset() { *m = MemcacheDeleteRequest_Item{} }
+func (m *MemcacheDeleteRequest_Item) Reset()         { *m = MemcacheDeleteRequest_Item{} }
+func (m *MemcacheDeleteRequest_Item) String() string { return proto.CompactTextString(m) }
+func (*MemcacheDeleteRequest_Item) ProtoMessage()    {}
 
 const Default_MemcacheDeleteRequest_Item_DeleteTime uint32 = 0
 
@@ -944,7 +950,9 @@ type MemcacheGrabTailResponse_Item struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (m *MemcacheGrabTailResponse_Item) Reset() { *m = MemcacheGrabTailResponse_Item{} }
+func (m *MemcacheGrabTailResponse_Item) Reset()         { *m = MemcacheGrabTailResponse_Item{} }
+func (m *MemcacheGrabTailResponse_Item) String() string { return proto.CompactTextString(m) }
+func (*MemcacheGrabTailResponse_Item) ProtoMessage()    {}
 
 func (m *MemcacheGrabTailResponse_Item) GetValue() []byte {
 	if m != nil {

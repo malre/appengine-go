@@ -38,7 +38,8 @@ type Message struct {
 	Sender  string
 	ReplyTo string // may be empty
 
-	// At least one of these slices must have a non-zero length.
+	// At least one of these slices must have a non-zero length,
+	// except when calling SendToAdmins.
 	To, Cc, Bcc []string
 
 	Subject string
@@ -64,6 +65,15 @@ type Attachment struct {
 
 // Send sends an email message.
 func Send(c appengine.Context, msg *Message) error {
+	return send(c, "Send", msg)
+}
+
+// SendToAdmins sends an email message to the application's administrators.
+func SendToAdmins(c appengine.Context, msg *Message) error {
+	return send(c, "SendToAdmins", msg)
+}
+
+func send(c appengine.Context, method string, msg *Message) error {
 	req := &mail_proto.MailMessage{
 		Sender:  &msg.Sender,
 		To:      msg.To,
@@ -98,7 +108,7 @@ func Send(c appengine.Context, msg *Message) error {
 		}
 	}
 	res := &base_proto.VoidProto{}
-	if err := c.Call("mail", "Send", req, res, nil); err != nil {
+	if err := c.Call("mail", method, req, res, nil); err != nil {
 		return err
 	}
 	return nil

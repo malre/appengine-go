@@ -393,6 +393,9 @@ func callNext(c appengine.Context, res *pb.QueryResult, offset, limit int32) err
 // PropertyList is a slice of structs. It is treated as invalid to avoid being
 // mistakenly passed when *[]PropertyList was intended.
 //
+// The keys returned by GetAll will be in a 1-1 correspondence with the entities
+// added to dst.
+//
 // If q is a ``keys-only'' query, GetAll ignores dst and only returns the keys.
 func (q *Query) GetAll(c appengine.Context, dst interface{}) ([]*Key, error) {
 	var (

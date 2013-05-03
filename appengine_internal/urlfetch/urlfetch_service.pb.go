@@ -210,7 +210,9 @@ type URLFetchRequest_Header struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (m *URLFetchRequest_Header) Reset() { *m = URLFetchRequest_Header{} }
+func (m *URLFetchRequest_Header) Reset()         { *m = URLFetchRequest_Header{} }
+func (m *URLFetchRequest_Header) String() string { return proto.CompactTextString(m) }
+func (*URLFetchRequest_Header) ProtoMessage()    {}
 
 func (m *URLFetchRequest_Header) GetKey() string {
 	if m != nil && m.Key != nil {
@@ -325,7 +327,9 @@ type URLFetchResponse_Header struct {
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (m *URLFetchResponse_Header) Reset() { *m = URLFetchResponse_Header{} }
+func (m *URLFetchResponse_Header) Reset()         { *m = URLFetchResponse_Header{} }
+func (m *URLFetchResponse_Header) String() string { return proto.CompactTextString(m) }
+func (*URLFetchResponse_Header) ProtoMessage()    {}
 
 func (m *URLFetchResponse_Header) GetKey() string {
 	if m != nil && m.Key != nil {

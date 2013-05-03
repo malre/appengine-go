@@ -302,6 +302,9 @@ func DeleteMulti(c appengine.Context, tasks []*Task, queueName string) error {
 	for i, t := range tasks {
 		taskNames[i] = []byte(t.Name)
 	}
+	if queueName == "" {
+		queueName = "default"
+	}
 	req := &taskqueue_proto.TaskQueueDeleteRequest{
 		QueueName: []byte(queueName),
 		TaskName:  taskNames,
@@ -330,6 +333,9 @@ func DeleteMulti(c appengine.Context, tasks []*Task, queueName string) error {
 }
 
 func lease(c appengine.Context, maxTasks int, queueName string, leaseTime int, groupByTag bool, tag []byte) ([]*Task, error) {
+	if queueName == "" {
+		queueName = "default"
+	}
 	req := &taskqueue_proto.TaskQueueQueryAndOwnTasksRequest{
 		QueueName:    []byte(queueName),
 		LeaseSeconds: proto.Float64(float64(leaseTime)),
@@ -375,6 +381,9 @@ func LeaseByTag(c appengine.Context, maxTasks int, queueName string, leaseTime i
 
 // Purge removes all tasks from a queue.
 func Purge(c appengine.Context, queueName string) error {
+	if queueName == "" {
+		queueName = "default"
+	}
 	req := &taskqueue_proto.TaskQueuePurgeQueueRequest{
 		QueueName: []byte(queueName),
 	}
@@ -386,6 +395,9 @@ func Purge(c appengine.Context, queueName string) error {
 // Used to request more processing time, or to abandon processing.
 // leaseTime is in seconds and must not be negative.
 func ModifyLease(c appengine.Context, task *Task, queueName string, leaseTime int) error {
+	if queueName == "" {
+		queueName = "default"
+	}
 	req := &taskqueue_proto.TaskQueueModifyTaskLeaseRequest{
 		QueueName:    []byte(queueName),
 		TaskName:     []byte(task.Name),
@@ -411,17 +423,16 @@ type QueueStatistics struct {
 }
 
 // QueueStats retrieves statistics about queues.
-// If maxTasks is greater than zero, the number of tasks scanned will be limited;
-// if the number of tasks is greater than maxTasks, the Tasks field will be an approximation.
+// maxTasks is a deprecated and ignored argument.
 func QueueStats(c appengine.Context, queueNames []string, maxTasks int) ([]QueueStatistics, error) {
 	req := &taskqueue_proto.TaskQueueFetchQueueStatsRequest{
 		QueueName: make([][]byte, len(queueNames)),
 	}
 	for i, q := range queueNames {
+		if q == "" {
+			q = "default"
+		}
 		req.QueueName[i] = []byte(q)
-	}
-	if maxTasks > 0 {
-		req.MaxNumTasks = proto.Int32(int32(maxTasks))
 	}
 	res := &taskqueue_proto.TaskQueueFetchQueueStatsResponse{}
 	callOpts := &appengine_internal.CallOptions{

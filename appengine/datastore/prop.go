@@ -132,6 +132,9 @@ type structCodec struct {
 	// hasSlice is whether a struct or any of its nested or embedded structs
 	// has a slice-typed field (other than []byte).
 	hasSlice bool
+	// complete is whether the structCodec is complete. An incomplete
+	// structCodec may be encountered when walking a recursive struct.
+	complete bool
 }
 
 // fieldCodec is a struct field's index and, if that struct field's type is
@@ -156,7 +159,7 @@ func getStructCodec(t reflect.Type) (*structCodec, error) {
 
 // getStructCodecLocked implements getStructCodec. The structCodecsMutex must
 // be held when calling this function.
-func getStructCodecLocked(t reflect.Type) (*structCodec, error) {
+func getStructCodecLocked(t reflect.Type) (ret *structCodec, retErr error) {
 	c, ok := structCodecs[t]
 	if ok {
 		return c, nil
@@ -165,6 +168,17 @@ func getStructCodecLocked(t reflect.Type) (*structCodec, error) {
 		byIndex: make([]structTag, t.NumField()),
 		byName:  make(map[string]fieldCodec),
 	}
+
+	// Add c to the structCodecs map before we are sure it is good. If t is
+	// a recursive type, it needs to find the incomplete entry for itself in
+	// the map.
+	structCodecs[t] = c
+	defer func() {
+		if retErr != nil {
+			delete(structCodecs, t)
+		}
+	}()
+
 	for i := range c.byIndex {
 		f := t.Field(i)
 		name, opts := f.Tag.Get("datastore"), ""
@@ -202,6 +216,9 @@ func getStructCodecLocked(t reflect.Type) (*structCodec, error) {
 			if err != nil {
 				return nil, err
 			}
+			if !sub.complete {
+				return nil, fmt.Errorf("datastore: recursive struct: field %q", f.Name)
+			}
 			if fIsSlice && sub.hasSlice {
 				return nil, fmt.Errorf(
 					"datastore: flattening nested structs leads to a slice of slices: field %q", f.Name)
@@ -226,7 +243,7 @@ func getStructCodecLocked(t reflect.Type) (*structCodec, error) {
 			noIndex: opts == "noindex",
 		}
 	}
-	structCodecs[t] = c
+	c.complete = true
 	return c, nil
 }
 

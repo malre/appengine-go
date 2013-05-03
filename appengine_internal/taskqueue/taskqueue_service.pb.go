@@ -576,7 +576,9 @@ type TaskQueueAddRequest_Header struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (m *TaskQueueAddRequest_Header) Reset() { *m = TaskQueueAddRequest_Header{} }
+func (m *TaskQueueAddRequest_Header) Reset()         { *m = TaskQueueAddRequest_Header{} }
+func (m *TaskQueueAddRequest_Header) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueAddRequest_Header) ProtoMessage()    {}
 
 func (m *TaskQueueAddRequest_Header) GetKey() []byte {
 	if m != nil {
@@ -598,7 +600,9 @@ type TaskQueueAddRequest_CronTimetable struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (m *TaskQueueAddRequest_CronTimetable) Reset() { *m = TaskQueueAddRequest_CronTimetable{} }
+func (m *TaskQueueAddRequest_CronTimetable) Reset()         { *m = TaskQueueAddRequest_CronTimetable{} }
+func (m *TaskQueueAddRequest_CronTimetable) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueAddRequest_CronTimetable) ProtoMessage()    {}
 
 func (m *TaskQueueAddRequest_CronTimetable) GetSchedule() []byte {
 	if m != nil {
@@ -668,7 +672,9 @@ type TaskQueueBulkAddResponse_TaskResult struct {
 	XXX_unrecognized []byte                           `json:"-"`
 }
 
-func (m *TaskQueueBulkAddResponse_TaskResult) Reset() { *m = TaskQueueBulkAddResponse_TaskResult{} }
+func (m *TaskQueueBulkAddResponse_TaskResult) Reset()         { *m = TaskQueueBulkAddResponse_TaskResult{} }
+func (m *TaskQueueBulkAddResponse_TaskResult) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueBulkAddResponse_TaskResult) ProtoMessage()    {}
 
 func (m *TaskQueueBulkAddResponse_TaskResult) GetResult() TaskQueueServiceError_ErrorCode {
 	if m != nil && m.Result != nil {
@@ -933,7 +939,9 @@ type TaskQueueFetchQueuesResponse_Queue struct {
 	XXX_unrecognized      []byte                    `json:"-"`
 }
 
-func (m *TaskQueueFetchQueuesResponse_Queue) Reset() { *m = TaskQueueFetchQueuesResponse_Queue{} }
+func (m *TaskQueueFetchQueuesResponse_Queue) Reset()         { *m = TaskQueueFetchQueuesResponse_Queue{} }
+func (m *TaskQueueFetchQueuesResponse_Queue) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueFetchQueuesResponse_Queue) ProtoMessage()    {}
 
 const Default_TaskQueueFetchQueuesResponse_Queue_Paused bool = false
 const Default_TaskQueueFetchQueuesResponse_Queue_Mode TaskQueueMode_Mode = TaskQueueMode_PUSH
@@ -1124,6 +1132,10 @@ type TaskQueueFetchQueueStatsResponse_QueueStats struct {
 func (m *TaskQueueFetchQueueStatsResponse_QueueStats) Reset() {
 	*m = TaskQueueFetchQueueStatsResponse_QueueStats{}
 }
+func (m *TaskQueueFetchQueueStatsResponse_QueueStats) String() string {
+	return proto.CompactTextString(m)
+}
+func (*TaskQueueFetchQueueStatsResponse_QueueStats) ProtoMessage() {}
 
 func (m *TaskQueueFetchQueueStatsResponse_QueueStats) GetNumTasks() int32 {
 	if m != nil && m.NumTasks != nil {
@@ -1369,7 +1381,9 @@ type TaskQueueQueryTasksResponse_Task struct {
 	XXX_unrecognized []byte                                          `json:"-"`
 }
 
-func (m *TaskQueueQueryTasksResponse_Task) Reset() { *m = TaskQueueQueryTasksResponse_Task{} }
+func (m *TaskQueueQueryTasksResponse_Task) Reset()         { *m = TaskQueueQueryTasksResponse_Task{} }
+func (m *TaskQueueQueryTasksResponse_Task) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueQueryTasksResponse_Task) ProtoMessage()    {}
 
 const Default_TaskQueueQueryTasksResponse_Task_RetryCount int32 = 0
 const Default_TaskQueueQueryTasksResponse_Task_ExecutionCount int32 = 0
@@ -1502,6 +1516,8 @@ type TaskQueueQueryTasksResponse_Task_Header struct {
 func (m *TaskQueueQueryTasksResponse_Task_Header) Reset() {
 	*m = TaskQueueQueryTasksResponse_Task_Header{}
 }
+func (m *TaskQueueQueryTasksResponse_Task_Header) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueQueryTasksResponse_Task_Header) ProtoMessage()    {}
 
 func (m *TaskQueueQueryTasksResponse_Task_Header) GetKey() []byte {
 	if m != nil {
@@ -1526,6 +1542,10 @@ type TaskQueueQueryTasksResponse_Task_CronTimetable struct {
 func (m *TaskQueueQueryTasksResponse_Task_CronTimetable) Reset() {
 	*m = TaskQueueQueryTasksResponse_Task_CronTimetable{}
 }
+func (m *TaskQueueQueryTasksResponse_Task_CronTimetable) String() string {
+	return proto.CompactTextString(m)
+}
+func (*TaskQueueQueryTasksResponse_Task_CronTimetable) ProtoMessage() {}
 
 func (m *TaskQueueQueryTasksResponse_Task_CronTimetable) GetSchedule() []byte {
 	if m != nil {
@@ -1553,6 +1573,8 @@ type TaskQueueQueryTasksResponse_Task_RunLog struct {
 func (m *TaskQueueQueryTasksResponse_Task_RunLog) Reset() {
 	*m = TaskQueueQueryTasksResponse_Task_RunLog{}
 }
+func (m *TaskQueueQueryTasksResponse_Task_RunLog) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueQueryTasksResponse_Task_RunLog) ProtoMessage()    {}
 
 func (m *TaskQueueQueryTasksResponse_Task_RunLog) GetDispatchedUsec() int64 {
 	if m != nil && m.DispatchedUsec != nil {
@@ -1755,6 +1777,8 @@ type TaskQueueQueryAndOwnTasksResponse_Task struct {
 func (m *TaskQueueQueryAndOwnTasksResponse_Task) Reset() {
 	*m = TaskQueueQueryAndOwnTasksResponse_Task{}
 }
+func (m *TaskQueueQueryAndOwnTasksResponse_Task) String() string { return proto.CompactTextString(m) }
+func (*TaskQueueQueryAndOwnTasksResponse_Task) ProtoMessage()    {}
 
 const Default_TaskQueueQueryAndOwnTasksResponse_Task_RetryCount int32 = 0
 
