@@ -198,9 +198,10 @@ func (m *GetServiceAccountNameResponse) GetServiceAccountName() string {
 }
 
 type GetAccessTokenRequest struct {
-	Scope            []string `protobuf:"bytes,1,rep,name=scope" json:"scope,omitempty"`
-	ServiceAccountId *int64   `protobuf:"varint,2,opt,name=service_account_id" json:"service_account_id,omitempty"`
-	XXX_unrecognized []byte   `json:"-"`
+	Scope              []string `protobuf:"bytes,1,rep,name=scope" json:"scope,omitempty"`
+	ServiceAccountId   *int64   `protobuf:"varint,2,opt,name=service_account_id" json:"service_account_id,omitempty"`
+	ServiceAccountName *string  `protobuf:"bytes,3,opt,name=service_account_name" json:"service_account_name,omitempty"`
+	XXX_unrecognized   []byte   `json:"-"`
 }
 
 func (m *GetAccessTokenRequest) Reset()         { *m = GetAccessTokenRequest{} }
@@ -219,6 +220,13 @@ func (m *GetAccessTokenRequest) GetServiceAccountId() int64 {
 		return *m.ServiceAccountId
 	}
 	return 0
+}
+
+func (m *GetAccessTokenRequest) GetServiceAccountName() string {
+	if m != nil && m.ServiceAccountName != nil {
+		return *m.ServiceAccountName
+	}
+	return ""
 }
 
 type GetAccessTokenResponse struct {

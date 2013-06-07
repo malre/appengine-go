@@ -3,6 +3,19 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.8.1 - June 2013
+=========================
+This release is based on Go 1.1.
+
+appengine/blobstore:
+  - Add StorageBucket to UploadURLOptions struct.
+appengine/datastore:
+  - Allow Property.Value to be the nil interface value, for compatibility with
+    datastore entities created by other languages.
+  - Support Projection and Distinct Projection queries.
+appengine/memcache:
+  - Stop populating Expiration field of fetched items.
+
 Version 1.8.0 - May 2013
 ========================
 appengine/blobstore:

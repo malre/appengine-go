@@ -41,7 +41,10 @@ type Property struct {
 	// underlying type to be on that list. For example, a Value of "type
 	// myInt64 int64" is invalid. Smaller-width integers and floats are also
 	// invalid. Again, this is more restrictive than the set of valid struct
-	// field types.
+	// field types. A Value may also be the nil interface value; this is
+	// equivalent to Python's None but not directly representable by a Go
+	// struct. Loading a nil-valued property into a struct will set that
+	// field to the zero value.
 	Value interface{}
 	// NoIndex is whether the datastore cannot index this property.
 	NoIndex bool

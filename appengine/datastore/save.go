@@ -263,7 +263,9 @@ func propertiesToProto(defaultAppID string, key *Key, src <-chan Property) (*pb.
 				return nil, fmt.Errorf("datastore: cannot index a []byte valued Property with Name %q", p.Name)
 			}
 		default:
-			return nil, fmt.Errorf("datastore: invalid Value type for a Property with Name %q", p.Name)
+			if p.Value != nil {
+				return nil, fmt.Errorf("datastore: invalid Value type for a Property with Name %q", p.Name)
+			}
 		}
 
 		if p.NoIndex {

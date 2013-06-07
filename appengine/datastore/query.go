@@ -76,11 +76,13 @@ func NewQuery(kind string) *Query {
 
 // Query represents a datastore query.
 type Query struct {
-	kind     string
-	ancestor *Key
-	filter   []filter
-	order    []order
+	kind       string
+	ancestor   *Key
+	filter     []filter
+	order      []order
+	projection []string
 
+	distinct bool
 	keysOnly bool
 	limit    int32
 	offset   int32
@@ -176,8 +178,25 @@ func (q *Query) Order(fieldName string) *Query {
 	return q
 }
 
+// Project returns a derivative query that yields only the given fields. It
+// cannot be used with KeysOnly.
+func (q *Query) Project(fieldNames ...string) *Query {
+	q = q.clone()
+	q.projection = append([]string(nil), fieldNames...)
+	return q
+}
+
+// Distinct returns a derivative query that yields de-duplicated entities with
+// respect to the set of projected fields. It is only used for projection
+// queries.
+func (q *Query) Distinct() *Query {
+	q = q.clone()
+	q.distinct = true
+	return q
+}
+
 // KeysOnly returns a derivative query that yields only keys, not keys and
-// entities.
+// entities. It cannot be used with projection queries.
 func (q *Query) KeysOnly() *Query {
 	q = q.clone()
 	q.keysOnly = true
@@ -239,11 +258,20 @@ func (q *Query) toProto(dst *pb.Query, appID string) error {
 	if q.kind == "" {
 		return errors.New("datastore: empty query kind")
 	}
+	if len(q.projection) != 0 && q.keysOnly {
+		return errors.New("datastore: query cannot both project and be keys-only")
+	}
 	dst.Reset()
 	dst.App = proto.String(appID)
 	dst.Kind = proto.String(q.kind)
 	if q.ancestor != nil {
 		dst.Ancestor = keyToProto(appID, q.ancestor)
+	}
+	if q.projection != nil {
+		dst.PropertyName = q.projection
+		if q.distinct {
+			dst.GroupByPropertyName = q.projection
+		}
 	}
 	if q.keysOnly {
 		dst.KeysOnly = proto.Bool(true)
@@ -298,11 +326,12 @@ func (q *Query) Count(c appengine.Context) (int, error) {
 		return 0, q.err
 	}
 
-	// Run a copy of the query, with keysOnly true, and an adjusted offset.
-	// We also set the limit to zero, as we don't want any actual entity data,
-	// just the number of skipped results.
+	// Run a copy of the query, with keysOnly true (if we're not a projection,
+	// since the two are incompatible), and an adjusted offset. We also set the
+	// limit to zero, as we don't want any actual entity data, just the number
+	// of skipped results.
 	newQ := q.clone()
-	newQ.keysOnly = true
+	newQ.keysOnly = len(newQ.projection) == 0
 	newQ.limit = 0
 	if q.limit < 0 {
 		// If the original query was unlimited, set the new query's offset to maximum.
@@ -616,7 +645,7 @@ func (t *Iterator) Cursor() (Cursor, error) {
 	q.start = t.prevCC
 	q.offset = skipped + int32(t.i)
 	q.limit = 0
-	q.keysOnly = true
+	q.keysOnly = len(q.projection) == 0
 	t1 := q.Run(t.c)
 	_, _, err := t1.next()
 	if err != Done {

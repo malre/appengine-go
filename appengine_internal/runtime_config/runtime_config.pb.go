@@ -22,6 +22,7 @@ type Config struct {
 	SkipFiles        *string       `protobuf:"bytes,7,opt,name=skip_files,def=^$" json:"skip_files,omitempty"`
 	StaticFiles      *string       `protobuf:"bytes,8,opt,name=static_files,def=^$" json:"static_files,omitempty"`
 	PythonConfig     *PythonConfig `protobuf:"bytes,14,opt,name=python_config" json:"python_config,omitempty"`
+	PhpConfig        *PhpConfig    `protobuf:"bytes,9,opt,name=php_config" json:"php_config,omitempty"`
 	Environ          []*Environ    `protobuf:"bytes,10,rep,name=environ" json:"environ,omitempty"`
 	CloudSqlConfig   *CloudSQL     `protobuf:"bytes,11,opt,name=cloud_sql_config" json:"cloud_sql_config,omitempty"`
 	Datacenter       *string       `protobuf:"bytes,12,req,name=datacenter" json:"datacenter,omitempty"`
@@ -103,6 +104,13 @@ func (m *Config) GetPythonConfig() *PythonConfig {
 	return nil
 }
 
+func (m *Config) GetPhpConfig() *PhpConfig {
+	if m != nil {
+		return m.PhpConfig
+	}
+	return nil
+}
+
 func (m *Config) GetEnviron() []*Environ {
 	if m != nil {
 		return m.Environ
@@ -143,6 +151,30 @@ func (m *Config) GetAuthDomain() string {
 		return *m.AuthDomain
 	}
 	return ""
+}
+
+type PhpConfig struct {
+	PhpExecutablePath []byte `protobuf:"bytes,1,opt,name=php_executable_path" json:"php_executable_path,omitempty"`
+	EnableDebugger    *bool  `protobuf:"varint,3,req,name=enable_debugger" json:"enable_debugger,omitempty"`
+	XXX_unrecognized  []byte `json:"-"`
+}
+
+func (m *PhpConfig) Reset()         { *m = PhpConfig{} }
+func (m *PhpConfig) String() string { return proto.CompactTextString(m) }
+func (*PhpConfig) ProtoMessage()    {}
+
+func (m *PhpConfig) GetPhpExecutablePath() []byte {
+	if m != nil {
+		return m.PhpExecutablePath
+	}
+	return nil
+}
+
+func (m *PhpConfig) GetEnableDebugger() bool {
+	if m != nil && m.EnableDebugger != nil {
+		return *m.EnableDebugger
+	}
+	return false
 }
 
 type PythonConfig struct {

@@ -120,7 +120,7 @@ func main() {
 	}
 
 	if err := buildApp(app); err != nil {
-		log.Fatalf("go-app-builder: Failed building app: %v", err)
+		log.Fatalf("go-app-builder: %v", err)
 	}
 }
 

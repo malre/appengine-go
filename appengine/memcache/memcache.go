@@ -75,6 +75,7 @@ type Item struct {
 	// in the cache.
 	// The zero value means the Item has no expiration time.
 	// Subsecond precision is ignored.
+	// This is not set when getting items.
 	Expiration time.Duration
 	// casID is a client-opaque value used for compare-and-swap operations.
 	// Zero means that compare-and-swap is not used.
@@ -88,17 +89,11 @@ const (
 
 // protoToItem converts a protocol buffer item to a Go struct.
 func protoToItem(p *pb.MemcacheGetResponse_Item) *Item {
-	var expiration time.Duration
-	sec := p.GetExpiresInSeconds()
-	if sec > 0 && sec < secondsIn30Years {
-		expiration = time.Duration(sec) * time.Second
-	}
 	return &Item{
-		Key:        string(p.Key),
-		Value:      p.Value,
-		Flags:      p.GetFlags(),
-		Expiration: expiration,
-		casID:      p.GetCasId(),
+		Key:   string(p.Key),
+		Value: p.Value,
+		Flags: p.GetFlags(),
+		casID: p.GetCasId(),
 	}
 }
 

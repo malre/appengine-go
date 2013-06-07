@@ -227,6 +227,8 @@ new query value. A query is typically constructed by calling NewQuery followed
 by a chain of zero or more such methods. These methods are:
   - Ancestor and Filter constrain the entities returned by running a query.
   - Order affects the order in which they are returned.
+  - Project constrains the fields returned.
+  - Distinct de-duplicates projected entities.
   - KeysOnly makes the iterator return only keys, not (key, entity) pairs.
   - Start, End, Offset and Limit define which sub-sequence of matching entities
     to return. Start and End take cursors, Offset and Limit take integers. Start

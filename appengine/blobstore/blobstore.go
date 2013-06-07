@@ -96,11 +96,14 @@ func UploadURL(c appengine.Context, successPath string, opts *UploadURLOptions) 
 		SuccessPath: proto.String(successPath),
 	}
 	if opts != nil {
-		if opts.MaxUploadBytes != 0 {
-			req.MaxUploadSizeBytes = proto.Int64(opts.MaxUploadBytes)
+		if n := opts.MaxUploadBytes; n != 0 {
+			req.MaxUploadSizeBytes = &n
 		}
-		if opts.MaxUploadBytesPerBlob != 0 {
-			req.MaxUploadSizePerBlobBytes = proto.Int64(opts.MaxUploadBytesPerBlob)
+		if n := opts.MaxUploadBytesPerBlob; n != 0 {
+			req.MaxUploadSizePerBlobBytes = &n
+		}
+		if s := opts.StorageBucket; s != "" {
+			req.GsBucketName = &s
 		}
 	}
 	res := &blobpb.CreateUploadURLResponse{}
@@ -114,6 +117,15 @@ func UploadURL(c appengine.Context, successPath string, opts *UploadURLOptions) 
 type UploadURLOptions struct {
 	MaxUploadBytes        int64 // optional
 	MaxUploadBytesPerBlob int64 // optional
+
+	// StorageBucket specifies the Google Cloud Storage bucket in which
+	// to store the blob.
+	// This is required if you use Cloud Storage instead of Blobstore.
+	// Your application must have permission to write to the bucket.
+	// You may optionally specify a bucket name and path in the format
+	// "bucket_name/path", in which case the included path will be the
+	// prefix of the uploaded object's name.
+	StorageBucket string
 }
 
 // Delete deletes a blob.

@@ -103,12 +103,13 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 
 	vfs := vfs{baseDir, filenames}
 	ctxt := &build.Context{
-		GOARCH:    build.Default.GOARCH,
-		GOOS:      build.Default.GOOS,
-		GOROOT:    *goRoot,
-		GOPATH:    baseDir,
-		BuildTags: []string{"appengine"},
-		Compiler:  "gc",
+		GOARCH:      build.Default.GOARCH,
+		GOOS:        build.Default.GOOS,
+		GOROOT:      *goRoot,
+		GOPATH:      baseDir,
+		BuildTags:   []string{"appengine"},
+		ReleaseTags: build.Default.ReleaseTags,
+		Compiler:    "gc",
 		HasSubdir: func(root, dir string) (rel string, ok bool) {
 			// Override the default HasSubdir, which evaluates symlinks.
 			const sep = string(filepath.Separator)
@@ -345,7 +346,7 @@ func parseFile(baseDir, filename string) (*File, error) {
 	}, nil
 }
 
-var legalImportPath = regexp.MustCompile(`^[a-zA-Z0-9_\-./]+$`)
+var legalImportPath = regexp.MustCompile(`^[a-zA-Z0-9_\-./~]+$`)
 
 // checkImport will return whether the provided import path is good.
 func checkImport(path string) bool {

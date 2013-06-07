@@ -99,7 +99,7 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 	switch v.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		x, ok := p.Value.(int64)
-		if !ok {
+		if !ok && p.Value != nil {
 			return typeMismatchReason(p, v)
 		}
 		if v.OverflowInt(x) {
@@ -108,7 +108,7 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 		v.SetInt(x)
 	case reflect.Bool:
 		x, ok := p.Value.(bool)
-		if !ok {
+		if !ok && p.Value != nil {
 			return typeMismatchReason(p, v)
 		}
 		v.SetBool(x)
@@ -118,13 +118,13 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 			break
 		}
 		x, ok := p.Value.(string)
-		if !ok {
+		if !ok && p.Value != nil {
 			return typeMismatchReason(p, v)
 		}
 		v.SetString(x)
 	case reflect.Float32, reflect.Float64:
 		x, ok := p.Value.(float64)
-		if !ok {
+		if !ok && p.Value != nil {
 			return typeMismatchReason(p, v)
 		}
 		if v.OverflowFloat(x) {
@@ -133,7 +133,7 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 		v.SetFloat(x)
 	case reflect.Ptr:
 		x, ok := p.Value.(*Key)
-		if p.Value != nil && !ok {
+		if !ok && p.Value != nil {
 			return typeMismatchReason(p, v)
 		}
 		if _, ok := v.Interface().(*Key); !ok {
@@ -142,7 +142,7 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 		v.Set(reflect.ValueOf(x))
 	case reflect.Struct:
 		x, ok := p.Value.(time.Time)
-		if !ok {
+		if !ok && p.Value != nil {
 			return typeMismatchReason(p, v)
 		}
 		if _, ok := v.Interface().(time.Time); !ok {
@@ -151,7 +151,7 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 		v.Set(reflect.ValueOf(x))
 	case reflect.Slice:
 		x, ok := p.Value.([]byte)
-		if !ok {
+		if !ok && p.Value != nil {
 			return typeMismatchReason(p, v)
 		}
 		if _, ok := v.Interface().([]byte); !ok {
