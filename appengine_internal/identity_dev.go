@@ -11,7 +11,7 @@ import (
 
 	"code.google.com/p/goprotobuf/proto"
 
-	pb "appengine_internal/servers"
+	pb "appengine_internal/modules"
 )
 
 // These functions are the dev implementations of the wrapper functions
@@ -22,17 +22,17 @@ const (
 )
 
 func BackendHostname(c apiContext, name string, index int) string {
-	// TODO: Use the servers API when one exists.
+	// TODO: Use the modules API when one exists.
 	req := &pb.GetHostnameRequest{
-		Server: proto.String(name),
+		Module: proto.String(name),
 	}
 	if index != -1 {
 		req.Instance = proto.String(strconv.Itoa(index))
 	}
 	res := &pb.GetHostnameResponse{}
 
-	if err := c.Call("servers", "GetHostname", req, res, nil); err != nil {
-		log.Printf("appengine: call to servers.GetHostname (name=%s, index=%d) failed: %s",
+	if err := c.Call("modules", "GetHostname", req, res, nil); err != nil {
+		log.Printf("appengine: call to modules.GetHostname (name=%s, index=%d) failed: %s",
 			name, index, err)
 		return "" // The API doesn't allow for error returns.
 	}

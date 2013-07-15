@@ -221,9 +221,9 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 // or implement PropertyLoadSaver. If there is no such entity for the key, Get
 // returns ErrNoSuchEntity.
 //
-// The values of dst's unmatched struct fields are not modified. In particular,
-// it is recommended to pass either a pointer to a zero valued struct on each
-// Get call.
+// The values of dst's unmatched struct fields are not modified, and matching
+// slice-typed fields are not reset before appending to them. In particular, it
+// is recommended to pass a pointer to a zero valued struct on each Get call.
 //
 // ErrFieldMismatch is returned when a field is to be loaded into a different
 // type than the one it was stored from, or when a field is missing or

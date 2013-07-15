@@ -28,7 +28,7 @@ import (
 
 var (
 	addrHTTP = flag.String("addr_http", "", "net:laddr to listen on for HTTP requests.")
-	addrAPI  = flag.String("addr_api", "", "net:raddr to dial for API requests.")
+	addrAPI  = flag.String("addr_api", "", "deprecated")
 )
 
 // ProtoMessage is the same as proto.Message. It is defined here because user
@@ -166,22 +166,18 @@ var appPackagesInitialized = make(chan struct{})
 // The "myapp/packageX" packages are expected to register HTTP handlers
 // in their init functions.
 func Main() {
-	var httpNet, httpAddr, apiNet, apiAddr string
+	var httpNet, httpAddr string
 
 	close(appPackagesInitialized)
 
 	// Check flags.
 	flag.Parse()
 	if !IsDevAppServer() {
-		if *addrHTTP == "" || *addrAPI == "" {
+		if *addrHTTP == "" {
 			log.Panic("appengine_internal.Main called without address flags.")
 		}
 		httpNet, httpAddr = parseAddr(*addrHTTP)
-		apiNet, apiAddr = parseAddr(*addrAPI)
 	}
-
-	// Forward App Engine API calls to the appserver.
-	initAPI(apiNet, apiAddr)
 
 	// Serve HTTP requests forwarded from the appserver to us.
 	http.HandleFunc("/_appengine_delegate_health_check", handleHealthCheck)

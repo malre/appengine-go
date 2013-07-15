@@ -44,5 +44,4 @@ func Enabled(c appengine.Context, api, capability string) bool {
 	default:
 		return false
 	}
-	panic("unreachable")
 }

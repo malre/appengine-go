@@ -62,16 +62,15 @@ type order struct {
 }
 
 // NewQuery creates a new Query for a specific entity kind.
-// The kind must be non-empty.
+//
+// An empty kind means to return all entities, including entities created and
+// managed by other App Engine features, and is called a kindless query.
+// Kindless queries cannot include filters or sort orders on property values.
 func NewQuery(kind string) *Query {
-	q := &Query{
+	return &Query{
 		kind:  kind,
 		limit: -1,
 	}
-	if kind == "" {
-		q.err = errors.New("datastore: empty kind")
-	}
-	return q
 }
 
 // Query represents a datastore query.
@@ -131,7 +130,7 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 		return q
 	}
 	f := filter{
-		FieldName: strings.TrimRight(filterStr, " ><="),
+		FieldName: strings.TrimRight(filterStr, " ><=!"),
 		Value:     value,
 	}
 	switch op := strings.TrimSpace(filterStr[len(f.FieldName):]); op {
@@ -256,14 +255,21 @@ func (q *Query) End(c Cursor) *Query {
 // toProto converts the query to a protocol buffer.
 func (q *Query) toProto(dst *pb.Query, appID string) error {
 	if q.kind == "" {
-		return errors.New("datastore: empty query kind")
+		if len(q.filter) != 0 {
+			return errors.New("datastore: kindless query cannot have filters")
+		}
+		if len(q.order) != 0 {
+			return errors.New("datastore: kindless query cannot have sort orders")
+		}
 	}
 	if len(q.projection) != 0 && q.keysOnly {
 		return errors.New("datastore: query cannot both project and be keys-only")
 	}
 	dst.Reset()
 	dst.App = proto.String(appID)
-	dst.Kind = proto.String(q.kind)
+	if q.kind != "" {
+		dst.Kind = proto.String(q.kind)
+	}
 	if q.ancestor != nil {
 		dst.Ancestor = keyToProto(appID, q.ancestor)
 	}

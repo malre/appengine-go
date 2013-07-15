@@ -189,7 +189,7 @@ func (m *LogLine) GetLogMessage() string {
 
 type RequestLog struct {
 	AppId                   *string    `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	ServerId                *string    `protobuf:"bytes,37,opt,name=server_id,def=default" json:"server_id,omitempty"`
+	ModuleId                *string    `protobuf:"bytes,37,opt,name=module_id,def=default" json:"module_id,omitempty"`
 	VersionId               *string    `protobuf:"bytes,2,req,name=version_id" json:"version_id,omitempty"`
 	RequestId               []byte     `protobuf:"bytes,3,req,name=request_id" json:"request_id,omitempty"`
 	Offset                  *LogOffset `protobuf:"bytes,35,opt,name=offset" json:"offset,omitempty"`
@@ -233,7 +233,7 @@ func (m *RequestLog) Reset()         { *m = RequestLog{} }
 func (m *RequestLog) String() string { return proto.CompactTextString(m) }
 func (*RequestLog) ProtoMessage()    {}
 
-const Default_RequestLog_ServerId string = "default"
+const Default_RequestLog_ModuleId string = "default"
 const Default_RequestLog_ReplicaIndex int32 = -1
 const Default_RequestLog_Finished bool = true
 
@@ -244,11 +244,11 @@ func (m *RequestLog) GetAppId() string {
 	return ""
 }
 
-func (m *RequestLog) GetServerId() string {
-	if m != nil && m.ServerId != nil {
-		return *m.ServerId
+func (m *RequestLog) GetModuleId() string {
+	if m != nil && m.ModuleId != nil {
+		return *m.ModuleId
 	}
-	return Default_RequestLog_ServerId
+	return Default_RequestLog_ModuleId
 }
 
 func (m *RequestLog) GetVersionId() string {
@@ -503,26 +503,26 @@ func (m *RequestLog) GetServerName() []byte {
 	return nil
 }
 
-type LogServerVersion struct {
-	ServerId         *string `protobuf:"bytes,1,opt,name=server_id,def=default" json:"server_id,omitempty"`
+type LogModuleVersion struct {
+	ModuleId         *string `protobuf:"bytes,1,opt,name=module_id,def=default" json:"module_id,omitempty"`
 	VersionId        *string `protobuf:"bytes,2,opt,name=version_id" json:"version_id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (m *LogServerVersion) Reset()         { *m = LogServerVersion{} }
-func (m *LogServerVersion) String() string { return proto.CompactTextString(m) }
-func (*LogServerVersion) ProtoMessage()    {}
+func (m *LogModuleVersion) Reset()         { *m = LogModuleVersion{} }
+func (m *LogModuleVersion) String() string { return proto.CompactTextString(m) }
+func (*LogModuleVersion) ProtoMessage()    {}
 
-const Default_LogServerVersion_ServerId string = "default"
+const Default_LogModuleVersion_ModuleId string = "default"
 
-func (m *LogServerVersion) GetServerId() string {
-	if m != nil && m.ServerId != nil {
-		return *m.ServerId
+func (m *LogModuleVersion) GetModuleId() string {
+	if m != nil && m.ModuleId != nil {
+		return *m.ModuleId
 	}
-	return Default_LogServerVersion_ServerId
+	return Default_LogModuleVersion_ModuleId
 }
 
-func (m *LogServerVersion) GetVersionId() string {
+func (m *LogModuleVersion) GetVersionId() string {
 	if m != nil && m.VersionId != nil {
 		return *m.VersionId
 	}
@@ -532,7 +532,7 @@ func (m *LogServerVersion) GetVersionId() string {
 type LogReadRequest struct {
 	AppId             *string             `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
 	VersionId         []string            `protobuf:"bytes,2,rep,name=version_id" json:"version_id,omitempty"`
-	ServerVersion     []*LogServerVersion `protobuf:"bytes,19,rep,name=server_version" json:"server_version,omitempty"`
+	ModuleVersion     []*LogModuleVersion `protobuf:"bytes,19,rep,name=module_version" json:"module_version,omitempty"`
 	StartTime         *int64              `protobuf:"varint,3,opt,name=start_time" json:"start_time,omitempty"`
 	EndTime           *int64              `protobuf:"varint,4,opt,name=end_time" json:"end_time,omitempty"`
 	Offset            *LogOffset          `protobuf:"bytes,5,opt,name=offset" json:"offset,omitempty"`
@@ -570,9 +570,9 @@ func (m *LogReadRequest) GetVersionId() []string {
 	return nil
 }
 
-func (m *LogReadRequest) GetServerVersion() []*LogServerVersion {
+func (m *LogReadRequest) GetModuleVersion() []*LogModuleVersion {
 	if m != nil {
-		return m.ServerVersion
+		return m.ModuleVersion
 	}
 	return nil
 }

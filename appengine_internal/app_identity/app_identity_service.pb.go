@@ -253,6 +253,30 @@ func (m *GetAccessTokenResponse) GetExpirationTime() int64 {
 	return 0
 }
 
+type GetDefaultGcsBucketNameRequest struct {
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *GetDefaultGcsBucketNameRequest) Reset()         { *m = GetDefaultGcsBucketNameRequest{} }
+func (m *GetDefaultGcsBucketNameRequest) String() string { return proto.CompactTextString(m) }
+func (*GetDefaultGcsBucketNameRequest) ProtoMessage()    {}
+
+type GetDefaultGcsBucketNameResponse struct {
+	DefaultGcsBucketName *string `protobuf:"bytes,1,opt,name=default_gcs_bucket_name" json:"default_gcs_bucket_name,omitempty"`
+	XXX_unrecognized     []byte  `json:"-"`
+}
+
+func (m *GetDefaultGcsBucketNameResponse) Reset()         { *m = GetDefaultGcsBucketNameResponse{} }
+func (m *GetDefaultGcsBucketNameResponse) String() string { return proto.CompactTextString(m) }
+func (*GetDefaultGcsBucketNameResponse) ProtoMessage()    {}
+
+func (m *GetDefaultGcsBucketNameResponse) GetDefaultGcsBucketName() string {
+	if m != nil && m.DefaultGcsBucketName != nil {
+		return *m.DefaultGcsBucketName
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterEnum("appengine.AppIdentityServiceError_ErrorCode", AppIdentityServiceError_ErrorCode_name, AppIdentityServiceError_ErrorCode_value)
 }

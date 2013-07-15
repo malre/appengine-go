@@ -32,8 +32,8 @@ func IsDevAppServer() bool {
 // serveHTTP serves App Engine HTTP requests.
 func serveHTTP(netw, addr string) {
 	// The development server reads the HTTP port that the server is listening to
-	// from stdout.
-	conn, err := net.Listen("tcp", ":0")
+	// from stdout. We listen on 127.0.0.1:0 to avoid firewall restrictions.
+	conn, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		log.Fatal("appengine: couldn't listen to TCP socket: ", err)
 	}
@@ -132,11 +132,6 @@ func readConfig(r io.Reader) *rpb.Config {
 		log.Fatal("appengine: could not decode runtime_config: ", err)
 	}
 	return config
-}
-
-// initAPI has no work to do in the development server.
-// TODO: Get rid of initAPI everywhere.
-func initAPI(netw, addr string) {
 }
 
 func call(service, method string, data []byte, requestID string) ([]byte, error) {

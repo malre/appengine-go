@@ -12,88 +12,88 @@ var _ = proto.Marshal
 var _ = &json.SyntaxError{}
 var _ = math.Inf
 
-type ServersServiceError_ErrorCode int32
+type ModulesServiceError_ErrorCode int32
 
 const (
-	ServersServiceError_OK                ServersServiceError_ErrorCode = 0
-	ServersServiceError_INVALID_SERVER    ServersServiceError_ErrorCode = 1
-	ServersServiceError_INVALID_VERSION   ServersServiceError_ErrorCode = 2
-	ServersServiceError_INVALID_INSTANCES ServersServiceError_ErrorCode = 3
-	ServersServiceError_TRANSIENT_ERROR   ServersServiceError_ErrorCode = 4
-	ServersServiceError_UNEXPECTED_STATE  ServersServiceError_ErrorCode = 5
+	ModulesServiceError_OK                ModulesServiceError_ErrorCode = 0
+	ModulesServiceError_INVALID_MODULE    ModulesServiceError_ErrorCode = 1
+	ModulesServiceError_INVALID_VERSION   ModulesServiceError_ErrorCode = 2
+	ModulesServiceError_INVALID_INSTANCES ModulesServiceError_ErrorCode = 3
+	ModulesServiceError_TRANSIENT_ERROR   ModulesServiceError_ErrorCode = 4
+	ModulesServiceError_UNEXPECTED_STATE  ModulesServiceError_ErrorCode = 5
 )
 
-var ServersServiceError_ErrorCode_name = map[int32]string{
+var ModulesServiceError_ErrorCode_name = map[int32]string{
 	0: "OK",
-	1: "INVALID_SERVER",
+	1: "INVALID_MODULE",
 	2: "INVALID_VERSION",
 	3: "INVALID_INSTANCES",
 	4: "TRANSIENT_ERROR",
 	5: "UNEXPECTED_STATE",
 }
-var ServersServiceError_ErrorCode_value = map[string]int32{
+var ModulesServiceError_ErrorCode_value = map[string]int32{
 	"OK":                0,
-	"INVALID_SERVER":    1,
+	"INVALID_MODULE":    1,
 	"INVALID_VERSION":   2,
 	"INVALID_INSTANCES": 3,
 	"TRANSIENT_ERROR":   4,
 	"UNEXPECTED_STATE":  5,
 }
 
-func (x ServersServiceError_ErrorCode) Enum() *ServersServiceError_ErrorCode {
-	p := new(ServersServiceError_ErrorCode)
+func (x ModulesServiceError_ErrorCode) Enum() *ModulesServiceError_ErrorCode {
+	p := new(ModulesServiceError_ErrorCode)
 	*p = x
 	return p
 }
-func (x ServersServiceError_ErrorCode) String() string {
-	return proto.EnumName(ServersServiceError_ErrorCode_name, int32(x))
+func (x ModulesServiceError_ErrorCode) String() string {
+	return proto.EnumName(ModulesServiceError_ErrorCode_name, int32(x))
 }
-func (x ServersServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
+func (x ModulesServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(x.String())
 }
-func (x *ServersServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
-	value, err := proto.UnmarshalJSONEnum(ServersServiceError_ErrorCode_value, data, "ServersServiceError_ErrorCode")
+func (x *ModulesServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(ModulesServiceError_ErrorCode_value, data, "ModulesServiceError_ErrorCode")
 	if err != nil {
 		return err
 	}
-	*x = ServersServiceError_ErrorCode(value)
+	*x = ModulesServiceError_ErrorCode(value)
 	return nil
 }
 
-type ServersServiceError struct {
+type ModulesServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (m *ServersServiceError) Reset()         { *m = ServersServiceError{} }
-func (m *ServersServiceError) String() string { return proto.CompactTextString(m) }
-func (*ServersServiceError) ProtoMessage()    {}
+func (m *ModulesServiceError) Reset()         { *m = ModulesServiceError{} }
+func (m *ModulesServiceError) String() string { return proto.CompactTextString(m) }
+func (*ModulesServiceError) ProtoMessage()    {}
 
-type GetServersRequest struct {
+type GetModulesRequest struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (m *GetServersRequest) Reset()         { *m = GetServersRequest{} }
-func (m *GetServersRequest) String() string { return proto.CompactTextString(m) }
-func (*GetServersRequest) ProtoMessage()    {}
+func (m *GetModulesRequest) Reset()         { *m = GetModulesRequest{} }
+func (m *GetModulesRequest) String() string { return proto.CompactTextString(m) }
+func (*GetModulesRequest) ProtoMessage()    {}
 
-type GetServersResponse struct {
-	Server           []string `protobuf:"bytes,1,rep,name=server" json:"server,omitempty"`
+type GetModulesResponse struct {
+	Module           []string `protobuf:"bytes,1,rep,name=module" json:"module,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
-func (m *GetServersResponse) Reset()         { *m = GetServersResponse{} }
-func (m *GetServersResponse) String() string { return proto.CompactTextString(m) }
-func (*GetServersResponse) ProtoMessage()    {}
+func (m *GetModulesResponse) Reset()         { *m = GetModulesResponse{} }
+func (m *GetModulesResponse) String() string { return proto.CompactTextString(m) }
+func (*GetModulesResponse) ProtoMessage()    {}
 
-func (m *GetServersResponse) GetServer() []string {
+func (m *GetModulesResponse) GetModule() []string {
 	if m != nil {
-		return m.Server
+		return m.Module
 	}
 	return nil
 }
 
 type GetVersionsRequest struct {
-	Server           *string `protobuf:"bytes,1,opt,name=server" json:"server,omitempty"`
+	Module           *string `protobuf:"bytes,1,opt,name=module" json:"module,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -101,9 +101,9 @@ func (m *GetVersionsRequest) Reset()         { *m = GetVersionsRequest{} }
 func (m *GetVersionsRequest) String() string { return proto.CompactTextString(m) }
 func (*GetVersionsRequest) ProtoMessage()    {}
 
-func (m *GetVersionsRequest) GetServer() string {
-	if m != nil && m.Server != nil {
-		return *m.Server
+func (m *GetVersionsRequest) GetModule() string {
+	if m != nil && m.Module != nil {
+		return *m.Module
 	}
 	return ""
 }
@@ -125,7 +125,7 @@ func (m *GetVersionsResponse) GetVersion() []string {
 }
 
 type GetDefaultVersionRequest struct {
-	Server           *string `protobuf:"bytes,1,opt,name=server" json:"server,omitempty"`
+	Module           *string `protobuf:"bytes,1,opt,name=module" json:"module,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -133,9 +133,9 @@ func (m *GetDefaultVersionRequest) Reset()         { *m = GetDefaultVersionReque
 func (m *GetDefaultVersionRequest) String() string { return proto.CompactTextString(m) }
 func (*GetDefaultVersionRequest) ProtoMessage()    {}
 
-func (m *GetDefaultVersionRequest) GetServer() string {
-	if m != nil && m.Server != nil {
-		return *m.Server
+func (m *GetDefaultVersionRequest) GetModule() string {
+	if m != nil && m.Module != nil {
+		return *m.Module
 	}
 	return ""
 }
@@ -157,7 +157,7 @@ func (m *GetDefaultVersionResponse) GetVersion() string {
 }
 
 type GetNumInstancesRequest struct {
-	Server           *string `protobuf:"bytes,1,opt,name=server" json:"server,omitempty"`
+	Module           *string `protobuf:"bytes,1,opt,name=module" json:"module,omitempty"`
 	Version          *string `protobuf:"bytes,2,opt,name=version" json:"version,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
@@ -166,9 +166,9 @@ func (m *GetNumInstancesRequest) Reset()         { *m = GetNumInstancesRequest{}
 func (m *GetNumInstancesRequest) String() string { return proto.CompactTextString(m) }
 func (*GetNumInstancesRequest) ProtoMessage()    {}
 
-func (m *GetNumInstancesRequest) GetServer() string {
-	if m != nil && m.Server != nil {
-		return *m.Server
+func (m *GetNumInstancesRequest) GetModule() string {
+	if m != nil && m.Module != nil {
+		return *m.Module
 	}
 	return ""
 }
@@ -197,7 +197,7 @@ func (m *GetNumInstancesResponse) GetInstances() int64 {
 }
 
 type SetNumInstancesRequest struct {
-	Server           *string `protobuf:"bytes,1,opt,name=server" json:"server,omitempty"`
+	Module           *string `protobuf:"bytes,1,opt,name=module" json:"module,omitempty"`
 	Version          *string `protobuf:"bytes,2,opt,name=version" json:"version,omitempty"`
 	Instances        *int64  `protobuf:"varint,3,req,name=instances" json:"instances,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -207,9 +207,9 @@ func (m *SetNumInstancesRequest) Reset()         { *m = SetNumInstancesRequest{}
 func (m *SetNumInstancesRequest) String() string { return proto.CompactTextString(m) }
 func (*SetNumInstancesRequest) ProtoMessage()    {}
 
-func (m *SetNumInstancesRequest) GetServer() string {
-	if m != nil && m.Server != nil {
-		return *m.Server
+func (m *SetNumInstancesRequest) GetModule() string {
+	if m != nil && m.Module != nil {
+		return *m.Module
 	}
 	return ""
 }
@@ -236,72 +236,72 @@ func (m *SetNumInstancesResponse) Reset()         { *m = SetNumInstancesResponse
 func (m *SetNumInstancesResponse) String() string { return proto.CompactTextString(m) }
 func (*SetNumInstancesResponse) ProtoMessage()    {}
 
-type StartServerRequest struct {
-	Server           *string `protobuf:"bytes,1,req,name=server" json:"server,omitempty"`
+type StartModuleRequest struct {
+	Module           *string `protobuf:"bytes,1,req,name=module" json:"module,omitempty"`
 	Version          *string `protobuf:"bytes,2,req,name=version" json:"version,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (m *StartServerRequest) Reset()         { *m = StartServerRequest{} }
-func (m *StartServerRequest) String() string { return proto.CompactTextString(m) }
-func (*StartServerRequest) ProtoMessage()    {}
+func (m *StartModuleRequest) Reset()         { *m = StartModuleRequest{} }
+func (m *StartModuleRequest) String() string { return proto.CompactTextString(m) }
+func (*StartModuleRequest) ProtoMessage()    {}
 
-func (m *StartServerRequest) GetServer() string {
-	if m != nil && m.Server != nil {
-		return *m.Server
+func (m *StartModuleRequest) GetModule() string {
+	if m != nil && m.Module != nil {
+		return *m.Module
 	}
 	return ""
 }
 
-func (m *StartServerRequest) GetVersion() string {
+func (m *StartModuleRequest) GetVersion() string {
 	if m != nil && m.Version != nil {
 		return *m.Version
 	}
 	return ""
 }
 
-type StartServerResponse struct {
+type StartModuleResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (m *StartServerResponse) Reset()         { *m = StartServerResponse{} }
-func (m *StartServerResponse) String() string { return proto.CompactTextString(m) }
-func (*StartServerResponse) ProtoMessage()    {}
+func (m *StartModuleResponse) Reset()         { *m = StartModuleResponse{} }
+func (m *StartModuleResponse) String() string { return proto.CompactTextString(m) }
+func (*StartModuleResponse) ProtoMessage()    {}
 
-type StopServerRequest struct {
-	Server           *string `protobuf:"bytes,1,opt,name=server" json:"server,omitempty"`
+type StopModuleRequest struct {
+	Module           *string `protobuf:"bytes,1,opt,name=module" json:"module,omitempty"`
 	Version          *string `protobuf:"bytes,2,opt,name=version" json:"version,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (m *StopServerRequest) Reset()         { *m = StopServerRequest{} }
-func (m *StopServerRequest) String() string { return proto.CompactTextString(m) }
-func (*StopServerRequest) ProtoMessage()    {}
+func (m *StopModuleRequest) Reset()         { *m = StopModuleRequest{} }
+func (m *StopModuleRequest) String() string { return proto.CompactTextString(m) }
+func (*StopModuleRequest) ProtoMessage()    {}
 
-func (m *StopServerRequest) GetServer() string {
-	if m != nil && m.Server != nil {
-		return *m.Server
+func (m *StopModuleRequest) GetModule() string {
+	if m != nil && m.Module != nil {
+		return *m.Module
 	}
 	return ""
 }
 
-func (m *StopServerRequest) GetVersion() string {
+func (m *StopModuleRequest) GetVersion() string {
 	if m != nil && m.Version != nil {
 		return *m.Version
 	}
 	return ""
 }
 
-type StopServerResponse struct {
+type StopModuleResponse struct {
 	XXX_unrecognized []byte `json:"-"`
 }
 
-func (m *StopServerResponse) Reset()         { *m = StopServerResponse{} }
-func (m *StopServerResponse) String() string { return proto.CompactTextString(m) }
-func (*StopServerResponse) ProtoMessage()    {}
+func (m *StopModuleResponse) Reset()         { *m = StopModuleResponse{} }
+func (m *StopModuleResponse) String() string { return proto.CompactTextString(m) }
+func (*StopModuleResponse) ProtoMessage()    {}
 
 type GetHostnameRequest struct {
-	Server           *string `protobuf:"bytes,1,opt,name=server" json:"server,omitempty"`
+	Module           *string `protobuf:"bytes,1,opt,name=module" json:"module,omitempty"`
 	Version          *string `protobuf:"bytes,2,opt,name=version" json:"version,omitempty"`
 	Instance         *string `protobuf:"bytes,3,opt,name=instance" json:"instance,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -311,9 +311,9 @@ func (m *GetHostnameRequest) Reset()         { *m = GetHostnameRequest{} }
 func (m *GetHostnameRequest) String() string { return proto.CompactTextString(m) }
 func (*GetHostnameRequest) ProtoMessage()    {}
 
-func (m *GetHostnameRequest) GetServer() string {
-	if m != nil && m.Server != nil {
-		return *m.Server
+func (m *GetHostnameRequest) GetModule() string {
+	if m != nil && m.Module != nil {
+		return *m.Module
 	}
 	return ""
 }
@@ -349,5 +349,5 @@ func (m *GetHostnameResponse) GetHostname() string {
 }
 
 func init() {
-	proto.RegisterEnum("appengine.ServersServiceError_ErrorCode", ServersServiceError_ErrorCode_name, ServersServiceError_ErrorCode_value)
+	proto.RegisterEnum("appengine.ModulesServiceError_ErrorCode", ModulesServiceError_ErrorCode_name, ModulesServiceError_ErrorCode_value)
 }

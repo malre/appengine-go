@@ -362,7 +362,7 @@ func checkImport(path string) bool {
 	if !legalImportPath.MatchString(path) {
 		return false
 	}
-	if path == "syscall" {
+	if path == "syscall" || path == "unsafe" {
 		return false
 	}
 	return true
@@ -560,7 +560,6 @@ func findCycle(pkgs []*Package) []*Package {
 		seen[dep] = len(cycle)
 		cycle = append(cycle, dep)
 	}
-	panic("unreachable")
 }
 
 func init() {
