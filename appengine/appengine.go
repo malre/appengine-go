@@ -49,7 +49,8 @@ type Context interface {
 	Request() interface{}
 }
 
-// NewContext returns a new context for an in-flight HTTP request.
+// NewContext returns a context for an in-flight HTTP request.
+// Repeated calls will return the same value.
 func NewContext(req *http.Request) Context {
 	return appengine_internal.NewContext(req)
 }

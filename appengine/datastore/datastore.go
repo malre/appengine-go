@@ -393,6 +393,7 @@ func namespaceMod(m proto.Message, namespace string) {
 }
 
 func init() {
-	appengine_internal.RegisterErrorCodeMap("datastore_v3", pb.Error_ErrorCode_name)
 	appengine_internal.NamespaceMods["datastore_v3"] = namespaceMod
+	appengine_internal.RegisterErrorCodeMap("datastore_v3", pb.Error_ErrorCode_name)
+	appengine_internal.RegisterTimeoutErrorCode("datastore_v3", int32(pb.Error_TIMEOUT))
 }

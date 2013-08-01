@@ -12,42 +12,6 @@ var _ = proto.Marshal
 var _ = &json.SyntaxError{}
 var _ = math.Inf
 
-type MemcacheShardingStrategy_Enum int32
-
-const (
-	MemcacheShardingStrategy_NAMESPACE_OR_KEY  MemcacheShardingStrategy_Enum = 0
-	MemcacheShardingStrategy_NAMESPACE_AND_KEY MemcacheShardingStrategy_Enum = 1
-)
-
-var MemcacheShardingStrategy_Enum_name = map[int32]string{
-	0: "NAMESPACE_OR_KEY",
-	1: "NAMESPACE_AND_KEY",
-}
-var MemcacheShardingStrategy_Enum_value = map[string]int32{
-	"NAMESPACE_OR_KEY":  0,
-	"NAMESPACE_AND_KEY": 1,
-}
-
-func (x MemcacheShardingStrategy_Enum) Enum() *MemcacheShardingStrategy_Enum {
-	p := new(MemcacheShardingStrategy_Enum)
-	*p = x
-	return p
-}
-func (x MemcacheShardingStrategy_Enum) String() string {
-	return proto.EnumName(MemcacheShardingStrategy_Enum_name, int32(x))
-}
-func (x MemcacheShardingStrategy_Enum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
-func (x *MemcacheShardingStrategy_Enum) UnmarshalJSON(data []byte) error {
-	value, err := proto.UnmarshalJSONEnum(MemcacheShardingStrategy_Enum_value, data, "MemcacheShardingStrategy_Enum")
-	if err != nil {
-		return err
-	}
-	*x = MemcacheShardingStrategy_Enum(value)
-	return nil
-}
-
 type MemcacheServiceError_ErrorCode int32
 
 const (
@@ -288,14 +252,6 @@ func (x *MemcacheIncrementResponse_IncrementStatusCode) UnmarshalJSON(data []byt
 	return nil
 }
 
-type MemcacheShardingStrategy struct {
-	XXX_unrecognized []byte `json:"-"`
-}
-
-func (m *MemcacheShardingStrategy) Reset()         { *m = MemcacheShardingStrategy{} }
-func (m *MemcacheShardingStrategy) String() string { return proto.CompactTextString(m) }
-func (*MemcacheShardingStrategy) ProtoMessage()    {}
-
 type MemcacheServiceError struct {
 	XXX_unrecognized []byte `json:"-"`
 }
@@ -305,12 +261,12 @@ func (m *MemcacheServiceError) String() string { return proto.CompactTextString(
 func (*MemcacheServiceError) ProtoMessage()    {}
 
 type AppOverride struct {
-	AppId                    *string                        `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	NumMemcachegBackends     *int32                         `protobuf:"varint,2,opt,name=num_memcacheg_backends" json:"num_memcacheg_backends,omitempty"`
-	IgnoreShardlock          *bool                          `protobuf:"varint,3,opt,name=ignore_shardlock" json:"ignore_shardlock,omitempty"`
-	MemcachePoolHint         *string                        `protobuf:"bytes,4,opt,name=memcache_pool_hint" json:"memcache_pool_hint,omitempty"`
-	MemcacheShardingStrategy *MemcacheShardingStrategy_Enum `protobuf:"varint,5,opt,name=memcache_sharding_strategy,enum=appengine.MemcacheShardingStrategy_Enum" json:"memcache_sharding_strategy,omitempty"`
-	XXX_unrecognized         []byte                         `json:"-"`
+	AppId                    *string `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
+	NumMemcachegBackends     *int32  `protobuf:"varint,2,opt,name=num_memcacheg_backends" json:"num_memcacheg_backends,omitempty"`
+	IgnoreShardlock          *bool   `protobuf:"varint,3,opt,name=ignore_shardlock" json:"ignore_shardlock,omitempty"`
+	MemcachePoolHint         *string `protobuf:"bytes,4,opt,name=memcache_pool_hint" json:"memcache_pool_hint,omitempty"`
+	MemcacheShardingStrategy []byte  `protobuf:"bytes,5,opt,name=memcache_sharding_strategy" json:"memcache_sharding_strategy,omitempty"`
+	XXX_unrecognized         []byte  `json:"-"`
 }
 
 func (m *AppOverride) Reset()         { *m = AppOverride{} }
@@ -345,11 +301,11 @@ func (m *AppOverride) GetMemcachePoolHint() string {
 	return ""
 }
 
-func (m *AppOverride) GetMemcacheShardingStrategy() MemcacheShardingStrategy_Enum {
-	if m != nil && m.MemcacheShardingStrategy != nil {
-		return *m.MemcacheShardingStrategy
+func (m *AppOverride) GetMemcacheShardingStrategy() []byte {
+	if m != nil {
+		return m.MemcacheShardingStrategy
 	}
-	return 0
+	return nil
 }
 
 type MemcacheGetRequest struct {
@@ -969,7 +925,6 @@ func (m *MemcacheGrabTailResponse_Item) GetFlags() uint32 {
 }
 
 func init() {
-	proto.RegisterEnum("appengine.MemcacheShardingStrategy_Enum", MemcacheShardingStrategy_Enum_name, MemcacheShardingStrategy_Enum_value)
 	proto.RegisterEnum("appengine.MemcacheServiceError_ErrorCode", MemcacheServiceError_ErrorCode_name, MemcacheServiceError_ErrorCode_value)
 	proto.RegisterEnum("appengine.MemcacheSetRequest_SetPolicy", MemcacheSetRequest_SetPolicy_name, MemcacheSetRequest_SetPolicy_value)
 	proto.RegisterEnum("appengine.MemcacheSetResponse_SetStatusCode", MemcacheSetResponse_SetStatusCode_name, MemcacheSetResponse_SetStatusCode_value)

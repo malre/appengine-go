@@ -3,12 +3,22 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.8.3 - August 2013
+===========================
+appengine:
+  - Add IsTimeoutError function.
+appengine/cloudsql:
+  - New package for CloudSQL support.
+appengine/datastore:
+  - Reject datastore keys, property names, or property string values that are
+    not valid UTF-8.
+
 Version 1.8.2 - July 2013
 =========================
 appengine:
   - Add Timeout function for overriding the default API RPC timeout.
 appengine/datastore:
-  - Support Kindless queries.
+  - Support kindless queries.
 
 Version 1.8.1 - June 2013
 =========================

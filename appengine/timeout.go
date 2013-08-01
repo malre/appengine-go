@@ -10,6 +10,16 @@ import (
 	"appengine_internal"
 )
 
+// IsTimeoutError reports whether err is a timeout error.
+func IsTimeoutError(err error) bool {
+	if t, ok := err.(interface {
+		IsTimeout() bool
+	}); ok {
+		return t.IsTimeout()
+	}
+	return false
+}
+
 // Timeout returns a replacement context that uses d as the default API RPC timeout.
 func Timeout(c Context, d time.Duration) Context {
 	return &timeoutContext{

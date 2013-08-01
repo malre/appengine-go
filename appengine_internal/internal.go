@@ -14,7 +14,6 @@ package appengine_internal
 // exported API is the same.
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -62,6 +61,18 @@ func RegisterErrorCodeMap(service string, m map[int32]string) {
 	errorCodeMaps[service] = m
 }
 
+type timeoutCodeKey struct {
+	service string
+	code    int32
+}
+
+// timeoutCodes is the set of service+code pairs that represent timeouts.
+var timeoutCodes = make(map[timeoutCodeKey]bool)
+
+func RegisterTimeoutErrorCode(service string, code int32) {
+	timeoutCodes[timeoutCodeKey{service, code}] = true
+}
+
 // APIError is the type returned by appengine.Context's Call method
 // when an API call fails in an API-specific way. This may be, for instance,
 // a taskqueue API call failing with TaskQueueServiceError::UNKNOWN_QUEUE.
@@ -91,11 +102,17 @@ func (e *APIError) Error() string {
 	return s
 }
 
+func (e *APIError) IsTimeout() bool {
+	return timeoutCodes[timeoutCodeKey{e.Service, e.Code}]
+}
+
 // CallError is the type returned by appengine.Context's Call method when an
 // API call fails in a generic way, such as APIResponse::CAPABILITY_DISABLED.
 type CallError struct {
 	Detail string
 	Code   int32
+	// TODO: Remove this if we get a distinguishable error code.
+	Timeout bool
 }
 
 func (e *CallError) Error() string {
@@ -114,7 +131,15 @@ func (e *CallError) Error() string {
 	default:
 		msg = fmt.Sprintf("Call error %d", e.Code)
 	}
-	return msg + ": " + e.Detail
+	s := msg + ": " + e.Detail
+	if e.Timeout {
+		s += " (timeout)"
+	}
+	return s
+}
+
+func (e *CallError) IsTimeout() bool {
+	return e.Timeout
 }
 
 // handleHealthCheck handles health check HTTP requests from the App Server.
@@ -129,20 +154,6 @@ func parseAddr(compAddr string) (net, addr string) {
 		log.Panicf("appengine: bad composite address %q", compAddr)
 	}
 	return parts[0], parts[1]
-}
-
-type failingTransport struct{}
-
-func (failingTransport) RoundTrip(*http.Request) (*http.Response, error) {
-	return nil, errors.New("http.DefaultTransport and http.DefaultClient are not available in App Engine. " +
-		"See https://developers.google.com/appengine/docs/go/urlfetch/overview")
-}
-
-func init() {
-	// http.DefaultTransport doesn't work in production so break it
-	// explicitly so it fails the same way in both dev and prod
-	// (and with a useful error message)
-	http.DefaultTransport = failingTransport{}
 }
 
 // appPackagesInitialized is closed at the start of Main, after all app packages

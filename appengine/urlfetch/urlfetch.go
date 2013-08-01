@@ -199,4 +199,5 @@ func (t *Transport) RoundTrip(req *http.Request) (res *http.Response, err error)
 
 func init() {
 	appengine_internal.RegisterErrorCodeMap("urlfetch", pb.URLFetchServiceError_ErrorCode_name)
+	appengine_internal.RegisterTimeoutErrorCode("urlfetch", int32(pb.URLFetchServiceError_DEADLINE_EXCEEDED))
 }

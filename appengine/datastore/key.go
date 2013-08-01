@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"appengine"
 	basepb "appengine_internal/base"
@@ -68,7 +69,10 @@ func (k *Key) valid() bool {
 		return false
 	}
 	for ; k != nil; k = k.parent {
-		if k.kind == "" || k.appID == "" {
+		if k.kind == "" || !utf8.ValidString(k.kind) || k.appID == "" {
+			return false
+		}
+		if k.stringID != "" && !utf8.ValidString(k.stringID) {
 			return false
 		}
 		if k.stringID != "" && k.intID != 0 {

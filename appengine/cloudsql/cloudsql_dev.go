@@ -2,10 +2,13 @@
 // Use of this source code is governed by the Apache 2.0
 // license that can be found in the LICENSE file.
 
-package init
+package cloudsql
 
-import "os"
+import (
+	"errors"
+	"net"
+)
 
-func init() {
-	os.DisableWritesForAppEngine = true
+func connect(instance string) (net.Conn, error) {
+	return nil, errors.New("cloudsql: not supported in dev yet")
 }

@@ -26,6 +26,7 @@ import (
 	"appengine"
 	"appengine_internal"
 	basepb "appengine_internal/base"
+	dspb "appengine_internal/datastore"
 	taskqueue_proto "appengine_internal/taskqueue"
 	"code.google.com/p/goprotobuf/proto"
 )
@@ -460,4 +461,8 @@ func QueueStats(c appengine.Context, queueNames []string, maxTasks int) ([]Queue
 
 func init() {
 	appengine_internal.RegisterErrorCodeMap("taskqueue", taskqueue_proto.TaskQueueServiceError_ErrorCode_name)
+
+	// Datastore error codes are shifted by DATASTORE_ERROR when presented through taskqueue.
+	dsCode := int32(taskqueue_proto.TaskQueueServiceError_DATASTORE_ERROR) + int32(dspb.Error_TIMEOUT)
+	appengine_internal.RegisterTimeoutErrorCode("taskqueue", dsCode)
 }

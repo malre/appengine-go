@@ -10,6 +10,7 @@ import (
 	"math"
 	"reflect"
 	"time"
+	"unicode/utf8"
 
 	"appengine"
 	"code.google.com/p/goprotobuf/proto"
@@ -35,7 +36,7 @@ var (
 
 // valueToProto converts a named value to a newly allocated Property.
 // The returned error string is empty on success.
-func valueToProto(defaultAppID, name string, v reflect.Value, multiple bool) (p *pb.Property, errStr string) {
+func valueToProto(defaultAppID, name string, v reflect.Value) (p *pb.Property, errStr string) {
 	var (
 		pv          pb.PropertyValue
 		unsupported bool
@@ -49,6 +50,9 @@ func valueToProto(defaultAppID, name string, v reflect.Value, multiple bool) (p 
 		pv.BooleanValue = proto.Bool(v.Bool())
 	case reflect.String:
 		pv.StringValue = proto.String(v.String())
+		if !utf8.ValidString(*pv.StringValue) {
+			return nil, "invalid UTF-8"
+		}
 	case reflect.Float32, reflect.Float64:
 		pv.DoubleValue = proto.Float64(v.Float())
 	case reflect.Ptr:
@@ -85,7 +89,7 @@ func valueToProto(defaultAppID, name string, v reflect.Value, multiple bool) (p 
 	p = &pb.Property{
 		Name:     proto.String(name),
 		Value:    &pv,
-		Multiple: proto.Bool(multiple),
+		Multiple: proto.Bool(false),
 	}
 	if v.IsValid() {
 		switch v.Interface().(type) {
@@ -218,6 +222,9 @@ func propertiesToProto(defaultAppID string, key *Key, src <-chan Property) (*pb.
 	prevMultiple := make(map[string]bool)
 
 	for p := range src {
+		if !utf8.ValidString(p.Name) {
+			return nil, fmt.Errorf("datastore: property name %q is not valid UTF-8", p.Name)
+		}
 		if pm, ok := prevMultiple[p.Name]; ok {
 			if !pm || !p.Multiple {
 				return nil, fmt.Errorf("datastore: multiple Properties with Name %q, but Multiple is false", p.Name)
@@ -266,6 +273,15 @@ func propertiesToProto(defaultAppID string, key *Key, src <-chan Property) (*pb.
 			if p.Value != nil {
 				return nil, fmt.Errorf("datastore: invalid Value type for a Property with Name %q", p.Name)
 			}
+		}
+
+		// Only string values with BLOB or BYTESTRING meanings are allowed to be
+		// non-UTF-8. BYTESTRING is not used by the Go runtime.
+		if x.Value.StringValue != nil &&
+			x.GetMeaning() != pb.Property_BLOB &&
+			!utf8.ValidString(*x.Value.StringValue) {
+
+			return nil, fmt.Errorf("datastore: property value %q is not valid UTF-8", *x.Value.StringValue)
 		}
 
 		if p.NoIndex {
