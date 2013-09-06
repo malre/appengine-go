@@ -26,7 +26,7 @@ Valid value types are:
   - float32 and float64,
   - any type whose underlying type is one of the above predeclared types,
   - *Key,
-  - time.Time,
+  - time.Time (stored with microsecond precision),
   - appengine.BlobKey,
   - []byte (up to 1 megabyte in length),
   - structs whose fields are all valid value types,

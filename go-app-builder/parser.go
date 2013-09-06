@@ -21,6 +21,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"code.google.com/p/go.tools/cmd/vet/whitelist"
 )
 
 // App represents an entire Go App Engine app.
@@ -319,7 +321,7 @@ func parseFile(baseDir, filename string) (*File, error) {
 					return nil, fmt.Errorf("parser: bad ImportSpec %q: %v", val, err)
 				}
 				if !checkImport(path) {
-					return nil, fmt.Errorf("parser: bad import %q", path)
+					return nil, fmt.Errorf("parser: bad import %q in %s", path, filename)
 				}
 				imports = append(imports, path)
 			}
@@ -331,7 +333,7 @@ func parseFile(baseDir, filename string) (*File, error) {
 		}
 	}
 
-	// Check for untagged struct literals from the standard package library.
+	// Check for unkeyed struct literals from the standard package library.
 	ch := newCompLitChecker(&fset)
 	ast.Walk(ch, file)
 	if len(ch.errors) > 0 {
@@ -426,17 +428,17 @@ func (c *compLitChecker) Visit(node ast.Node) ast.Visitor {
 	}
 
 	// Check exception list.
-	if untaggedLiteralWhitelist[pth+"."+sel.Sel.Name] {
+	if whitelist.UnkeyedLiteral[pth+"."+sel.Sel.Name] {
 		return c
 	}
 
-	allTags := true
+	allKeys := true
 	for _, elt := range lit.Elts {
 		_, ok := elt.(*ast.KeyValueExpr)
-		allTags = allTags && ok
+		allKeys = allKeys && ok
 	}
-	if !allTags {
-		c.errorf(lit, "composite struct literal %v.%v with untagged fields", pth, sel.Sel)
+	if !allKeys {
+		c.errorf(lit, "composite struct literal %v.%v with unkeyed fields", pth, sel.Sel)
 	}
 
 	return c
@@ -563,7 +565,7 @@ func findCycle(pkgs []*Package) []*Package {
 }
 
 func init() {
-	// Add some App Engine-specific entries to the untagged literal whitelist.
-	untaggedLiteralWhitelist["appengine/datastore.PropertyList"] = true
-	untaggedLiteralWhitelist["appengine.MultiError"] = true
+	// Add some App Engine-specific entries to the unkeyed literal whitelist.
+	whitelist.UnkeyedLiteral["appengine/datastore.PropertyList"] = true
+	whitelist.UnkeyedLiteral["appengine.MultiError"] = true
 }

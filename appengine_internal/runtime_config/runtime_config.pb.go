@@ -17,6 +17,7 @@ type Config struct {
 	VersionId        []byte        `protobuf:"bytes,2,req,name=version_id" json:"version_id,omitempty"`
 	ApplicationRoot  []byte        `protobuf:"bytes,3,req,name=application_root" json:"application_root,omitempty"`
 	Threadsafe       *bool         `protobuf:"varint,4,opt,name=threadsafe,def=0" json:"threadsafe,omitempty"`
+	ApiHost          *string       `protobuf:"bytes,17,opt,name=api_host,def=localhost" json:"api_host,omitempty"`
 	ApiPort          *int32        `protobuf:"varint,5,req,name=api_port" json:"api_port,omitempty"`
 	Libraries        []*Library    `protobuf:"bytes,6,rep,name=libraries" json:"libraries,omitempty"`
 	SkipFiles        *string       `protobuf:"bytes,7,opt,name=skip_files,def=^$" json:"skip_files,omitempty"`
@@ -37,6 +38,7 @@ func (m *Config) String() string { return proto.CompactTextString(m) }
 func (*Config) ProtoMessage()    {}
 
 const Default_Config_Threadsafe bool = false
+const Default_Config_ApiHost string = "localhost"
 const Default_Config_SkipFiles string = "^$"
 const Default_Config_StaticFiles string = "^$"
 const Default_Config_StderrLogLevel int64 = 1
@@ -67,6 +69,13 @@ func (m *Config) GetThreadsafe() bool {
 		return *m.Threadsafe
 	}
 	return Default_Config_Threadsafe
+}
+
+func (m *Config) GetApiHost() string {
+	if m != nil && m.ApiHost != nil {
+		return *m.ApiHost
+	}
+	return Default_Config_ApiHost
 }
 
 func (m *Config) GetApiPort() int32 {

@@ -11,7 +11,6 @@ import (
 	"math"
 	"reflect"
 	"strings"
-	"unicode/utf8"
 
 	"appengine"
 	"code.google.com/p/goprotobuf/proto"
@@ -134,10 +133,6 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 		FieldName: strings.TrimRight(filterStr, " ><=!"),
 		Value:     value,
 	}
-	if !utf8.ValidString(f.FieldName) {
-		q.err = errors.New("datastore: invalid field name: " + f.FieldName)
-		return q
-	}
 	switch op := strings.TrimSpace(filterStr[len(f.FieldName):]); op {
 	case "<=":
 		f.Op = lessEq
@@ -176,10 +171,6 @@ func (q *Query) Order(fieldName string) *Query {
 	}
 	if len(o.FieldName) == 0 {
 		q.err = errors.New("datastore: empty order")
-		return q
-	}
-	if !utf8.ValidString(o.FieldName) {
-		q.err = errors.New("datastore: invalid field name: " + o.FieldName)
 		return q
 	}
 	q.order = append(q.order, o)
@@ -296,9 +287,9 @@ func (q *Query) toProto(dst *pb.Query, appID string) error {
 		if qf.FieldName == "" {
 			return errors.New("datastore: empty query filter field name")
 		}
-		p, errStr := valueToProto(appID, qf.FieldName, reflect.ValueOf(qf.Value))
+		p, errStr := valueToProto(appID, qf.FieldName, reflect.ValueOf(qf.Value), false)
 		if errStr != "" {
-			return errors.New("datastore: bad query filter value: " + errStr)
+			return errors.New("datastore: bad query filter value type: " + errStr)
 		}
 		xf := &pb.Query_Filter{
 			Op:       operatorToProto[qf.Op],

@@ -94,7 +94,7 @@ func send(c appengine.Context, method string, msg *Message) error {
 		req.Attachment = make([]*mail_proto.MailAttachment, len(msg.Attachments))
 		for i, att := range msg.Attachments {
 			req.Attachment[i] = &mail_proto.MailAttachment{
-				FileName: &att.Name,
+				FileName: proto.String(att.Name),
 				Data:     att.Data,
 			}
 		}

@@ -345,11 +345,17 @@ func CompareAndSwapMulti(c appengine.Context, item []*Item) error {
 // Codec represents a symmetric pair of functions that implement a codec.
 // Items stored into or retrieved from memcache using a Codec have their
 // values marshaled or unmarshaled.
+//
+// All the methods provided for Codec behave analogously to the package level
+// function with same name.
 type Codec struct {
 	Marshal   func(interface{}) ([]byte, error)
 	Unmarshal func([]byte, interface{}) error
 }
 
+// Get gets the item for the given key and decodes the obtained value into v.
+// ErrCacheMiss is returned for a memcache cache miss.
+// The key must be at most 250 bytes in length.
 func (cd Codec) Get(c appengine.Context, key string, v interface{}) (*Item, error) {
 	i, err := Get(c, key)
 	if err != nil {
@@ -384,26 +390,41 @@ func (cd Codec) set(c appengine.Context, items []*Item, policy pb.MemcacheSetReq
 	return set(c, items, vs, policy)
 }
 
+// Set writes the given item, unconditionally.
 func (cd Codec) Set(c appengine.Context, item *Item) error {
 	return singleError(cd.set(c, []*Item{item}, pb.MemcacheSetRequest_SET))
 }
 
+// SetMulti is a batch version of Set.
+// appengine.MultiError may be returned.
 func (cd Codec) SetMulti(c appengine.Context, items []*Item) error {
 	return cd.set(c, items, pb.MemcacheSetRequest_SET)
 }
 
+// Add writes the given item, if no value already exists for its key.
+// ErrNotStored is returned if that condition is not met.
 func (cd Codec) Add(c appengine.Context, item *Item) error {
 	return singleError(cd.set(c, []*Item{item}, pb.MemcacheSetRequest_ADD))
 }
 
+// AddMulti is a batch version of Add.
+// appengine.MultiError may be returned.
 func (cd Codec) AddMulti(c appengine.Context, items []*Item) error {
 	return cd.set(c, items, pb.MemcacheSetRequest_ADD)
 }
 
+// CompareAndSwap writes the given item that was previously returned by Get,
+// if the value was neither modified or evicted between the Get and the
+// CompareAndSwap calls. The item's Key should not change between calls but
+// all other item fields may differ.
+// ErrCASConflict is returned if the value was modified in between the calls.
+// ErrNotStored is returned if the value was evicted in between the calls.
 func (cd Codec) CompareAndSwap(c appengine.Context, item *Item) error {
 	return singleError(cd.set(c, []*Item{item}, pb.MemcacheSetRequest_CAS))
 }
 
+// CompareAndSwapMulti is a batch version of CompareAndSwap.
+// appengine.MultiError may be returned.
 func (cd Codec) CompareAndSwapMulti(c appengine.Context, items []*Item) error {
 	return cd.set(c, items, pb.MemcacheSetRequest_CAS)
 }
@@ -466,7 +487,7 @@ func Flush(c appengine.Context) error {
 	return c.Call("memcache", "FlushAll", req, res, nil)
 }
 
-func namespaceMod(m proto.Message, namespace string) {
+func namespaceMod(m appengine_internal.ProtoMessage, namespace string) {
 	switch m := m.(type) {
 	case *pb.MemcacheDeleteRequest:
 		if m.NameSpace == nil {

@@ -120,6 +120,19 @@ func readConfig(r io.Reader) *rpb.Config {
 		log.Fatal("appengine: could not read from stdin: ", err)
 	}
 
+	if len(raw) == 0 {
+		// If there were zero bytes, assume this code is not being run as part of
+		// a complete app under devappserver2, and generate some reasonable defaults.
+		log.Print("appengine: not running under devappserver2; using some default configuration")
+		return &rpb.Config{
+			AppId:      []byte("dev~my-app"),
+			VersionId:  []byte("1.2345"),
+			ApiPort:    proto.Int32(1),
+			Datacenter: proto.String("us1"),
+			InstanceId: proto.String("deadbeef"),
+		}
+	}
+
 	b := make([]byte, base64.StdEncoding.DecodedLen(len(raw)))
 	n, err := base64.StdEncoding.Decode(b, raw)
 	if err != nil {

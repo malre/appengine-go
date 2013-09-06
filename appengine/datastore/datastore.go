@@ -381,7 +381,7 @@ func DeleteMulti(c appengine.Context, key []*Key) error {
 	return c.Call("datastore_v3", "Delete", req, res, nil)
 }
 
-func namespaceMod(m proto.Message, namespace string) {
+func namespaceMod(m appengine_internal.ProtoMessage, namespace string) {
 	// pb.Query is the only type that has a name_space field.
 	// All other namespace support in datastore is in the keys.
 	switch m := m.(type) {

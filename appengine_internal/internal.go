@@ -201,11 +201,11 @@ func Main() {
 // NamespaceMods is a map from API service to a function that will mutate an RPC request to attach a namespace.
 // The function should be prepared to be called on the same message more than once; it should only modify the
 // RPC request the first time.
-var NamespaceMods = make(map[string]func(m proto.Message, namespace string))
+var NamespaceMods = make(map[string]func(m ProtoMessage, namespace string))
 
 // apiOverrides is a map of replacements for the implementation of API RPC calls.
-var apiOverrides = make(map[struct{ service, method string }]func(proto.Message, proto.Message, *CallOptions) error)
+var apiOverrides = make(map[struct{ service, method string }]func(in, out ProtoMessage, opts *CallOptions) error)
 
-func RegisterAPIOverride(service, method string, f func(proto.Message, proto.Message, *CallOptions) error) {
+func RegisterAPIOverride(service, method string, f func(in, out ProtoMessage, opts *CallOptions) error) {
 	apiOverrides[struct{ service, method string }{service, method}] = f
 }

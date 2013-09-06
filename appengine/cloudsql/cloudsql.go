@@ -10,12 +10,14 @@ This package is intended for MySQL drivers to make App Engine-specific connectio
 Applications should use this package through database/sql:
 Select a pure Go MySQL driver that supports this package, and use sql.Open
 with protocol "cloudsql" and an address of the CloudSQL instance.
+The exact format of the second argument to sql.Open is driver-dependent;
+consult the driver's documentation for details.
 
 Example:
 	import "database/sql"
 	import _ "<some mysql package>"
 
-	db, err := sql.Open("mysql", "cloudsql(my-instance)/dbname")
+	db, err := sql.Open("mysql", "cloudsql:my-instance*dbname/user/passwd")
 */
 package cloudsql
 

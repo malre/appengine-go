@@ -15,6 +15,7 @@ import (
 )
 
 var (
+	typeOfBlobKey   = reflect.TypeOf(appengine.BlobKey(""))
 	typeOfByteSlice = reflect.TypeOf([]byte(nil))
 	typeOfTime      = reflect.TypeOf(time.Time{})
 )
@@ -96,10 +97,31 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 	} else if requireSlice {
 		return "multiple-valued property requires a slice field type"
 	}
+
+	// Convert indexValues to a Go value with a meaning derived from the
+	// destination type.
+	pValue := p.Value
+	if iv, ok := pValue.(indexValue); ok {
+		meaning := pb.Property_NO_MEANING
+		switch v.Type() {
+		case typeOfBlobKey:
+			meaning = pb.Property_BLOBKEY
+		case typeOfByteSlice:
+			meaning = pb.Property_BLOB
+		case typeOfTime:
+			meaning = pb.Property_GD_WHEN
+		}
+		var err error
+		pValue, err = propValue(iv.value, meaning)
+		if err != nil {
+			return err.Error()
+		}
+	}
+
 	switch v.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		x, ok := p.Value.(int64)
-		if !ok && p.Value != nil {
+		x, ok := pValue.(int64)
+		if !ok && pValue != nil {
 			return typeMismatchReason(p, v)
 		}
 		if v.OverflowInt(x) {
@@ -107,24 +129,24 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 		}
 		v.SetInt(x)
 	case reflect.Bool:
-		x, ok := p.Value.(bool)
-		if !ok && p.Value != nil {
+		x, ok := pValue.(bool)
+		if !ok && pValue != nil {
 			return typeMismatchReason(p, v)
 		}
 		v.SetBool(x)
 	case reflect.String:
-		if x, ok := p.Value.(appengine.BlobKey); ok {
+		if x, ok := pValue.(appengine.BlobKey); ok {
 			v.SetString(string(x))
 			break
 		}
-		x, ok := p.Value.(string)
-		if !ok && p.Value != nil {
+		x, ok := pValue.(string)
+		if !ok && pValue != nil {
 			return typeMismatchReason(p, v)
 		}
 		v.SetString(x)
 	case reflect.Float32, reflect.Float64:
-		x, ok := p.Value.(float64)
-		if !ok && p.Value != nil {
+		x, ok := pValue.(float64)
+		if !ok && pValue != nil {
 			return typeMismatchReason(p, v)
 		}
 		if v.OverflowFloat(x) {
@@ -132,8 +154,8 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 		}
 		v.SetFloat(x)
 	case reflect.Ptr:
-		x, ok := p.Value.(*Key)
-		if !ok && p.Value != nil {
+		x, ok := pValue.(*Key)
+		if !ok && pValue != nil {
 			return typeMismatchReason(p, v)
 		}
 		if _, ok := v.Interface().(*Key); !ok {
@@ -141,8 +163,8 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 		}
 		v.Set(reflect.ValueOf(x))
 	case reflect.Struct:
-		x, ok := p.Value.(time.Time)
-		if !ok && p.Value != nil {
+		x, ok := pValue.(time.Time)
+		if !ok && pValue != nil {
 			return typeMismatchReason(p, v)
 		}
 		if _, ok := v.Interface().(time.Time); !ok {
@@ -150,8 +172,8 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 		}
 		v.Set(reflect.ValueOf(x))
 	case reflect.Slice:
-		x, ok := p.Value.([]byte)
-		if !ok && p.Value != nil {
+		x, ok := pValue.([]byte)
+		if !ok && pValue != nil {
 			return typeMismatchReason(p, v)
 		}
 		if _, ok := v.Interface().([]byte); !ok {
@@ -222,32 +244,15 @@ func protoToProperties(dst chan<- Property, errc chan<- error, src *pb.EntityPro
 		}
 
 		var value interface{}
-		switch {
-		case x.Value.Int64Value != nil:
-			if x.Meaning != nil && *x.Meaning == pb.Property_GD_WHEN {
-				value = fromUnixMicro(*x.Value.Int64Value)
-			} else {
-				value = *x.Value.Int64Value
-			}
-		case x.Value.BooleanValue != nil:
-			value = *x.Value.BooleanValue
-		case x.Value.StringValue != nil:
-			if x.Meaning != nil && *x.Meaning == pb.Property_BLOB {
-				value = []byte(*x.Value.StringValue)
-			} else if x.Meaning != nil && *x.Meaning == pb.Property_BLOBKEY {
-				value = appengine.BlobKey(*x.Value.StringValue)
-			} else {
-				value = *x.Value.StringValue
-			}
-		case x.Value.DoubleValue != nil:
-			value = *x.Value.DoubleValue
-		case x.Value.Referencevalue != nil:
-			key, err := referenceValueToKey(x.Value.Referencevalue)
+		if x.Meaning != nil && *x.Meaning == pb.Property_INDEX_VALUE {
+			value = indexValue{x.Value}
+		} else {
+			var err error
+			value, err = propValue(x.Value, x.GetMeaning())
 			if err != nil {
 				errc <- err
 				return
 			}
-			value = key
 		}
 		dst <- Property{
 			Name:     x.GetName(),
@@ -257,4 +262,48 @@ func protoToProperties(dst chan<- Property, errc chan<- error, src *pb.EntityPro
 		}
 	}
 	errc <- nil
+}
+
+// propValue returns a Go value that combines the raw PropertyValue with a
+// meaning. For example, an Int64Value with GD_WHEN becomes a time.Time.
+func propValue(v *pb.PropertyValue, m pb.Property_Meaning) (interface{}, error) {
+	switch {
+	case v.Int64Value != nil:
+		if m == pb.Property_GD_WHEN {
+			return fromUnixMicro(*v.Int64Value), nil
+		} else {
+			return *v.Int64Value, nil
+		}
+	case v.BooleanValue != nil:
+		return *v.BooleanValue, nil
+	case v.StringValue != nil:
+		if m == pb.Property_BLOB {
+			return []byte(*v.StringValue), nil
+		} else if m == pb.Property_BLOBKEY {
+			return appengine.BlobKey(*v.StringValue), nil
+		} else {
+			return *v.StringValue, nil
+		}
+	case v.DoubleValue != nil:
+		return *v.DoubleValue, nil
+	case v.Referencevalue != nil:
+		key, err := referenceValueToKey(v.Referencevalue)
+		if err != nil {
+			return nil, err
+		}
+		return key, nil
+	}
+	return nil, nil
+}
+
+// indexValue is a Property value that is created when entities are loaded from
+// an index, such as from a projection query.
+//
+// Such Property values do not contain all of the metadata required to be
+// faithfully represented as a Go value, and are instead represented as an
+// opaque indexValue. Load the properties into a concrete struct type (e.g. by
+// passing a struct pointer to Iterator.Next) to reconstruct actual Go values
+// of type int, string, time.Time, etc.
+type indexValue struct {
+	value *pb.PropertyValue
 }

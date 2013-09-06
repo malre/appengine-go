@@ -67,16 +67,18 @@ func handle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// Only allow datastore_v3 for now.
-	if *remReq.ServiceName != "datastore_v3" {
+	// Only allow datastore_v3 for now, or AllocateIds for datastore_v4.
+	service, method := *remReq.ServiceName, *remReq.Method
+	ok := service == "datastore_v3" || (service == "datastore_v4" && method == "AllocateIds")
+	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
-		c.Errorf("Unsupported service %q", *remReq.ServiceName)
+		c.Errorf("Unsupported RPC /%s.%s", service, method)
 		return
 	}
 
 	rawReq := &rawMessage{remReq.Request}
 	rawRes := &rawMessage{}
-	err = c.Call(*remReq.ServiceName, *remReq.Method, rawReq, rawRes, nil)
+	err = c.Call(service, method, rawReq, rawRes, nil)
 
 	remRes := &pb.Response{}
 	if err == nil {
@@ -102,7 +104,7 @@ func handle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	c.Infof("Spooling %d bytes of response to /%s.%s", len(out), *remReq.ServiceName, *remReq.Method)
+	c.Infof("Spooling %d bytes of response to /%s.%s", len(out), service, method)
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Length", strconv.Itoa(len(out)))
 	w.Write(out)
