@@ -10,6 +10,7 @@ import (
 
 	"appengine_internal"
 	pb "appengine_internal/app_identity"
+	modpb "appengine_internal/modules"
 )
 
 // AppID returns the application ID for the current application.
@@ -48,6 +49,7 @@ func DefaultVersionHostname(c Context) string {
 // VersionID returns the version ID for the current application.
 // It will be of the form "X.Y", where X is specified in app.yaml,
 // and Y is a number generated when each version of the app is uploaded.
+// It does not include a module name.
 func VersionID(c Context) string { return appengine_internal.VersionID(c.Request()) }
 
 // InstanceID returns a mostly-unique identifier for this instance.
@@ -78,6 +80,30 @@ func AccessToken(c Context, scopes ...string) (token string, expiry time.Time, e
 	return res.GetAccessToken(), time.Unix(res.GetExpirationTime(), 0), nil
 }
 
+// Certificate represents a public certificate for the app.
+type Certificate struct {
+	KeyName string
+	Data    []byte // PEM-encoded X.509 certificate
+}
+
+// PublicCertificates retrieves the public certificates for the app.
+// They can be used to verify a signature returned by SignBytes.
+func PublicCertificates(c Context) ([]Certificate, error) {
+	req := &pb.GetPublicCertificateForAppRequest{}
+	res := &pb.GetPublicCertificateForAppResponse{}
+	if err := c.Call("app_identity_service", "GetPublicCertificatesForApp", req, res, nil); err != nil {
+		return nil, err
+	}
+	var cs []Certificate
+	for _, pc := range res.PublicCertificateList {
+		cs = append(cs, Certificate{
+			KeyName: pc.GetKeyName(),
+			Data:    []byte(pc.GetX509CertificatePem()),
+		})
+	}
+	return cs, nil
+}
+
 // ServiceAccount returns a string representing the service account name, in
 // the form of an email address (typically app_id@appspot.gserviceaccount.com).
 func ServiceAccount(c Context) (string, error) {
@@ -105,4 +131,5 @@ func SignBytes(c Context, bytes []byte) (string, []byte, error) {
 
 func init() {
 	appengine_internal.RegisterErrorCodeMap("app_identity_service", pb.AppIdentityServiceError_ErrorCode_name)
+	appengine_internal.RegisterErrorCodeMap("modules", modpb.ModulesServiceError_ErrorCode_name)
 }

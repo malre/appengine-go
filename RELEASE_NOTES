@@ -3,6 +3,17 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.8.5 - September 2013
+==============================
+appengine:
+  - Add PublicCertificates function.
+appengine/conversion:
+  ! Remove package.
+appengine/search:
+  - Add namespace support.
+appengine/taskqueue:
+  - Add ErrTaskAlreadyAdded var.
+
 Version 1.8.4 - September 2013
 ==============================
 appengine/search:

@@ -506,7 +506,7 @@ func (m *Scope) GetType() Scope_Type {
 	if m != nil && m.Type != nil {
 		return *m.Type
 	}
-	return 0
+	return Scope_USER_BY_CANONICAL_ID
 }
 
 func (m *Scope) GetValue() string {
@@ -538,7 +538,7 @@ func (m *Entry) GetPermission() Entry_Permission {
 	if m != nil && m.Permission != nil {
 		return *m.Permission
 	}
-	return 0
+	return Entry_READ
 }
 
 func (m *Entry) GetDisplayName() string {
@@ -776,7 +776,7 @@ func (m *RequestStatus) GetCode() SearchServiceError_ErrorCode {
 	if m != nil && m.Code != nil {
 		return *m.Code
 	}
-	return 0
+	return SearchServiceError_OK
 }
 
 func (m *RequestStatus) GetErrorDetail() string {

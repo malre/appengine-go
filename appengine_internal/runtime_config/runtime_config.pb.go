@@ -30,6 +30,7 @@ type Config struct {
 	InstanceId       *string       `protobuf:"bytes,13,req,name=instance_id" json:"instance_id,omitempty"`
 	StderrLogLevel   *int64        `protobuf:"varint,15,opt,name=stderr_log_level,def=1" json:"stderr_log_level,omitempty"`
 	AuthDomain       *string       `protobuf:"bytes,16,req,name=auth_domain" json:"auth_domain,omitempty"`
+	MaxInstances     *int32        `protobuf:"varint,18,opt,name=max_instances" json:"max_instances,omitempty"`
 	XXX_unrecognized []byte        `json:"-"`
 }
 
@@ -160,6 +161,13 @@ func (m *Config) GetAuthDomain() string {
 		return *m.AuthDomain
 	}
 	return ""
+}
+
+func (m *Config) GetMaxInstances() int32 {
+	if m != nil && m.MaxInstances != nil {
+		return *m.MaxInstances
+	}
+	return 0
 }
 
 type PhpConfig struct {

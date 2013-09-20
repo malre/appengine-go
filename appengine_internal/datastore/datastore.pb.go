@@ -912,7 +912,7 @@ func (m *Property) GetFtsTokenizationOption() Property_FtsTokenizationOption {
 	if m != nil && m.FtsTokenizationOption != nil {
 		return *m.FtsTokenizationOption
 	}
-	return 0
+	return Property_HTML
 }
 
 func (m *Property) GetLocale() string {
@@ -1107,7 +1107,7 @@ func (m *EntityProto) GetKind() EntityProto_Kind {
 	if m != nil && m.Kind != nil {
 		return *m.Kind
 	}
-	return 0
+	return EntityProto_GD_CONTACT
 }
 
 func (m *EntityProto) GetKindUri() string {
@@ -1260,7 +1260,7 @@ func (m *CompositeIndex) GetState() CompositeIndex_State {
 	if m != nil && m.State != nil {
 		return *m.State
 	}
-	return 0
+	return CompositeIndex_WRITE_ONLY
 }
 
 func (m *CompositeIndex) GetOnlyUseIfRequired() bool {
@@ -1471,7 +1471,7 @@ func (m *Query) GetHint() Query_Hint {
 	if m != nil && m.Hint != nil {
 		return *m.Hint
 	}
-	return 0
+	return Query_ORDER_FIRST
 }
 
 func (m *Query) GetCount() int32 {
@@ -1614,7 +1614,7 @@ func (m *Query_Filter) GetOp() Query_Filter_Operator {
 	if m != nil && m.Op != nil {
 		return *m.Op
 	}
-	return 0
+	return Query_Filter_LESS_THAN
 }
 
 func (m *Query_Filter) GetProperty() []*Property {
@@ -1995,12 +1995,13 @@ func (m *Error) String() string { return proto.CompactTextString(m) }
 func (*Error) ProtoMessage()    {}
 
 type Cost struct {
-	IndexWrites      *int32           `protobuf:"varint,1,opt,name=index_writes" json:"index_writes,omitempty"`
-	IndexWriteBytes  *int32           `protobuf:"varint,2,opt,name=index_write_bytes" json:"index_write_bytes,omitempty"`
-	EntityWrites     *int32           `protobuf:"varint,3,opt,name=entity_writes" json:"entity_writes,omitempty"`
-	EntityWriteBytes *int32           `protobuf:"varint,4,opt,name=entity_write_bytes" json:"entity_write_bytes,omitempty"`
-	Commitcost       *Cost_CommitCost `protobuf:"group,5,opt,name=CommitCost" json:"commitcost,omitempty"`
-	XXX_unrecognized []byte           `json:"-"`
+	IndexWrites             *int32           `protobuf:"varint,1,opt,name=index_writes" json:"index_writes,omitempty"`
+	IndexWriteBytes         *int32           `protobuf:"varint,2,opt,name=index_write_bytes" json:"index_write_bytes,omitempty"`
+	EntityWrites            *int32           `protobuf:"varint,3,opt,name=entity_writes" json:"entity_writes,omitempty"`
+	EntityWriteBytes        *int32           `protobuf:"varint,4,opt,name=entity_write_bytes" json:"entity_write_bytes,omitempty"`
+	Commitcost              *Cost_CommitCost `protobuf:"group,5,opt,name=CommitCost" json:"commitcost,omitempty"`
+	ApproximateStorageDelta *int32           `protobuf:"varint,8,opt,name=approximate_storage_delta" json:"approximate_storage_delta,omitempty"`
+	XXX_unrecognized        []byte           `json:"-"`
 }
 
 func (m *Cost) Reset()         { *m = Cost{} }
@@ -2040,6 +2041,13 @@ func (m *Cost) GetCommitcost() *Cost_CommitCost {
 		return m.Commitcost
 	}
 	return nil
+}
+
+func (m *Cost) GetApproximateStorageDelta() int32 {
+	if m != nil && m.ApproximateStorageDelta != nil {
+		return *m.ApproximateStorageDelta
+	}
+	return 0
 }
 
 type Cost_CommitCost struct {

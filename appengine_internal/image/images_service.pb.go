@@ -605,7 +605,7 @@ func (m *CompositeImageOptions) GetAnchor() CompositeImageOptions_ANCHOR {
 	if m != nil && m.Anchor != nil {
 		return *m.Anchor
 	}
-	return 0
+	return CompositeImageOptions_TOP_LEFT
 }
 
 type ImagesCanvas struct {

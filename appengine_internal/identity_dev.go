@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"code.google.com/p/goprotobuf/proto"
 
@@ -22,7 +23,6 @@ const (
 )
 
 func BackendHostname(c apiContext, name string, index int) string {
-	// TODO: Use the modules API when one exists.
 	req := &pb.GetHostnameRequest{
 		Module: proto.String(name),
 	}
@@ -42,6 +42,15 @@ func BackendHostname(c apiContext, name string, index int) string {
 
 func DefaultVersionHostname(req interface{}) string {
 	return req.(*http.Request).Host
+}
+
+func ModuleName(req interface{}) string {
+	// instanceConfig.VersionID is either "module:version.timestamp"
+	// or "version.timestamp".
+	if i := strings.Index(instanceConfig.VersionID, ":"); i >= 0 {
+		return instanceConfig.VersionID[:i]
+	}
+	return "default"
 }
 
 func BackendInstance() int {

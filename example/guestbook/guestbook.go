@@ -5,9 +5,8 @@
 package guestbook
 
 import (
-	"io"
+	"html/template"
 	"net/http"
-	"text/template"
 	"time"
 
 	"appengine"
@@ -21,25 +20,23 @@ type Greeting struct {
 	Date    time.Time
 }
 
-func serve404(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusNotFound)
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	io.WriteString(w, "Not Found")
+func init() {
+	http.HandleFunc("/", handleMainPage)
+	http.HandleFunc("/sign", handleSign)
 }
 
-func serveError(c appengine.Context, w http.ResponseWriter, err error) {
-	w.WriteHeader(http.StatusInternalServerError)
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	io.WriteString(w, "Internal Server Error")
-	c.Errorf("%v", err)
+// guestbookKey returns the key used for all guestbook entries.
+func guestbookKey(c appengine.Context) *datastore.Key {
+	// The string "default_guestbook" here could be varied to have multiple guestbooks.
+	return datastore.NewKey(c, "Guestbook", "default_guestbook", 0, nil)
 }
 
 var mainPage = template.Must(template.New("guestbook").Parse(
 	`<html><body>
 {{range .}}
-{{with .Author}}<b>{{.|html}}</b>{{else}}An anonymous person{{end}}
+{{with .Author}}<b>{{.}}</b>{{else}}An anonymous person{{end}}
 on <em>{{.Date.Format "3:04pm, Mon 2 Jan"}}</em>
-wrote <blockquote>{{.Content|html}}</blockquote>
+wrote <blockquote>{{.Content}}</blockquote>
 {{end}}
 <form action="/sign" method="post">
 <div><textarea name="content" rows="3" cols="60"></textarea></div>
@@ -49,15 +46,15 @@ wrote <blockquote>{{.Content|html}}</blockquote>
 
 func handleMainPage(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" || r.URL.Path != "/" {
-		serve404(w)
+		http.NotFound(w, r)
 		return
 	}
 	c := appengine.NewContext(r)
-	q := datastore.NewQuery("Greeting").Order("-Date").Limit(10)
+	q := datastore.NewQuery("Greeting").Ancestor(guestbookKey(c)).Order("-Date").Limit(10)
 	var gg []*Greeting
 	_, err := q.GetAll(c, &gg)
 	if err != nil {
-		serveError(c, w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -68,12 +65,12 @@ func handleMainPage(w http.ResponseWriter, r *http.Request) {
 
 func handleSign(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
-		serve404(w)
+		http.NotFound(w, r)
 		return
 	}
 	c := appengine.NewContext(r)
 	if err := r.ParseForm(); err != nil {
-		serveError(c, w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	g := &Greeting{
@@ -83,14 +80,10 @@ func handleSign(w http.ResponseWriter, r *http.Request) {
 	if u := user.Current(c); u != nil {
 		g.Author = u.String()
 	}
-	if _, err := datastore.Put(c, datastore.NewIncompleteKey(c, "Greeting", nil), g); err != nil {
-		serveError(c, w, err)
+	key := datastore.NewIncompleteKey(c, "Greeting", guestbookKey(c))
+	if _, err := datastore.Put(c, key, g); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	http.Redirect(w, r, "/", http.StatusFound)
-}
-
-func init() {
-	http.HandleFunc("/", handleMainPage)
-	http.HandleFunc("/sign", handleSign)
 }

@@ -689,7 +689,7 @@ func (m *MemcacheIncrementResponse) GetIncrementStatus() MemcacheIncrementRespon
 	if m != nil && m.IncrementStatus != nil {
 		return *m.IncrementStatus
 	}
-	return 0
+	return MemcacheIncrementResponse_OK
 }
 
 type MemcacheBatchIncrementRequest struct {

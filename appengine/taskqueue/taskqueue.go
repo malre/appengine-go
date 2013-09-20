@@ -31,6 +31,11 @@ import (
 	"code.google.com/p/goprotobuf/proto"
 )
 
+var (
+	// ErrTaskAlreadyAdded is the error returned by Add and AddMulti when a task has already been added with a particular name.
+	ErrTaskAlreadyAdded = errors.New("taskqueue: task has already been added")
+)
+
 // RetryOptions let you control whether to retry a task and the backoff intervals between tries.
 type RetryOptions struct {
 	// Number of tries/leases after which the task fails permanently and is deleted.
@@ -220,6 +225,11 @@ func newAddReq(c appengine.Context, task *Task, queueName string) (*taskqueue_pr
 	return req, nil
 }
 
+var alreadyAddedErrors = map[taskqueue_proto.TaskQueueServiceError_ErrorCode]bool{
+	taskqueue_proto.TaskQueueServiceError_TASK_ALREADY_EXISTS: true,
+	taskqueue_proto.TaskQueueServiceError_TOMBSTONED_TASK:     true,
+}
+
 // Add adds the task to a named queue.
 // An empty queue name means that the default queue will be used.
 // Add returns an equivalent Task with defaults filled in, including setting
@@ -231,6 +241,10 @@ func Add(c appengine.Context, task *Task, queueName string) (*Task, error) {
 	}
 	res := &taskqueue_proto.TaskQueueAddResponse{}
 	if err := c.Call("taskqueue", "Add", req, res, nil); err != nil {
+		apiErr, ok := err.(*appengine_internal.APIError)
+		if ok && alreadyAddedErrors[taskqueue_proto.TaskQueueServiceError_ErrorCode(apiErr.Code)] {
+			return nil, ErrTaskAlreadyAdded
+		}
 		return nil, err
 	}
 	resultTask := *task
@@ -274,9 +288,13 @@ func AddMulti(c appengine.Context, tasks []*Task, queueName string) ([]*Task, er
 			tasksOut[i].Name = string(tr.ChosenTaskName)
 		}
 		if *tr.Result != taskqueue_proto.TaskQueueServiceError_OK {
-			me[i] = &appengine_internal.APIError{
-				Service: "taskqueue",
-				Code:    int32(*tr.Result),
+			if alreadyAddedErrors[*tr.Result] {
+				me[i] = ErrTaskAlreadyAdded
+			} else {
+				me[i] = &appengine_internal.APIError{
+					Service: "taskqueue",
+					Code:    int32(*tr.Result),
+				}
 			}
 			any = true
 		}
@@ -459,10 +477,27 @@ func QueueStats(c appengine.Context, queueNames []string, maxTasks int) ([]Queue
 	return qs, nil
 }
 
+func setTransaction(x *taskqueue_proto.TaskQueueAddRequest, t *dspb.Transaction) {
+	// The message matches, but the generated types are distinct.
+	x.Transaction = &taskqueue_proto.Transaction{
+		Handle:      t.Handle,
+		App:         t.App,
+		MarkChanges: t.MarkChanges,
+	}
+}
+
 func init() {
 	appengine_internal.RegisterErrorCodeMap("taskqueue", taskqueue_proto.TaskQueueServiceError_ErrorCode_name)
 
 	// Datastore error codes are shifted by DATASTORE_ERROR when presented through taskqueue.
 	dsCode := int32(taskqueue_proto.TaskQueueServiceError_DATASTORE_ERROR) + int32(dspb.Error_TIMEOUT)
 	appengine_internal.RegisterTimeoutErrorCode("taskqueue", dsCode)
+
+	// Transaction registration.
+	appengine_internal.RegisterTransactionSetter(setTransaction)
+	appengine_internal.RegisterTransactionSetter(func(x *taskqueue_proto.TaskQueueBulkAddRequest, t *dspb.Transaction) {
+		for _, req := range x.AddRequest {
+			setTransaction(req, t)
+		}
+	})
 }

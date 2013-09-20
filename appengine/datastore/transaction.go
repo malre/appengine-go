@@ -6,7 +6,6 @@ package datastore
 
 import (
 	"errors"
-	"reflect"
 
 	"appengine"
 	"appengine_internal"
@@ -14,6 +13,21 @@ import (
 
 	pb "appengine_internal/datastore"
 )
+
+func init() {
+	appengine_internal.RegisterTransactionSetter(func(x *pb.Query, t *pb.Transaction) {
+		x.Transaction = t
+	})
+	appengine_internal.RegisterTransactionSetter(func(x *pb.GetRequest, t *pb.Transaction) {
+		x.Transaction = t
+	})
+	appengine_internal.RegisterTransactionSetter(func(x *pb.PutRequest, t *pb.Transaction) {
+		x.Transaction = t
+	})
+	appengine_internal.RegisterTransactionSetter(func(x *pb.DeleteRequest, t *pb.Transaction) {
+		x.Transaction = t
+	})
+}
 
 // ErrConcurrentTransaction is returned when a transaction is rolled back due
 // to a conflict with a concurrent transaction.
@@ -25,78 +39,11 @@ type transaction struct {
 	finished    bool
 }
 
-var errBadTransactionField = errors.New("datastore: Call parameter has an incompatible Transaction field")
-
-// setTransactionField performs the equivalent of "x.Transaction =
-// &t.transaction", where x is a pointer to a protocol buffer value whose
-// Transaction field has a different but field-for-field equivalent protocol
-// buffer type to the *pb.Transaction type.
-//
-// It is not an error if x does not have a Transaction field at all.
-//
-// errBadTransactionField is returned if x does have a Transaction field but
-// it is not field-for-field assignment compatible with t.transaction.
-//
-// This reflect-based copy is necessary because the script that generates the
-// datastore and taskqueue protocol buffer definitions lead to two distinct
-// types in Go, even though they are conceptually the same.
-func (t *transaction) setTransactionField(x interface{}) (err error) {
-	v := reflect.ValueOf(x)
-	if v.Kind() != reflect.Ptr || v.Type().Elem().Kind() != reflect.Struct {
-		return errBadTransactionField
-	}
-	v = v.Elem().FieldByName("Transaction")
-	if !v.IsValid() {
-		// x does not have a Transaction field. That is not an error.
-		return nil
-	}
-	if v.Kind() != reflect.Ptr || v.Type().Elem().Kind() != reflect.Struct {
-		return errBadTransactionField
-	}
-	// Perform a field-for-field copy from t.transaction to a newly allocated value.
-	fieldPtr := v
-	dstPtr := reflect.New(v.Type().Elem())
-	dst := dstPtr.Elem()
-	src := reflect.ValueOf(&t.transaction).Elem()
-	if dst.NumField() != src.NumField() {
-		return errBadTransactionField
-	}
-	for i := 0; i < src.NumField(); i++ {
-		if dst.Type().Field(i).Name != src.Type().Field(i).Name {
-			return errBadTransactionField
-		}
-		df := dst.Field(i)
-		sf := src.Field(i)
-		if !sf.Type().AssignableTo(df.Type()) {
-			return errBadTransactionField
-		}
-		df.Set(sf)
-	}
-	fieldPtr.Set(dstPtr)
-	return nil
-}
-
 func (t *transaction) Call(service, method string, in, out appengine_internal.ProtoMessage, opts *appengine_internal.CallOptions) error {
 	if t.finished {
 		return errors.New("datastore: transaction context has expired")
 	}
-	switch service {
-	case "datastore_v3":
-		switch x := in.(type) {
-		case *pb.Query:
-			x.Transaction = &t.transaction
-		case *pb.GetRequest:
-			x.Transaction = &t.transaction
-		case *pb.PutRequest:
-			x.Transaction = &t.transaction
-		case *pb.DeleteRequest:
-			x.Transaction = &t.transaction
-		}
-	case "taskqueue":
-		if err := t.setTransactionField(in); err != nil {
-			return err
-		}
-	}
+	appengine_internal.ApplyTransaction(in, &t.transaction)
 	return t.Context.Call(service, method, in, out, opts)
 }
 

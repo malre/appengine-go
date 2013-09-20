@@ -16,7 +16,7 @@ pointers, and the valid types for a struct's fields are:
 
 Example code:
 
-	type Doc struct{
+	type Doc struct {
 		Author   string
 		Comment  string
 		Creation time.Time
@@ -69,7 +69,6 @@ with an upper case letter.
 */
 package search
 
-// TODO: namespace support.
 // TODO: a PropertyLoadSaver interface, similar to package datastore?
 // TODO: let Put specify the document language: "en", "fr", etc. Also: order_id?? storage??
 // TODO: Index.GetAll.
@@ -442,6 +441,25 @@ func loadFields(dst interface{}, fields []*pb.Field) error {
 	return nil
 }
 
+func namespaceMod(m appengine_internal.ProtoMessage, namespace string) {
+	set := func(s **string) {
+		if *s == nil {
+			*s = &namespace
+		}
+	}
+	switch m := m.(type) {
+	case *pb.IndexDocumentRequest:
+		set(&m.Params.IndexSpec.Namespace)
+	case *pb.ListDocumentsRequest:
+		set(&m.Params.IndexSpec.Namespace)
+	case *pb.DeleteDocumentRequest:
+		set(&m.Params.IndexSpec.Namespace)
+	case *pb.SearchRequest:
+		set(&m.Params.IndexSpec.Namespace)
+	}
+}
+
 func init() {
 	appengine_internal.RegisterErrorCodeMap("search", pb.SearchServiceError_ErrorCode_name)
+	appengine_internal.NamespaceMods["search"] = namespaceMod
 }

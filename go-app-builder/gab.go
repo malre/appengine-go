@@ -32,6 +32,7 @@ import (
 	"runtime"
 	"sort"
 	"strings"
+	"time"
 )
 
 var (
@@ -119,10 +120,19 @@ func main() {
 		return
 	}
 
-	if err := buildApp(app); err != nil {
+	gTimer.name = *arch + "g"
+	pTimer.name = "gopack"
+	lTimer.name = *arch + "l"
+
+	err = buildApp(app)
+	log.Printf("go-app-builder: build timing: %v, %v, %v", &gTimer, &pTimer, &lTimer)
+	if err != nil {
 		log.Fatalf("go-app-builder: %v", err)
 	}
 }
+
+// Timers that are manipulated in buildApp.
+var gTimer, pTimer, lTimer timer // manipulated in buildApp
 
 func plural(n int, suffix string) string {
 	if n == 1 {
@@ -219,7 +229,7 @@ func buildApp(app *App) error {
 			args = append(args, mainFile)
 		}
 		defer os.Remove(objectFile)
-		if err := run(args, env); err != nil {
+		if err := gTimer.run(args, env); err != nil {
 			return err
 		}
 
@@ -239,7 +249,7 @@ func buildApp(app *App) error {
 			objectFile,
 		}
 		defer os.Remove(archiveFile)
-		if err := run(args, env); err != nil {
+		if err := pTimer.run(args, env); err != nil {
 			return err
 		}
 		if i != len(app.Packages)-1 && len(extra) > 0 {
@@ -250,7 +260,7 @@ func buildApp(app *App) error {
 				"grcP", absWorkDir,
 				archiveFile,
 			}
-			if err := run(args, env); err != nil {
+			if err := pTimer.run(args, env); err != nil {
 				return err
 			}
 		}
@@ -265,11 +275,10 @@ func buildApp(app *App) error {
 		"-L", goRootSearchPath,
 		"-L", *workDir,
 		"-o", binaryFile,
-		"-w", // disable dwarf generation
 	}
 	if !*dynamic {
-		// force the binary to be statically linked
-		args = append(args, "-d")
+		// force the binary to be statically linked and disable dwarf generation
+		args = append(args, "-d", "-w")
 	}
 	if !*unsafe {
 		// reject unsafe code
@@ -279,7 +288,7 @@ func buildApp(app *App) error {
 		args = append(args, parseToolFlags(*ldFlags)...)
 	}
 	args = append(args, archiveFile)
-	if err := run(args, env); err != nil {
+	if err := lTimer.run(args, env); err != nil {
 		return err
 	}
 
@@ -293,6 +302,26 @@ func buildApp(app *App) error {
 	}
 
 	return nil
+}
+
+type timer struct {
+	name  string
+	n     int
+	total time.Duration
+}
+
+func (t *timer) run(args, env []string) error {
+	start := time.Now()
+	err := run(args, env)
+
+	t.n++
+	t.total += time.Since(start)
+
+	return err
+}
+
+func (t *timer) String() string {
+	return fmt.Sprintf("%d×%s (%v total)", t.n, t.name, t.total)
 }
 
 func printExtraFiles(w io.Writer, app *App) {

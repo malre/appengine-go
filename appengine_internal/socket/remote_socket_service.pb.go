@@ -1027,14 +1027,14 @@ func (m *CreateSocketRequest) GetFamily() CreateSocketRequest_SocketFamily {
 	if m != nil && m.Family != nil {
 		return *m.Family
 	}
-	return 0
+	return CreateSocketRequest_IPv4
 }
 
 func (m *CreateSocketRequest) GetProtocol() CreateSocketRequest_SocketProtocol {
 	if m != nil && m.Protocol != nil {
 		return *m.Protocol
 	}
-	return 0
+	return CreateSocketRequest_TCP
 }
 
 func (m *CreateSocketRequest) GetSocketOptions() []*SocketOption {
@@ -1223,14 +1223,14 @@ func (m *SocketOption) GetLevel() SocketOption_SocketOptionLevel {
 	if m != nil && m.Level != nil {
 		return *m.Level
 	}
-	return 0
+	return SocketOption_SOCKET_SOL_IP
 }
 
 func (m *SocketOption) GetOption() SocketOption_SocketOptionName {
 	if m != nil && m.Option != nil {
 		return *m.Option
 	}
-	return 0
+	return SocketOption_SOCKET_SO_DEBUG
 }
 
 func (m *SocketOption) GetValue() []byte {
@@ -1466,7 +1466,7 @@ func (m *ShutDownRequest) GetHow() ShutDownRequest_How {
 	if m != nil && m.How != nil {
 		return *m.How
 	}
-	return 0
+	return ShutDownRequest_SOCKET_SHUT_RD
 }
 
 func (m *ShutDownRequest) GetSendOffset() int64 {

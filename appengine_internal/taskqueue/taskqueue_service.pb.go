@@ -680,7 +680,7 @@ func (m *TaskQueueBulkAddResponse_TaskResult) GetResult() TaskQueueServiceError_
 	if m != nil && m.Result != nil {
 		return *m.Result
 	}
-	return 0
+	return TaskQueueServiceError_OK
 }
 
 func (m *TaskQueueBulkAddResponse_TaskResult) GetChosenTaskName() []byte {
@@ -783,7 +783,7 @@ func (m *TaskQueueForceRunResponse) GetResult() TaskQueueServiceError_ErrorCode 
 	if m != nil && m.Result != nil {
 		return *m.Result
 	}
-	return 0
+	return TaskQueueServiceError_OK
 }
 
 type TaskQueueUpdateQueueRequest struct {
@@ -1413,7 +1413,7 @@ func (m *TaskQueueQueryTasksResponse_Task) GetMethod() TaskQueueQueryTasksRespon
 	if m != nil && m.Method != nil {
 		return *m.Method
 	}
-	return 0
+	return TaskQueueQueryTasksResponse_Task_GET
 }
 
 func (m *TaskQueueQueryTasksResponse_Task) GetRetryCount() int32 {

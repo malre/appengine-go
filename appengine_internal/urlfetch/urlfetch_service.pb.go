@@ -159,7 +159,7 @@ func (m *URLFetchRequest) GetMethod() URLFetchRequest_RequestMethod {
 	if m != nil && m.Method != nil {
 		return *m.Method
 	}
-	return 0
+	return URLFetchRequest_GET
 }
 
 func (m *URLFetchRequest) GetUrl() string {

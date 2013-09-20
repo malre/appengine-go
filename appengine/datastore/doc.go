@@ -52,7 +52,7 @@ Example code:
 		k := datastore.NewKey(c, "Entity", "stringID", 0, nil)
 		e := new(Entity)
 		if err := datastore.Get(c, k, e); err != nil {
-			serveError(c, w, err)
+			http.Error(w, err.Error(), 500)
 			return
 		}
 
@@ -60,7 +60,7 @@ Example code:
 		e.Value = r.URL.Path
 
 		if _, err := datastore.Put(c, k, e); err != nil {
-			serveError(c, w, err)
+			http.Error(w, err.Error(), 500)
 			return
 		}
 

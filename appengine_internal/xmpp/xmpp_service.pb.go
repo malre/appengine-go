@@ -204,7 +204,7 @@ func (m *PresenceResponse) GetPresence() PresenceResponse_SHOW {
 	if m != nil && m.Presence != nil {
 		return *m.Presence
 	}
-	return 0
+	return PresenceResponse_NORMAL
 }
 
 func (m *PresenceResponse) GetValid() bool {

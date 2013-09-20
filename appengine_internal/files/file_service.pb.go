@@ -550,7 +550,7 @@ func (m *CreateRequest) GetContentType() FileContentType_ContentType {
 	if m != nil && m.ContentType != nil {
 		return *m.ContentType
 	}
-	return 0
+	return FileContentType_RAW
 }
 
 func (m *CreateRequest) GetFilename() string {
@@ -643,14 +643,14 @@ func (m *OpenRequest) GetContentType() FileContentType_ContentType {
 	if m != nil && m.ContentType != nil {
 		return *m.ContentType
 	}
-	return 0
+	return FileContentType_RAW
 }
 
 func (m *OpenRequest) GetOpenMode() OpenRequest_OpenMode {
 	if m != nil && m.OpenMode != nil {
 		return *m.OpenMode
 	}
-	return 0
+	return OpenRequest_APPEND
 }
 
 func (m *OpenRequest) GetExclusiveLock() bool {
@@ -741,7 +741,7 @@ func (m *FileStat) GetContentType() FileContentType_ContentType {
 	if m != nil && m.ContentType != nil {
 		return *m.ContentType
 	}
-	return 0
+	return FileContentType_RAW
 }
 
 func (m *FileStat) GetFinalized() bool {
@@ -1219,7 +1219,7 @@ func (m *GetShuffleStatusResponse) GetStatus() ShuffleEnums_Status {
 	if m != nil && m.Status != nil {
 		return *m.Status
 	}
-	return 0
+	return ShuffleEnums_UNKNOWN
 }
 
 func (m *GetShuffleStatusResponse) GetDescription() string {

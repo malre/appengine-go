@@ -236,7 +236,7 @@ func (m *IsEnabledResponse) GetSummaryStatus() IsEnabledResponse_SummaryStatus {
 	if m != nil && m.SummaryStatus != nil {
 		return *m.SummaryStatus
 	}
-	return 0
+	return IsEnabledResponse_ENABLED
 }
 
 func (m *IsEnabledResponse) GetTimeUntilScheduled() int64 {
