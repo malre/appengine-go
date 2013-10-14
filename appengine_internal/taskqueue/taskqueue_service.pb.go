@@ -117,9 +117,6 @@ func (x TaskQueueServiceError_ErrorCode) Enum() *TaskQueueServiceError_ErrorCode
 func (x TaskQueueServiceError_ErrorCode) String() string {
 	return proto.EnumName(TaskQueueServiceError_ErrorCode_name, int32(x))
 }
-func (x TaskQueueServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *TaskQueueServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(TaskQueueServiceError_ErrorCode_value, data, "TaskQueueServiceError_ErrorCode")
 	if err != nil {
@@ -152,9 +149,6 @@ func (x TaskQueueMode_Mode) Enum() *TaskQueueMode_Mode {
 }
 func (x TaskQueueMode_Mode) String() string {
 	return proto.EnumName(TaskQueueMode_Mode_name, int32(x))
-}
-func (x TaskQueueMode_Mode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *TaskQueueMode_Mode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(TaskQueueMode_Mode_value, data, "TaskQueueMode_Mode")
@@ -198,9 +192,6 @@ func (x TaskQueueAddRequest_RequestMethod) Enum() *TaskQueueAddRequest_RequestMe
 func (x TaskQueueAddRequest_RequestMethod) String() string {
 	return proto.EnumName(TaskQueueAddRequest_RequestMethod_name, int32(x))
 }
-func (x TaskQueueAddRequest_RequestMethod) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *TaskQueueAddRequest_RequestMethod) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(TaskQueueAddRequest_RequestMethod_value, data, "TaskQueueAddRequest_RequestMethod")
 	if err != nil {
@@ -242,9 +233,6 @@ func (x TaskQueueQueryTasksResponse_Task_RequestMethod) Enum() *TaskQueueQueryTa
 }
 func (x TaskQueueQueryTasksResponse_Task_RequestMethod) String() string {
 	return proto.EnumName(TaskQueueQueryTasksResponse_Task_RequestMethod_name, int32(x))
-}
-func (x TaskQueueQueryTasksResponse_Task_RequestMethod) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *TaskQueueQueryTasksResponse_Task_RequestMethod) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(TaskQueueQueryTasksResponse_Task_RequestMethod_value, data, "TaskQueueQueryTasksResponse_Task_RequestMethod")

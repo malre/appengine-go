@@ -48,9 +48,6 @@ func (x UserServiceError_ErrorCode) Enum() *UserServiceError_ErrorCode {
 func (x UserServiceError_ErrorCode) String() string {
 	return proto.EnumName(UserServiceError_ErrorCode_name, int32(x))
 }
-func (x UserServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *UserServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(UserServiceError_ErrorCode_value, data, "UserServiceError_ErrorCode")
 	if err != nil {
@@ -157,8 +154,9 @@ func (m *CreateLogoutURLResponse) GetLogoutUrl() string {
 }
 
 type GetOAuthUserRequest struct {
-	Scope            *string `protobuf:"bytes,1,opt,name=scope" json:"scope,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Scope            *string  `protobuf:"bytes,1,opt,name=scope" json:"scope,omitempty"`
+	Scopes           []string `protobuf:"bytes,2,rep,name=scopes" json:"scopes,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (m *GetOAuthUserRequest) Reset()         { *m = GetOAuthUserRequest{} }
@@ -172,14 +170,22 @@ func (m *GetOAuthUserRequest) GetScope() string {
 	return ""
 }
 
+func (m *GetOAuthUserRequest) GetScopes() []string {
+	if m != nil {
+		return m.Scopes
+	}
+	return nil
+}
+
 type GetOAuthUserResponse struct {
-	Email            *string `protobuf:"bytes,1,req,name=email" json:"email,omitempty"`
-	UserId           *string `protobuf:"bytes,2,req,name=user_id" json:"user_id,omitempty"`
-	AuthDomain       *string `protobuf:"bytes,3,req,name=auth_domain" json:"auth_domain,omitempty"`
-	UserOrganization *string `protobuf:"bytes,4,opt,name=user_organization" json:"user_organization,omitempty"`
-	IsAdmin          *bool   `protobuf:"varint,5,opt,name=is_admin,def=0" json:"is_admin,omitempty"`
-	ClientId         *string `protobuf:"bytes,6,opt,name=client_id" json:"client_id,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Email            *string  `protobuf:"bytes,1,req,name=email" json:"email,omitempty"`
+	UserId           *string  `protobuf:"bytes,2,req,name=user_id" json:"user_id,omitempty"`
+	AuthDomain       *string  `protobuf:"bytes,3,req,name=auth_domain" json:"auth_domain,omitempty"`
+	UserOrganization *string  `protobuf:"bytes,4,opt,name=user_organization" json:"user_organization,omitempty"`
+	IsAdmin          *bool    `protobuf:"varint,5,opt,name=is_admin,def=0" json:"is_admin,omitempty"`
+	ClientId         *string  `protobuf:"bytes,6,opt,name=client_id" json:"client_id,omitempty"`
+	Scopes           []string `protobuf:"bytes,7,rep,name=scopes" json:"scopes,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
 }
 
 func (m *GetOAuthUserResponse) Reset()         { *m = GetOAuthUserResponse{} }
@@ -228,6 +234,13 @@ func (m *GetOAuthUserResponse) GetClientId() string {
 		return *m.ClientId
 	}
 	return ""
+}
+
+func (m *GetOAuthUserResponse) GetScopes() []string {
+	if m != nil {
+		return m.Scopes
+	}
+	return nil
 }
 
 type CheckOAuthSignatureRequest struct {

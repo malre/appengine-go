@@ -57,9 +57,6 @@ func (x BlobstoreServiceError_ErrorCode) Enum() *BlobstoreServiceError_ErrorCode
 func (x BlobstoreServiceError_ErrorCode) String() string {
 	return proto.EnumName(BlobstoreServiceError_ErrorCode_name, int32(x))
 }
-func (x BlobstoreServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *BlobstoreServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(BlobstoreServiceError_ErrorCode_value, data, "BlobstoreServiceError_ErrorCode")
 	if err != nil {

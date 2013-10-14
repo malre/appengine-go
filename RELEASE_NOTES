@@ -3,6 +3,20 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.8.6 - October 2013
+============================
+appengine:
+  - Add ModuleName and ModuleHostname functions.
+appengine/aetest:
+  - New package for testing with a local api_server.py.
+appengine/module:
+  - New package.
+appengine/search:
+  - Add Index.List method and ListOptions.StartID field.
+  - Add Iterator.Count method.
+Other:
+  - Support "goapp build", "goapp install", and "goapp test".
+
 Version 1.8.5 - September 2013
 ==============================
 appengine:

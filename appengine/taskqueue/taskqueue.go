@@ -391,7 +391,7 @@ func Lease(c appengine.Context, maxTasks int, queueName string, leaseTime int) (
 }
 
 // LeaseByTag leases tasks from a queue, grouped by tag.
-// If tag is nil, then the returned tasks are grouped by the tag of the task with earliest Eta.
+// If tag is empty, then the returned tasks are grouped by the tag of the task with earliest ETA.
 // leaseTime is in seconds.
 // The number of tasks fetched will be at most maxTasks.
 func LeaseByTag(c appengine.Context, maxTasks int, queueName string, leaseTime int, tag string) ([]*Task, error) {

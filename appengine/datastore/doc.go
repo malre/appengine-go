@@ -194,7 +194,7 @@ Example code:
 		defer close(c)
 		// Validate the Sum field.
 		if x.Sum != x.I + x.J {
-			return os.NewError("CustomPropsExample has inconsistent sum")
+			return errors.New("CustomPropsExample has inconsistent sum")
 		}
 		// Save I and J as usual. The code below is equivalent to calling
 		// "return datastore.SaveStruct(x, c)", but is done manually for
@@ -250,7 +250,7 @@ Example code:
 		q := datastore.NewQuery("Widget").
 			Filter("Price <", 1000).
 			Order("-Price")
-		b := bytes.NewBuffer(nil)
+		b := new(bytes.Buffer)
 		for t := q.Run(c); ; {
 			var x Widget
 			key, err := t.Next(&x)

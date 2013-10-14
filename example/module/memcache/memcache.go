@@ -2,8 +2,8 @@
 // Use of this source code is governed by the Apache 2.0
 // license that can be found in the LICENSE file.
 
-// Package backend implements a simple memcache-alike.
-package backend
+// Package memcache implements a simple memcache-alike.
+package memcache
 
 import (
 	"io"
@@ -25,7 +25,7 @@ var (
 )
 
 func handleStart(w http.ResponseWriter, r *http.Request) {
-	// This handler is executed when a backend instance is started.
+	// This handler is executed when an instance is started.
 	// If it responds with a HTTP 2xx or 404 response then it is ready to go.
 	// Otherwise, the instance is terminated and restarted.
 	// The instance will receive traffic after this handler returns.
@@ -34,17 +34,17 @@ func handleStart(w http.ResponseWriter, r *http.Request) {
 	http.HandleFunc("/memcache/get", handleGet)
 	http.HandleFunc("/memcache/set", handleSet)
 	cache = make(map[string][]byte)
-	c.Infof("Memcache backend started.")
+	c.Infof("Memcache module started.")
 	io.WriteString(w, "OK")
 }
 
 func handleStop(w http.ResponseWriter, r *http.Request) {
-	// This handler is executed when a backend instance is being shut down.
+	// This handler is executed when an instance is being shut down.
 	// It has 30s before it will be terminated.
 	// When this is called, no new requests will reach the instance.
 
 	c := appengine.NewContext(r)
-	c.Infof("Memcache backend stopped.")
+	c.Infof("Memcache module stopped.")
 }
 
 func handleGet(w http.ResponseWriter, r *http.Request) {

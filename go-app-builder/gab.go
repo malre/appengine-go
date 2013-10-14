@@ -146,7 +146,7 @@ func buildApp(app *App) error {
 	if *extraImports != "" {
 		extra = strings.Split(*extraImports, ",")
 	}
-	mainStr, err := MakeMain(app, extra)
+	mainStr, err := MakeMain(app)
 	if err != nil {
 		return fmt.Errorf("failed creating main: %v", err)
 	}

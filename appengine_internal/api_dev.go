@@ -30,7 +30,7 @@ func IsDevAppServer() bool {
 }
 
 // serveHTTP serves App Engine HTTP requests.
-func serveHTTP(netw, addr string) {
+func serveHTTP() {
 	// The development server reads the HTTP port that the server is listening to
 	// from stdout. We listen on 127.0.0.1:0 to avoid firewall restrictions.
 	conn, err := net.Listen("tcp", "127.0.0.1:0")
@@ -54,13 +54,13 @@ func init() {
 	// should also not be reading from stdin.
 	c := readConfig(os.Stdin)
 	instanceConfig.AppID = string(c.AppId)
+	instanceConfig.APIHost = c.GetApiHost()
 	instanceConfig.APIPort = int(*c.ApiPort)
 	instanceConfig.VersionID = string(c.VersionId)
 	instanceConfig.InstanceID = *c.InstanceId
 	instanceConfig.Datacenter = *c.Datacenter
 
-	apiAddress = fmt.Sprintf("http://localhost:%d", instanceConfig.APIPort)
-	RegisterHTTPFunc(serveHTTP)
+	apiAddress = fmt.Sprintf("http://%s:%d", instanceConfig.APIHost, instanceConfig.APIPort)
 }
 
 func handleFilteredHTTP(w http.ResponseWriter, r *http.Request) {
@@ -110,6 +110,7 @@ var (
 		VersionID  string
 		InstanceID string
 		Datacenter string
+		APIHost    string
 		APIPort    int
 	}
 )
@@ -127,6 +128,7 @@ func readConfig(r io.Reader) *rpb.Config {
 		return &rpb.Config{
 			AppId:      []byte("dev~my-app"),
 			VersionId:  []byte("1.2345"),
+			ApiHost:    proto.String("localhost"),
 			ApiPort:    proto.Int32(1),
 			Datacenter: proto.String("us1"),
 			InstanceId: proto.String("deadbeef"),

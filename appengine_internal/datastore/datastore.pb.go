@@ -90,9 +90,6 @@ func (x Property_Meaning) Enum() *Property_Meaning {
 func (x Property_Meaning) String() string {
 	return proto.EnumName(Property_Meaning_name, int32(x))
 }
-func (x Property_Meaning) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *Property_Meaning) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(Property_Meaning_value, data, "Property_Meaning")
 	if err != nil {
@@ -125,9 +122,6 @@ func (x Property_FtsTokenizationOption) Enum() *Property_FtsTokenizationOption {
 }
 func (x Property_FtsTokenizationOption) String() string {
 	return proto.EnumName(Property_FtsTokenizationOption_name, int32(x))
-}
-func (x Property_FtsTokenizationOption) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *Property_FtsTokenizationOption) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(Property_FtsTokenizationOption_value, data, "Property_FtsTokenizationOption")
@@ -165,9 +159,6 @@ func (x EntityProto_Kind) Enum() *EntityProto_Kind {
 func (x EntityProto_Kind) String() string {
 	return proto.EnumName(EntityProto_Kind_name, int32(x))
 }
-func (x EntityProto_Kind) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *EntityProto_Kind) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(EntityProto_Kind_value, data, "EntityProto_Kind")
 	if err != nil {
@@ -200,9 +191,6 @@ func (x Index_Property_Direction) Enum() *Index_Property_Direction {
 }
 func (x Index_Property_Direction) String() string {
 	return proto.EnumName(Index_Property_Direction_name, int32(x))
-}
-func (x Index_Property_Direction) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *Index_Property_Direction) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(Index_Property_Direction_value, data, "Index_Property_Direction")
@@ -243,9 +231,6 @@ func (x CompositeIndex_State) Enum() *CompositeIndex_State {
 func (x CompositeIndex_State) String() string {
 	return proto.EnumName(CompositeIndex_State_name, int32(x))
 }
-func (x CompositeIndex_State) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *CompositeIndex_State) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(CompositeIndex_State_value, data, "CompositeIndex_State")
 	if err != nil {
@@ -278,9 +263,6 @@ func (x Snapshot_Status) Enum() *Snapshot_Status {
 }
 func (x Snapshot_Status) String() string {
 	return proto.EnumName(Snapshot_Status_name, int32(x))
-}
-func (x Snapshot_Status) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *Snapshot_Status) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(Snapshot_Status_value, data, "Snapshot_Status")
@@ -317,9 +299,6 @@ func (x Query_Hint) Enum() *Query_Hint {
 }
 func (x Query_Hint) String() string {
 	return proto.EnumName(Query_Hint_name, int32(x))
-}
-func (x Query_Hint) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *Query_Hint) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(Query_Hint_value, data, "Query_Hint")
@@ -369,9 +348,6 @@ func (x Query_Filter_Operator) Enum() *Query_Filter_Operator {
 func (x Query_Filter_Operator) String() string {
 	return proto.EnumName(Query_Filter_Operator_name, int32(x))
 }
-func (x Query_Filter_Operator) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *Query_Filter_Operator) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(Query_Filter_Operator_value, data, "Query_Filter_Operator")
 	if err != nil {
@@ -404,9 +380,6 @@ func (x Query_Order_Direction) Enum() *Query_Order_Direction {
 }
 func (x Query_Order_Direction) String() string {
 	return proto.EnumName(Query_Order_Direction_name, int32(x))
-}
-func (x Query_Order_Direction) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *Query_Order_Direction) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(Query_Order_Direction_value, data, "Query_Order_Direction")
@@ -468,9 +441,6 @@ func (x Error_ErrorCode) Enum() *Error_ErrorCode {
 func (x Error_ErrorCode) String() string {
 	return proto.EnumName(Error_ErrorCode_name, int32(x))
 }
-func (x Error_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *Error_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(Error_ErrorCode_value, data, "Error_ErrorCode")
 	if err != nil {
@@ -503,9 +473,6 @@ func (x PutRequest_AutoIdPolicy) Enum() *PutRequest_AutoIdPolicy {
 }
 func (x PutRequest_AutoIdPolicy) String() string {
 	return proto.EnumName(PutRequest_AutoIdPolicy_name, int32(x))
-}
-func (x PutRequest_AutoIdPolicy) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *PutRequest_AutoIdPolicy) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(PutRequest_AutoIdPolicy_value, data, "PutRequest_AutoIdPolicy")
@@ -1328,6 +1295,32 @@ func (m *IndexPostfix_IndexValue) GetValue() *PropertyValue {
 	return nil
 }
 
+type IndexPosition struct {
+	Key              *string `protobuf:"bytes,1,opt,name=key" json:"key,omitempty"`
+	Before           *bool   `protobuf:"varint,2,opt,name=before,def=1" json:"before,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *IndexPosition) Reset()         { *m = IndexPosition{} }
+func (m *IndexPosition) String() string { return proto.CompactTextString(m) }
+func (*IndexPosition) ProtoMessage()    {}
+
+const Default_IndexPosition_Before bool = true
+
+func (m *IndexPosition) GetKey() string {
+	if m != nil && m.Key != nil {
+		return *m.Key
+	}
+	return ""
+}
+
+func (m *IndexPosition) GetBefore() bool {
+	if m != nil && m.Before != nil {
+		return *m.Before
+	}
+	return Default_IndexPosition_Before
+}
+
 type Snapshot struct {
 	Ts               *int64 `protobuf:"varint,1,req,name=ts" json:"ts,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
@@ -2127,12 +2120,15 @@ func (m *GetRequest) GetAllowDeferred() bool {
 type GetResponse struct {
 	Entity           []*GetResponse_Entity `protobuf:"group,1,rep" json:"entity,omitempty"`
 	Deferred         []*Reference          `protobuf:"bytes,5,rep,name=deferred" json:"deferred,omitempty"`
+	InOrder          *bool                 `protobuf:"varint,6,opt,name=in_order,def=1" json:"in_order,omitempty"`
 	XXX_unrecognized []byte                `json:"-"`
 }
 
 func (m *GetResponse) Reset()         { *m = GetResponse{} }
 func (m *GetResponse) String() string { return proto.CompactTextString(m) }
 func (*GetResponse) ProtoMessage()    {}
+
+const Default_GetResponse_InOrder bool = true
 
 func (m *GetResponse) GetEntity() []*GetResponse_Entity {
 	if m != nil {
@@ -2146,6 +2142,13 @@ func (m *GetResponse) GetDeferred() []*Reference {
 		return m.Deferred
 	}
 	return nil
+}
+
+func (m *GetResponse) GetInOrder() bool {
+	if m != nil && m.InOrder != nil {
+		return *m.InOrder
+	}
+	return Default_GetResponse_InOrder
 }
 
 type GetResponse_Entity struct {
@@ -2485,6 +2488,7 @@ type QueryResult struct {
 	CompiledQuery    *CompiledQuery    `protobuf:"bytes,5,opt,name=compiled_query" json:"compiled_query,omitempty"`
 	CompiledCursor   *CompiledCursor   `protobuf:"bytes,6,opt,name=compiled_cursor" json:"compiled_cursor,omitempty"`
 	Index            []*CompositeIndex `protobuf:"bytes,8,rep,name=index" json:"index,omitempty"`
+	Version          []int64           `protobuf:"varint,11,rep,name=version" json:"version,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
 }
 
@@ -2558,6 +2562,13 @@ func (m *QueryResult) GetCompiledCursor() *CompiledCursor {
 func (m *QueryResult) GetIndex() []*CompositeIndex {
 	if m != nil {
 		return m.Index
+	}
+	return nil
+}
+
+func (m *QueryResult) GetVersion() []int64 {
+	if m != nil {
+		return m.Version
 	}
 	return nil
 }

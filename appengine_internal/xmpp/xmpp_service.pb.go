@@ -54,9 +54,6 @@ func (x XmppServiceError_ErrorCode) Enum() *XmppServiceError_ErrorCode {
 func (x XmppServiceError_ErrorCode) String() string {
 	return proto.EnumName(XmppServiceError_ErrorCode_name, int32(x))
 }
-func (x XmppServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *XmppServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(XmppServiceError_ErrorCode_value, data, "XmppServiceError_ErrorCode")
 	if err != nil {
@@ -99,9 +96,6 @@ func (x PresenceResponse_SHOW) Enum() *PresenceResponse_SHOW {
 func (x PresenceResponse_SHOW) String() string {
 	return proto.EnumName(PresenceResponse_SHOW_name, int32(x))
 }
-func (x PresenceResponse_SHOW) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *PresenceResponse_SHOW) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(PresenceResponse_SHOW_value, data, "PresenceResponse_SHOW")
 	if err != nil {
@@ -137,9 +131,6 @@ func (x XmppMessageResponse_XmppMessageStatus) Enum() *XmppMessageResponse_XmppM
 }
 func (x XmppMessageResponse_XmppMessageStatus) String() string {
 	return proto.EnumName(XmppMessageResponse_XmppMessageStatus_name, int32(x))
-}
-func (x XmppMessageResponse_XmppMessageStatus) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *XmppMessageResponse_XmppMessageStatus) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(XmppMessageResponse_XmppMessageStatus_value, data, "XmppMessageResponse_XmppMessageStatus")

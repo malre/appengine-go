@@ -42,9 +42,6 @@ func (x CapabilityConfig_Status) Enum() *CapabilityConfig_Status {
 func (x CapabilityConfig_Status) String() string {
 	return proto.EnumName(CapabilityConfig_Status_name, int32(x))
 }
-func (x CapabilityConfig_Status) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *CapabilityConfig_Status) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(CapabilityConfig_Status_value, data, "CapabilityConfig_Status")
 	if err != nil {
@@ -86,9 +83,6 @@ func (x IsEnabledResponse_SummaryStatus) Enum() *IsEnabledResponse_SummaryStatus
 }
 func (x IsEnabledResponse_SummaryStatus) String() string {
 	return proto.EnumName(IsEnabledResponse_SummaryStatus_name, int32(x))
-}
-func (x IsEnabledResponse_SummaryStatus) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *IsEnabledResponse_SummaryStatus) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(IsEnabledResponse_SummaryStatus_value, data, "IsEnabledResponse_SummaryStatus")

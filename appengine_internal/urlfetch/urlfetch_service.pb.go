@@ -69,9 +69,6 @@ func (x URLFetchServiceError_ErrorCode) Enum() *URLFetchServiceError_ErrorCode {
 func (x URLFetchServiceError_ErrorCode) String() string {
 	return proto.EnumName(URLFetchServiceError_ErrorCode_name, int32(x))
 }
-func (x URLFetchServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *URLFetchServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(URLFetchServiceError_ErrorCode_value, data, "URLFetchServiceError_ErrorCode")
 	if err != nil {
@@ -116,9 +113,6 @@ func (x URLFetchRequest_RequestMethod) Enum() *URLFetchRequest_RequestMethod {
 }
 func (x URLFetchRequest_RequestMethod) String() string {
 	return proto.EnumName(URLFetchRequest_RequestMethod_name, int32(x))
-}
-func (x URLFetchRequest_RequestMethod) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *URLFetchRequest_RequestMethod) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(URLFetchRequest_RequestMethod_value, data, "URLFetchRequest_RequestMethod")

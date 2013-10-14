@@ -4,6 +4,7 @@
 :: license that can be found in the LICENSE file.
 setlocal
 set GOROOT=%~dp0\goroot
+set APPENGINE_API_SERVER=%~dp0\api_server.py
 set GOBIN=
 
 :: Set a GOPATH if one is not set.

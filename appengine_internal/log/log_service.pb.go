@@ -39,9 +39,6 @@ func (x LogServiceError_ErrorCode) Enum() *LogServiceError_ErrorCode {
 func (x LogServiceError_ErrorCode) String() string {
 	return proto.EnumName(LogServiceError_ErrorCode_name, int32(x))
 }
-func (x LogServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *LogServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(LogServiceError_ErrorCode_value, data, "LogServiceError_ErrorCode")
 	if err != nil {

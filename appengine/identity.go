@@ -46,6 +46,34 @@ func DefaultVersionHostname(c Context) string {
 	return appengine_internal.DefaultVersionHostname(c.Request())
 }
 
+// ModuleName returns the module name of the current instance.
+func ModuleName(c Context) string {
+	return appengine_internal.ModuleName(c.Request())
+}
+
+// ModuleHostname returns a hostname of a module instance.
+// If module is the empty string, it refers to the module of the current instance.
+// If version is empty, it refers to the version of the current instance if valid,
+// or the default version of the module of the current instance.
+// If instance is empty, ModuleHostname returns the load-balancing hostname.
+func ModuleHostname(c Context, module, version, instance string) (string, error) {
+	req := &modpb.GetHostnameRequest{}
+	if module != "" {
+		req.Module = &module
+	}
+	if version != "" {
+		req.Version = &version
+	}
+	if instance != "" {
+		req.Instance = &instance
+	}
+	res := &modpb.GetHostnameResponse{}
+	if err := c.Call("modules", "GetHostname", req, res, nil); err != nil {
+		return "", err
+	}
+	return *res.Hostname, nil
+}
+
 // VersionID returns the version ID for the current application.
 // It will be of the form "X.Y", where X is specified in app.yaml,
 // and Y is a number generated when each version of the app is uploaded.

@@ -144,9 +144,6 @@ func (x FileServiceErrors_ErrorCode) Enum() *FileServiceErrors_ErrorCode {
 func (x FileServiceErrors_ErrorCode) String() string {
 	return proto.EnumName(FileServiceErrors_ErrorCode_name, int32(x))
 }
-func (x FileServiceErrors_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *FileServiceErrors_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(FileServiceErrors_ErrorCode_value, data, "FileServiceErrors_ErrorCode")
 	if err != nil {
@@ -183,9 +180,6 @@ func (x FileContentType_ContentType) Enum() *FileContentType_ContentType {
 func (x FileContentType_ContentType) String() string {
 	return proto.EnumName(FileContentType_ContentType_name, int32(x))
 }
-func (x FileContentType_ContentType) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *FileContentType_ContentType) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(FileContentType_ContentType_value, data, "FileContentType_ContentType")
 	if err != nil {
@@ -219,9 +213,6 @@ func (x OpenRequest_OpenMode) Enum() *OpenRequest_OpenMode {
 func (x OpenRequest_OpenMode) String() string {
 	return proto.EnumName(OpenRequest_OpenMode_name, int32(x))
 }
-func (x OpenRequest_OpenMode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *OpenRequest_OpenMode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(OpenRequest_OpenMode_value, data, "OpenRequest_OpenMode")
 	if err != nil {
@@ -252,9 +243,6 @@ func (x ShuffleEnums_InputFormat) Enum() *ShuffleEnums_InputFormat {
 func (x ShuffleEnums_InputFormat) String() string {
 	return proto.EnumName(ShuffleEnums_InputFormat_name, int32(x))
 }
-func (x ShuffleEnums_InputFormat) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *ShuffleEnums_InputFormat) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(ShuffleEnums_InputFormat_value, data, "ShuffleEnums_InputFormat")
 	if err != nil {
@@ -284,9 +272,6 @@ func (x ShuffleEnums_OutputFormat) Enum() *ShuffleEnums_OutputFormat {
 }
 func (x ShuffleEnums_OutputFormat) String() string {
 	return proto.EnumName(ShuffleEnums_OutputFormat_name, int32(x))
-}
-func (x ShuffleEnums_OutputFormat) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *ShuffleEnums_OutputFormat) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(ShuffleEnums_OutputFormat_value, data, "ShuffleEnums_OutputFormat")
@@ -335,9 +320,6 @@ func (x ShuffleEnums_Status) Enum() *ShuffleEnums_Status {
 }
 func (x ShuffleEnums_Status) String() string {
 	return proto.EnumName(ShuffleEnums_Status_name, int32(x))
-}
-func (x ShuffleEnums_Status) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *ShuffleEnums_Status) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(ShuffleEnums_Status_value, data, "ShuffleEnums_Status")

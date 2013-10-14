@@ -48,9 +48,6 @@ func (x ModulesServiceError_ErrorCode) Enum() *ModulesServiceError_ErrorCode {
 func (x ModulesServiceError_ErrorCode) String() string {
 	return proto.EnumName(ModulesServiceError_ErrorCode_name, int32(x))
 }
-func (x ModulesServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *ModulesServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(ModulesServiceError_ErrorCode_value, data, "ModulesServiceError_ErrorCode")
 	if err != nil {

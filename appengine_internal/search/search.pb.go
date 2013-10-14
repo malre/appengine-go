@@ -51,9 +51,6 @@ func (x Scope_Type) Enum() *Scope_Type {
 func (x Scope_Type) String() string {
 	return proto.EnumName(Scope_Type_name, int32(x))
 }
-func (x Scope_Type) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *Scope_Type) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(Scope_Type_value, data, "Scope_Type")
 	if err != nil {
@@ -89,9 +86,6 @@ func (x Entry_Permission) Enum() *Entry_Permission {
 }
 func (x Entry_Permission) String() string {
 	return proto.EnumName(Entry_Permission_name, int32(x))
-}
-func (x Entry_Permission) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *Entry_Permission) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(Entry_Permission_value, data, "Entry_Permission")
@@ -138,9 +132,6 @@ func (x FieldValue_ContentType) Enum() *FieldValue_ContentType {
 func (x FieldValue_ContentType) String() string {
 	return proto.EnumName(FieldValue_ContentType_name, int32(x))
 }
-func (x FieldValue_ContentType) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *FieldValue_ContentType) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(FieldValue_ContentType_value, data, "FieldValue_ContentType")
 	if err != nil {
@@ -170,9 +161,6 @@ func (x Document_Storage) Enum() *Document_Storage {
 }
 func (x Document_Storage) String() string {
 	return proto.EnumName(Document_Storage_name, int32(x))
-}
-func (x Document_Storage) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *Document_Storage) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(Document_Storage_value, data, "Document_Storage")
@@ -222,9 +210,6 @@ func (x SearchServiceError_ErrorCode) Enum() *SearchServiceError_ErrorCode {
 func (x SearchServiceError_ErrorCode) String() string {
 	return proto.EnumName(SearchServiceError_ErrorCode_name, int32(x))
 }
-func (x SearchServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *SearchServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(SearchServiceError_ErrorCode_value, data, "SearchServiceError_ErrorCode")
 	if err != nil {
@@ -257,9 +242,6 @@ func (x IndexSpec_Consistency) Enum() *IndexSpec_Consistency {
 }
 func (x IndexSpec_Consistency) String() string {
 	return proto.EnumName(IndexSpec_Consistency_name, int32(x))
-}
-func (x IndexSpec_Consistency) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *IndexSpec_Consistency) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(IndexSpec_Consistency_value, data, "IndexSpec_Consistency")
@@ -297,9 +279,6 @@ func (x IndexSpec_Source) Enum() *IndexSpec_Source {
 func (x IndexSpec_Source) String() string {
 	return proto.EnumName(IndexSpec_Source_name, int32(x))
 }
-func (x IndexSpec_Source) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *IndexSpec_Source) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(IndexSpec_Source_value, data, "IndexSpec_Source")
 	if err != nil {
@@ -332,9 +311,6 @@ func (x IndexSpec_Mode) Enum() *IndexSpec_Mode {
 }
 func (x IndexSpec_Mode) String() string {
 	return proto.EnumName(IndexSpec_Mode_name, int32(x))
-}
-func (x IndexSpec_Mode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *IndexSpec_Mode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(IndexSpec_Mode_value, data, "IndexSpec_Mode")
@@ -369,9 +345,6 @@ func (x IndexDocumentParams_Freshness) Enum() *IndexDocumentParams_Freshness {
 func (x IndexDocumentParams_Freshness) String() string {
 	return proto.EnumName(IndexDocumentParams_Freshness_name, int32(x))
 }
-func (x IndexDocumentParams_Freshness) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *IndexDocumentParams_Freshness) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(IndexDocumentParams_Freshness_value, data, "IndexDocumentParams_Freshness")
 	if err != nil {
@@ -404,9 +377,6 @@ func (x ScorerSpec_Scorer) Enum() *ScorerSpec_Scorer {
 }
 func (x ScorerSpec_Scorer) String() string {
 	return proto.EnumName(ScorerSpec_Scorer_name, int32(x))
-}
-func (x ScorerSpec_Scorer) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *ScorerSpec_Scorer) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(ScorerSpec_Scorer_value, data, "ScorerSpec_Scorer")
@@ -444,9 +414,6 @@ func (x SearchParams_CursorType) Enum() *SearchParams_CursorType {
 func (x SearchParams_CursorType) String() string {
 	return proto.EnumName(SearchParams_CursorType_name, int32(x))
 }
-func (x SearchParams_CursorType) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *SearchParams_CursorType) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(SearchParams_CursorType_value, data, "SearchParams_CursorType")
 	if err != nil {
@@ -479,9 +446,6 @@ func (x SearchParams_ParsingMode) Enum() *SearchParams_ParsingMode {
 }
 func (x SearchParams_ParsingMode) String() string {
 	return proto.EnumName(SearchParams_ParsingMode_name, int32(x))
-}
-func (x SearchParams_ParsingMode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *SearchParams_ParsingMode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(SearchParams_ParsingMode_value, data, "SearchParams_ParsingMode")

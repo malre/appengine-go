@@ -16,17 +16,13 @@ package appengine_internal
 import (
 	"flag"
 	"fmt"
-	"io"
-	"log"
-	"net/http"
-	"strings"
 	"time"
 
 	"code.google.com/p/goprotobuf/proto"
 )
 
 var (
-	addrHTTP = flag.String("addr_http", "", "net:laddr to listen on for HTTP requests.")
+	addrHTTP = flag.String("addr_http", "", "deprecated")
 	addrAPI  = flag.String("addr_api", "", "deprecated")
 )
 
@@ -39,14 +35,6 @@ type ProtoMessage interface {
 }
 
 var _ ProtoMessage = proto.Message(ProtoMessage(nil))
-
-type ServeHTTPFunc func(netw, addr string)
-
-var serveHTTPFunc ServeHTTPFunc
-
-func RegisterHTTPFunc(f ServeHTTPFunc) {
-	serveHTTPFunc = f
-}
 
 type CallOptions struct {
 	Timeout time.Duration // if non-zero, overrides RPC default
@@ -142,20 +130,6 @@ func (e *CallError) IsTimeout() bool {
 	return e.Timeout
 }
 
-// handleHealthCheck handles health check HTTP requests from the App Server.
-func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "OK")
-}
-
-// parseAddr parses a composite address of the form "net:addr".
-func parseAddr(compAddr string) (net, addr string) {
-	parts := strings.SplitN(compAddr, ":", 2)
-	if len(parts) != 2 {
-		log.Panicf("appengine: bad composite address %q", compAddr)
-	}
-	return parts[0], parts[1]
-}
-
 // appPackagesInitialized is closed at the start of Main, after all app packages
 // have been initialized
 var appPackagesInitialized = make(chan struct{})
@@ -177,25 +151,9 @@ var appPackagesInitialized = make(chan struct{})
 // The "myapp/packageX" packages are expected to register HTTP handlers
 // in their init functions.
 func Main() {
-	var httpNet, httpAddr string
-
 	close(appPackagesInitialized)
-
-	// Check flags.
 	flag.Parse()
-	if !IsDevAppServer() {
-		if *addrHTTP == "" {
-			log.Panic("appengine_internal.Main called without address flags.")
-		}
-		httpNet, httpAddr = parseAddr(*addrHTTP)
-	}
-
-	// Serve HTTP requests forwarded from the appserver to us.
-	http.HandleFunc("/_appengine_delegate_health_check", handleHealthCheck)
-	if serveHTTPFunc == nil {
-		log.Panic("appengine: no ServeHTTPFunc registered.")
-	}
-	serveHTTPFunc(httpNet, httpAddr)
+	serveHTTP()
 }
 
 // NamespaceMods is a map from API service to a function that will mutate an RPC request to attach a namespace.

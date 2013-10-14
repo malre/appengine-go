@@ -51,9 +51,6 @@ func (x RemoteSocketServiceError_ErrorCode) Enum() *RemoteSocketServiceError_Err
 func (x RemoteSocketServiceError_ErrorCode) String() string {
 	return proto.EnumName(RemoteSocketServiceError_ErrorCode_name, int32(x))
 }
-func (x RemoteSocketServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *RemoteSocketServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(RemoteSocketServiceError_ErrorCode_value, data, "RemoteSocketServiceError_ErrorCode")
 	if err != nil {
@@ -483,9 +480,6 @@ func (x RemoteSocketServiceError_SystemError) Enum() *RemoteSocketServiceError_S
 func (x RemoteSocketServiceError_SystemError) String() string {
 	return proto.EnumName(RemoteSocketServiceError_SystemError_name, int32(x))
 }
-func (x RemoteSocketServiceError_SystemError) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *RemoteSocketServiceError_SystemError) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(RemoteSocketServiceError_SystemError_value, data, "RemoteSocketServiceError_SystemError")
 	if err != nil {
@@ -519,9 +513,6 @@ func (x CreateSocketRequest_SocketFamily) Enum() *CreateSocketRequest_SocketFami
 func (x CreateSocketRequest_SocketFamily) String() string {
 	return proto.EnumName(CreateSocketRequest_SocketFamily_name, int32(x))
 }
-func (x CreateSocketRequest_SocketFamily) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *CreateSocketRequest_SocketFamily) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(CreateSocketRequest_SocketFamily_value, data, "CreateSocketRequest_SocketFamily")
 	if err != nil {
@@ -554,9 +545,6 @@ func (x CreateSocketRequest_SocketProtocol) Enum() *CreateSocketRequest_SocketPr
 }
 func (x CreateSocketRequest_SocketProtocol) String() string {
 	return proto.EnumName(CreateSocketRequest_SocketProtocol_name, int32(x))
-}
-func (x CreateSocketRequest_SocketProtocol) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *CreateSocketRequest_SocketProtocol) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(CreateSocketRequest_SocketProtocol_value, data, "CreateSocketRequest_SocketProtocol")
@@ -596,9 +584,6 @@ func (x SocketOption_SocketOptionLevel) Enum() *SocketOption_SocketOptionLevel {
 }
 func (x SocketOption_SocketOptionLevel) String() string {
 	return proto.EnumName(SocketOption_SocketOptionLevel_name, int32(x))
-}
-func (x SocketOption_SocketOptionLevel) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *SocketOption_SocketOptionLevel) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(SocketOption_SocketOptionLevel_value, data, "SocketOption_SocketOptionLevel")
@@ -714,9 +699,6 @@ func (x SocketOption_SocketOptionName) Enum() *SocketOption_SocketOptionName {
 func (x SocketOption_SocketOptionName) String() string {
 	return proto.EnumName(SocketOption_SocketOptionName_name, int32(x))
 }
-func (x SocketOption_SocketOptionName) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *SocketOption_SocketOptionName) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(SocketOption_SocketOptionName_value, data, "SocketOption_SocketOptionName")
 	if err != nil {
@@ -753,9 +735,6 @@ func (x ShutDownRequest_How) Enum() *ShutDownRequest_How {
 func (x ShutDownRequest_How) String() string {
 	return proto.EnumName(ShutDownRequest_How_name, int32(x))
 }
-func (x ShutDownRequest_How) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *ShutDownRequest_How) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(ShutDownRequest_How_value, data, "ShutDownRequest_How")
 	if err != nil {
@@ -788,9 +767,6 @@ func (x ReceiveRequest_Flags) Enum() *ReceiveRequest_Flags {
 }
 func (x ReceiveRequest_Flags) String() string {
 	return proto.EnumName(ReceiveRequest_Flags_name, int32(x))
-}
-func (x ReceiveRequest_Flags) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *ReceiveRequest_Flags) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(ReceiveRequest_Flags_value, data, "ReceiveRequest_Flags")
@@ -860,9 +836,6 @@ func (x PollEvent_PollEventFlag) Enum() *PollEvent_PollEventFlag {
 }
 func (x PollEvent_PollEventFlag) String() string {
 	return proto.EnumName(PollEvent_PollEventFlag_name, int32(x))
-}
-func (x PollEvent_PollEventFlag) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *PollEvent_PollEventFlag) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(PollEvent_PollEventFlag_value, data, "PollEvent_PollEventFlag")
@@ -935,9 +908,6 @@ func (x ResolveReply_ErrorCode) Enum() *ResolveReply_ErrorCode {
 }
 func (x ResolveReply_ErrorCode) String() string {
 	return proto.EnumName(ResolveReply_ErrorCode_name, int32(x))
-}
-func (x ResolveReply_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *ResolveReply_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(ResolveReply_ErrorCode_value, data, "ResolveReply_ErrorCode")

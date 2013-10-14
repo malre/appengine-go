@@ -23,8 +23,10 @@ func handleID(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "appengine.AppID(c) = %q\n", appengine.AppID(c))
 	fmt.Fprintf(w, "appengine.VersionID(c) = %q\n", appengine.VersionID(c))
 
-	name, index := appengine.BackendInstance(c)
-	fmt.Fprintf(w, "appengine.BackendInstance(c) = %q, %d\n", name, index)
+	name := appengine.ModuleName(c)
+	hostname, err := appengine.ModuleHostname(c, "", "", "")
+	fmt.Fprintf(w, "appengine.ModuleName(c) = %q\n", name)
+	fmt.Fprintf(w, `appengine.ModuleHostname(c, "", "", "") = %q (err: %v)`+"\n", hostname, err)
 
 	fmt.Fprintf(w, "----------\n")
 	for _, s := range os.Environ() {

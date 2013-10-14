@@ -54,9 +54,6 @@ func (x ImagesServiceError_ErrorCode) Enum() *ImagesServiceError_ErrorCode {
 func (x ImagesServiceError_ErrorCode) String() string {
 	return proto.EnumName(ImagesServiceError_ErrorCode_name, int32(x))
 }
-func (x ImagesServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *ImagesServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(ImagesServiceError_ErrorCode_value, data, "ImagesServiceError_ErrorCode")
 	if err != nil {
@@ -102,9 +99,6 @@ func (x ImagesServiceTransform_Type) Enum() *ImagesServiceTransform_Type {
 func (x ImagesServiceTransform_Type) String() string {
 	return proto.EnumName(ImagesServiceTransform_Type_name, int32(x))
 }
-func (x ImagesServiceTransform_Type) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *ImagesServiceTransform_Type) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(ImagesServiceTransform_Type_value, data, "ImagesServiceTransform_Type")
 	if err != nil {
@@ -137,9 +131,6 @@ func (x InputSettings_ORIENTATION_CORRECTION_TYPE) Enum() *InputSettings_ORIENTA
 }
 func (x InputSettings_ORIENTATION_CORRECTION_TYPE) String() string {
 	return proto.EnumName(InputSettings_ORIENTATION_CORRECTION_TYPE_name, int32(x))
-}
-func (x InputSettings_ORIENTATION_CORRECTION_TYPE) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *InputSettings_ORIENTATION_CORRECTION_TYPE) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(InputSettings_ORIENTATION_CORRECTION_TYPE_value, data, "InputSettings_ORIENTATION_CORRECTION_TYPE")
@@ -176,9 +167,6 @@ func (x OutputSettings_MIME_TYPE) Enum() *OutputSettings_MIME_TYPE {
 }
 func (x OutputSettings_MIME_TYPE) String() string {
 	return proto.EnumName(OutputSettings_MIME_TYPE_name, int32(x))
-}
-func (x OutputSettings_MIME_TYPE) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *OutputSettings_MIME_TYPE) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(OutputSettings_MIME_TYPE_value, data, "OutputSettings_MIME_TYPE")
@@ -233,9 +221,6 @@ func (x CompositeImageOptions_ANCHOR) Enum() *CompositeImageOptions_ANCHOR {
 }
 func (x CompositeImageOptions_ANCHOR) String() string {
 	return proto.EnumName(CompositeImageOptions_ANCHOR_name, int32(x))
-}
-func (x CompositeImageOptions_ANCHOR) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *CompositeImageOptions_ANCHOR) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(CompositeImageOptions_ANCHOR_value, data, "CompositeImageOptions_ANCHOR")

@@ -51,8 +51,22 @@ result. Next will return Done when the iterator is exhausted.
 		fmt.Fprintf(w, "%s -> %#v\n", id, doc)
 	}
 
-A document can also be retrieved by its ID. Pass a destination struct to Get
-to hold the resulting document.
+Call List to iterate over documents.
+
+	for t := index.List(c, nil); ; {
+		var doc Doc
+		id, err := t.Next(&doc)
+		if err == search.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(w, "%s -> %#v\n", id, doc)
+	}
+
+A single document can also be retrieved by its ID. Pass a destination struct
+to Get to hold the resulting document.
 
 	var doc Doc
 	err := index.Get(c, id, &doc)
@@ -71,7 +85,7 @@ package search
 
 // TODO: a PropertyLoadSaver interface, similar to package datastore?
 // TODO: let Put specify the document language: "en", "fr", etc. Also: order_id?? storage??
-// TODO: Index.GetAll.
+// TODO: Index.GetAll (or Iterator.GetAll)?
 // TODO: struct <-> protobuf tests.
 // TODO: enforce Python's MIN_NUMBER_VALUE and MIN_DATE (which would disallow a zero
 // time.Time)? _MAXIMUM_STRING_LENGTH?
@@ -220,7 +234,7 @@ func (x *Index) Get(c appengine.Context, id string, dst interface{}) error {
 	if res.Status == nil || res.Status.GetCode() != pb.SearchServiceError_OK {
 		return fmt.Errorf("search: %s: %s", res.Status.GetCode(), res.Status.GetErrorDetail())
 	}
-	if len(res.Document) != 1 {
+	if len(res.Document) != 1 || res.Document[0].GetId() != id {
 		return ErrNoSuchDocument
 	}
 	return loadFields(dst, res.Document[0].Field)
@@ -247,54 +261,98 @@ func (x *Index) Delete(c appengine.Context, id string) error {
 	return nil
 }
 
-// TODO: export List and ListOptions after the 1.8.4 release when we have
-// finalized what the API should look like.
-//
-// Exporting those names will also require updating the package doc comment and
-// the Iterator doc comment.
-
-// list lists all of the documents in an index. The documents are returned in
-// increasing string ID order.
-func (x *Index) list(c appengine.Context, opts *listOptions) *Iterator {
-	req := &pb.ListDocumentsRequest{
-		Params: &pb.ListDocumentsParams{
-			IndexSpec: &x.spec,
-		},
+// List lists all of the documents in an index. The documents are returned in
+// increasing ID order.
+func (x *Index) List(c appengine.Context, opts *ListOptions) *Iterator {
+	t := &Iterator{
+		c:             c,
+		index:         x,
+		count:         -1,
+		listInclusive: true,
+		more:          moreList,
 	}
-	res := &pb.ListDocumentsResponse{}
-	if err := c.Call("search", "ListDocuments", req, res, nil); err != nil {
-		return &Iterator{err: err}
+	if opts != nil {
+		if opts.StartID != "" {
+			t.listStartID = opts.StartID
+		}
 	}
-	if res.Status == nil || res.Status.GetCode() != pb.SearchServiceError_OK {
-		return &Iterator{err: fmt.Errorf("search: %s: %s", res.Status.GetCode(), res.Status.GetErrorDetail())}
-	}
-	return &Iterator{c: c, listRes: res.Document}
+	return t
 }
 
-// listOptions are the options for listing documents in an index. Passing a nil
-// *listOptions is equivalent to using the default values.
-//
-// There are currently no options. Future versions may introduce some.
-type listOptions struct {
-	// TODO: startDocId, includeStartDoc, limit, idsOnly, maybe others.
+func moreList(t *Iterator) error {
+	req := &pb.ListDocumentsRequest{
+		Params: &pb.ListDocumentsParams{
+			IndexSpec: &t.index.spec,
+		},
+	}
+	if t.listStartID != "" {
+		req.Params.StartDocId = &t.listStartID
+		req.Params.IncludeStartDoc = &t.listInclusive
+	}
+
+	res := &pb.ListDocumentsResponse{}
+	if err := t.c.Call("search", "ListDocuments", req, res, nil); err != nil {
+		return err
+	}
+	if res.Status == nil || res.Status.GetCode() != pb.SearchServiceError_OK {
+		return fmt.Errorf("search: %s: %s", res.Status.GetCode(), res.Status.GetErrorDetail())
+	}
+	t.listRes = res.Document
+	t.listStartID, t.listInclusive, t.more = "", false, nil
+	if len(res.Document) != 0 {
+		if id := res.Document[len(res.Document)-1].GetId(); id != "" {
+			t.listStartID, t.more = id, moreList
+		}
+	}
+	return nil
+}
+
+// ListOptions are the options for listing documents in an index. Passing a nil
+// *ListOptions is equivalent to using the default values.
+type ListOptions struct {
+	// StartID is the inclusive lower bound for the ID of the returned
+	// documents. The zero value means all documents will be returned.
+	StartID string
+
+	// TODO: limit, idsOnly, maybe others.
 }
 
 // Search searches the index for the given query.
 func (x *Index) Search(c appengine.Context, query string, opts *SearchOptions) *Iterator {
+	return &Iterator{
+		c:           c,
+		index:       x,
+		searchQuery: query,
+		more:        moreSearch,
+	}
+}
+
+func moreSearch(t *Iterator) error {
 	req := &pb.SearchRequest{
 		Params: &pb.SearchParams{
-			IndexSpec: &x.spec,
-			Query:     &query,
+			IndexSpec:  &t.index.spec,
+			Query:      &t.searchQuery,
+			CursorType: pb.SearchParams_SINGLE.Enum(),
 		},
 	}
+	if t.searchCursor != nil {
+		req.Params.Cursor = t.searchCursor
+	}
 	res := &pb.SearchResponse{}
-	if err := c.Call("search", "Search", req, res, nil); err != nil {
-		return &Iterator{err: err}
+	if err := t.c.Call("search", "Search", req, res, nil); err != nil {
+		return err
 	}
 	if res.Status == nil || res.Status.GetCode() != pb.SearchServiceError_OK {
-		return &Iterator{err: fmt.Errorf("search: %s: %s", res.Status.GetCode(), res.Status.GetErrorDetail())}
+		return fmt.Errorf("search: %s: %s", res.Status.GetCode(), res.Status.GetErrorDetail())
 	}
-	return &Iterator{c: c, searchRes: res.Result}
+	t.searchRes = res.Result
+	t.count = int(*res.MatchedCount)
+	if res.Cursor != nil {
+		t.searchCursor, t.more = res.Cursor, moreSearch
+	} else {
+		t.searchCursor, t.more = nil, nil
+	}
+	return nil
 }
 
 // SearchOptions are the options for searching an index. Passing a nil
@@ -305,18 +363,32 @@ type SearchOptions struct {
 	// TODO: limit, cursor, offset, idsOnly, maybe others.
 }
 
-// Iterator is the result of searching an index for a query.
+// Iterator is the result of searching an index for a query or listing an
+// index.
 type Iterator struct {
-	c         appengine.Context
-	err       error
-	listRes   []*pb.Document
-	searchRes []*pb.SearchResult
-	// TODO: issue a follow-up RPC when the results are exhausted
-	// and the XxxOptions had no explicit limit?
+	c     appengine.Context
+	index *Index
+	err   error
+
+	listRes       []*pb.Document
+	listStartID   string
+	listInclusive bool
+
+	searchRes    []*pb.SearchResult
+	searchQuery  string
+	searchCursor *string
+
+	more func(*Iterator) error
+
+	count int
 }
 
 // Done is returned when a query iteration has completed.
 var Done = errors.New("search: query has no more results")
+
+// Count returns an approximation of the number of documents matched by the
+// query. It is only valid to call for iterators returned by Search.
+func (t *Iterator) Count() int { return t.count }
 
 // Next returns the ID of the next result. When there are no more results,
 // Done is returned as the error.
@@ -325,9 +397,13 @@ var Done = errors.New("search: query has no more results")
 // non-nil struct pointer is provided, that struct will be filled with the
 // indexed fields.
 func (t *Iterator) Next(dst interface{}) (string, error) {
+	if t.err == nil && len(t.listRes)+len(t.searchRes) == 0 && t.more != nil {
+		t.err = t.more(t)
+	}
 	if t.err != nil {
 		return "", t.err
 	}
+
 	var doc *pb.Document
 	switch {
 	case len(t.listRes) != 0:

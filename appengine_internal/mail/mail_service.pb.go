@@ -21,6 +21,7 @@ const (
 	MailServiceError_UNAUTHORIZED_SENDER     MailServiceError_ErrorCode = 3
 	MailServiceError_INVALID_ATTACHMENT_TYPE MailServiceError_ErrorCode = 4
 	MailServiceError_INVALID_HEADER_NAME     MailServiceError_ErrorCode = 5
+	MailServiceError_EMPTY_CONTENT_ID        MailServiceError_ErrorCode = 6
 )
 
 var MailServiceError_ErrorCode_name = map[int32]string{
@@ -30,6 +31,7 @@ var MailServiceError_ErrorCode_name = map[int32]string{
 	3: "UNAUTHORIZED_SENDER",
 	4: "INVALID_ATTACHMENT_TYPE",
 	5: "INVALID_HEADER_NAME",
+	6: "EMPTY_CONTENT_ID",
 }
 var MailServiceError_ErrorCode_value = map[string]int32{
 	"OK":                      0,
@@ -38,6 +40,7 @@ var MailServiceError_ErrorCode_value = map[string]int32{
 	"UNAUTHORIZED_SENDER":     3,
 	"INVALID_ATTACHMENT_TYPE": 4,
 	"INVALID_HEADER_NAME":     5,
+	"EMPTY_CONTENT_ID":        6,
 }
 
 func (x MailServiceError_ErrorCode) Enum() *MailServiceError_ErrorCode {
@@ -47,9 +50,6 @@ func (x MailServiceError_ErrorCode) Enum() *MailServiceError_ErrorCode {
 }
 func (x MailServiceError_ErrorCode) String() string {
 	return proto.EnumName(MailServiceError_ErrorCode_name, int32(x))
-}
-func (x MailServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *MailServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(MailServiceError_ErrorCode_value, data, "MailServiceError_ErrorCode")
@@ -71,6 +71,7 @@ func (*MailServiceError) ProtoMessage()    {}
 type MailAttachment struct {
 	FileName         *string `protobuf:"bytes,1,req" json:"FileName,omitempty"`
 	Data             []byte  `protobuf:"bytes,2,req" json:"Data,omitempty"`
+	ContentID        *string `protobuf:"bytes,3,opt" json:"ContentID,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -90,6 +91,13 @@ func (m *MailAttachment) GetData() []byte {
 		return m.Data
 	}
 	return nil
+}
+
+func (m *MailAttachment) GetContentID() string {
+	if m != nil && m.ContentID != nil {
+		return *m.ContentID
+	}
+	return ""
 }
 
 type MailHeader struct {

@@ -57,9 +57,6 @@ func (x AppIdentityServiceError_ErrorCode) Enum() *AppIdentityServiceError_Error
 func (x AppIdentityServiceError_ErrorCode) String() string {
 	return proto.EnumName(AppIdentityServiceError_ErrorCode_name, int32(x))
 }
-func (x AppIdentityServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *AppIdentityServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(AppIdentityServiceError_ErrorCode_value, data, "AppIdentityServiceError_ErrorCode")
 	if err != nil {

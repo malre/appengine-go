@@ -10,16 +10,9 @@ import (
 )
 
 // MakeMain creates the synthetic main package for a Go App Engine app.
-func MakeMain(app *App, extraImports []string) (string, error) {
+func MakeMain(app *App) (string, error) {
 	buf := new(bytes.Buffer)
-	err := mainTemplate.Execute(buf, struct {
-		App          *App
-		ExtraImports []string
-	}{
-		app,
-		extraImports,
-	})
-	if err != nil {
+	if err := mainTemplate.Execute(buf, app); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
@@ -41,19 +34,14 @@ func MakeExtraImports(packageName string, extraImports []string) (string, error)
 	return buf.String(), nil
 }
 
-// TODO: remove the ExtraImports from mainTemplate.
-
 var mainTemplate = template.Must(template.New("main").Parse(
 	`package main
 
 import (
 	"appengine_internal"
-	{{range .ExtraImports}}
-	_ "{{.}}"
-	{{end}}
 
 	// Top-level app packages
-	{{range .App.RootPackages}}
+	{{range .RootPackages}}
 	_ "{{.ImportPath}}"
 	{{end}}
 )

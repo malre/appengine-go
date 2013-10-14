@@ -45,9 +45,6 @@ func (x MemcacheServiceError_ErrorCode) Enum() *MemcacheServiceError_ErrorCode {
 func (x MemcacheServiceError_ErrorCode) String() string {
 	return proto.EnumName(MemcacheServiceError_ErrorCode_name, int32(x))
 }
-func (x MemcacheServiceError_ErrorCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *MemcacheServiceError_ErrorCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(MemcacheServiceError_ErrorCode_value, data, "MemcacheServiceError_ErrorCode")
 	if err != nil {
@@ -86,9 +83,6 @@ func (x MemcacheSetRequest_SetPolicy) Enum() *MemcacheSetRequest_SetPolicy {
 }
 func (x MemcacheSetRequest_SetPolicy) String() string {
 	return proto.EnumName(MemcacheSetRequest_SetPolicy_name, int32(x))
-}
-func (x MemcacheSetRequest_SetPolicy) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *MemcacheSetRequest_SetPolicy) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(MemcacheSetRequest_SetPolicy_value, data, "MemcacheSetRequest_SetPolicy")
@@ -129,9 +123,6 @@ func (x MemcacheSetResponse_SetStatusCode) Enum() *MemcacheSetResponse_SetStatus
 func (x MemcacheSetResponse_SetStatusCode) String() string {
 	return proto.EnumName(MemcacheSetResponse_SetStatusCode_name, int32(x))
 }
-func (x MemcacheSetResponse_SetStatusCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *MemcacheSetResponse_SetStatusCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(MemcacheSetResponse_SetStatusCode_value, data, "MemcacheSetResponse_SetStatusCode")
 	if err != nil {
@@ -165,9 +156,6 @@ func (x MemcacheDeleteResponse_DeleteStatusCode) Enum() *MemcacheDeleteResponse_
 func (x MemcacheDeleteResponse_DeleteStatusCode) String() string {
 	return proto.EnumName(MemcacheDeleteResponse_DeleteStatusCode_name, int32(x))
 }
-func (x MemcacheDeleteResponse_DeleteStatusCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
-}
 func (x *MemcacheDeleteResponse_DeleteStatusCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(MemcacheDeleteResponse_DeleteStatusCode_value, data, "MemcacheDeleteResponse_DeleteStatusCode")
 	if err != nil {
@@ -200,9 +188,6 @@ func (x MemcacheIncrementRequest_Direction) Enum() *MemcacheIncrementRequest_Dir
 }
 func (x MemcacheIncrementRequest_Direction) String() string {
 	return proto.EnumName(MemcacheIncrementRequest_Direction_name, int32(x))
-}
-func (x MemcacheIncrementRequest_Direction) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *MemcacheIncrementRequest_Direction) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(MemcacheIncrementRequest_Direction_value, data, "MemcacheIncrementRequest_Direction")
@@ -239,9 +224,6 @@ func (x MemcacheIncrementResponse_IncrementStatusCode) Enum() *MemcacheIncrement
 }
 func (x MemcacheIncrementResponse_IncrementStatusCode) String() string {
 	return proto.EnumName(MemcacheIncrementResponse_IncrementStatusCode_name, int32(x))
-}
-func (x MemcacheIncrementResponse_IncrementStatusCode) MarshalJSON() ([]byte, error) {
-	return json.Marshal(x.String())
 }
 func (x *MemcacheIncrementResponse_IncrementStatusCode) UnmarshalJSON(data []byte) error {
 	value, err := proto.UnmarshalJSONEnum(MemcacheIncrementResponse_IncrementStatusCode_value, data, "MemcacheIncrementResponse_IncrementStatusCode")
