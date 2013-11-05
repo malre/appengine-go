@@ -8,12 +8,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"image"
 	"image/color"
 	"image/png"
 	"net/http"
 	"strconv"
-	"text/template"
 
 	"appengine"
 	"appengine/memcache"

@@ -63,18 +63,18 @@ Next {{.Count}} &gt;
   <li>
   <h5>
     <span>{{.StartTime.Format "2006-01-02 15:04:05.000 MST"}}</span>
-    <span class="path">{{.Resource|html}}</span>
+    <span class="path">{{.Resource}}</span>
     <span>{{.Status}}</span>
     <span>{{.Latency}}</span>
     <span>{{.ResponseSize}}</span>
-    <span>{{.UserAgent|html}}</span>
+    <span>{{.UserAgent}}</span>
   </h5>
   </li>
   {{range .AppLogs}}
     <li><h5>
     <span class="severity level_{{.Level}}">{{levelInitial .Level}}</span>
     {{.Time.Format "2006-01-02 15:04:05.000 MST"}}
-    <span class="snippet">{{.Message|html}}</span>
+    <span class="snippet">{{.Message}}</span>
     </h5></li>
   {{end}}
   </ol>

@@ -13,7 +13,6 @@
 		var id = "{{.|js}}";
 		var $pic = $("#pic");
 		var $url = $("#url");
-		var $share = $("#share");
 		var x = 0;
 		var y = 0;
 		function update() {
@@ -22,7 +21,6 @@
 				"&d="+$("#droop").val();
 			$pic.attr("src", "/img?"+query);
 			$url.text("/img?"+query);
-			$share.attr("href", "/share?"+query);
 		}
 		$pic.click(function(e) {
 			x = e.pageX - this.offsetLeft;
@@ -39,7 +37,6 @@
 	<input id="droop" type="range" min="-100" max="100" step="1" value="0">
 	<p>Click the image to place the moustache.</p>
 	<p>Image: <code id="url"></code></p>
-	<p><a id="share">Share this image</a></p>
 	<img id="pic">
 </body>
 </html>

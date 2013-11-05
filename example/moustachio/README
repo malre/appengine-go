@@ -1,19 +1,8 @@
-This program requires the freetype-go and goauth2 libraries.
+This program requires the freetype-go library.
 
-They should be checked out in this directory under these paths:
+It must be installed into your GOPATH so the relevant package can by
+imported by Moustachio. You can do this by running the following command:
 
-	freetype-go.googlecode.com
-	goauth2.googlecode.com
+        goapp get code.google.com/p/freetype-go/freetype/raster
 
-This is so that these packages can be imported by Moustachio:
-
-	"freetype-go.googlecode.com/hg/freetype/raster"
-	"goauth2.googlecode.com/hg/oauth"
-
-You can do this by running these commands:
-	
-	hg clone http://code.google.com/p/freetype-go code.google.com/p/freetype-go
-        # Remove the example code that doesn't work as-is on App Engine.
-	rm -r code.google.com/p/freetype-go/example
-
-	hg clone http://code.google.com/p/goauth2 code.google.com/p/goauth2
+Where goapp is the binary in the root of the Go App Engine SDK.

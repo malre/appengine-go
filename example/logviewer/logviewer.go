@@ -7,10 +7,10 @@ package logviewer
 import (
 	"encoding/base64"
 	"errors"
+	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
-	"text/template"
 
 	"appengine"
 	"appengine/log"

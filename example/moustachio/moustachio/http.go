@@ -7,53 +7,28 @@ package moustachio
 
 import (
 	"bytes"
-	"encoding/json"
-	"errors"
 	"fmt"
+	"html/template"
 	"image"
 	"image/jpeg"
 	_ "image/png" // import so we can read PNG files.
 	"io"
 	"net/http"
 	"strconv"
-	"text/template"
-
-	"code.google.com/p/goauth2/oauth"
 )
 
 // These imports were added for deployment on App Engine.
 import (
 	"appengine"
 	"appengine/datastore"
-	"appengine/urlfetch"
 	"crypto/sha1"
 	"resize"
 )
-
-const (
-	// Created at http://code.google.com/apis/console, these identify
-	// our app for the OAuth protocol.
-	CLIENT_ID     = "Your Client ID here."
-	CLIENT_SECRET = "Your Client Secret here."
-)
-
-// config returns the configuration information for OAuth and Buzz.
-func config(host string) *oauth.Config {
-	return &oauth.Config{
-		ClientId:     CLIENT_ID,
-		ClientSecret: CLIENT_SECRET,
-		Scope:        "https://www.googleapis.com/auth/buzz",
-		AuthURL:      "https://accounts.google.com/o/oauth2/auth",
-		TokenURL:     "https://accounts.google.com/o/oauth2/token",
-		RedirectURL:  fmt.Sprintf("http://%s/post", host),
-	}
-}
 
 var (
 	templates = template.Must(template.ParseFiles(
 		"edit.html",
 		"error.html",
-		"post.html",
 		"upload.html",
 	))
 )
@@ -64,8 +39,6 @@ func init() {
 	http.HandleFunc("/", errorHandler(upload))
 	http.HandleFunc("/edit", errorHandler(edit))
 	http.HandleFunc("/img", errorHandler(img))
-	http.HandleFunc("/share", errorHandler(share))
-	http.HandleFunc("/post", errorHandler(post))
 }
 
 // Image is the type used to hold the image in the datastore.
@@ -170,71 +143,6 @@ func img(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "image/jpeg")
 	jpeg.Encode(w, m, nil)
-}
-
-// share is the HTTP handler that redirects the user to authenticate
-// with OAuth; it handles "/share".
-func share(w http.ResponseWriter, r *http.Request) {
-	url := config(r.Host).AuthCodeURL(r.URL.RawQuery)
-	http.Redirect(w, r, url, http.StatusFound)
-}
-
-// post is the HTTP handler that receives the redirection from OAuth
-// and posts the image to the Buzz stream; it handles "/share".
-func post(w http.ResponseWriter, r *http.Request) {
-	// Exchange code for an access token at OAuth provider.
-	code := r.FormValue("code")
-	t := &oauth.Transport{
-		Config: config(r.Host),
-		Transport: &urlfetch.Transport{
-			Context: appengine.NewContext(r),
-		},
-	}
-	_, err := t.Exchange(code)
-	check(err)
-
-	// Post the image to the user's activity stream.
-	image := r.FormValue("state")
-	url := fmt.Sprintf("http://%s/img?%s", r.Host, image)
-	err = postPhoto(t.Client(), url)
-	check(err)
-
-	templates.ExecuteTemplate(w, "post.html", url)
-}
-
-// postPhoto uses the Buzz API to post the image to the user's Buzz stream.
-func postPhoto(client *http.Client, photoURL string) error {
-	const url = "https://www.googleapis.com/buzz/v1/activities/@me/@self"
-	const text = "Moustachio"
-
-	type m map[string]interface{}
-	post := m{"data": m{"object": m{
-		"type":    "note",
-		"content": text,
-		"attachments": []m{{
-			"type":    "photo",
-			"content": text,
-			"links": m{
-				"enclosure": []m{{
-					"href": photoURL,
-					"type": "image/jpeg",
-				}},
-			},
-		}},
-	}}}
-
-	b, err := json.Marshal(post)
-	if err != nil {
-		return err
-	}
-	resp, err := client.Post(url, "application/json", bytes.NewBuffer(b))
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode != 200 {
-		return errors.New("invalid post " + resp.Status)
-	}
-	return nil
 }
 
 // errorHandler wraps the argument handler with an error-catcher that

@@ -23,7 +23,9 @@ import (
 // Dial connects to the address addr on the network protocol.
 // The address format is host:port, where host may be a hostname or an IP address.
 // Known protocols are "tcp" and "udp".
-// The returned connection satisfies net.Conn, and is valid while c is valid.
+// The returned connection satisfies net.Conn, and is valid while c is valid;
+// if the connection is to be used after c becomes invalid, invoke SetContext
+// with the new context.
 func Dial(c appengine.Context, protocol, addr string) (*Conn, error) {
 	return DialTimeout(c, protocol, addr, 0)
 }
@@ -153,6 +155,14 @@ type Conn struct {
 	local, remote *pb.AddressPort
 
 	readDeadline, writeDeadline time.Time // optional
+}
+
+// SetContext sets the context that is used by this Conn.
+// It is usually used only when using a Conn that was created in a different context,
+// such as when a connection is created during a warmup request but used while
+// servicing a user request.
+func (cn *Conn) SetContext(c appengine.Context) {
+	cn.c = c
 }
 
 func (cn *Conn) Read(b []byte) (n int, err error) {

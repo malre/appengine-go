@@ -40,22 +40,24 @@ An example test file:
 		}
 	}
 
-The environment variable APPENGINE_API_SERVER specifies the location of the
-api_server.py executable to use. If unset, the system PATH is consulted.
+The environment variable APPENGINE_DEV_APPSERVER specifies the location of the
+dev_appserver.py executable to use. If unset, the system PATH is consulted.
 */
 package aetest
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"regexp"
 	"time"
 
 	"appengine"
@@ -74,17 +76,6 @@ type Context interface {
 	// Close kills the child api_server.py process,
 	// releasing its resources.
 	io.Closer
-}
-
-// PickPort picks a free port on which to start the API server.
-var PickPort = func() (int, error) {
-	l, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		return 0, err
-	}
-	defer l.Close()
-	addr := l.Addr().(*net.TCPAddr)
-	return addr.Port, nil
 }
 
 // NewContext launches an instance of api_server.py and returns a Context
@@ -121,11 +112,11 @@ func (o *Options) appID() string {
 // context implements appengine.Context by running an api_server.py
 // process as a child and proxying all Context calls to the child.
 type context struct {
-	appID string
-	req   *http.Request
-	child *exec.Cmd
-	port  int // of child api_server.py http server
-	addr  string
+	appID  string
+	req    *http.Request
+	child  *exec.Cmd
+	apiURL string // base URL of API HTTP server
+	appDir string
 }
 
 func (c *context) AppID() string               { return c.appID }
@@ -161,8 +152,7 @@ func (c *context) Call(service, method string, in, out appengine_internal.ProtoM
 	if err != nil {
 		return err
 	}
-	url := "http://" + c.addr
-	res, err := http.Post(url, "application/x-google-protobuf", bytes.NewReader(req))
+	res, err := http.Post(c.apiURL, "application/x-google-protobuf", bytes.NewReader(req))
 	if err != nil {
 		return err
 	}
@@ -195,7 +185,7 @@ func (c *context) Close() error {
 		p.Kill()
 	}
 	c.child = nil
-	return nil
+	return os.RemoveAll(c.appDir)
 }
 
 func fileExists(path string) bool {
@@ -213,58 +203,115 @@ func findPython() (path string, err error) {
 	return
 }
 
-func findAPIServer() (string, error) {
-	if p := os.Getenv("APPENGINE_API_SERVER"); p != "" {
+func findDevAppserver() (string, error) {
+	if p := os.Getenv("APPENGINE_DEV_APPSERVER"); p != "" {
 		if fileExists(p) {
 			return p, nil
 		}
-		return "", fmt.Errorf("invalid APPENGINE_API_SERVER environment variable; path %q doesn't exist", p)
+		return "", fmt.Errorf("invalid APPENGINE_DEV_APPSERVER environment variable; path %q doesn't exist", p)
 	}
-	return exec.LookPath("api_server.py")
+	return exec.LookPath("dev_appserver.py")
 }
+
+var apiServerAddrRE = regexp.MustCompile(`Starting API server at: (\S+)`)
 
 func (c *context) startChild() (err error) {
 	python, err := findPython()
 	if err != nil {
 		return fmt.Errorf("Could not find python interpreter: %v", err)
 	}
-	apiServer, err := findAPIServer()
+	devAppserver, err := findDevAppserver()
 	if err != nil {
-		return fmt.Errorf("Could not find api_server.py: %v", err)
+		return fmt.Errorf("Could not find dev_appserver.py: %v", err)
 	}
-	c.port, err = PickPort()
+
+	c.appDir, err = ioutil.TempDir("", "appengine-aetest")
 	if err != nil {
 		return err
 	}
-	c.addr = fmt.Sprintf("127.0.0.1:%v", c.port)
+	defer func() {
+		if err != nil {
+			os.RemoveAll(c.appDir)
+		}
+	}()
+	err = ioutil.WriteFile(filepath.Join(c.appDir, "app.yaml"), []byte(c.appYAML()), 0644)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(filepath.Join(c.appDir, "stubapp.go"), []byte(appSource), 0644)
+	if err != nil {
+		return err
+	}
+
 	c.child = exec.Command(
 		python,
-		apiServer,
-		fmt.Sprintf("-A%s", c.FullyQualifiedAppID()),
-		fmt.Sprintf("--api_port=%v", c.port),
+		devAppserver,
+		"--port=0",
+		"--api_port=0",
+		"--admin_port=0",
+		"--skip_sdk_update_check=true",
+		"--clear_datastore=true",
+		c.appDir,
 	)
 	c.child.Stdout = os.Stdout
-	c.child.Stderr = os.Stderr
+	var stderr io.Reader
+	stderr, err = c.child.StderrPipe()
+	if err != nil {
+		return err
+	}
+	stderr = io.TeeReader(stderr, os.Stderr)
 	if err = c.child.Start(); err != nil {
 		return err
 	}
 
-	timeout := time.After(15 * time.Second)
-	tick := time.NewTicker(500 * time.Millisecond)
-	defer tick.Stop()
-	for {
-		select {
-		case <-tick.C:
-			conn, err := net.DialTimeout("tcp", c.addr, 400*time.Millisecond)
-			if err == nil {
-				conn.Close()
-				return nil
+	// Wait until we have read the URL of the API server.
+	errc := make(chan error, 1)
+	urlc := make(chan string)
+	go func() {
+		s := bufio.NewScanner(stderr)
+		for s.Scan() {
+			if match := apiServerAddrRE.FindSubmatch(s.Bytes()); match != nil {
+				urlc <- string(match[1])
+				io.Copy(ioutil.Discard, stderr)
+				return
 			}
-		case <-timeout:
-			if p := c.child.Process; p != nil {
-				p.Kill()
-			}
-			return errors.New("timeout starting child process")
 		}
+		if err = s.Err(); err != nil {
+			errc <- err
+		}
+	}()
+
+	select {
+	case url := <-urlc:
+		c.apiURL = url
+		return nil
+	case <-time.After(15 * time.Second):
+		if p := c.child.Process; p != nil {
+			p.Kill()
+		}
+		return errors.New("timeout starting child process")
+	case err := <-errc:
+		return fmt.Errorf("error reading child process stderr: %v", err)
 	}
 }
+
+func (c *context) appYAML() string {
+	return fmt.Sprintf(appYAMLTemplate, c.appID)
+}
+
+const appYAMLTemplate = `
+application: %s
+version: 1
+runtime: go
+api_version: go1
+
+handlers:
+- url: /.*
+  script: _go_app
+`
+
+const appSource = `
+package nihilist
+
+func init() {}
+`

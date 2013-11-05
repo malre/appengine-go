@@ -16,7 +16,8 @@ if __name__ == '__main__':
   tool = os.path.basename(__file__)
   bin = os.path.join(GOROOT, 'bin', tool)
   os.environ['GOROOT'] = GOROOT
-  os.environ['APPENGINE_API_SERVER'] = os.path.join(SDK_BASE, 'api_server.py')
+  os.environ['APPENGINE_DEV_APPSERVER'] = os.path.join(SDK_BASE,
+                                                       'dev_appserver.py')
   if 'GOBIN' in os.environ:
     del os.environ['GOBIN']
 
