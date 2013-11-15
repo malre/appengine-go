@@ -41,7 +41,7 @@ type Package struct {
 	BaseDir      string     // what the file names are relative to, if outside app
 	Dependencies []*Package // the packages that this directly depends upon, in no particular order
 	HasInit      bool       // whether the package has any init functions
-	Dupe         bool       // whether the package is is a duplicate
+	Dupe         bool       // whether the package is a duplicate
 }
 
 func (p *Package) String() string {

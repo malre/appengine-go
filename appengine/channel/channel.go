@@ -26,17 +26,17 @@ import (
 	"appengine"
 	"appengine_internal"
 
-	base_proto "appengine_internal/base"
-	channel_proto "appengine_internal/channel"
+	bpb "appengine_internal/base"
+	pb "appengine_internal/channel"
 )
 
 // Create creates a channel and returns a token for use by the client.
 // The clientID is an application-provided string used to identify the client.
 func Create(c appengine.Context, clientID string) (token string, err error) {
-	req := &channel_proto.CreateChannelRequest{
+	req := &pb.CreateChannelRequest{
 		ApplicationKey: &clientID,
 	}
-	resp := &channel_proto.CreateChannelResponse{}
+	resp := &pb.CreateChannelResponse{}
 	err = c.Call(service, "CreateChannel", req, resp, nil)
 	token = resp.GetToken()
 	return token, remapError(err)
@@ -44,11 +44,11 @@ func Create(c appengine.Context, clientID string) (token string, err error) {
 
 // Send sends a message on the channel associated with clientID.
 func Send(c appengine.Context, clientID, message string) error {
-	req := &channel_proto.SendMessageRequest{
+	req := &pb.SendMessageRequest{
 		ApplicationKey: &clientID,
 		Message:        &message,
 	}
-	resp := &base_proto.VoidProto{}
+	resp := &bpb.VoidProto{}
 	return remapError(c.Call(service, "SendChannelMessage", req, resp, nil))
 }
 
@@ -78,5 +78,5 @@ func init() {
 	if appengine.IsDevAppServer() {
 		service = "channel" // dev
 	}
-	appengine_internal.RegisterErrorCodeMap("channel", channel_proto.ChannelServiceError_ErrorCode_name)
+	appengine_internal.RegisterErrorCodeMap("channel", pb.ChannelServiceError_ErrorCode_name)
 }

@@ -16,7 +16,7 @@ package capability
 import (
 	"appengine"
 
-	capability_proto "appengine_internal/capability"
+	pb "appengine_internal/capability"
 )
 
 // Enabled returns whether an API's capabilities are enabled.
@@ -24,21 +24,21 @@ import (
 // If the underlying RPC fails (if the package is unknown, for example),
 // false is returned and information is written to the application log.
 func Enabled(c appengine.Context, api, capability string) bool {
-	req := &capability_proto.IsEnabledRequest{
+	req := &pb.IsEnabledRequest{
 		Package:    &api,
 		Capability: []string{capability},
 	}
-	res := &capability_proto.IsEnabledResponse{}
+	res := &pb.IsEnabledResponse{}
 	if err := c.Call("capability_service", "IsEnabled", req, res, nil); err != nil {
 		c.Warningf("capability.Enabled: RPC failed: %v", err)
 		return false
 	}
 	switch *res.SummaryStatus {
-	case capability_proto.IsEnabledResponse_ENABLED,
-		capability_proto.IsEnabledResponse_SCHEDULED_FUTURE,
-		capability_proto.IsEnabledResponse_SCHEDULED_NOW:
+	case pb.IsEnabledResponse_ENABLED,
+		pb.IsEnabledResponse_SCHEDULED_FUTURE,
+		pb.IsEnabledResponse_SCHEDULED_NOW:
 		return true
-	case capability_proto.IsEnabledResponse_UNKNOWN:
+	case pb.IsEnabledResponse_UNKNOWN:
 		c.Errorf("capability.Enabled: unknown API capability %s/%s", api, capability)
 		return false
 	default:

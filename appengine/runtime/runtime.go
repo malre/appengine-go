@@ -14,7 +14,7 @@ import (
 	"appengine"
 	"appengine_internal"
 
-	system_proto "appengine_internal/system"
+	pb "appengine_internal/system"
 )
 
 // Statistics represents the system's statistics.
@@ -34,8 +34,8 @@ type Statistics struct {
 }
 
 func Stats(c appengine.Context) (*Statistics, error) {
-	req := &system_proto.GetSystemStatsRequest{}
-	res := &system_proto.GetSystemStatsResponse{}
+	req := &pb.GetSystemStatsRequest{}
+	res := &pb.GetSystemStatsResponse{}
 	if err := c.Call("system", "GetSystemStats", req, res, nil); err != nil {
 		return nil, err
 	}
@@ -130,8 +130,8 @@ func handleBackground(w http.ResponseWriter, req *http.Request) {
 // RunInBackground runs f in a background goroutine in this process.
 // This is only valid to invoke from a backend.
 func RunInBackground(c appengine.Context, f func(c appengine.Context)) error {
-	req := &system_proto.StartBackgroundRequestRequest{}
-	res := &system_proto.StartBackgroundRequestResponse{}
+	req := &pb.StartBackgroundRequestRequest{}
+	res := &pb.StartBackgroundRequestResponse{}
 	if err := c.Call("system", "StartBackgroundRequest", req, res, nil); err != nil {
 		return err
 	}
@@ -140,5 +140,5 @@ func RunInBackground(c appengine.Context, f func(c appengine.Context)) error {
 }
 
 func init() {
-	appengine_internal.RegisterErrorCodeMap("system", system_proto.SystemServiceError_ErrorCode_name)
+	appengine_internal.RegisterErrorCodeMap("system", pb.SystemServiceError_ErrorCode_name)
 }

@@ -3,34 +3,62 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"go/build"
 	"os"
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"strconv"
+	"strings"
 )
 
 var cmdServe = &Command{
-	UsageLine: "serve [serve flags] application_dir | [yaml_files...]",
+	UsageLine: "serve [serve flags] [application_dir | package | yaml_files...]",
 	Short:     "starts a local development App Engine server",
 	Long: `
 Serve launches your application on a local development App Engine server.
 
-The argument to this command should be your application's root directory that
-contains the app.yaml file. If you are using the Modules feature, then you may
-pass multiple YAML files to serve, rather than a directory, to specify
-which modules to serve.
+The argument to this command should be your application's root directory or a
+single package which contains an app.yaml file. If you are using the Modules
+feature, then you should pass multiple YAML files to serve, rather than a
+directory, to specify which modules to serve. If no arguments are provided,
+serve looks in your current directory for an app.yaml file.
+
+The -host flag controls the host name to which application modules should bind
+(default localhost).
+
+The -port flag controls the lowest port to which application modules should
+bind (default 8080).
+
+The -use_mtime_file_watcher flag causes the development server to use mtime
+polling for detecting source code changes, as opposed to inotify watches.
+
+The -admin_port flag controls the port to which the admin server should bind
+(default 8000).
 
 This command wraps the dev_appserver.py command provided as part of the
 App Engine SDK. For help using that command directly, run:
   ./dev_appserver.py --help
   `,
-	CustomFlags: true,
 }
+
+var (
+	serveHost       string // serve -host flag
+	servePort       int    // serve -port flag
+	serveUseModTime bool   // serve -use_mtime_file_watcher flag
+	serveAdminPort  int    // serve -admin_port flag
+)
 
 func init() {
 	// break init cycle
 	cmdServe.Run = runServe
+
+	cmdServe.Flag.StringVar(&serveHost, "host", "localhost", "")
+	cmdServe.Flag.IntVar(&servePort, "port", 8080, "")
+	cmdServe.Flag.BoolVar(&serveUseModTime, "use_mtime_file_watcher", false, "")
+	cmdServe.Flag.IntVar(&serveAdminPort, "admin_port", 8000, "")
 }
 
 func runServe(cmd *Command, args []string) {
@@ -38,7 +66,20 @@ func runServe(cmd *Command, args []string) {
 	if err != nil {
 		fatalf("goapp serve: %v", err)
 	}
-	runSDKTool(devAppserver, args)
+	toolArgs := []string{
+		"--host", serveHost,
+		"--port", strconv.Itoa(servePort),
+		"--admin_port", strconv.Itoa(serveAdminPort),
+		"--skip_sdk_update_check", "yes",
+	}
+	if serveUseModTime {
+		toolArgs = append(toolArgs, "--use_mtime_file_watcher", "yes")
+	}
+	files, err := resolveAppFiles(args)
+	if err != nil {
+		fatalf("goapp serve: %v", err)
+	}
+	runSDKTool(devAppserver, append(toolArgs, files...))
 }
 
 func runSDKTool(tool string, args []string) {
@@ -62,8 +103,9 @@ func runSDKTool(tool string, args []string) {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt)
 	go func() {
-		for _ = range sig {
+		for s := range sig {
 			logf("goapp: caught SIGINT, waiting for %s to shut down", toolName)
+			cmd.Process.Signal(s)
 		}
 	}()
 
@@ -87,4 +129,53 @@ func findDevAppserver() (string, error) {
 		return p, nil
 	}
 	return "", fmt.Errorf("unable to find dev_appserver.py")
+}
+
+// resolveAppFiles returns a list of arguments suitable for passing appcfg.py
+// or dev_appserver.py corresponding to the user-provided args.
+func resolveAppFiles(args []string) ([]string, error) {
+	if len(args) == 0 {
+		if fileExists("app.yaml") {
+			return []string{"./"}, nil
+		}
+		return nil, errors.New("no app.yaml file in current directory")
+	}
+
+	if len(args) == 1 && !strings.HasSuffix(args[0], ".yaml") {
+		if fileExists(filepath.Join(args[0], "app.yaml")) {
+			return args, nil
+		}
+		// Try to resolve this arg as a package.
+		if build.IsLocalImport(args[0]) {
+			return nil, fmt.Errorf("unable to find app.yaml at %s", args[0])
+		}
+		pkgs := packages(args)
+		if len(pkgs) > 1 {
+			return nil, errors.New("only a single package may be provided")
+		}
+		if len(pkgs) == 0 {
+			return nil, fmt.Errorf("unable to find app.yaml at %s (unable to resolve package)", args[0])
+		}
+		dir := pkgs[0].Dir
+		if !fileExists(filepath.Join(dir, "app.yaml")) {
+			return nil, fmt.Errorf("unable to find app.yaml at %s", dir)
+		}
+		return []string{dir}, nil
+	}
+
+	// The 1 or more args must all end with .yaml at this point.
+	for _, a := range args {
+		if !strings.HasSuffix(a, ".yaml") {
+			return nil, fmt.Errorf("%s is not a YAML file", a)
+		}
+		if !fileExists(a) {
+			return nil, fmt.Errorf("%s does not exist", a)
+		}
+	}
+	return args, nil
+}
+
+func fileExists(name string) bool {
+	_, err := os.Stat(name)
+	return err == nil
 }

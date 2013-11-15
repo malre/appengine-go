@@ -48,6 +48,7 @@ package aetest
 import (
 	"bufio"
 	"bytes"
+	"crypto/rand"
 	"errors"
 	"fmt"
 	"io"
@@ -84,13 +85,20 @@ type Context interface {
 func NewContext(opts *Options) (Context, error) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	c := &context{
-		appID: opts.appID(),
-		req:   req,
+		appID:   opts.appID(),
+		req:     req,
+		session: newSessionID(),
 	}
 	if err := c.startChild(); err != nil {
 		return nil, err
 	}
 	return c, nil
+}
+
+func newSessionID() string {
+	var buf [16]byte
+	io.ReadFull(rand.Reader, buf[:])
+	return fmt.Sprintf("%x", buf[:])
 }
 
 // TODO: option to pass flags to api_server.py
@@ -112,11 +120,13 @@ func (o *Options) appID() string {
 // context implements appengine.Context by running an api_server.py
 // process as a child and proxying all Context calls to the child.
 type context struct {
-	appID  string
-	req    *http.Request
-	child  *exec.Cmd
-	apiURL string // base URL of API HTTP server
-	appDir string
+	appID    string
+	req      *http.Request
+	child    *exec.Cmd
+	apiURL   string // base URL of API HTTP server
+	adminURL string // base URL of admin HTTP server
+	appDir   string
+	session  string
 }
 
 func (c *context) AppID() string               { return c.appID }
@@ -148,11 +158,12 @@ func (c *context) Call(service, method string, in, out appengine_internal.ProtoM
 		ServiceName: proto.String(service),
 		Method:      proto.String(method),
 		Request:     data,
+		RequestId:   proto.String(c.session),
 	})
 	if err != nil {
 		return err
 	}
-	res, err := http.Post(c.apiURL, "application/x-google-protobuf", bytes.NewReader(req))
+	res, err := http.Post(c.apiURL, "application/octet-stream", bytes.NewReader(req))
 	if err != nil {
 		return err
 	}
@@ -177,15 +188,41 @@ func (c *context) Call(service, method string, in, out appengine_internal.ProtoM
 
 // Close kills the child api_server.py process, releasing its resources.
 // Close is not part of the appengine.Context interface.
-func (c *context) Close() error {
+func (c *context) Close() (err error) {
 	if c.child == nil {
 		return nil
 	}
+	defer func() {
+		c.child = nil
+		err1 := os.RemoveAll(c.appDir)
+		if err == nil {
+			err = err1
+		}
+	}()
+
 	if p := c.child.Process; p != nil {
-		p.Kill()
+		errc := make(chan error, 1)
+		go func() {
+			errc <- c.child.Wait()
+		}()
+
+		// Call the quit handler on the admin server.
+		res, err := http.Get(c.adminURL + "/quit")
+		if err != nil {
+			p.Kill()
+			return fmt.Errorf("unable to call /quit handler: %v", err)
+		}
+		res.Body.Close()
+
+		select {
+		case <-time.After(15 * time.Second):
+			p.Kill()
+			return errors.New("timeout killing child process")
+		case err = <-errc:
+			// Do nothing.
+		}
 	}
-	c.child = nil
-	return os.RemoveAll(c.appDir)
+	return
 }
 
 func fileExists(path string) bool {
@@ -214,6 +251,7 @@ func findDevAppserver() (string, error) {
 }
 
 var apiServerAddrRE = regexp.MustCompile(`Starting API server at: (\S+)`)
+var adminServerAddrRE = regexp.MustCompile(`Starting admin server at: (\S+)`)
 
 func (c *context) startChild() (err error) {
 	python, err := findPython()
@@ -266,14 +304,16 @@ func (c *context) startChild() (err error) {
 
 	// Wait until we have read the URL of the API server.
 	errc := make(chan error, 1)
-	urlc := make(chan string)
+	apic := make(chan string)
+	adminc := make(chan string)
 	go func() {
 		s := bufio.NewScanner(stderr)
 		for s.Scan() {
 			if match := apiServerAddrRE.FindSubmatch(s.Bytes()); match != nil {
-				urlc <- string(match[1])
-				io.Copy(ioutil.Discard, stderr)
-				return
+				apic <- string(match[1])
+			}
+			if match := adminServerAddrRE.FindSubmatch(s.Bytes()); match != nil {
+				adminc <- string(match[1])
 			}
 		}
 		if err = s.Err(); err != nil {
@@ -281,18 +321,20 @@ func (c *context) startChild() (err error) {
 		}
 	}()
 
-	select {
-	case url := <-urlc:
-		c.apiURL = url
-		return nil
-	case <-time.After(15 * time.Second):
-		if p := c.child.Process; p != nil {
-			p.Kill()
+	for c.apiURL == "" || c.adminURL == "" {
+		select {
+		case c.apiURL = <-apic:
+		case c.adminURL = <-adminc:
+		case <-time.After(15 * time.Second):
+			if p := c.child.Process; p != nil {
+				p.Kill()
+			}
+			return errors.New("timeout starting child process")
+		case err := <-errc:
+			return fmt.Errorf("error reading child process stderr: %v", err)
 		}
-		return errors.New("timeout starting child process")
-	case err := <-errc:
-		return fmt.Errorf("error reading child process stderr: %v", err)
 	}
+	return nil
 }
 
 func (c *context) appYAML() string {

@@ -27,7 +27,7 @@ import (
 	"appengine_internal"
 	basepb "appengine_internal/base"
 	dspb "appengine_internal/datastore"
-	taskqueue_proto "appengine_internal/taskqueue"
+	pb "appengine_internal/taskqueue"
 	"code.google.com/p/goprotobuf/proto"
 )
 
@@ -60,9 +60,9 @@ type RetryOptions struct {
 	ApplyZeroMaxDoublings bool
 }
 
-// toRetryParameter converts RetryOptions to taskqueue_proto.TaskQueueRetryParameters.
-func (opt *RetryOptions) toRetryParameters() *taskqueue_proto.TaskQueueRetryParameters {
-	params := &taskqueue_proto.TaskQueueRetryParameters{}
+// toRetryParameter converts RetryOptions to pb.TaskQueueRetryParameters.
+func (opt *RetryOptions) toRetryParameters() *pb.TaskQueueRetryParameters {
+	params := &pb.TaskQueueRetryParameters{}
 	if opt.RetryLimit > 0 {
 		params.RetryLimit = proto.Int32(opt.RetryLimit)
 	}
@@ -151,7 +151,7 @@ var (
 	defaultNamespace = http.CanonicalHeaderKey("X-AppEngine-Default-Namespace")
 )
 
-func newAddReq(c appengine.Context, task *Task, queueName string) (*taskqueue_proto.TaskQueueAddRequest, error) {
+func newAddReq(c appengine.Context, task *Task, queueName string) (*pb.TaskQueueAddRequest, error) {
 	if queueName == "" {
 		queueName = "default"
 	}
@@ -161,7 +161,7 @@ func newAddReq(c appengine.Context, task *Task, queueName string) (*taskqueue_pr
 	} else if task.Delay != 0 {
 		panic("taskqueue: both Delay and ETA are set")
 	}
-	req := &taskqueue_proto.TaskQueueAddRequest{
+	req := &pb.TaskQueueAddRequest{
 		QueueName: []byte(queueName),
 		TaskName:  []byte(task.Name),
 		EtaUsec:   proto.Int64(eta.UnixNano() / 1e3),
@@ -170,22 +170,22 @@ func newAddReq(c appengine.Context, task *Task, queueName string) (*taskqueue_pr
 	if method == "PULL" {
 		// Pull-based task
 		req.Body = task.Payload
-		req.Mode = taskqueue_proto.TaskQueueMode_PULL.Enum()
+		req.Mode = pb.TaskQueueMode_PULL.Enum()
 		if task.Tag != "" {
 			req.Tag = []byte(task.Tag)
 		}
 		// TODO: More fields will need to be set.
 	} else {
 		// HTTP-based task
-		if v, ok := taskqueue_proto.TaskQueueAddRequest_RequestMethod_value[method]; ok {
-			req.Method = taskqueue_proto.TaskQueueAddRequest_RequestMethod(v).Enum()
+		if v, ok := pb.TaskQueueAddRequest_RequestMethod_value[method]; ok {
+			req.Method = pb.TaskQueueAddRequest_RequestMethod(v).Enum()
 		} else {
 			return nil, fmt.Errorf("taskqueue: bad method %q", method)
 		}
 		req.Url = []byte(task.Path)
 		for k, vs := range task.Header {
 			for _, v := range vs {
-				req.Header = append(req.Header, &taskqueue_proto.TaskQueueAddRequest_Header{
+				req.Header = append(req.Header, &pb.TaskQueueAddRequest_Header{
 					Key:   []byte(k),
 					Value: []byte(v),
 				})
@@ -200,7 +200,7 @@ func newAddReq(c appengine.Context, task *Task, queueName string) (*taskqueue_pr
 			// Fetch the current namespace of this request.
 			s := &basepb.StringProto{}
 			c.Call("__go__", "GetNamespace", &basepb.VoidProto{}, s, nil)
-			req.Header = append(req.Header, &taskqueue_proto.TaskQueueAddRequest_Header{
+			req.Header = append(req.Header, &pb.TaskQueueAddRequest_Header{
 				Key:   []byte(currentNamespace),
 				Value: []byte(s.GetValue()),
 			})
@@ -210,7 +210,7 @@ func newAddReq(c appengine.Context, task *Task, queueName string) (*taskqueue_pr
 			s := &basepb.StringProto{}
 			c.Call("__go__", "GetDefaultNamespace", &basepb.VoidProto{}, s, nil)
 			if ns := s.GetValue(); ns != "" {
-				req.Header = append(req.Header, &taskqueue_proto.TaskQueueAddRequest_Header{
+				req.Header = append(req.Header, &pb.TaskQueueAddRequest_Header{
 					Key:   []byte(defaultNamespace),
 					Value: []byte(ns),
 				})
@@ -225,9 +225,9 @@ func newAddReq(c appengine.Context, task *Task, queueName string) (*taskqueue_pr
 	return req, nil
 }
 
-var alreadyAddedErrors = map[taskqueue_proto.TaskQueueServiceError_ErrorCode]bool{
-	taskqueue_proto.TaskQueueServiceError_TASK_ALREADY_EXISTS: true,
-	taskqueue_proto.TaskQueueServiceError_TOMBSTONED_TASK:     true,
+var alreadyAddedErrors = map[pb.TaskQueueServiceError_ErrorCode]bool{
+	pb.TaskQueueServiceError_TASK_ALREADY_EXISTS: true,
+	pb.TaskQueueServiceError_TOMBSTONED_TASK:     true,
 }
 
 // Add adds the task to a named queue.
@@ -239,10 +239,10 @@ func Add(c appengine.Context, task *Task, queueName string) (*Task, error) {
 	if err != nil {
 		return nil, err
 	}
-	res := &taskqueue_proto.TaskQueueAddResponse{}
+	res := &pb.TaskQueueAddResponse{}
 	if err := c.Call("taskqueue", "Add", req, res, nil); err != nil {
 		apiErr, ok := err.(*appengine_internal.APIError)
-		if ok && alreadyAddedErrors[taskqueue_proto.TaskQueueServiceError_ErrorCode(apiErr.Code)] {
+		if ok && alreadyAddedErrors[pb.TaskQueueServiceError_ErrorCode(apiErr.Code)] {
 			return nil, ErrTaskAlreadyAdded
 		}
 		return nil, err
@@ -261,8 +261,8 @@ func Add(c appengine.Context, task *Task, queueName string) (*Task, error) {
 // each task's Name field to the chosen name if the original was empty.
 // If a given task is badly formed or could not be added, an appengine.MultiError is returned.
 func AddMulti(c appengine.Context, tasks []*Task, queueName string) ([]*Task, error) {
-	req := &taskqueue_proto.TaskQueueBulkAddRequest{
-		AddRequest: make([]*taskqueue_proto.TaskQueueAddRequest, len(tasks)),
+	req := &pb.TaskQueueBulkAddRequest{
+		AddRequest: make([]*pb.TaskQueueAddRequest, len(tasks)),
 	}
 	me, any := make(appengine.MultiError, len(tasks)), false
 	for i, t := range tasks {
@@ -272,7 +272,7 @@ func AddMulti(c appengine.Context, tasks []*Task, queueName string) ([]*Task, er
 	if any {
 		return nil, me
 	}
-	res := &taskqueue_proto.TaskQueueBulkAddResponse{}
+	res := &pb.TaskQueueBulkAddResponse{}
 	if err := c.Call("taskqueue", "BulkAdd", req, res, nil); err != nil {
 		return nil, err
 	}
@@ -287,7 +287,7 @@ func AddMulti(c appengine.Context, tasks []*Task, queueName string) ([]*Task, er
 		if tasksOut[i].Name == "" {
 			tasksOut[i].Name = string(tr.ChosenTaskName)
 		}
-		if *tr.Result != taskqueue_proto.TaskQueueServiceError_OK {
+		if *tr.Result != pb.TaskQueueServiceError_OK {
 			if alreadyAddedErrors[*tr.Result] {
 				me[i] = ErrTaskAlreadyAdded
 			} else {
@@ -324,11 +324,11 @@ func DeleteMulti(c appengine.Context, tasks []*Task, queueName string) error {
 	if queueName == "" {
 		queueName = "default"
 	}
-	req := &taskqueue_proto.TaskQueueDeleteRequest{
+	req := &pb.TaskQueueDeleteRequest{
 		QueueName: []byte(queueName),
 		TaskName:  taskNames,
 	}
-	res := &taskqueue_proto.TaskQueueDeleteResponse{}
+	res := &pb.TaskQueueDeleteResponse{}
 	if err := c.Call("taskqueue", "Delete", req, res, nil); err != nil {
 		return err
 	}
@@ -337,7 +337,7 @@ func DeleteMulti(c appengine.Context, tasks []*Task, queueName string) error {
 	}
 	me, any := make(appengine.MultiError, len(res.Result)), false
 	for i, ec := range res.Result {
-		if ec != taskqueue_proto.TaskQueueServiceError_OK {
+		if ec != pb.TaskQueueServiceError_OK {
 			me[i] = &appengine_internal.APIError{
 				Service: "taskqueue",
 				Code:    int32(ec),
@@ -355,14 +355,14 @@ func lease(c appengine.Context, maxTasks int, queueName string, leaseTime int, g
 	if queueName == "" {
 		queueName = "default"
 	}
-	req := &taskqueue_proto.TaskQueueQueryAndOwnTasksRequest{
+	req := &pb.TaskQueueQueryAndOwnTasksRequest{
 		QueueName:    []byte(queueName),
 		LeaseSeconds: proto.Float64(float64(leaseTime)),
 		MaxTasks:     proto.Int64(int64(maxTasks)),
 		GroupByTag:   proto.Bool(groupByTag),
 		Tag:          tag,
 	}
-	res := &taskqueue_proto.TaskQueueQueryAndOwnTasksResponse{}
+	res := &pb.TaskQueueQueryAndOwnTasksResponse{}
 	callOpts := &appengine_internal.CallOptions{
 		Timeout: 10 * time.Second,
 	}
@@ -403,10 +403,10 @@ func Purge(c appengine.Context, queueName string) error {
 	if queueName == "" {
 		queueName = "default"
 	}
-	req := &taskqueue_proto.TaskQueuePurgeQueueRequest{
+	req := &pb.TaskQueuePurgeQueueRequest{
 		QueueName: []byte(queueName),
 	}
-	res := &taskqueue_proto.TaskQueuePurgeQueueResponse{}
+	res := &pb.TaskQueuePurgeQueueResponse{}
 	return c.Call("taskqueue", "PurgeQueue", req, res, nil)
 }
 
@@ -417,13 +417,13 @@ func ModifyLease(c appengine.Context, task *Task, queueName string, leaseTime in
 	if queueName == "" {
 		queueName = "default"
 	}
-	req := &taskqueue_proto.TaskQueueModifyTaskLeaseRequest{
+	req := &pb.TaskQueueModifyTaskLeaseRequest{
 		QueueName:    []byte(queueName),
 		TaskName:     []byte(task.Name),
 		EtaUsec:      proto.Int64(task.ETA.UnixNano() / 1e3), // Used to verify ownership.
 		LeaseSeconds: proto.Float64(float64(leaseTime)),
 	}
-	res := &taskqueue_proto.TaskQueueModifyTaskLeaseResponse{}
+	res := &pb.TaskQueueModifyTaskLeaseResponse{}
 	if err := c.Call("taskqueue", "ModifyTaskLease", req, res, nil); err != nil {
 		return err
 	}
@@ -444,7 +444,7 @@ type QueueStatistics struct {
 // QueueStats retrieves statistics about queues.
 // maxTasks is a deprecated and ignored argument.
 func QueueStats(c appengine.Context, queueNames []string, maxTasks int) ([]QueueStatistics, error) {
-	req := &taskqueue_proto.TaskQueueFetchQueueStatsRequest{
+	req := &pb.TaskQueueFetchQueueStatsRequest{
 		QueueName: make([][]byte, len(queueNames)),
 	}
 	for i, q := range queueNames {
@@ -453,7 +453,7 @@ func QueueStats(c appengine.Context, queueNames []string, maxTasks int) ([]Queue
 		}
 		req.QueueName[i] = []byte(q)
 	}
-	res := &taskqueue_proto.TaskQueueFetchQueueStatsResponse{}
+	res := &pb.TaskQueueFetchQueueStatsResponse{}
 	callOpts := &appengine_internal.CallOptions{
 		Timeout: 10 * time.Second,
 	}
@@ -477,9 +477,9 @@ func QueueStats(c appengine.Context, queueNames []string, maxTasks int) ([]Queue
 	return qs, nil
 }
 
-func setTransaction(x *taskqueue_proto.TaskQueueAddRequest, t *dspb.Transaction) {
+func setTransaction(x *pb.TaskQueueAddRequest, t *dspb.Transaction) {
 	// The message matches, but the generated types are distinct.
-	x.Transaction = &taskqueue_proto.Transaction{
+	x.Transaction = &pb.Transaction{
 		Handle:      t.Handle,
 		App:         t.App,
 		MarkChanges: t.MarkChanges,
@@ -487,15 +487,15 @@ func setTransaction(x *taskqueue_proto.TaskQueueAddRequest, t *dspb.Transaction)
 }
 
 func init() {
-	appengine_internal.RegisterErrorCodeMap("taskqueue", taskqueue_proto.TaskQueueServiceError_ErrorCode_name)
+	appengine_internal.RegisterErrorCodeMap("taskqueue", pb.TaskQueueServiceError_ErrorCode_name)
 
 	// Datastore error codes are shifted by DATASTORE_ERROR when presented through taskqueue.
-	dsCode := int32(taskqueue_proto.TaskQueueServiceError_DATASTORE_ERROR) + int32(dspb.Error_TIMEOUT)
+	dsCode := int32(pb.TaskQueueServiceError_DATASTORE_ERROR) + int32(dspb.Error_TIMEOUT)
 	appengine_internal.RegisterTimeoutErrorCode("taskqueue", dsCode)
 
 	// Transaction registration.
 	appengine_internal.RegisterTransactionSetter(setTransaction)
-	appengine_internal.RegisterTransactionSetter(func(x *taskqueue_proto.TaskQueueBulkAddRequest, t *dspb.Transaction) {
+	appengine_internal.RegisterTransactionSetter(func(x *pb.TaskQueueBulkAddRequest, t *dspb.Transaction) {
 		for _, req := range x.AddRequest {
 			setTransaction(req, t)
 		}

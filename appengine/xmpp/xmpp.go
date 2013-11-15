@@ -32,7 +32,7 @@ import (
 	"appengine"
 	"appengine_internal"
 
-	xmpp_proto "appengine_internal/xmpp"
+	pb "appengine_internal/xmpp"
 )
 
 // Message represents an incoming chat message.
@@ -96,7 +96,7 @@ func Handle(f func(c appengine.Context, m *Message)) {
 // Send sends a message.
 // If any failures occur with specific recipients, the error will be an appengine.MultiError.
 func (m *Message) Send(c appengine.Context) error {
-	req := &xmpp_proto.XmppMessageRequest{
+	req := &pb.XmppMessageRequest{
 		Jid:    m.To,
 		Body:   &m.Body,
 		RawXml: &m.RawXML,
@@ -107,7 +107,7 @@ func (m *Message) Send(c appengine.Context) error {
 	if m.Sender != "" {
 		req.FromJid = &m.Sender
 	}
-	res := &xmpp_proto.XmppMessageResponse{}
+	res := &pb.XmppMessageResponse{}
 	if err := c.Call("xmpp", "SendMessage", req, res, nil); err != nil {
 		return err
 	}
@@ -117,7 +117,7 @@ func (m *Message) Send(c appengine.Context) error {
 	}
 	me, any := make(appengine.MultiError, len(req.Jid)), false
 	for i, st := range res.Status {
-		if st != xmpp_proto.XmppMessageResponse_NO_ERROR {
+		if st != pb.XmppMessageResponse_NO_ERROR {
 			me[i] = errors.New(st.String())
 			any = true
 		}
@@ -131,19 +131,19 @@ func (m *Message) Send(c appengine.Context) error {
 // Invite sends an invitation. If the from address is an empty string
 // the default (yourapp@appspot.com/bot) will be used.
 func Invite(c appengine.Context, to, from string) error {
-	req := &xmpp_proto.XmppInviteRequest{
+	req := &pb.XmppInviteRequest{
 		Jid: &to,
 	}
 	if from != "" {
 		req.FromJid = &from
 	}
-	res := &xmpp_proto.XmppInviteResponse{}
+	res := &pb.XmppInviteResponse{}
 	return c.Call("xmpp", "SendInvite", req, res, nil)
 }
 
 // Send sends a presence update.
 func (p *Presence) Send(c appengine.Context) error {
-	req := &xmpp_proto.XmppSendPresenceRequest{
+	req := &pb.XmppSendPresenceRequest{
 		Jid: &p.To,
 	}
 	if p.State != "" {
@@ -158,16 +158,16 @@ func (p *Presence) Send(c appengine.Context) error {
 	if p.Status != "" {
 		req.Status = &p.Status
 	}
-	res := &xmpp_proto.XmppSendPresenceResponse{}
+	res := &pb.XmppSendPresenceResponse{}
 	return c.Call("xmpp", "SendPresence", req, res, nil)
 }
 
-var presenceMap = map[xmpp_proto.PresenceResponse_SHOW]string{
-	xmpp_proto.PresenceResponse_NORMAL:         "",
-	xmpp_proto.PresenceResponse_AWAY:           "away",
-	xmpp_proto.PresenceResponse_DO_NOT_DISTURB: "dnd",
-	xmpp_proto.PresenceResponse_CHAT:           "chat",
-	xmpp_proto.PresenceResponse_EXTENDED_AWAY:  "xa",
+var presenceMap = map[pb.PresenceResponse_SHOW]string{
+	pb.PresenceResponse_NORMAL:         "",
+	pb.PresenceResponse_AWAY:           "away",
+	pb.PresenceResponse_DO_NOT_DISTURB: "dnd",
+	pb.PresenceResponse_CHAT:           "chat",
+	pb.PresenceResponse_EXTENDED_AWAY:  "xa",
 }
 
 // GetPresence retrieves a user's presence.
@@ -176,13 +176,13 @@ var presenceMap = map[xmpp_proto.PresenceResponse_SHOW]string{
 // Possible return values are "", "away", "dnd", "chat", "xa".
 // ErrPresenceUnavailable is returned if the presence is unavailable.
 func GetPresence(c appengine.Context, to string, from string) (string, error) {
-	req := &xmpp_proto.PresenceRequest{
+	req := &pb.PresenceRequest{
 		Jid: &to,
 	}
 	if from != "" {
 		req.FromJid = &from
 	}
-	res := &xmpp_proto.PresenceResponse{}
+	res := &pb.PresenceResponse{}
 	if err := c.Call("xmpp", "GetPresence", req, res, nil); err != nil {
 		return "", err
 	}
@@ -202,13 +202,13 @@ func GetPresence(c appengine.Context, to string, from string) (string, error) {
 // Possible return values are "", "away", "dnd", "chat", "xa".
 // If any presence is unavailable, an appengine.MultiError is returned
 func GetPresenceMulti(c appengine.Context, to []string, from string) ([]string, error) {
-	req := &xmpp_proto.BulkPresenceRequest{
+	req := &pb.BulkPresenceRequest{
 		Jid: to,
 	}
 	if from != "" {
 		req.FromJid = &from
 	}
-	res := &xmpp_proto.BulkPresenceResponse{}
+	res := &pb.BulkPresenceResponse{}
 
 	if err := c.Call("xmpp", "BulkGetPresence", req, res, nil); err != nil {
 		return nil, err
@@ -249,5 +249,5 @@ func GetPresenceMulti(c appengine.Context, to []string, from string) ([]string, 
 }
 
 func init() {
-	appengine_internal.RegisterErrorCodeMap("xmpp", xmpp_proto.XmppServiceError_ErrorCode_name)
+	appengine_internal.RegisterErrorCodeMap("xmpp", pb.XmppServiceError_ErrorCode_name)
 }

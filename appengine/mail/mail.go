@@ -26,8 +26,8 @@ import (
 	"appengine_internal"
 	"code.google.com/p/goprotobuf/proto"
 
-	base_proto "appengine_internal/base"
-	mail_proto "appengine_internal/mail"
+	bpb "appengine_internal/base"
+	pb "appengine_internal/mail"
 )
 
 // A Message represents an email message.
@@ -59,8 +59,9 @@ type Message struct {
 // An Attachment represents an email attachment.
 type Attachment struct {
 	// Name must be set to a valid file name.
-	Name string
-	Data []byte
+	Name      string
+	Data      []byte
+	ContentID string
 }
 
 // Send sends an email message.
@@ -74,7 +75,7 @@ func SendToAdmins(c appengine.Context, msg *Message) error {
 }
 
 func send(c appengine.Context, method string, msg *Message) error {
-	req := &mail_proto.MailMessage{
+	req := &pb.MailMessage{
 		Sender:  &msg.Sender,
 		To:      msg.To,
 		Cc:      msg.Cc,
@@ -91,23 +92,26 @@ func send(c appengine.Context, method string, msg *Message) error {
 		req.HtmlBody = &msg.HTMLBody
 	}
 	if len(msg.Attachments) > 0 {
-		req.Attachment = make([]*mail_proto.MailAttachment, len(msg.Attachments))
+		req.Attachment = make([]*pb.MailAttachment, len(msg.Attachments))
 		for i, att := range msg.Attachments {
-			req.Attachment[i] = &mail_proto.MailAttachment{
+			req.Attachment[i] = &pb.MailAttachment{
 				FileName: proto.String(att.Name),
 				Data:     att.Data,
+			}
+			if att.ContentID != "" {
+				req.Attachment[i].ContentID = proto.String(att.ContentID)
 			}
 		}
 	}
 	for key, vs := range msg.Headers {
 		for _, v := range vs {
-			req.Header = append(req.Header, &mail_proto.MailHeader{
+			req.Header = append(req.Header, &pb.MailHeader{
 				Name:  proto.String(key),
 				Value: proto.String(v),
 			})
 		}
 	}
-	res := &base_proto.VoidProto{}
+	res := &bpb.VoidProto{}
 	if err := c.Call("mail", method, req, res, nil); err != nil {
 		return err
 	}
@@ -115,5 +119,5 @@ func send(c appengine.Context, method string, msg *Message) error {
 }
 
 func init() {
-	appengine_internal.RegisterErrorCodeMap("mail", mail_proto.MailServiceError_ErrorCode_name)
+	appengine_internal.RegisterErrorCodeMap("mail", pb.MailServiceError_ErrorCode_name)
 }

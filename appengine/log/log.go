@@ -38,7 +38,7 @@ import (
 	"appengine_internal"
 	"code.google.com/p/goprotobuf/proto"
 
-	log_proto "appengine_internal/log"
+	pb "appengine_internal/log"
 )
 
 // Query defines a logs query.
@@ -130,7 +130,7 @@ type Record struct {
 type Result struct {
 	logs        []*Record
 	context     appengine.Context
-	request     *log_proto.LogReadRequest
+	request     *pb.LogReadRequest
 	resultsSeen bool
 	err         error
 }
@@ -165,7 +165,7 @@ var Done = errors.New("log: query has no more results")
 // Protocol Buffer representation of a single application-level log,
 // and converts it to an array of AppLogs, the external representation
 // of an application-level log.
-func protoToAppLogs(logLines []*log_proto.LogLine) []AppLog {
+func protoToAppLogs(logLines []*pb.LogLine) []AppLog {
 	appLogs := make([]AppLog, len(logLines))
 
 	for i, line := range logLines {
@@ -182,7 +182,7 @@ func protoToAppLogs(logLines []*log_proto.LogLine) []AppLog {
 // protoToRecord converts a RequestLog, the internal Protocol Buffer
 // representation of a single request-level log, to a Record, its
 // corresponding external representation.
-func protoToRecord(rl *log_proto.RequestLog) *Record {
+func protoToRecord(rl *pb.RequestLog) *Record {
 	offset, err := proto.Marshal(rl.Offset)
 	if err != nil {
 		offset = nil
@@ -222,7 +222,7 @@ func protoToRecord(rl *log_proto.RequestLog) *Record {
 // Run starts a query for log records, which contain request and application
 // level log information.
 func (params *Query) Run(c appengine.Context) *Result {
-	req := &log_proto.LogReadRequest{}
+	req := &pb.LogReadRequest{}
 	appId := c.FullyQualifiedAppID()
 	req.AppId = &appId
 	if !params.StartTime.IsZero() {
@@ -232,7 +232,7 @@ func (params *Query) Run(c appengine.Context) *Result {
 		req.EndTime = proto.Int64(params.EndTime.UnixNano() / 1e3)
 	}
 	if params.Offset != nil {
-		var offset log_proto.LogOffset
+		var offset pb.LogOffset
 		if err := proto.Unmarshal(params.Offset, &offset); err != nil {
 			return &Result{context: c, err: fmt.Errorf("bad Offset: %v", err)}
 		}
@@ -275,7 +275,7 @@ func (params *Query) Run(c appengine.Context) *Result {
 // response from their internal representations to external versions of the
 // same structs.
 func (r *Result) run() error {
-	res := &log_proto.LogReadResponse{}
+	res := &pb.LogReadResponse{}
 	if err := r.context.Call("logservice", "Read", r.request, res, nil); err != nil {
 		return err
 	}
@@ -292,5 +292,5 @@ func (r *Result) run() error {
 }
 
 func init() {
-	appengine_internal.RegisterErrorCodeMap("logservice", log_proto.LogServiceError_ErrorCode_name)
+	appengine_internal.RegisterErrorCodeMap("logservice", pb.LogServiceError_ErrorCode_name)
 }

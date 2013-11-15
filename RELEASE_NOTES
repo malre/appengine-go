@@ -3,10 +3,17 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.8.8 - November 2013
+=============================
+appengine/mail:
+  - Add Attachment.ContentID field.
+
 Version 1.8.7 - November 2013
 =============================
 appengine/socket:
   - Add SetContext method.
+Other:
+  - Support "goapp serve" and "goapp deploy".
 
 Version 1.8.6 - October 2013
 ============================
