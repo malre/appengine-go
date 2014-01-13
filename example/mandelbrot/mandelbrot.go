@@ -14,6 +14,7 @@ import (
 	"image/png"
 	"net/http"
 	"strconv"
+	"time"
 
 	"appengine"
 	"appengine/memcache"
@@ -91,7 +92,7 @@ func tileHandler(w http.ResponseWriter, r *http.Request) {
 		memcache.Set(c, &memcache.Item{
 			Key:        key,
 			Value:      b,
-			Expiration: 3600, // TTL = 1 hour
+			Expiration: 1 * time.Hour,
 		})
 	}
 

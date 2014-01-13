@@ -117,6 +117,11 @@ func (o *Options) appID() string {
 	return o.AppID
 }
 
+// PrepareDevAppserver is a hook which, if set, will be called before the
+// dev_appserver.py is started, each time it is started. If aetest.NewContext
+// is invoked from the goapp test tool, this hook is unnecessary.
+var PrepareDevAppserver func() error
+
 // context implements appengine.Context by running an api_server.py
 // process as a child and proxying all Context calls to the child.
 type context struct {
@@ -254,6 +259,11 @@ var apiServerAddrRE = regexp.MustCompile(`Starting API server at: (\S+)`)
 var adminServerAddrRE = regexp.MustCompile(`Starting admin server at: (\S+)`)
 
 func (c *context) startChild() (err error) {
+	if PrepareDevAppserver != nil {
+		if err := PrepareDevAppserver(); err != nil {
+			return err
+		}
+	}
 	python, err := findPython()
 	if err != nil {
 		return fmt.Errorf("Could not find python interpreter: %v", err)
@@ -302,7 +312,7 @@ func (c *context) startChild() (err error) {
 		return err
 	}
 
-	// Wait until we have read the URL of the API server.
+	// Wait until we have read the URLs of the API server and admin interface.
 	errc := make(chan error, 1)
 	apic := make(chan string)
 	adminc := make(chan string)

@@ -28,6 +28,7 @@ It has these top-level messages:
 	IndexPostfix
 	IndexPosition
 	Snapshot
+	InternalHeader
 	Transaction
 	Query
 	CompiledQuery
@@ -1389,11 +1390,28 @@ func (m *Snapshot) GetTs() int64 {
 	return 0
 }
 
-type Transaction struct {
-	Handle           *uint64 `protobuf:"fixed64,1,req,name=handle" json:"handle,omitempty"`
-	App              *string `protobuf:"bytes,2,req,name=app" json:"app,omitempty"`
-	MarkChanges      *bool   `protobuf:"varint,3,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
+type InternalHeader struct {
+	Qos              *string `protobuf:"bytes,1,opt,name=qos" json:"qos,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *InternalHeader) Reset()         { *m = InternalHeader{} }
+func (m *InternalHeader) String() string { return proto.CompactTextString(m) }
+func (*InternalHeader) ProtoMessage()    {}
+
+func (m *InternalHeader) GetQos() string {
+	if m != nil && m.Qos != nil {
+		return *m.Qos
+	}
+	return ""
+}
+
+type Transaction struct {
+	Header           *InternalHeader `protobuf:"bytes,4,opt,name=header" json:"header,omitempty"`
+	Handle           *uint64         `protobuf:"fixed64,1,req,name=handle" json:"handle,omitempty"`
+	App              *string         `protobuf:"bytes,2,req,name=app" json:"app,omitempty"`
+	MarkChanges      *bool           `protobuf:"varint,3,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
+	XXX_unrecognized []byte          `json:"-"`
 }
 
 func (m *Transaction) Reset()         { *m = Transaction{} }
@@ -1401,6 +1419,13 @@ func (m *Transaction) String() string { return proto.CompactTextString(m) }
 func (*Transaction) ProtoMessage()    {}
 
 const Default_Transaction_MarkChanges bool = false
+
+func (m *Transaction) GetHeader() *InternalHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
 
 func (m *Transaction) GetHandle() uint64 {
 	if m != nil && m.Handle != nil {
@@ -1424,6 +1449,7 @@ func (m *Transaction) GetMarkChanges() bool {
 }
 
 type Query struct {
+	Header              *InternalHeader   `protobuf:"bytes,39,opt,name=header" json:"header,omitempty"`
 	App                 *string           `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
 	NameSpace           *string           `protobuf:"bytes,29,opt,name=name_space" json:"name_space,omitempty"`
 	Kind                *string           `protobuf:"bytes,3,opt,name=kind" json:"kind,omitempty"`
@@ -1462,6 +1488,13 @@ const Default_Query_RequirePerfectPlan bool = false
 const Default_Query_KeysOnly bool = false
 const Default_Query_Compile bool = false
 const Default_Query_PersistOffset bool = false
+
+func (m *Query) GetHeader() *InternalHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
 
 func (m *Query) GetApp() string {
 	if m != nil && m.App != nil {
@@ -1918,23 +1951,15 @@ func (m *CompiledQuery_EntityFilter) GetAncestor() *Reference {
 }
 
 type CompiledCursor struct {
-	MultiqueryIndex  *int32                     `protobuf:"varint,1,opt,name=multiquery_index" json:"multiquery_index,omitempty"`
-	Position         []*CompiledCursor_Position `protobuf:"group,2,rep" json:"position,omitempty"`
-	XXX_unrecognized []byte                     `json:"-"`
+	Position         *CompiledCursor_Position `protobuf:"group,2,opt" json:"position,omitempty"`
+	XXX_unrecognized []byte                   `json:"-"`
 }
 
 func (m *CompiledCursor) Reset()         { *m = CompiledCursor{} }
 func (m *CompiledCursor) String() string { return proto.CompactTextString(m) }
 func (*CompiledCursor) ProtoMessage()    {}
 
-func (m *CompiledCursor) GetMultiqueryIndex() int32 {
-	if m != nil && m.MultiqueryIndex != nil {
-		return *m.MultiqueryIndex
-	}
-	return 0
-}
-
-func (m *CompiledCursor) GetPosition() []*CompiledCursor_Position {
+func (m *CompiledCursor) GetPosition() *CompiledCursor_Position {
 	if m != nil {
 		return m.Position
 	}
@@ -2128,12 +2153,13 @@ func (m *Cost_CommitCost) GetRequestedEntityDeletes() int32 {
 }
 
 type GetRequest struct {
-	Key              []*Reference `protobuf:"bytes,1,rep,name=key" json:"key,omitempty"`
-	Transaction      *Transaction `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
-	FailoverMs       *int64       `protobuf:"varint,3,opt,name=failover_ms" json:"failover_ms,omitempty"`
-	Strong           *bool        `protobuf:"varint,4,opt,name=strong" json:"strong,omitempty"`
-	AllowDeferred    *bool        `protobuf:"varint,5,opt,name=allow_deferred,def=0" json:"allow_deferred,omitempty"`
-	XXX_unrecognized []byte       `json:"-"`
+	Header           *InternalHeader `protobuf:"bytes,6,opt,name=header" json:"header,omitempty"`
+	Key              []*Reference    `protobuf:"bytes,1,rep,name=key" json:"key,omitempty"`
+	Transaction      *Transaction    `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
+	FailoverMs       *int64          `protobuf:"varint,3,opt,name=failover_ms" json:"failover_ms,omitempty"`
+	Strong           *bool           `protobuf:"varint,4,opt,name=strong" json:"strong,omitempty"`
+	AllowDeferred    *bool           `protobuf:"varint,5,opt,name=allow_deferred,def=0" json:"allow_deferred,omitempty"`
+	XXX_unrecognized []byte          `json:"-"`
 }
 
 func (m *GetRequest) Reset()         { *m = GetRequest{} }
@@ -2141,6 +2167,13 @@ func (m *GetRequest) String() string { return proto.CompactTextString(m) }
 func (*GetRequest) ProtoMessage()    {}
 
 const Default_GetRequest_AllowDeferred bool = false
+
+func (m *GetRequest) GetHeader() *InternalHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
 
 func (m *GetRequest) GetKey() []*Reference {
 	if m != nil {
@@ -2244,6 +2277,7 @@ func (m *GetResponse_Entity) GetVersion() int64 {
 }
 
 type PutRequest struct {
+	Header           *InternalHeader          `protobuf:"bytes,11,opt,name=header" json:"header,omitempty"`
 	Entity           []*EntityProto           `protobuf:"bytes,1,rep,name=entity" json:"entity,omitempty"`
 	Transaction      *Transaction             `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
 	CompositeIndex   []*CompositeIndex        `protobuf:"bytes,3,rep,name=composite_index" json:"composite_index,omitempty"`
@@ -2263,6 +2297,13 @@ const Default_PutRequest_Trusted bool = false
 const Default_PutRequest_Force bool = false
 const Default_PutRequest_MarkChanges bool = false
 const Default_PutRequest_AutoIdPolicy PutRequest_AutoIdPolicy = PutRequest_CURRENT
+
+func (m *PutRequest) GetHeader() *InternalHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
 
 func (m *PutRequest) GetEntity() []*EntityProto {
 	if m != nil {
@@ -2353,6 +2394,7 @@ func (m *PutResponse) GetVersion() []int64 {
 }
 
 type TouchRequest struct {
+	Header           *InternalHeader   `protobuf:"bytes,10,opt,name=header" json:"header,omitempty"`
 	Key              []*Reference      `protobuf:"bytes,1,rep,name=key" json:"key,omitempty"`
 	CompositeIndex   []*CompositeIndex `protobuf:"bytes,2,rep,name=composite_index" json:"composite_index,omitempty"`
 	Force            *bool             `protobuf:"varint,3,opt,name=force,def=0" json:"force,omitempty"`
@@ -2365,6 +2407,13 @@ func (m *TouchRequest) String() string { return proto.CompactTextString(m) }
 func (*TouchRequest) ProtoMessage()    {}
 
 const Default_TouchRequest_Force bool = false
+
+func (m *TouchRequest) GetHeader() *InternalHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
 
 func (m *TouchRequest) GetKey() []*Reference {
 	if m != nil {
@@ -2411,13 +2460,14 @@ func (m *TouchResponse) GetCost() *Cost {
 }
 
 type DeleteRequest struct {
-	Key              []*Reference `protobuf:"bytes,6,rep,name=key" json:"key,omitempty"`
-	Transaction      *Transaction `protobuf:"bytes,5,opt,name=transaction" json:"transaction,omitempty"`
-	Trusted          *bool        `protobuf:"varint,4,opt,name=trusted,def=0" json:"trusted,omitempty"`
-	Force            *bool        `protobuf:"varint,7,opt,name=force,def=0" json:"force,omitempty"`
-	MarkChanges      *bool        `protobuf:"varint,8,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
-	Snapshot         []*Snapshot  `protobuf:"bytes,9,rep,name=snapshot" json:"snapshot,omitempty"`
-	XXX_unrecognized []byte       `json:"-"`
+	Header           *InternalHeader `protobuf:"bytes,10,opt,name=header" json:"header,omitempty"`
+	Key              []*Reference    `protobuf:"bytes,6,rep,name=key" json:"key,omitempty"`
+	Transaction      *Transaction    `protobuf:"bytes,5,opt,name=transaction" json:"transaction,omitempty"`
+	Trusted          *bool           `protobuf:"varint,4,opt,name=trusted,def=0" json:"trusted,omitempty"`
+	Force            *bool           `protobuf:"varint,7,opt,name=force,def=0" json:"force,omitempty"`
+	MarkChanges      *bool           `protobuf:"varint,8,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
+	Snapshot         []*Snapshot     `protobuf:"bytes,9,rep,name=snapshot" json:"snapshot,omitempty"`
+	XXX_unrecognized []byte          `json:"-"`
 }
 
 func (m *DeleteRequest) Reset()         { *m = DeleteRequest{} }
@@ -2427,6 +2477,13 @@ func (*DeleteRequest) ProtoMessage()    {}
 const Default_DeleteRequest_Trusted bool = false
 const Default_DeleteRequest_Force bool = false
 const Default_DeleteRequest_MarkChanges bool = false
+
+func (m *DeleteRequest) GetHeader() *InternalHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
 
 func (m *DeleteRequest) GetKey() []*Reference {
 	if m != nil {
@@ -2495,11 +2552,12 @@ func (m *DeleteResponse) GetVersion() []int64 {
 }
 
 type NextRequest struct {
-	Cursor           *Cursor `protobuf:"bytes,1,req,name=cursor" json:"cursor,omitempty"`
-	Count            *int32  `protobuf:"varint,2,opt,name=count" json:"count,omitempty"`
-	Offset           *int32  `protobuf:"varint,4,opt,name=offset,def=0" json:"offset,omitempty"`
-	Compile          *bool   `protobuf:"varint,3,opt,name=compile,def=0" json:"compile,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Header           *InternalHeader `protobuf:"bytes,5,opt,name=header" json:"header,omitempty"`
+	Cursor           *Cursor         `protobuf:"bytes,1,req,name=cursor" json:"cursor,omitempty"`
+	Count            *int32          `protobuf:"varint,2,opt,name=count" json:"count,omitempty"`
+	Offset           *int32          `protobuf:"varint,4,opt,name=offset,def=0" json:"offset,omitempty"`
+	Compile          *bool           `protobuf:"varint,3,opt,name=compile,def=0" json:"compile,omitempty"`
+	XXX_unrecognized []byte          `json:"-"`
 }
 
 func (m *NextRequest) Reset()         { *m = NextRequest{} }
@@ -2508,6 +2566,13 @@ func (*NextRequest) ProtoMessage()    {}
 
 const Default_NextRequest_Offset int32 = 0
 const Default_NextRequest_Compile bool = false
+
+func (m *NextRequest) GetHeader() *InternalHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
 
 func (m *NextRequest) GetCursor() *Cursor {
 	if m != nil {
@@ -2634,15 +2699,24 @@ func (m *QueryResult) GetVersion() []int64 {
 }
 
 type AllocateIdsRequest struct {
-	ModelKey         *Reference `protobuf:"bytes,1,req,name=model_key" json:"model_key,omitempty"`
-	Size             *int64     `protobuf:"varint,2,opt,name=size" json:"size,omitempty"`
-	Max              *int64     `protobuf:"varint,3,opt,name=max" json:"max,omitempty"`
-	XXX_unrecognized []byte     `json:"-"`
+	Header           *InternalHeader `protobuf:"bytes,4,opt,name=header" json:"header,omitempty"`
+	ModelKey         *Reference      `protobuf:"bytes,1,opt,name=model_key" json:"model_key,omitempty"`
+	Size             *int64          `protobuf:"varint,2,opt,name=size" json:"size,omitempty"`
+	Max              *int64          `protobuf:"varint,3,opt,name=max" json:"max,omitempty"`
+	Reserve          []*Reference    `protobuf:"bytes,5,rep,name=reserve" json:"reserve,omitempty"`
+	XXX_unrecognized []byte          `json:"-"`
 }
 
 func (m *AllocateIdsRequest) Reset()         { *m = AllocateIdsRequest{} }
 func (m *AllocateIdsRequest) String() string { return proto.CompactTextString(m) }
 func (*AllocateIdsRequest) ProtoMessage()    {}
+
+func (m *AllocateIdsRequest) GetHeader() *InternalHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
 
 func (m *AllocateIdsRequest) GetModelKey() *Reference {
 	if m != nil {
@@ -2663,6 +2737,13 @@ func (m *AllocateIdsRequest) GetMax() int64 {
 		return *m.Max
 	}
 	return 0
+}
+
+func (m *AllocateIdsRequest) GetReserve() []*Reference {
+	if m != nil {
+		return m.Reserve
+	}
+	return nil
 }
 
 type AllocateIdsResponse struct {
@@ -2714,14 +2795,22 @@ func (m *CompositeIndices) GetIndex() []*CompositeIndex {
 }
 
 type AddActionsRequest struct {
-	Transaction      *Transaction `protobuf:"bytes,1,req,name=transaction" json:"transaction,omitempty"`
-	Action           []*Action    `protobuf:"bytes,2,rep,name=action" json:"action,omitempty"`
-	XXX_unrecognized []byte       `json:"-"`
+	Header           *InternalHeader `protobuf:"bytes,3,opt,name=header" json:"header,omitempty"`
+	Transaction      *Transaction    `protobuf:"bytes,1,req,name=transaction" json:"transaction,omitempty"`
+	Action           []*Action       `protobuf:"bytes,2,rep,name=action" json:"action,omitempty"`
+	XXX_unrecognized []byte          `json:"-"`
 }
 
 func (m *AddActionsRequest) Reset()         { *m = AddActionsRequest{} }
 func (m *AddActionsRequest) String() string { return proto.CompactTextString(m) }
 func (*AddActionsRequest) ProtoMessage()    {}
+
+func (m *AddActionsRequest) GetHeader() *InternalHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
 
 func (m *AddActionsRequest) GetTransaction() *Transaction {
 	if m != nil {
@@ -2746,9 +2835,10 @@ func (m *AddActionsResponse) String() string { return proto.CompactTextString(m)
 func (*AddActionsResponse) ProtoMessage()    {}
 
 type BeginTransactionRequest struct {
-	App              *string `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
-	AllowMultipleEg  *bool   `protobuf:"varint,2,opt,name=allow_multiple_eg,def=0" json:"allow_multiple_eg,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Header           *InternalHeader `protobuf:"bytes,3,opt,name=header" json:"header,omitempty"`
+	App              *string         `protobuf:"bytes,1,req,name=app" json:"app,omitempty"`
+	AllowMultipleEg  *bool           `protobuf:"varint,2,opt,name=allow_multiple_eg,def=0" json:"allow_multiple_eg,omitempty"`
+	XXX_unrecognized []byte          `json:"-"`
 }
 
 func (m *BeginTransactionRequest) Reset()         { *m = BeginTransactionRequest{} }
@@ -2756,6 +2846,13 @@ func (m *BeginTransactionRequest) String() string { return proto.CompactTextStri
 func (*BeginTransactionRequest) ProtoMessage()    {}
 
 const Default_BeginTransactionRequest_AllowMultipleEg bool = false
+
+func (m *BeginTransactionRequest) GetHeader() *InternalHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
 
 func (m *BeginTransactionRequest) GetApp() string {
 	if m != nil && m.App != nil {

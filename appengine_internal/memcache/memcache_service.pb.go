@@ -618,6 +618,7 @@ type MemcacheIncrementRequest struct {
 	InitialValue     *uint64                             `protobuf:"varint,5,opt,name=initial_value" json:"initial_value,omitempty"`
 	InitialFlags     *uint32                             `protobuf:"fixed32,6,opt,name=initial_flags" json:"initial_flags,omitempty"`
 	Override         *AppOverride                        `protobuf:"bytes,7,opt,name=override" json:"override,omitempty"`
+	ExpirationTime   *uint32                             `protobuf:"fixed32,8,opt,name=expiration_time,def=0" json:"expiration_time,omitempty"`
 	XXX_unrecognized []byte                              `json:"-"`
 }
 
@@ -627,6 +628,7 @@ func (*MemcacheIncrementRequest) ProtoMessage()    {}
 
 const Default_MemcacheIncrementRequest_Delta uint64 = 1
 const Default_MemcacheIncrementRequest_Direction MemcacheIncrementRequest_Direction = MemcacheIncrementRequest_INCREMENT
+const Default_MemcacheIncrementRequest_ExpirationTime uint32 = 0
 
 func (m *MemcacheIncrementRequest) GetKey() []byte {
 	if m != nil {
@@ -675,6 +677,13 @@ func (m *MemcacheIncrementRequest) GetOverride() *AppOverride {
 		return m.Override
 	}
 	return nil
+}
+
+func (m *MemcacheIncrementRequest) GetExpirationTime() uint32 {
+	if m != nil && m.ExpirationTime != nil {
+		return *m.ExpirationTime
+	}
+	return Default_MemcacheIncrementRequest_ExpirationTime
 }
 
 type MemcacheIncrementResponse struct {

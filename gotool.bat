@@ -5,7 +5,9 @@
 setlocal
 set GOROOT=%~dp0\goroot
 set APPENGINE_DEV_APPSERVER=%~dp0\dev_appserver.py
+set GOARCH=
 set GOBIN=
+set GOOS=
 
 :: Set a GOPATH if one is not set.
 if not "%GOPATH%"=="" goto havepath

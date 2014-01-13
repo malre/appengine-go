@@ -3,6 +3,11 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.8.9 - January 2014
+============================
+appengine/remote_api:
+  - Add NewRemoteContext function.
+
 Version 1.8.8 - November 2013
 =============================
 appengine/mail:

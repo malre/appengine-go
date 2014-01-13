@@ -50,8 +50,13 @@ func serveHTTP() {
 
 func init() {
 	// If the user's application has a transitive dependency on appengine_internal
-	// then this init will be called before any user code. The user application
-	// should also not be reading from stdin.
+	// then this init will be called before any user code.
+	// Read configuration from stdin when the application is being run by
+	// devappserver2. The user application should not be reading from stdin.
+	if os.Getenv("RUN_WITH_DEVAPPSERVER") != "1" {
+		log.Print("appengine: not running under devappserver2; using some default configuration")
+		return
+	}
 	c := readConfig(os.Stdin)
 	instanceConfig.AppID = string(c.AppId)
 	instanceConfig.APIHost = c.GetApiHost()
@@ -105,13 +110,22 @@ var (
 	ctxsMu sync.Mutex
 	ctxs   = make(map[*http.Request]*context)
 
-	instanceConfig struct {
+	instanceConfig = struct {
 		AppID      string
 		VersionID  string
 		InstanceID string
 		Datacenter string
 		APIHost    string
 		APIPort    int
+	}{
+		// Default configuration for when this file is loaded outside the context
+		// of devappserver2.
+		AppID:      "dev~my~app",
+		VersionID:  "1.2345",
+		InstanceID: "deadbeef",
+		Datacenter: "us1",
+		APIHost:    "localhost",
+		APIPort:    1,
 	}
 )
 
@@ -122,17 +136,7 @@ func readConfig(r io.Reader) *rpb.Config {
 	}
 
 	if len(raw) == 0 {
-		// If there were zero bytes, assume this code is not being run as part of
-		// a complete app under devappserver2, and generate some reasonable defaults.
-		log.Print("appengine: not running under devappserver2; using some default configuration")
-		return &rpb.Config{
-			AppId:      []byte("dev~my-app"),
-			VersionId:  []byte("1.2345"),
-			ApiHost:    proto.String("localhost"),
-			ApiPort:    proto.Int32(1),
-			Datacenter: proto.String("us1"),
-			InstanceId: proto.String("deadbeef"),
-		}
+		log.Fatal("appengine: no config provided on stdin")
 	}
 
 	b := make([]byte, base64.StdEncoding.DecodedLen(len(raw)))

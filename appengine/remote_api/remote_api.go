@@ -29,7 +29,12 @@ func init() {
 func handle(w http.ResponseWriter, req *http.Request) {
 	c := appengine.NewContext(req)
 
-	if !user.IsAdmin(c) {
+	u := user.Current(c)
+	if u == nil {
+		u, _ = user.CurrentOAuth(c, "")
+	}
+
+	if u == nil || !u.Admin {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusUnauthorized)
 		io.WriteString(w, "You must be logged in as an administrator to access this.\n")
@@ -67,10 +72,8 @@ func handle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// Only allow datastore_v3 for now, or AllocateIds for datastore_v4.
 	service, method := *remReq.ServiceName, *remReq.Method
-	ok := service == "datastore_v3" || (service == "datastore_v4" && method == "AllocateIds")
-	if !ok {
+	if !requestSupported(service, method) {
 		w.WriteHeader(http.StatusBadRequest)
 		c.Errorf("Unsupported RPC /%s.%s", service, method)
 		return
@@ -125,6 +128,11 @@ func (rm *rawMessage) Unmarshal(buf []byte) error {
 	rm.buf = make([]byte, len(buf))
 	copy(rm.buf, buf)
 	return nil
+}
+
+func requestSupported(service, method string) bool {
+	// Only allow datastore_v3 for now, or AllocateIds for datastore_v4.
+	return service == "datastore_v3" || (service == "datastore_v4" && method == "AllocateIds")
 }
 
 // Methods to satisfy proto.Message.

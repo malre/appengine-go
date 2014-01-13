@@ -7,6 +7,7 @@ package moustachio
 
 import (
 	"bytes"
+	"crypto/sha1"
 	"fmt"
 	"html/template"
 	"image"
@@ -15,13 +16,10 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-)
 
-// These imports were added for deployment on App Engine.
-import (
 	"appengine"
 	"appengine/datastore"
-	"crypto/sha1"
+
 	"resize"
 )
 
@@ -36,9 +34,9 @@ var (
 // Because App Engine owns main and starts the HTTP service,
 // we do our setup during initialization.
 func init() {
-	http.HandleFunc("/", errorHandler(upload))
-	http.HandleFunc("/edit", errorHandler(edit))
-	http.HandleFunc("/img", errorHandler(img))
+	http.HandleFunc("/", uploadHandler)
+	http.HandleFunc("/edit", editHandler)
+	http.HandleFunc("/img", imgHandler)
 }
 
 // Image is the type used to hold the image in the datastore.
@@ -46,23 +44,38 @@ type Image struct {
 	Data []byte
 }
 
-// upload is the HTTP handler for uploading images; it handles "/".
-func upload(w http.ResponseWriter, r *http.Request) {
+// uploadHandler is the HTTP handler for uploading images; it handles "/".
+func uploadHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
 	if r.Method != "POST" {
 		// No upload; show the upload form.
-		templates.ExecuteTemplate(w, "upload.html", nil)
+		b := &bytes.Buffer{}
+		if err := templates.ExecuteTemplate(b, "upload.html", nil); err != nil {
+			writeError(w, r, err)
+			return
+		}
+		b.WriteTo(w)
 		return
 	}
 
 	f, _, err := r.FormFile("image")
-	check(err)
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
 	defer f.Close()
 
-	// Grab the image data
+	// Grab the image data.
 	var buf bytes.Buffer
 	io.Copy(&buf, f)
 	i, _, err := image.Decode(&buf)
-	check(err)
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
 
 	// Resize if too large, for more efficient moustachioing.
 	// We aim for less than 1200 pixels in any dimension; if the
@@ -92,16 +105,20 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 	// Encode as a new JPEG image.
 	buf.Reset()
-	err = jpeg.Encode(&buf, i, nil)
-	check(err)
+	if err := jpeg.Encode(&buf, i, nil); err != nil {
+		writeError(w, r, err)
+		return
+	}
 
 	// Create an App Engine context for the client's request.
 	c := appengine.NewContext(r)
 
 	// Save the image under a unique key, a hash of the image.
 	key := datastore.NewKey(c, "Image", keyOf(buf.Bytes()), 0, nil)
-	_, err = datastore.Put(c, key, &Image{buf.Bytes()})
-	check(err)
+	if _, err = datastore.Put(c, key, &Image{buf.Bytes()}); err != nil {
+		writeError(w, r, err)
+		return
+	}
 
 	// Redirect to /edit using the key.
 	http.Redirect(w, r, "/edit?id="+key.StringID(), http.StatusFound)
@@ -114,22 +131,31 @@ func keyOf(data []byte) string {
 	return fmt.Sprintf("%x", string(sha.Sum(nil))[0:8])
 }
 
-// edit is the HTTP handler for editing images; it handles "/edit".
-func edit(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "edit.html", r.FormValue("id"))
+// editHandler is the HTTP handler for editing images; it handles "/edit".
+func editHandler(w http.ResponseWriter, r *http.Request) {
+	b := &bytes.Buffer{}
+	if err := templates.ExecuteTemplate(b, "edit.html", r.FormValue("id")); err != nil {
+		writeError(w, r, err)
+	}
+	b.WriteTo(w)
 }
 
-// img is the HTTP handler for displaying images and painting moustaches;
-// it handles "/img".
-func img(w http.ResponseWriter, r *http.Request) {
+// imgHandler is the HTTP handler for displaying images and painting
+// moustaches; it handles "/img".
+func imgHandler(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	key := datastore.NewKey(c, "Image", r.FormValue("id"), 0, nil)
 	im := new(Image)
-	err := datastore.Get(c, key, im)
-	check(err)
+	if err := datastore.Get(c, key, im); err != nil {
+		writeError(w, r, err)
+		return
+	}
 
 	m, _, err := image.Decode(bytes.NewBuffer(im.Data))
-	check(err)
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
 
 	get := func(n string) int { // helper closure
 		i, _ := strconv.Atoi(r.FormValue(n))
@@ -141,27 +167,21 @@ func img(w http.ResponseWriter, r *http.Request) {
 		m = moustache(m, x, y, s, d)
 	}
 
-	w.Header().Set("Content-type", "image/jpeg")
-	jpeg.Encode(w, m, nil)
-}
-
-// errorHandler wraps the argument handler with an error-catcher that
-// returns a 500 HTTP error if the request fails (calls check with err non-nil).
-func errorHandler(fn http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if err, ok := recover().(error); ok {
-				w.WriteHeader(http.StatusInternalServerError)
-				templates.ExecuteTemplate(w, "error.html", err)
-			}
-		}()
-		fn(w, r)
+	b := &bytes.Buffer{}
+	if err := jpeg.Encode(w, m, nil); err != nil {
+		writeError(w, r, err)
+		return
 	}
+	w.Header().Set("Content-type", "image/jpeg")
+	b.WriteTo(w)
 }
 
-// check aborts the current execution if err is non-nil.
-func check(err error) {
-	if err != nil {
-		panic(err)
+// writeError renders the error in the HTTP response.
+func writeError(w http.ResponseWriter, r *http.Request, err error) {
+	c := appengine.NewContext(r)
+	c.Errorf("Error: %v", err)
+	w.WriteHeader(http.StatusInternalServerError)
+	if err := templates.ExecuteTemplate(w, "error.html", err); err != nil {
+		c.Errorf("templates.ExecuteTemplate: %v", err)
 	}
 }

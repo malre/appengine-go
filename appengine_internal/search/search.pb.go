@@ -14,6 +14,8 @@ It has these top-level messages:
 	FieldValue
 	Field
 	FieldTypes
+	FacetValue
+	Facet
 	Document
 	SearchServiceError
 	RequestStatus
@@ -39,6 +41,8 @@ It has these top-level messages:
 	FieldSpec
 	SearchParams
 	SearchRequest
+	FacetResultValue
+	FacetResult
 	SearchResult
 	SearchResponse
 */
@@ -179,6 +183,42 @@ func (x *FieldValue_ContentType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*x = FieldValue_ContentType(value)
+	return nil
+}
+
+type FacetValue_ContentType int32
+
+const (
+	FacetValue_ATOM   FacetValue_ContentType = 2
+	FacetValue_DATE   FacetValue_ContentType = 3
+	FacetValue_NUMBER FacetValue_ContentType = 4
+)
+
+var FacetValue_ContentType_name = map[int32]string{
+	2: "ATOM",
+	3: "DATE",
+	4: "NUMBER",
+}
+var FacetValue_ContentType_value = map[string]int32{
+	"ATOM":   2,
+	"DATE":   3,
+	"NUMBER": 4,
+}
+
+func (x FacetValue_ContentType) Enum() *FacetValue_ContentType {
+	p := new(FacetValue_ContentType)
+	*p = x
+	return p
+}
+func (x FacetValue_ContentType) String() string {
+	return proto.EnumName(FacetValue_ContentType_name, int32(x))
+}
+func (x *FacetValue_ContentType) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(FacetValue_ContentType_value, data, "FacetValue_ContentType")
+	if err != nil {
+		return err
+	}
+	*x = FacetValue_ContentType(value)
 	return nil
 }
 
@@ -692,6 +732,56 @@ func (m *FieldTypes) GetType() []FieldValue_ContentType {
 	return nil
 }
 
+type FacetValue struct {
+	Type             *FacetValue_ContentType `protobuf:"varint,1,opt,name=type,enum=search.FacetValue_ContentType,def=2" json:"type,omitempty"`
+	StringValue      *string                 `protobuf:"bytes,3,opt,name=string_value" json:"string_value,omitempty"`
+	XXX_unrecognized []byte                  `json:"-"`
+}
+
+func (m *FacetValue) Reset()         { *m = FacetValue{} }
+func (m *FacetValue) String() string { return proto.CompactTextString(m) }
+func (*FacetValue) ProtoMessage()    {}
+
+const Default_FacetValue_Type FacetValue_ContentType = FacetValue_ATOM
+
+func (m *FacetValue) GetType() FacetValue_ContentType {
+	if m != nil && m.Type != nil {
+		return *m.Type
+	}
+	return Default_FacetValue_Type
+}
+
+func (m *FacetValue) GetStringValue() string {
+	if m != nil && m.StringValue != nil {
+		return *m.StringValue
+	}
+	return ""
+}
+
+type Facet struct {
+	Name             *string     `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Value            *FacetValue `protobuf:"bytes,2,req,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte      `json:"-"`
+}
+
+func (m *Facet) Reset()         { *m = Facet{} }
+func (m *Facet) String() string { return proto.CompactTextString(m) }
+func (*Facet) ProtoMessage()    {}
+
+func (m *Facet) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
+	}
+	return ""
+}
+
+func (m *Facet) GetValue() *FacetValue {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
 type Document struct {
 	Id               *string            `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
 	Language         *string            `protobuf:"bytes,2,opt,name=language,def=en" json:"language,omitempty"`
@@ -700,6 +790,7 @@ type Document struct {
 	Storage          *Document_Storage  `protobuf:"varint,5,opt,name=storage,enum=search.Document_Storage,def=0" json:"storage,omitempty"`
 	Acl              *AccessControlList `protobuf:"bytes,6,opt,name=acl" json:"acl,omitempty"`
 	Version          *int64             `protobuf:"varint,7,opt,name=version" json:"version,omitempty"`
+	Facet            []*Facet           `protobuf:"bytes,8,rep,name=facet" json:"facet,omitempty"`
 	XXX_unrecognized []byte             `json:"-"`
 }
 
@@ -757,6 +848,13 @@ func (m *Document) GetVersion() int64 {
 		return *m.Version
 	}
 	return 0
+}
+
+func (m *Document) GetFacet() []*Facet {
+	if m != nil {
+		return m.Facet
+	}
+	return nil
 }
 
 type SearchServiceError struct {
@@ -852,9 +950,10 @@ func (m *IndexSpec) GetMode() IndexSpec_Mode {
 }
 
 type IndexMetadata struct {
-	IndexSpec        *IndexSpec    `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
-	Field            []*FieldTypes `protobuf:"bytes,2,rep,name=field" json:"field,omitempty"`
-	XXX_unrecognized []byte        `json:"-"`
+	IndexSpec        *IndexSpec             `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
+	Field            []*FieldTypes          `protobuf:"bytes,2,rep,name=field" json:"field,omitempty"`
+	Storage          *IndexMetadata_Storage `protobuf:"bytes,3,opt,name=storage" json:"storage,omitempty"`
+	XXX_unrecognized []byte                 `json:"-"`
 }
 
 func (m *IndexMetadata) Reset()         { *m = IndexMetadata{} }
@@ -873,6 +972,37 @@ func (m *IndexMetadata) GetField() []*FieldTypes {
 		return m.Field
 	}
 	return nil
+}
+
+func (m *IndexMetadata) GetStorage() *IndexMetadata_Storage {
+	if m != nil {
+		return m.Storage
+	}
+	return nil
+}
+
+type IndexMetadata_Storage struct {
+	AmountUsed       *int64 `protobuf:"varint,1,opt,name=amount_used" json:"amount_used,omitempty"`
+	Limit            *int64 `protobuf:"varint,2,opt,name=limit" json:"limit,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *IndexMetadata_Storage) Reset()         { *m = IndexMetadata_Storage{} }
+func (m *IndexMetadata_Storage) String() string { return proto.CompactTextString(m) }
+func (*IndexMetadata_Storage) ProtoMessage()    {}
+
+func (m *IndexMetadata_Storage) GetAmountUsed() int64 {
+	if m != nil && m.AmountUsed != nil {
+		return *m.AmountUsed
+	}
+	return 0
+}
+
+func (m *IndexMetadata_Storage) GetLimit() int64 {
+	if m != nil && m.Limit != nil {
+		return *m.Limit
+	}
+	return 0
 }
 
 type IndexDocumentParams struct {
@@ -1129,6 +1259,7 @@ type ListIndexesParams struct {
 	IndexNamePrefix   *string           `protobuf:"bytes,6,opt,name=index_name_prefix" json:"index_name_prefix,omitempty"`
 	Offset            *int32            `protobuf:"varint,7,opt,name=offset" json:"offset,omitempty"`
 	Source            *IndexSpec_Source `protobuf:"varint,8,opt,name=source,enum=search.IndexSpec_Source,def=0" json:"source,omitempty"`
+	FetchStorageUsage *bool             `protobuf:"varint,9,opt,name=fetch_storage_usage,def=0" json:"fetch_storage_usage,omitempty"`
 	XXX_unrecognized  []byte            `json:"-"`
 }
 
@@ -1139,6 +1270,7 @@ func (*ListIndexesParams) ProtoMessage()    {}
 const Default_ListIndexesParams_Limit int32 = 20
 const Default_ListIndexesParams_IncludeStartIndex bool = true
 const Default_ListIndexesParams_Source IndexSpec_Source = IndexSpec_SEARCH
+const Default_ListIndexesParams_FetchStorageUsage bool = false
 
 func (m *ListIndexesParams) GetFetchSchema() bool {
 	if m != nil && m.FetchSchema != nil {
@@ -1194,6 +1326,13 @@ func (m *ListIndexesParams) GetSource() IndexSpec_Source {
 		return *m.Source
 	}
 	return Default_ListIndexesParams_Source
+}
+
+func (m *ListIndexesParams) GetFetchStorageUsage() bool {
+	if m != nil && m.FetchStorageUsage != nil {
+		return *m.FetchStorageUsage
+	}
+	return Default_ListIndexesParams_FetchStorageUsage
 }
 
 type ListIndexesRequest struct {
@@ -1448,6 +1587,7 @@ type SearchParams struct {
 	FieldSpec            *FieldSpec                `protobuf:"bytes,10,opt,name=field_spec" json:"field_spec,omitempty"`
 	KeysOnly             *bool                     `protobuf:"varint,12,opt,name=keys_only" json:"keys_only,omitempty"`
 	ParsingMode          *SearchParams_ParsingMode `protobuf:"varint,13,opt,name=parsing_mode,enum=search.SearchParams_ParsingMode,def=0" json:"parsing_mode,omitempty"`
+	FacetedSearch        *bool                     `protobuf:"varint,14,opt,name=faceted_search,def=0" json:"faceted_search,omitempty"`
 	XXX_unrecognized     []byte                    `json:"-"`
 }
 
@@ -1458,6 +1598,7 @@ func (*SearchParams) ProtoMessage()    {}
 const Default_SearchParams_CursorType SearchParams_CursorType = SearchParams_NONE
 const Default_SearchParams_Limit int32 = 20
 const Default_SearchParams_ParsingMode SearchParams_ParsingMode = SearchParams_STRICT
+const Default_SearchParams_FacetedSearch bool = false
 
 func (m *SearchParams) GetIndexSpec() *IndexSpec {
 	if m != nil {
@@ -1543,6 +1684,13 @@ func (m *SearchParams) GetParsingMode() SearchParams_ParsingMode {
 	return Default_SearchParams_ParsingMode
 }
 
+func (m *SearchParams) GetFacetedSearch() bool {
+	if m != nil && m.FacetedSearch != nil {
+		return *m.FacetedSearch
+	}
+	return Default_SearchParams_FacetedSearch
+}
+
 type SearchRequest struct {
 	Params           *SearchParams `protobuf:"bytes,1,req,name=params" json:"params,omitempty"`
 	AppId            []byte        `protobuf:"bytes,3,opt,name=app_id" json:"app_id,omitempty"`
@@ -1563,6 +1711,62 @@ func (m *SearchRequest) GetParams() *SearchParams {
 func (m *SearchRequest) GetAppId() []byte {
 	if m != nil {
 		return m.AppId
+	}
+	return nil
+}
+
+type FacetResultValue struct {
+	Name             *string `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Count            *int32  `protobuf:"varint,2,req,name=count" json:"count,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *FacetResultValue) Reset()         { *m = FacetResultValue{} }
+func (m *FacetResultValue) String() string { return proto.CompactTextString(m) }
+func (*FacetResultValue) ProtoMessage()    {}
+
+func (m *FacetResultValue) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
+	}
+	return ""
+}
+
+func (m *FacetResultValue) GetCount() int32 {
+	if m != nil && m.Count != nil {
+		return *m.Count
+	}
+	return 0
+}
+
+type FacetResult struct {
+	Name             *string                 `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Type             *FacetValue_ContentType `protobuf:"varint,2,req,name=type,enum=search.FacetValue_ContentType" json:"type,omitempty"`
+	Value            []*FacetResultValue     `protobuf:"bytes,3,rep,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte                  `json:"-"`
+}
+
+func (m *FacetResult) Reset()         { *m = FacetResult{} }
+func (m *FacetResult) String() string { return proto.CompactTextString(m) }
+func (*FacetResult) ProtoMessage()    {}
+
+func (m *FacetResult) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
+	}
+	return ""
+}
+
+func (m *FacetResult) GetType() FacetValue_ContentType {
+	if m != nil && m.Type != nil {
+		return *m.Type
+	}
+	return FacetValue_ATOM
+}
+
+func (m *FacetResult) GetValue() []*FacetResultValue {
+	if m != nil {
+		return m.Value
 	}
 	return nil
 }
@@ -1612,6 +1816,7 @@ type SearchResponse struct {
 	MatchedCount     *int64                    `protobuf:"varint,2,req,name=matched_count" json:"matched_count,omitempty"`
 	Status           *RequestStatus            `protobuf:"bytes,3,req,name=status" json:"status,omitempty"`
 	Cursor           *string                   `protobuf:"bytes,4,opt,name=cursor" json:"cursor,omitempty"`
+	FacetResult      []*FacetResult            `protobuf:"bytes,5,rep,name=facet_result" json:"facet_result,omitempty"`
 	XXX_extensions   map[int32]proto.Extension `json:"-"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
@@ -1662,10 +1867,18 @@ func (m *SearchResponse) GetCursor() string {
 	return ""
 }
 
+func (m *SearchResponse) GetFacetResult() []*FacetResult {
+	if m != nil {
+		return m.FacetResult
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterEnum("search.Scope_Type", Scope_Type_name, Scope_Type_value)
 	proto.RegisterEnum("search.Entry_Permission", Entry_Permission_name, Entry_Permission_value)
 	proto.RegisterEnum("search.FieldValue_ContentType", FieldValue_ContentType_name, FieldValue_ContentType_value)
+	proto.RegisterEnum("search.FacetValue_ContentType", FacetValue_ContentType_name, FacetValue_ContentType_value)
 	proto.RegisterEnum("search.Document_Storage", Document_Storage_name, Document_Storage_value)
 	proto.RegisterEnum("search.SearchServiceError_ErrorCode", SearchServiceError_ErrorCode_name, SearchServiceError_ErrorCode_value)
 	proto.RegisterEnum("search.IndexSpec_Consistency", IndexSpec_Consistency_name, IndexSpec_Consistency_value)

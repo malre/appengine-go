@@ -42,6 +42,7 @@ const (
 	XmppServiceError_INVALID_SHOW         XmppServiceError_ErrorCode = 6
 	XmppServiceError_EXCEEDED_MAX_SIZE    XmppServiceError_ErrorCode = 7
 	XmppServiceError_APPID_ALIAS_REQUIRED XmppServiceError_ErrorCode = 8
+	XmppServiceError_NONDEFAULT_MODULE    XmppServiceError_ErrorCode = 9
 )
 
 var XmppServiceError_ErrorCode_name = map[int32]string{
@@ -53,6 +54,7 @@ var XmppServiceError_ErrorCode_name = map[int32]string{
 	6: "INVALID_SHOW",
 	7: "EXCEEDED_MAX_SIZE",
 	8: "APPID_ALIAS_REQUIRED",
+	9: "NONDEFAULT_MODULE",
 }
 var XmppServiceError_ErrorCode_value = map[string]int32{
 	"UNSPECIFIED_ERROR":    1,
@@ -63,6 +65,7 @@ var XmppServiceError_ErrorCode_value = map[string]int32{
 	"INVALID_SHOW":         6,
 	"EXCEEDED_MAX_SIZE":    7,
 	"APPID_ALIAS_REQUIRED": 8,
+	"NONDEFAULT_MODULE":    9,
 }
 
 func (x XmppServiceError_ErrorCode) Enum() *XmppServiceError_ErrorCode {

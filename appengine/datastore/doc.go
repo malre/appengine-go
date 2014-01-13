@@ -103,6 +103,10 @@ ignore that field. If options is "noindex" then the field will not be indexed.
 If the options is "" then the comma may be omitted. There are no other
 recognized options.
 
+Fields (except for []byte) are indexed by default. Strings longer than 500
+characters cannot be indexed; fields used to store long strings should be
+tagged with "noindex".
+
 Example code:
 
 	// A and B are renamed to a and b.

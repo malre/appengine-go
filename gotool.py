@@ -18,11 +18,11 @@ if __name__ == '__main__':
   os.environ['GOROOT'] = GOROOT
   os.environ['APPENGINE_DEV_APPSERVER'] = os.path.join(SDK_BASE,
                                                        'dev_appserver.py')
-  if 'GOBIN' in os.environ:
-    del os.environ['GOBIN']
+  # Remove env variables that may be incompatible with the SDK.
+  for e in ('GOARCH', 'GOBIN', 'GOOS'):
+    os.environ.pop(e, None)
 
   # Set a GOPATH if one is not set.
-  if not os.environ.get('GOPATH'):
-    os.environ['GOPATH'] = os.path.join(SDK_BASE, 'gopath')
+  os.environ.setdefault('GOPATH', os.path.join(SDK_BASE, 'gopath'))
 
   os.execve(bin, sys.argv, os.environ)
