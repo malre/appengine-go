@@ -12,7 +12,11 @@ import (
 // MakeMain creates the synthetic main package for a Go App Engine app.
 func MakeMain(app *App) (string, error) {
 	buf := new(bytes.Buffer)
-	if err := mainTemplate.Execute(buf, app); err != nil {
+	data := map[string]interface{}{
+		"App":         app,
+		"InternalPkg": *internalPkg,
+	}
+	if err := mainTemplate.Execute(buf, data); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
@@ -38,16 +42,27 @@ var mainTemplate = template.Must(template.New("main").Parse(
 	`package main
 
 import (
-	"appengine_internal"
+	{{with .InternalPkg}}
+	internal {{printf "%q" .}}
+	{{else}}
+	"log"
+	"net/http"
+	{{end}}
 
 	// Top-level app packages
-	{{range .RootPackages}}
+	{{range .App.RootPackages}}
 	_ "{{.ImportPath}}"
 	{{end}}
 )
 
 func main() {
-	appengine_internal.Main()
+	{{if .InternalPkg}}
+	internal.Main()
+	{{else}}
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatalf("http.ListenAndServe: %v", err)
+	}
+	{{end}}
 }
 `))
 

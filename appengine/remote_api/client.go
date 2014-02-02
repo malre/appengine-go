@@ -25,7 +25,7 @@ import (
 // APIs for the application at the given host. All communication will be
 // performed over SSL unless the host is localhost.
 func NewRemoteContext(host string, client *http.Client) (appengine.Context, error) {
-	// Add an appcfg header to outgoing reqeusts.
+	// Add an appcfg header to outgoing requests.
 	t := client.Transport
 	if t == nil {
 		t = http.DefaultTransport

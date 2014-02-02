@@ -9,6 +9,7 @@ package module
 import (
 	"appengine"
 	pb "appengine_internal/modules"
+	"code.google.com/p/goprotobuf/proto"
 )
 
 // List returns the names of modules belonging to this application.
@@ -35,4 +36,72 @@ func NumInstances(c appengine.Context, module, version string) (int, error) {
 		return 0, err
 	}
 	return int(*res.Instances), nil
+}
+
+// SetNumInstances sets the number of instances of the given module.version to the
+// specified value. If either module or version are the empty string it means the
+// default.
+func SetNumInstances(c appengine.Context, module, version string, instances int) error {
+	req := &pb.SetNumInstancesRequest{}
+	if module != "" {
+		req.Module = &module
+	}
+	if version != "" {
+		req.Version = &version
+	}
+	req.Instances = proto.Int64(int64(instances))
+	res := &pb.SetNumInstancesResponse{}
+	return c.Call("modules", "SetNumInstances", req, res, nil)
+}
+
+// Versions returns the names of the versions that belong to the specified module.
+// If module is the empty string, it means the default module.
+func Versions(c appengine.Context, module string) ([]string, error) {
+	req := &pb.GetVersionsRequest{}
+	if module != "" {
+		req.Module = &module
+	}
+	res := &pb.GetVersionsResponse{}
+	err := c.Call("modules", "GetVersions", req, res, nil)
+	return res.GetVersion(), err
+}
+
+// DefaultVersion returns the default version of the specified module.
+// If module is the empty string, it means the default module.
+func DefaultVersion(c appengine.Context, module string) (string, error) {
+	req := &pb.GetDefaultVersionRequest{}
+	if module != "" {
+		req.Module = &module
+	}
+	res := &pb.GetDefaultVersionResponse{}
+	err := c.Call("modules", "GetDefaultVersion", req, res, nil)
+	return res.GetVersion(), err
+}
+
+// Start starts the specified version of the specified module.
+// If either module or version are the empty string, it means the default.
+func Start(c appengine.Context, module, version string) error {
+	req := &pb.StartModuleRequest{}
+	if module != "" {
+		req.Module = &module
+	}
+	if version != "" {
+		req.Version = &version
+	}
+	res := &pb.StartModuleResponse{}
+	return c.Call("modules", "StartModule", req, res, nil)
+}
+
+// Stop stops the specified version of the specified module.
+// If either module or version are the empty string, it means the default.
+func Stop(c appengine.Context, module, version string) error {
+	req := &pb.StopModuleRequest{}
+	if module != "" {
+		req.Module = &module
+	}
+	if version != "" {
+		req.Version = &version
+	}
+	res := &pb.StopModuleResponse{}
+	return c.Call("modules", "StopModule", req, res, nil)
 }

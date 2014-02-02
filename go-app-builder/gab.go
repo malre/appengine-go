@@ -44,6 +44,7 @@ var (
 	gcFlags         = flag.String("gcflags", "", "Comma-separated list of extra compiler flags.")
 	goPath          = flag.String("gopath", os.Getenv("GOPATH"), "Location of extra packages.")
 	goRoot          = flag.String("goroot", os.Getenv("GOROOT"), "Root of the Go installation.")
+	internalPkg     = flag.String("internal_pkg", "appengine_internal", "If set, the import path of the internal package containing Main; if empty, a standalone main is generated.")
 	ldFlags         = flag.String("ldflags", "", "Comma-separated list of extra linker flags.")
 	logFile         = flag.String("log_file", "", "If set, a file to write messages to.")
 	noBuildFiles    = flag.String("nobuild_files", "", "Regular expression matching files to not build.")

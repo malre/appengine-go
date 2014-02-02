@@ -39,6 +39,11 @@ It has these top-level messages:
 	SortSpec
 	ScorerSpec
 	FieldSpec
+	FacetRange
+	FacetRequestParam
+	FacetAutoDetectParam
+	FacetRequest
+	FacetRefine
 	SearchParams
 	SearchRequest
 	FacetResultValue
@@ -1259,7 +1264,6 @@ type ListIndexesParams struct {
 	IndexNamePrefix   *string           `protobuf:"bytes,6,opt,name=index_name_prefix" json:"index_name_prefix,omitempty"`
 	Offset            *int32            `protobuf:"varint,7,opt,name=offset" json:"offset,omitempty"`
 	Source            *IndexSpec_Source `protobuf:"varint,8,opt,name=source,enum=search.IndexSpec_Source,def=0" json:"source,omitempty"`
-	FetchStorageUsage *bool             `protobuf:"varint,9,opt,name=fetch_storage_usage,def=0" json:"fetch_storage_usage,omitempty"`
 	XXX_unrecognized  []byte            `json:"-"`
 }
 
@@ -1270,7 +1274,6 @@ func (*ListIndexesParams) ProtoMessage()    {}
 const Default_ListIndexesParams_Limit int32 = 20
 const Default_ListIndexesParams_IncludeStartIndex bool = true
 const Default_ListIndexesParams_Source IndexSpec_Source = IndexSpec_SEARCH
-const Default_ListIndexesParams_FetchStorageUsage bool = false
 
 func (m *ListIndexesParams) GetFetchSchema() bool {
 	if m != nil && m.FetchSchema != nil {
@@ -1326,13 +1329,6 @@ func (m *ListIndexesParams) GetSource() IndexSpec_Source {
 		return *m.Source
 	}
 	return Default_ListIndexesParams_Source
-}
-
-func (m *ListIndexesParams) GetFetchStorageUsage() bool {
-	if m != nil && m.FetchStorageUsage != nil {
-		return *m.FetchStorageUsage
-	}
-	return Default_ListIndexesParams_FetchStorageUsage
 }
 
 type ListIndexesRequest struct {
@@ -1574,21 +1570,186 @@ func (m *FieldSpec_Expression) GetExpression() string {
 	return ""
 }
 
+type FacetRange struct {
+	Name             *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Start            *string `protobuf:"bytes,2,opt,name=start" json:"start,omitempty"`
+	End              *string `protobuf:"bytes,3,opt,name=end" json:"end,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *FacetRange) Reset()         { *m = FacetRange{} }
+func (m *FacetRange) String() string { return proto.CompactTextString(m) }
+func (*FacetRange) ProtoMessage()    {}
+
+func (m *FacetRange) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
+	}
+	return ""
+}
+
+func (m *FacetRange) GetStart() string {
+	if m != nil && m.Start != nil {
+		return *m.Start
+	}
+	return ""
+}
+
+func (m *FacetRange) GetEnd() string {
+	if m != nil && m.End != nil {
+		return *m.End
+	}
+	return ""
+}
+
+type FacetRequestParam struct {
+	ValueLimit       *int32        `protobuf:"varint,1,opt,name=value_limit" json:"value_limit,omitempty"`
+	Range            []*FacetRange `protobuf:"bytes,2,rep,name=range" json:"range,omitempty"`
+	ValueConstraint  []string      `protobuf:"bytes,3,rep,name=value_constraint" json:"value_constraint,omitempty"`
+	XXX_unrecognized []byte        `json:"-"`
+}
+
+func (m *FacetRequestParam) Reset()         { *m = FacetRequestParam{} }
+func (m *FacetRequestParam) String() string { return proto.CompactTextString(m) }
+func (*FacetRequestParam) ProtoMessage()    {}
+
+func (m *FacetRequestParam) GetValueLimit() int32 {
+	if m != nil && m.ValueLimit != nil {
+		return *m.ValueLimit
+	}
+	return 0
+}
+
+func (m *FacetRequestParam) GetRange() []*FacetRange {
+	if m != nil {
+		return m.Range
+	}
+	return nil
+}
+
+func (m *FacetRequestParam) GetValueConstraint() []string {
+	if m != nil {
+		return m.ValueConstraint
+	}
+	return nil
+}
+
+type FacetAutoDetectParam struct {
+	ValueLimit       *int32 `protobuf:"varint,1,opt,name=value_limit,def=10" json:"value_limit,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *FacetAutoDetectParam) Reset()         { *m = FacetAutoDetectParam{} }
+func (m *FacetAutoDetectParam) String() string { return proto.CompactTextString(m) }
+func (*FacetAutoDetectParam) ProtoMessage()    {}
+
+const Default_FacetAutoDetectParam_ValueLimit int32 = 10
+
+func (m *FacetAutoDetectParam) GetValueLimit() int32 {
+	if m != nil && m.ValueLimit != nil {
+		return *m.ValueLimit
+	}
+	return Default_FacetAutoDetectParam_ValueLimit
+}
+
+type FacetRequest struct {
+	Name             *string                 `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Type             *FacetValue_ContentType `protobuf:"varint,2,req,name=type,enum=search.FacetValue_ContentType" json:"type,omitempty"`
+	Params           *FacetRequestParam      `protobuf:"bytes,3,opt,name=params" json:"params,omitempty"`
+	XXX_unrecognized []byte                  `json:"-"`
+}
+
+func (m *FacetRequest) Reset()         { *m = FacetRequest{} }
+func (m *FacetRequest) String() string { return proto.CompactTextString(m) }
+func (*FacetRequest) ProtoMessage()    {}
+
+func (m *FacetRequest) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
+	}
+	return ""
+}
+
+func (m *FacetRequest) GetType() FacetValue_ContentType {
+	if m != nil && m.Type != nil {
+		return *m.Type
+	}
+	return FacetValue_ATOM
+}
+
+func (m *FacetRequest) GetParams() *FacetRequestParam {
+	if m != nil {
+		return m.Params
+	}
+	return nil
+}
+
+type FacetRefine struct {
+	Name             *string                 `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Type             *FacetValue_ContentType `protobuf:"varint,2,req,name=type,enum=search.FacetValue_ContentType" json:"type,omitempty"`
+	Value            *string                 `protobuf:"bytes,3,opt,name=value" json:"value,omitempty"`
+	Start            *string                 `protobuf:"bytes,4,opt,name=start" json:"start,omitempty"`
+	End              *string                 `protobuf:"bytes,5,opt,name=end" json:"end,omitempty"`
+	XXX_unrecognized []byte                  `json:"-"`
+}
+
+func (m *FacetRefine) Reset()         { *m = FacetRefine{} }
+func (m *FacetRefine) String() string { return proto.CompactTextString(m) }
+func (*FacetRefine) ProtoMessage()    {}
+
+func (m *FacetRefine) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
+	}
+	return ""
+}
+
+func (m *FacetRefine) GetType() FacetValue_ContentType {
+	if m != nil && m.Type != nil {
+		return *m.Type
+	}
+	return FacetValue_ATOM
+}
+
+func (m *FacetRefine) GetValue() string {
+	if m != nil && m.Value != nil {
+		return *m.Value
+	}
+	return ""
+}
+
+func (m *FacetRefine) GetStart() string {
+	if m != nil && m.Start != nil {
+		return *m.Start
+	}
+	return ""
+}
+
+func (m *FacetRefine) GetEnd() string {
+	if m != nil && m.End != nil {
+		return *m.End
+	}
+	return ""
+}
+
 type SearchParams struct {
-	IndexSpec            *IndexSpec                `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
-	Query                *string                   `protobuf:"bytes,2,req,name=query" json:"query,omitempty"`
-	Cursor               *string                   `protobuf:"bytes,4,opt,name=cursor" json:"cursor,omitempty"`
-	Offset               *int32                    `protobuf:"varint,11,opt,name=offset" json:"offset,omitempty"`
-	CursorType           *SearchParams_CursorType  `protobuf:"varint,5,opt,name=cursor_type,enum=search.SearchParams_CursorType,def=0" json:"cursor_type,omitempty"`
-	Limit                *int32                    `protobuf:"varint,6,opt,name=limit,def=20" json:"limit,omitempty"`
-	MatchedCountAccuracy *int32                    `protobuf:"varint,7,opt,name=matched_count_accuracy" json:"matched_count_accuracy,omitempty"`
-	SortSpec             []*SortSpec               `protobuf:"bytes,8,rep,name=sort_spec" json:"sort_spec,omitempty"`
-	ScorerSpec           *ScorerSpec               `protobuf:"bytes,9,opt,name=scorer_spec" json:"scorer_spec,omitempty"`
-	FieldSpec            *FieldSpec                `protobuf:"bytes,10,opt,name=field_spec" json:"field_spec,omitempty"`
-	KeysOnly             *bool                     `protobuf:"varint,12,opt,name=keys_only" json:"keys_only,omitempty"`
-	ParsingMode          *SearchParams_ParsingMode `protobuf:"varint,13,opt,name=parsing_mode,enum=search.SearchParams_ParsingMode,def=0" json:"parsing_mode,omitempty"`
-	FacetedSearch        *bool                     `protobuf:"varint,14,opt,name=faceted_search,def=0" json:"faceted_search,omitempty"`
-	XXX_unrecognized     []byte                    `json:"-"`
+	IndexSpec              *IndexSpec                `protobuf:"bytes,1,req,name=index_spec" json:"index_spec,omitempty"`
+	Query                  *string                   `protobuf:"bytes,2,req,name=query" json:"query,omitempty"`
+	Cursor                 *string                   `protobuf:"bytes,4,opt,name=cursor" json:"cursor,omitempty"`
+	Offset                 *int32                    `protobuf:"varint,11,opt,name=offset" json:"offset,omitempty"`
+	CursorType             *SearchParams_CursorType  `protobuf:"varint,5,opt,name=cursor_type,enum=search.SearchParams_CursorType,def=0" json:"cursor_type,omitempty"`
+	Limit                  *int32                    `protobuf:"varint,6,opt,name=limit,def=20" json:"limit,omitempty"`
+	MatchedCountAccuracy   *int32                    `protobuf:"varint,7,opt,name=matched_count_accuracy" json:"matched_count_accuracy,omitempty"`
+	SortSpec               []*SortSpec               `protobuf:"bytes,8,rep,name=sort_spec" json:"sort_spec,omitempty"`
+	ScorerSpec             *ScorerSpec               `protobuf:"bytes,9,opt,name=scorer_spec" json:"scorer_spec,omitempty"`
+	FieldSpec              *FieldSpec                `protobuf:"bytes,10,opt,name=field_spec" json:"field_spec,omitempty"`
+	KeysOnly               *bool                     `protobuf:"varint,12,opt,name=keys_only" json:"keys_only,omitempty"`
+	ParsingMode            *SearchParams_ParsingMode `protobuf:"varint,13,opt,name=parsing_mode,enum=search.SearchParams_ParsingMode,def=0" json:"parsing_mode,omitempty"`
+	AutoDiscoverFacetCount *int32                    `protobuf:"varint,15,opt,name=auto_discover_facet_count,def=0" json:"auto_discover_facet_count,omitempty"`
+	IncludeFacet           []*FacetRequest           `protobuf:"bytes,16,rep,name=include_facet" json:"include_facet,omitempty"`
+	FacetRefine            []*FacetRefine            `protobuf:"bytes,17,rep,name=facet_refine" json:"facet_refine,omitempty"`
+	FacetAutoDetectParam   *FacetAutoDetectParam     `protobuf:"bytes,18,opt,name=facet_auto_detect_param" json:"facet_auto_detect_param,omitempty"`
+	XXX_unrecognized       []byte                    `json:"-"`
 }
 
 func (m *SearchParams) Reset()         { *m = SearchParams{} }
@@ -1598,7 +1759,7 @@ func (*SearchParams) ProtoMessage()    {}
 const Default_SearchParams_CursorType SearchParams_CursorType = SearchParams_NONE
 const Default_SearchParams_Limit int32 = 20
 const Default_SearchParams_ParsingMode SearchParams_ParsingMode = SearchParams_STRICT
-const Default_SearchParams_FacetedSearch bool = false
+const Default_SearchParams_AutoDiscoverFacetCount int32 = 0
 
 func (m *SearchParams) GetIndexSpec() *IndexSpec {
 	if m != nil {
@@ -1684,11 +1845,32 @@ func (m *SearchParams) GetParsingMode() SearchParams_ParsingMode {
 	return Default_SearchParams_ParsingMode
 }
 
-func (m *SearchParams) GetFacetedSearch() bool {
-	if m != nil && m.FacetedSearch != nil {
-		return *m.FacetedSearch
+func (m *SearchParams) GetAutoDiscoverFacetCount() int32 {
+	if m != nil && m.AutoDiscoverFacetCount != nil {
+		return *m.AutoDiscoverFacetCount
 	}
-	return Default_SearchParams_FacetedSearch
+	return Default_SearchParams_AutoDiscoverFacetCount
+}
+
+func (m *SearchParams) GetIncludeFacet() []*FacetRequest {
+	if m != nil {
+		return m.IncludeFacet
+	}
+	return nil
+}
+
+func (m *SearchParams) GetFacetRefine() []*FacetRefine {
+	if m != nil {
+		return m.FacetRefine
+	}
+	return nil
+}
+
+func (m *SearchParams) GetFacetAutoDetectParam() *FacetAutoDetectParam {
+	if m != nil {
+		return m.FacetAutoDetectParam
+	}
+	return nil
 }
 
 type SearchRequest struct {

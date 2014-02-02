@@ -16,6 +16,8 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
+	"time"
 
 	basepb "appengine_internal/base"
 	"appengine_internal/remote_api"
@@ -153,7 +155,45 @@ func readConfig(r io.Reader) *rpb.Config {
 	return config
 }
 
-func call(service, method string, data []byte, requestID string) ([]byte, error) {
+var errTimeout = &CallError{
+	Detail:  "Deadline exceeded",
+	Code:    11, // CANCELED
+	Timeout: true,
+}
+
+// postWithTimeout issues a POST to the specified URL with a given timeout.
+func postWithTimeout(url, bodyType string, body io.Reader, timeout time.Duration) (b []byte, err error) {
+	req, err := http.NewRequest("POST", url, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", bodyType)
+	if timeout != 0 {
+		if tr, ok := apiHTTPClient.Transport.(*http.Transport); ok {
+			var canceled int32 // atomic; set to 1 if canceled
+			t := time.AfterFunc(timeout, func() {
+				atomic.StoreInt32(&canceled, 1)
+				tr.CancelRequest(req)
+			})
+			defer t.Stop()
+			defer func() {
+				// Check to see whether the call was canceled.
+				if atomic.LoadInt32(&canceled) != 0 {
+					err = errTimeout
+				}
+			}()
+		}
+	}
+	resp, err := apiHTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	return ioutil.ReadAll(resp.Body)
+}
+
+func call(service, method string, data []byte, requestID string, timeout time.Duration) ([]byte, error) {
 	req := &remote_api.Request{
 		ServiceName: &service,
 		Method:      &method,
@@ -166,14 +206,7 @@ func call(service, method string, data []byte, requestID string) ([]byte, error)
 		return nil, err
 	}
 
-	resp, err := apiHTTPClient.Post(apiAddress,
-		"application/octet-stream", bytes.NewReader(buf))
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := postWithTimeout(apiAddress, "application/octet-stream", bytes.NewReader(buf), timeout)
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +264,11 @@ func (c *context) Call(service, method string, in, out ProtoMessage, opts *CallO
 	}
 
 	requestID := c.req.Header.Get("X-Appengine-Internal-Request-Id")
-	res, err := call(service, method, data, requestID)
+	var d time.Duration
+	if opts != nil && opts.Timeout != 0 {
+		d = opts.Timeout
+	}
+	res, err := call(service, method, data, requestID, d)
 	if err != nil {
 		return err
 	}
