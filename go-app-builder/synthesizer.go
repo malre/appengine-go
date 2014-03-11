@@ -12,11 +12,7 @@ import (
 // MakeMain creates the synthetic main package for a Go App Engine app.
 func MakeMain(app *App) (string, error) {
 	buf := new(bytes.Buffer)
-	data := map[string]interface{}{
-		"App":         app,
-		"InternalPkg": *internalPkg,
-	}
-	if err := mainTemplate.Execute(buf, data); err != nil {
+	if err := mainTemplate.Execute(buf, app); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
@@ -50,7 +46,7 @@ import (
 	{{end}}
 
 	// Top-level app packages
-	{{range .App.RootPackages}}
+	{{range .RootPackages}}
 	_ "{{.ImportPath}}"
 	{{end}}
 )

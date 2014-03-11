@@ -19,7 +19,7 @@ import (
 // in ../appengine/identity.go. See that file for commentary.
 
 const (
-	hRequestLogId = "X-AppEngine-Internal-Request-Log-Id"
+	hRequestLogId = "X-AppEngine-Request-Log-Id"
 )
 
 func BackendHostname(c apiContext, name string, index int) string {

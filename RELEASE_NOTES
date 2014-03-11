@@ -3,8 +3,15 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.9.1 - March 2014
+==========================
+This release is based on Go 1.2.1.
+
+appengine/log:
+  - Add Record.InstanceID.
+
 Version 1.9.0 - February 2014
-============================
+=============================
 This release is based on Go 1.2.
 
 appengine/module:

@@ -62,6 +62,7 @@ import (
 	"time"
 
 	"appengine"
+	user "appengine/user"
 	"appengine_internal"
 	"code.google.com/p/goprotobuf/proto"
 
@@ -79,11 +80,27 @@ type Context interface {
 	io.Closer
 }
 
+func btos(b bool) string {
+	if b {
+		return "1"
+	}
+	return "0"
+}
+
 // NewContext launches an instance of api_server.py and returns a Context
 // that delegates all App Engine API calls to that instance.
 // If opts is nil the default values are used.
 func NewContext(opts *Options) (Context, error) {
 	req, _ := http.NewRequest("GET", "/", nil)
+	if u := opts.user(); u != nil {
+		req.Header = http.Header{
+			"X-Appengine-User-Email":              []string{u.Email},
+			"X-Appengine-User-Federated-Identity": []string{u.FederatedIdentity},
+			"X-Appengine-User-Federated-Provider": []string{u.FederatedProvider},
+			"X-Appengine-User-Id":                 []string{u.ID},
+			"X-Appengine-User-Is-Admin":           []string{btos(u.Admin)},
+		}
+	}
 	c := &context{
 		appID:   opts.appID(),
 		req:     req,
@@ -108,6 +125,8 @@ type Options struct {
 	// AppID specifies the App ID to use during tests.
 	// By default, "testapp".
 	AppID string
+	// User specifies the current user to use during tests.
+	User *user.User
 }
 
 func (o *Options) appID() string {
@@ -115,6 +134,13 @@ func (o *Options) appID() string {
 		return "testapp"
 	}
 	return o.AppID
+}
+
+func (o *Options) user() *user.User {
+	if o == nil {
+		return nil
+	}
+	return o.User
 }
 
 // PrepareDevAppserver is a hook which, if set, will be called before the

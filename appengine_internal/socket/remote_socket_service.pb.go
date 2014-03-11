@@ -46,12 +46,10 @@ It has these top-level messages:
 package appengine
 
 import proto "code.google.com/p/goprotobuf/proto"
-import json "encoding/json"
 import math "math"
 
-// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type RemoteSocketServiceError_ErrorCode int32
@@ -59,7 +57,6 @@ type RemoteSocketServiceError_ErrorCode int32
 const (
 	RemoteSocketServiceError_SYSTEM_ERROR      RemoteSocketServiceError_ErrorCode = 1
 	RemoteSocketServiceError_GAI_ERROR         RemoteSocketServiceError_ErrorCode = 2
-	RemoteSocketServiceError_SSL_ERROR         RemoteSocketServiceError_ErrorCode = 3
 	RemoteSocketServiceError_FAILURE           RemoteSocketServiceError_ErrorCode = 4
 	RemoteSocketServiceError_PERMISSION_DENIED RemoteSocketServiceError_ErrorCode = 5
 	RemoteSocketServiceError_INVALID_REQUEST   RemoteSocketServiceError_ErrorCode = 6
@@ -69,7 +66,6 @@ const (
 var RemoteSocketServiceError_ErrorCode_name = map[int32]string{
 	1: "SYSTEM_ERROR",
 	2: "GAI_ERROR",
-	3: "SSL_ERROR",
 	4: "FAILURE",
 	5: "PERMISSION_DENIED",
 	6: "INVALID_REQUEST",
@@ -78,7 +74,6 @@ var RemoteSocketServiceError_ErrorCode_name = map[int32]string{
 var RemoteSocketServiceError_ErrorCode_value = map[string]int32{
 	"SYSTEM_ERROR":      1,
 	"GAI_ERROR":         2,
-	"SSL_ERROR":         3,
 	"FAILURE":           4,
 	"PERMISSION_DENIED": 5,
 	"INVALID_REQUEST":   6,

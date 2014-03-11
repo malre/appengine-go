@@ -44,7 +44,7 @@ var (
 	gcFlags         = flag.String("gcflags", "", "Comma-separated list of extra compiler flags.")
 	goPath          = flag.String("gopath", os.Getenv("GOPATH"), "Location of extra packages.")
 	goRoot          = flag.String("goroot", os.Getenv("GOROOT"), "Root of the Go installation.")
-	internalPkg     = flag.String("internal_pkg", "appengine_internal", "If set, the import path of the internal package containing Main; if empty, a standalone main is generated.")
+	internalPkg     = flag.String("internal_pkg", "appengine_internal", "If set, the import path of the internal package containing Main; if empty, auto-detect.")
 	ldFlags         = flag.String("ldflags", "", "Comma-separated list of extra linker flags.")
 	logFile         = flag.String("log_file", "", "If set, a file to write messages to.")
 	noBuildFiles    = flag.String("nobuild_files", "", "Regular expression matching files to not build.")
@@ -54,6 +54,7 @@ var (
 	trampoline      = flag.String("trampoline", "", "If set, a binary to invoke tools with.")
 	trampolineFlags = flag.String("trampoline_flags", "", "Comma-separated flags to pass to trampoline.")
 	unsafe          = flag.Bool("unsafe", false, "Permit unsafe packages.")
+	useAllPackages  = flag.Bool("use_all_packages", false, "Whether to link all packages into the binary.")
 	verbose         = flag.Bool("v", false, "Noisy output.")
 	workDir         = flag.String("work_dir", "/tmp", "Directory to use for intermediate and output files.")
 )
@@ -278,8 +279,8 @@ func buildApp(app *App) error {
 		"-o", binaryFile,
 	}
 	if !*dynamic {
-		// force the binary to be statically linked and disable dwarf generation
-		args = append(args, "-d", "-w")
+		// force the binary to be statically linked, disable dwarf generation, and strip binary
+		args = append(args, "-d", "-w", "-s")
 	}
 	if !*unsafe {
 		// reject unsafe code

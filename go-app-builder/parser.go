@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"go/ast"
@@ -12,6 +13,7 @@ import (
 	"go/parser"
 	"go/scanner"
 	"go/token"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
@@ -32,6 +34,8 @@ type App struct {
 	RootPackages []*Package // the subset of packages with init functions
 
 	PackageIndex map[string]*Package // index from import path to package object
+
+	InternalPkg string // the name of the internal package
 }
 
 // Package represents a Go package.
@@ -41,6 +45,7 @@ type Package struct {
 	BaseDir      string     // what the file names are relative to, if outside app
 	Dependencies []*Package // the packages that this directly depends upon, in no particular order
 	HasInit      bool       // whether the package has any init functions
+	HasMain      bool       // whether the file has internal.Main
 	Dupe         bool       // whether the package is a duplicate
 }
 
@@ -60,6 +65,7 @@ type File struct {
 	PackageName string   // the package this file declares itself to be
 	ImportPaths []string // import paths
 	HasInit     bool     // whether the file has an init function
+	HasMain     bool     // whether the file has internal.Main
 }
 
 func (f *File) String() string {
@@ -100,6 +106,7 @@ func (v vfs) readDir(dir string) (fis []os.FileInfo, err error) {
 func ParseFiles(baseDir string, filenames []string) (*App, error) {
 	app := &App{
 		PackageIndex: make(map[string]*Package),
+		InternalPkg:  *internalPkg,
 	}
 	pkgFiles := make(map[string][]*File) // app package name => its files
 
@@ -191,11 +198,13 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		for _, f := range files {
 			if f.HasInit {
 				p.HasInit = true
-				break
+			}
+			if f.HasMain {
+				p.HasMain = true
 			}
 		}
 		app.Packages = append(app.Packages, p)
-		if p.HasInit {
+		if p.HasInit || *useAllPackages {
 			app.RootPackages = append(app.RootPackages, p)
 		}
 		app.PackageIndex[p.ImportPath] = p
@@ -210,8 +219,25 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 				return nil, fmt.Errorf("bad -nobuild_files: %v", err)
 			}
 		}
-		if err := addFromGOPATH(app, re); err != nil {
+		fs := appFilesInGOPATH(baseDir, *goPath, app)
+		if err := addFromGOPATH(app, re, fs); err != nil {
 			return nil, err
+		}
+	}
+
+	if app.InternalPkg == "" {
+		var mainPkg *Package
+		for _, pkg := range app.Packages {
+			if !pkg.HasMain {
+				continue
+			}
+			if mainPkg != nil {
+				return nil, fmt.Errorf("duplicate internal.Main in %q and %q", mainPkg.ImportPath, pkg.ImportPath)
+			}
+			mainPkg = pkg
+		}
+		if mainPkg != nil {
+			app.InternalPkg = mainPkg.ImportPath
 		}
 	}
 
@@ -244,8 +270,42 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 	return app, nil
 }
 
+// appFilesInGOPATH returns a set of app files that are in the GOPATH.
+// The constructed set of filenames is relative to the GOPATH's 'src' dir.
+// If any of these files appear in a package's source files, an error
+// is generated and the build fails.
+func appFilesInGOPATH(baseDir, goPath string, app *App) map[string]bool {
+	var gopathBase string
+	for _, p := range filepath.SplitList(goPath) {
+		prefix := filepath.Join(p, "src") + string(filepath.Separator)
+		if strings.HasPrefix(baseDir, prefix) {
+			gopathBase = baseDir[len(prefix):] // GOPATH-relative base of app's files
+			break
+		}
+	}
+	if gopathBase == "" {
+		return nil // app not in a GOPATH
+	}
+
+	r := make(map[string]bool)
+	for _, f := range app.Files {
+		r[filepath.Join(gopathBase, f.Name)] = true
+	}
+	return r
+}
+
+func validatePkgPaths(pkg *build.Package, appFilesInGOPATH map[string]bool) error {
+	for _, f := range pkg.GoFiles {
+		n := filepath.Join(pkg.ImportPath, f)
+		if _, ok := appFilesInGOPATH[n]; ok {
+			return fmt.Errorf("app file %s conflicts with same file imported from GOPATH", f)
+		}
+	}
+	return nil
+}
+
 // addFromGOPATH adds packages from GOPATH that are needed by the app.
-func addFromGOPATH(app *App, noBuild *regexp.Regexp) error {
+func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string]bool) error {
 	warned := make(map[string]bool)
 	for i := 0; i < len(app.Packages); i++ { // app.Packages is grown during this loop
 		p := app.Packages[i]
@@ -262,11 +322,27 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp) error {
 					}
 					continue
 				}
+				if err := validatePkgPaths(pkg, appFilesInGOPATH); err != nil {
+					return err
+				}
 
 				files := make([]*File, 0, len(pkg.GoFiles))
+				pkgHasMain := false
 				for _, f := range pkg.GoFiles {
 					if noBuild != nil && noBuild.MatchString(filepath.Join(path, f)) {
 						continue
+					}
+					hasMain := false
+					if *internalPkg == "" && pkg.Name == "internal" {
+						// See if this file has internal.Main.
+						// This check duplicates conditions in readFile
+						// as an optimisation to avoid parsing lots of code
+						// that can't have internal.Main.
+						var err error
+						_, _, hasMain, err = readFile(pkg.Dir, f)
+						if err != nil {
+							return err
+						}
 					}
 					files = append(files, &File{
 						Name:        f,
@@ -274,7 +350,11 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp) error {
 						// NOTE: This is inaccurate, but it is sufficient to
 						// record all the package imports for each file.
 						ImportPaths: pkg.Imports,
+						HasMain:     hasMain,
 					})
+					if hasMain {
+						pkgHasMain = true
+					}
 				}
 				if len(files) == 0 {
 					return fmt.Errorf("package %s required, but all its files were excluded by nobuild_files", path)
@@ -283,6 +363,7 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp) error {
 					ImportPath: path,
 					Files:      files,
 					BaseDir:    pkg.Dir,
+					HasMain:    pkgHasMain,
 				}
 				app.Packages = append(app.Packages, p)
 				app.PackageIndex[path] = p
@@ -294,15 +375,54 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp) error {
 
 // isInit returns whether the given function declaration is a true init function.
 // Such a function must be called "init", not have a receiver, and have no arguments or return types.
-func isInit(f *ast.FuncDecl) bool {
+func isInit(f *ast.FuncDecl) bool { return isNiladic(f, "init") }
+
+// isMain returns whether the given function declaration is a Main function.
+// Such a function must be called "Main", not have a receiver, and have no arguments or return types.
+func isMain(f *ast.FuncDecl) bool { return isNiladic(f, "Main") }
+
+func isNiladic(f *ast.FuncDecl, name string) bool {
 	ft := f.Type
-	return f.Name.Name == "init" && f.Recv == nil && ft.Params.NumFields() == 0 && ft.Results.NumFields() == 0
+	return f.Name.Name == name && f.Recv == nil && ft.Params.NumFields() == 0 && ft.Results.NumFields() == 0
+}
+
+// If this magic string occurs in a file with a niladic Main,
+// and the file's package is "internal",
+// and -internal_pkg is empty,
+// then the file's package is used for internal.Main.
+const magicInternalMain = `The gophers party all night; the rabbits provide the beats.`
+
+func readFile(baseDir, filename string) (file *ast.File, fset *token.FileSet, hasMain bool, err error) {
+	fullName := filepath.Join(baseDir, filename)
+	var src []byte
+	src, err = ioutil.ReadFile(fullName)
+	if err != nil {
+		return
+	}
+	fset = token.NewFileSet()
+	file, err = parser.ParseFile(fset, fullName, src, 0)
+	if *internalPkg == "" && file.Name.Name == "internal" {
+		for _, decl := range file.Decls {
+			funcDecl, ok := decl.(*ast.FuncDecl)
+			if !ok {
+				continue
+			}
+			if !isMain(funcDecl) {
+				continue
+			}
+			if !bytes.Contains(src, []byte(magicInternalMain)) {
+				continue
+			}
+			hasMain = true
+			break
+		}
+	}
+	return
 }
 
 // parseFile parses a single Go source file into a *File.
 func parseFile(baseDir, filename string) (*File, error) {
-	var fset token.FileSet
-	file, err := parser.ParseFile(&fset, filepath.Join(baseDir, filename), nil, 0)
+	file, fset, hasMain, err := readFile(baseDir, filename)
 	if err != nil {
 		return nil, err
 	}
@@ -334,7 +454,7 @@ func parseFile(baseDir, filename string) (*File, error) {
 	}
 
 	// Check for unkeyed struct literals from the standard package library.
-	ch := newCompLitChecker(&fset)
+	ch := newCompLitChecker(fset)
 	ast.Walk(ch, file)
 	if len(ch.errors) > 0 {
 		return nil, ch.errors
@@ -345,10 +465,11 @@ func parseFile(baseDir, filename string) (*File, error) {
 		PackageName: file.Name.Name,
 		ImportPaths: imports,
 		HasInit:     hasInit,
+		HasMain:     hasMain,
 	}, nil
 }
 
-var legalImportPath = regexp.MustCompile(`^[a-zA-Z0-9_\-./~]+$`)
+var legalImportPath = regexp.MustCompile(`^[a-zA-Z0-9_\-./~+]+$`)
 
 // checkImport will return whether the provided import path is good.
 func checkImport(path string) bool {

@@ -72,7 +72,7 @@ func init() {
 
 func handleFilteredHTTP(w http.ResponseWriter, r *http.Request) {
 	// Patch up RemoteAddr so it looks reasonable.
-	if addr := r.Header.Get("X-Appengine-Internal-Remote-Addr"); addr != "" {
+	if addr := r.Header.Get("X-Appengine-Remote-Addr"); addr != "" {
 		r.RemoteAddr = addr
 	} else {
 		// Should not normally reach here, but pick
@@ -86,7 +86,7 @@ func handleFilteredHTTP(w http.ResponseWriter, r *http.Request) {
 	creq := *r
 	r.Header = make(http.Header)
 	for name, values := range creq.Header {
-		if !strings.HasPrefix(name, "X-Appengine-Internal-") {
+		if !strings.HasPrefix(name, "X-Appengine-Dev-") {
 			r.Header[name] = values
 		}
 	}
@@ -263,7 +263,7 @@ func (c *context) Call(service, method string, in, out ProtoMessage, opts *CallO
 		return err
 	}
 
-	requestID := c.req.Header.Get("X-Appengine-Internal-Request-Id")
+	requestID := c.req.Header.Get("X-Appengine-Dev-Request-Id")
 	var d time.Duration
 	if opts != nil && opts.Timeout != 0 {
 		d = opts.Timeout

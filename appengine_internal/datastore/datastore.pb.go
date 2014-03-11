@@ -57,12 +57,10 @@ It has these top-level messages:
 package datastore
 
 import proto "code.google.com/p/goprotobuf/proto"
-import json "encoding/json"
 import math "math"
 
-// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type Property_Meaning int32
@@ -1391,7 +1389,8 @@ func (m *Snapshot) GetTs() int64 {
 }
 
 type InternalHeader struct {
-	Qos              *string `protobuf:"bytes,1,opt,name=qos" json:"qos,omitempty"`
+	RequestingAppId  *string `protobuf:"bytes,2,opt,name=requesting_app_id" json:"requesting_app_id,omitempty"`
+	ApiSettings      []byte  `protobuf:"bytes,3,opt,name=api_settings" json:"api_settings,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -1399,11 +1398,18 @@ func (m *InternalHeader) Reset()         { *m = InternalHeader{} }
 func (m *InternalHeader) String() string { return proto.CompactTextString(m) }
 func (*InternalHeader) ProtoMessage()    {}
 
-func (m *InternalHeader) GetQos() string {
-	if m != nil && m.Qos != nil {
-		return *m.Qos
+func (m *InternalHeader) GetRequestingAppId() string {
+	if m != nil && m.RequestingAppId != nil {
+		return *m.RequestingAppId
 	}
 	return ""
+}
+
+func (m *InternalHeader) GetApiSettings() []byte {
+	if m != nil {
+		return m.ApiSettings
+	}
+	return nil
 }
 
 type Transaction struct {
@@ -1738,6 +1744,7 @@ type CompiledQuery struct {
 	PropertyName      []string                       `protobuf:"bytes,24,rep,name=property_name" json:"property_name,omitempty"`
 	DistinctInfixSize *int32                         `protobuf:"varint,25,opt,name=distinct_infix_size" json:"distinct_infix_size,omitempty"`
 	Entityfilter      *CompiledQuery_EntityFilter    `protobuf:"group,13,opt,name=EntityFilter" json:"entityfilter,omitempty"`
+	PlanLabel         *string                        `protobuf:"bytes,26,opt,name=plan_label" json:"plan_label,omitempty"`
 	XXX_unrecognized  []byte                         `json:"-"`
 }
 
@@ -1808,6 +1815,13 @@ func (m *CompiledQuery) GetEntityfilter() *CompiledQuery_EntityFilter {
 		return m.Entityfilter
 	}
 	return nil
+}
+
+func (m *CompiledQuery) GetPlanLabel() string {
+	if m != nil && m.PlanLabel != nil {
+		return *m.PlanLabel
+	}
+	return ""
 }
 
 type CompiledQuery_PrimaryScan struct {
@@ -2603,18 +2617,20 @@ func (m *NextRequest) GetCompile() bool {
 }
 
 type QueryResult struct {
-	Cursor           *Cursor           `protobuf:"bytes,1,opt,name=cursor" json:"cursor,omitempty"`
-	Result           []*EntityProto    `protobuf:"bytes,2,rep,name=result" json:"result,omitempty"`
-	SkippedResults   *int32            `protobuf:"varint,7,opt,name=skipped_results" json:"skipped_results,omitempty"`
-	MoreResults      *bool             `protobuf:"varint,3,req,name=more_results" json:"more_results,omitempty"`
-	KeysOnly         *bool             `protobuf:"varint,4,opt,name=keys_only" json:"keys_only,omitempty"`
-	IndexOnly        *bool             `protobuf:"varint,9,opt,name=index_only" json:"index_only,omitempty"`
-	SmallOps         *bool             `protobuf:"varint,10,opt,name=small_ops" json:"small_ops,omitempty"`
-	CompiledQuery    *CompiledQuery    `protobuf:"bytes,5,opt,name=compiled_query" json:"compiled_query,omitempty"`
-	CompiledCursor   *CompiledCursor   `protobuf:"bytes,6,opt,name=compiled_cursor" json:"compiled_cursor,omitempty"`
-	Index            []*CompositeIndex `protobuf:"bytes,8,rep,name=index" json:"index,omitempty"`
-	Version          []int64           `protobuf:"varint,11,rep,name=version" json:"version,omitempty"`
-	XXX_unrecognized []byte            `json:"-"`
+	Cursor                       *Cursor           `protobuf:"bytes,1,opt,name=cursor" json:"cursor,omitempty"`
+	Result                       []*EntityProto    `protobuf:"bytes,2,rep,name=result" json:"result,omitempty"`
+	SkippedResults               *int32            `protobuf:"varint,7,opt,name=skipped_results" json:"skipped_results,omitempty"`
+	MoreResults                  *bool             `protobuf:"varint,3,req,name=more_results" json:"more_results,omitempty"`
+	KeysOnly                     *bool             `protobuf:"varint,4,opt,name=keys_only" json:"keys_only,omitempty"`
+	IndexOnly                    *bool             `protobuf:"varint,9,opt,name=index_only" json:"index_only,omitempty"`
+	SmallOps                     *bool             `protobuf:"varint,10,opt,name=small_ops" json:"small_ops,omitempty"`
+	CompiledQuery                *CompiledQuery    `protobuf:"bytes,5,opt,name=compiled_query" json:"compiled_query,omitempty"`
+	CompiledCursor               *CompiledCursor   `protobuf:"bytes,6,opt,name=compiled_cursor" json:"compiled_cursor,omitempty"`
+	Index                        []*CompositeIndex `protobuf:"bytes,8,rep,name=index" json:"index,omitempty"`
+	Version                      []int64           `protobuf:"varint,11,rep,name=version" json:"version,omitempty"`
+	ResultCompiledCursor         []*CompiledCursor `protobuf:"bytes,12,rep,name=result_compiled_cursor" json:"result_compiled_cursor,omitempty"`
+	SkippedResultsCompiledCursor *CompiledCursor   `protobuf:"bytes,13,opt,name=skipped_results_compiled_cursor" json:"skipped_results_compiled_cursor,omitempty"`
+	XXX_unrecognized             []byte            `json:"-"`
 }
 
 func (m *QueryResult) Reset()         { *m = QueryResult{} }
@@ -2694,6 +2710,20 @@ func (m *QueryResult) GetIndex() []*CompositeIndex {
 func (m *QueryResult) GetVersion() []int64 {
 	if m != nil {
 		return m.Version
+	}
+	return nil
+}
+
+func (m *QueryResult) GetResultCompiledCursor() []*CompiledCursor {
+	if m != nil {
+		return m.ResultCompiledCursor
+	}
+	return nil
+}
+
+func (m *QueryResult) GetSkippedResultsCompiledCursor() *CompiledCursor {
+	if m != nil {
+		return m.SkippedResultsCompiledCursor
 	}
 	return nil
 }
