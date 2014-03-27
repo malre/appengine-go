@@ -1389,9 +1389,11 @@ func (m *Snapshot) GetTs() int64 {
 }
 
 type InternalHeader struct {
-	RequestingAppId  *string `protobuf:"bytes,2,opt,name=requesting_app_id" json:"requesting_app_id,omitempty"`
-	ApiSettings      []byte  `protobuf:"bytes,3,opt,name=api_settings" json:"api_settings,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	RequestingAppId     *string `protobuf:"bytes,2,opt,name=requesting_app_id" json:"requesting_app_id,omitempty"`
+	RequestingProjectId *string `protobuf:"bytes,4,opt,name=requesting_project_id" json:"requesting_project_id,omitempty"`
+	RequestingVersionId *string `protobuf:"bytes,5,opt,name=requesting_version_id" json:"requesting_version_id,omitempty"`
+	ApiSettings         []byte  `protobuf:"bytes,3,opt,name=api_settings" json:"api_settings,omitempty"`
+	XXX_unrecognized    []byte  `json:"-"`
 }
 
 func (m *InternalHeader) Reset()         { *m = InternalHeader{} }
@@ -1401,6 +1403,20 @@ func (*InternalHeader) ProtoMessage()    {}
 func (m *InternalHeader) GetRequestingAppId() string {
 	if m != nil && m.RequestingAppId != nil {
 		return *m.RequestingAppId
+	}
+	return ""
+}
+
+func (m *InternalHeader) GetRequestingProjectId() string {
+	if m != nil && m.RequestingProjectId != nil {
+		return *m.RequestingProjectId
+	}
+	return ""
+}
+
+func (m *InternalHeader) GetRequestingVersionId() string {
+	if m != nil && m.RequestingVersionId != nil {
+		return *m.RequestingVersionId
 	}
 	return ""
 }

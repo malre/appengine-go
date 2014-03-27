@@ -45,6 +45,7 @@ const (
 	MemcacheServiceError_NAMESPACE_NOT_SET MemcacheServiceError_ErrorCode = 2
 	MemcacheServiceError_PERMISSION_DENIED MemcacheServiceError_ErrorCode = 3
 	MemcacheServiceError_INVALID_VALUE     MemcacheServiceError_ErrorCode = 6
+	MemcacheServiceError_UNAVAILABLE       MemcacheServiceError_ErrorCode = 9
 )
 
 var MemcacheServiceError_ErrorCode_name = map[int32]string{
@@ -53,6 +54,7 @@ var MemcacheServiceError_ErrorCode_name = map[int32]string{
 	2: "NAMESPACE_NOT_SET",
 	3: "PERMISSION_DENIED",
 	6: "INVALID_VALUE",
+	9: "UNAVAILABLE",
 }
 var MemcacheServiceError_ErrorCode_value = map[string]int32{
 	"OK":                0,
@@ -60,6 +62,7 @@ var MemcacheServiceError_ErrorCode_value = map[string]int32{
 	"NAMESPACE_NOT_SET": 2,
 	"PERMISSION_DENIED": 3,
 	"INVALID_VALUE":     6,
+	"UNAVAILABLE":       9,
 }
 
 func (x MemcacheServiceError_ErrorCode) Enum() *MemcacheServiceError_ErrorCode {

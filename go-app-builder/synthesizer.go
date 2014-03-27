@@ -41,8 +41,10 @@ import (
 	{{with .InternalPkg}}
 	internal {{printf "%q" .}}
 	{{else}}
+	"io"
 	"log"
 	"net/http"
+	"net/url"
 	{{end}}
 
 	// Top-level app packages
@@ -55,11 +57,29 @@ func main() {
 	{{if .InternalPkg}}
 	internal.Main()
 	{{else}}
+	installHealthChecker()
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatalf("http.ListenAndServe: %v", err)
 	}
 	{{end}}
 }
+
+{{if not .InternalPkg}}
+func installHealthChecker() {
+	const healthPath = "/_ah/health"
+	hreq := &http.Request{
+		Method: "GET",
+		URL: &url.URL{
+			Path: healthPath,
+		},
+	}
+	if _, pat := http.DefaultServeMux.Handler(hreq); pat != healthPath {
+		http.HandleFunc(healthPath, func(w http.ResponseWriter, r *http.Request) {
+			io.WriteString(w, "ok")
+		})
+	}
+}
+{{end}}
 `))
 
 var extraImportsTemplate = template.Must(template.New("extraImports").Parse(

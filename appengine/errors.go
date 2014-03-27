@@ -16,15 +16,28 @@ import (
 // due to insufficient available quota.
 func IsOverQuota(err error) bool {
 	callErr, ok := err.(*appengine_internal.CallError)
-	return ok && callErr.Code == 4
+	return ok && callErr.Code == 4 // 4 == APIResponse_OVER_QUOTA
 }
 
 // IsCapabilityDisabled reports whether err represents an API call failure
 // due to the API being disabled. See the appengine/capability package for
 // a way to detect this condition in advance.
 func IsCapabilityDisabled(err error) bool {
-	callErr, ok := err.(*appengine_internal.CallError)
-	return ok && callErr.Code == 6
+	// Note, we are using plain integers rather than the constants
+	// generated from the proto files to avoid dragging in
+	// possibly problematic dependencies into the Go toolchain.
+	switch e := err.(type) {
+	case *appengine_internal.CallError:
+		return e.Code == 6 // 6 == APIResponse_CAPABILITY_DISABLED
+	case *appengine_internal.APIError:
+		// Special-case mapping for memcache to ensure strict
+		// backward compatibility even for undocumented
+		// behaviors.
+		// 9 == MemcacheServiceError_UNAVAILABLE
+		return e.Code == 9 && e.Service == "memcache"
+	default:
+		return false
+	}
 }
 
 // MultiError is returned by batch operations when there are errors with

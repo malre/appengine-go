@@ -14,16 +14,15 @@ It has these top-level messages:
 	CloudSQL
 	Library
 	Environ
+	VMConfig
 */
 package appengine_tools_devappserver2
 
 import proto "code.google.com/p/goprotobuf/proto"
-import json "encoding/json"
 import math "math"
 
-// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type Config struct {
@@ -45,6 +44,7 @@ type Config struct {
 	StderrLogLevel   *int64        `protobuf:"varint,15,opt,name=stderr_log_level,def=1" json:"stderr_log_level,omitempty"`
 	AuthDomain       *string       `protobuf:"bytes,16,req,name=auth_domain" json:"auth_domain,omitempty"`
 	MaxInstances     *int32        `protobuf:"varint,18,opt,name=max_instances" json:"max_instances,omitempty"`
+	VmConfig         *VMConfig     `protobuf:"bytes,19,opt,name=vm_config" json:"vm_config,omitempty"`
 	XXX_unrecognized []byte        `json:"-"`
 }
 
@@ -182,6 +182,13 @@ func (m *Config) GetMaxInstances() int32 {
 		return *m.MaxInstances
 	}
 	return 0
+}
+
+func (m *Config) GetVmConfig() *VMConfig {
+	if m != nil {
+		return m.VmConfig
+	}
+	return nil
 }
 
 type PhpConfig struct {
@@ -326,6 +333,22 @@ func (m *Environ) GetValue() []byte {
 		return m.Value
 	}
 	return nil
+}
+
+type VMConfig struct {
+	DockerDaemonUrl  *string `protobuf:"bytes,1,opt,name=docker_daemon_url" json:"docker_daemon_url,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *VMConfig) Reset()         { *m = VMConfig{} }
+func (m *VMConfig) String() string { return proto.CompactTextString(m) }
+func (*VMConfig) ProtoMessage()    {}
+
+func (m *VMConfig) GetDockerDaemonUrl() string {
+	if m != nil && m.DockerDaemonUrl != nil {
+		return *m.DockerDaemonUrl
+	}
+	return ""
 }
 
 func init() {

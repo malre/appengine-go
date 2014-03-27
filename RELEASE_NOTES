@@ -3,6 +3,14 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.9.2 - April 2014
+==========================
+appengine:
+  - Add GeoPoint type.
+appengine/search:
+  - Support appengine.GeoPoint as a document field type.
+  - Add FieldLoadSaver interface and FieldList type.
+
 Version 1.9.1 - March 2014
 ==========================
 This release is based on Go 1.2.1.

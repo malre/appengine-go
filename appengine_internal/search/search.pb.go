@@ -877,6 +877,7 @@ func (*SearchServiceError) ProtoMessage()    {}
 type RequestStatus struct {
 	Code             *SearchServiceError_ErrorCode `protobuf:"varint,1,req,name=code,enum=search.SearchServiceError_ErrorCode" json:"code,omitempty"`
 	ErrorDetail      *string                       `protobuf:"bytes,2,opt,name=error_detail" json:"error_detail,omitempty"`
+	CanonicalCode    *int32                        `protobuf:"varint,3,opt,name=canonical_code" json:"canonical_code,omitempty"`
 	XXX_unrecognized []byte                        `json:"-"`
 }
 
@@ -896,6 +897,13 @@ func (m *RequestStatus) GetErrorDetail() string {
 		return *m.ErrorDetail
 	}
 	return ""
+}
+
+func (m *RequestStatus) GetCanonicalCode() int32 {
+	if m != nil && m.CanonicalCode != nil {
+		return *m.CanonicalCode
+	}
+	return 0
 }
 
 type IndexSpec struct {
