@@ -12,7 +12,7 @@ taskqueue operation is to add a single POST task, NewPOSTTask makes it easy.
 	t := taskqueue.NewPOSTTask("/worker", url.Values{
 		"key": {key},
 	})
-	taskqueue.Add(c, t, "") // add t to the default queue
+	taskqueue.Add(c, t, "") // add t to the default queue; c is appengine.Context
 */
 package taskqueue
 

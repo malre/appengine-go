@@ -17,6 +17,7 @@ import (
 var (
 	typeOfBlobKey   = reflect.TypeOf(appengine.BlobKey(""))
 	typeOfByteSlice = reflect.TypeOf([]byte(nil))
+	typeOfGeoPoint  = reflect.TypeOf(appengine.GeoPoint{})
 	typeOfTime      = reflect.TypeOf(time.Time{})
 )
 
@@ -39,6 +40,8 @@ func typeMismatchReason(p Property, v reflect.Value) string {
 		entityType = "time.Time"
 	case appengine.BlobKey:
 		entityType = "appengine.BlobKey"
+	case appengine.GeoPoint:
+		entityType = "appengine.GeoPoint"
 	case []byte:
 		entityType = "[]byte"
 	}
@@ -108,6 +111,8 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 			meaning = pb.Property_BLOBKEY
 		case typeOfByteSlice:
 			meaning = pb.Property_BLOB
+		case typeOfGeoPoint:
+			meaning = pb.Property_GEORSS_POINT
 		case typeOfTime:
 			meaning = pb.Property_GD_WHEN
 		}
@@ -163,14 +168,22 @@ func (l *propertyLoader) load(codec *structCodec, structValue reflect.Value, p P
 		}
 		v.Set(reflect.ValueOf(x))
 	case reflect.Struct:
-		x, ok := pValue.(time.Time)
-		if !ok && pValue != nil {
+		switch v.Type() {
+		case typeOfTime:
+			x, ok := pValue.(time.Time)
+			if !ok && pValue != nil {
+				return typeMismatchReason(p, v)
+			}
+			v.Set(reflect.ValueOf(x))
+		case typeOfGeoPoint:
+			x, ok := pValue.(appengine.GeoPoint)
+			if !ok && pValue != nil {
+				return typeMismatchReason(p, v)
+			}
+			v.Set(reflect.ValueOf(x))
+		default:
 			return typeMismatchReason(p, v)
 		}
-		if _, ok := v.Interface().(time.Time); !ok {
-			return typeMismatchReason(p, v)
-		}
-		v.Set(reflect.ValueOf(x))
 	case reflect.Slice:
 		x, ok := pValue.([]byte)
 		if !ok && pValue != nil {
@@ -292,6 +305,8 @@ func propValue(v *pb.PropertyValue, m pb.Property_Meaning) (interface{}, error) 
 			return nil, err
 		}
 		return key, nil
+	case v.Pointvalue != nil:
+		return appengine.GeoPoint{Lng: v.Pointvalue.GetX(), Lat: v.Pointvalue.GetY()}, nil
 	}
 	return nil, nil
 }

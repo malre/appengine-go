@@ -20,6 +20,7 @@ import (
 	"time"
 
 	basepb "appengine_internal/base"
+	lpb "appengine_internal/log"
 	"appengine_internal/remote_api"
 	rpb "appengine_internal/runtime_config"
 	"code.google.com/p/goprotobuf/proto"
@@ -279,15 +280,46 @@ func (c *context) Request() interface{} {
 	return c.req
 }
 
-func (c *context) logf(level, format string, args ...interface{}) {
-	log.Printf(level+": "+format, args...)
+func (c *context) logf(level int64, levelName, format string, args ...interface{}) {
+	s := fmt.Sprintf(format, args...)
+	s = strings.TrimRight(s, "\n") // Remove any trailing newline characters.
+	log.Println(levelName + ": " + s)
+
+	// Truncate long log lines.
+	const maxLogLine = 8192
+	if len(s) > maxLogLine {
+		suffix := fmt.Sprintf("...(length %d)", len(s))
+		s = s[:maxLogLine-len(suffix)] + suffix
+	}
+
+	buf, err := proto.Marshal(&lpb.UserAppLogGroup{
+		LogLine: []*lpb.UserAppLogLine{
+			{
+				TimestampUsec: proto.Int64(time.Now().UnixNano() / 1e3),
+				Level:         proto.Int64(level),
+				Message:       proto.String(s),
+			}}})
+	if err != nil {
+		log.Printf("appengine_internal.flushLog: failed marshaling AppLogGroup: %v", err)
+		return
+	}
+
+	req := &lpb.FlushRequest{
+		Logs: buf,
+	}
+	res := &basepb.VoidProto{}
+	if err := c.Call("logservice", "Flush", req, res, nil); err != nil {
+		log.Printf("appengine_internal.flushLog: failed Flush RPC: %v", err)
+	}
 }
 
-func (c *context) Debugf(format string, args ...interface{})    { c.logf("DEBUG", format, args...) }
-func (c *context) Infof(format string, args ...interface{})     { c.logf("INFO", format, args...) }
-func (c *context) Warningf(format string, args ...interface{})  { c.logf("WARNING", format, args...) }
-func (c *context) Errorf(format string, args ...interface{})    { c.logf("ERROR", format, args...) }
-func (c *context) Criticalf(format string, args ...interface{}) { c.logf("CRITICAL", format, args...) }
+func (c *context) Debugf(format string, args ...interface{})   { c.logf(0, "DEBUG", format, args...) }
+func (c *context) Infof(format string, args ...interface{})    { c.logf(1, "INFO", format, args...) }
+func (c *context) Warningf(format string, args ...interface{}) { c.logf(2, "WARNING", format, args...) }
+func (c *context) Errorf(format string, args ...interface{})   { c.logf(3, "ERROR", format, args...) }
+func (c *context) Criticalf(format string, args ...interface{}) {
+	c.logf(4, "CRITICAL", format, args...)
+}
 
 // FullyQualifiedAppID returns the fully-qualified application ID.
 // This may contain a partition prefix (e.g. "s~" for High Replication apps),

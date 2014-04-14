@@ -216,6 +216,9 @@ func (x *Index) Put(c appengine.Context, id string, src interface{}) (string, er
 //
 // dst must be a non-nil struct pointer or implement the FieldLoadSaver
 // interface.
+//
+// If dst is a struct pointer, then fields which are missing or unexported in
+// the destination struct are silently ignored.
 func (x *Index) Get(c appengine.Context, id string, dst interface{}) error {
 	if id == "" || !validIndexNameOrDocID(id) {
 		return fmt.Errorf("search: invalid ID %q", id)

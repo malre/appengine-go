@@ -3,6 +3,14 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.9.3 - April 2014
+==========================
+appengine/datastore:
+  - Support appengine.GeoPoint as an entity property type.
+appengine/aetest:
+  ! Remove aetest.Options.User and add aetest.Context.Login
+    and aetest.Context.Logout.
+
 Version 1.9.2 - April 2014
 ==========================
 appengine:

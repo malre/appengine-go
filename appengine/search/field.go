@@ -54,11 +54,9 @@ type structFLS struct {
 func (s structFLS) Load(fields []Field) error {
 	for _, field := range fields {
 		f := s.FieldByName(field.Name)
-		if !f.IsValid() {
-			// TODO: continue but eventually return ErrFieldMismatch, similar to package datastore.
-			continue
-		}
-		if !f.CanSet() {
+		if !f.IsValid() || !f.CanSet() {
+			// Ideally we would return an error, as per datastore, but for
+			// backwards-compatability we silently ignore these fields.
 			continue
 		}
 		v := reflect.ValueOf(field.Value)

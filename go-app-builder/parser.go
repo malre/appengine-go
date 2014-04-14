@@ -106,7 +106,9 @@ func (v vfs) readDir(dir string) (fis []os.FileInfo, err error) {
 func ParseFiles(baseDir string, filenames []string) (*App, error) {
 	app := &App{
 		PackageIndex: make(map[string]*Package),
-		InternalPkg:  *internalPkg,
+	}
+	if !*vm {
+		app.InternalPkg = "appengine_internal"
 	}
 	pkgFiles := make(map[string][]*File) // app package name => its files
 
@@ -204,7 +206,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 			}
 		}
 		app.Packages = append(app.Packages, p)
-		if p.HasInit || *useAllPackages {
+		if p.HasInit || *vm {
 			app.RootPackages = append(app.RootPackages, p)
 		}
 		app.PackageIndex[p.ImportPath] = p
@@ -333,7 +335,7 @@ func addFromGOPATH(app *App, noBuild *regexp.Regexp, appFilesInGOPATH map[string
 						continue
 					}
 					hasMain := false
-					if *internalPkg == "" && pkg.Name == "internal" {
+					if *vm && pkg.Name == "internal" {
 						// See if this file has internal.Main.
 						// This check duplicates conditions in readFile
 						// as an optimisation to avoid parsing lots of code
@@ -401,7 +403,7 @@ func readFile(baseDir, filename string) (file *ast.File, fset *token.FileSet, ha
 	}
 	fset = token.NewFileSet()
 	file, err = parser.ParseFile(fset, fullName, src, 0)
-	if *internalPkg == "" && file.Name.Name == "internal" {
+	if *vm && file.Name.Name == "internal" {
 		for _, decl := range file.Decls {
 			funcDecl, ok := decl.(*ast.FuncDecl)
 			if !ok {

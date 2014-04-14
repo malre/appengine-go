@@ -44,18 +44,18 @@ var (
 	gcFlags         = flag.String("gcflags", "", "Comma-separated list of extra compiler flags.")
 	goPath          = flag.String("gopath", os.Getenv("GOPATH"), "Location of extra packages.")
 	goRoot          = flag.String("goroot", os.Getenv("GOROOT"), "Root of the Go installation.")
-	internalPkg     = flag.String("internal_pkg", "appengine_internal", "If set, the import path of the internal package containing Main; if empty, auto-detect.")
 	ldFlags         = flag.String("ldflags", "", "Comma-separated list of extra linker flags.")
 	logFile         = flag.String("log_file", "", "If set, a file to write messages to.")
 	noBuildFiles    = flag.String("nobuild_files", "", "Regular expression matching files to not build.")
 	pkgDupes        = flag.String("pkg_dupe_whitelist", "", "Comma-separated list of packages that are okay to duplicate.")
 	printExtras     = flag.Bool("print_extras", false, "Whether to skip building and just print extra-app files.")
 	printExtrasHash = flag.Bool("print_extras_hash", false, "Whether to skip building and just print a hash of the extra-app files.")
+	printExtraPkgs  = flag.Bool("print_extra_packages", false, "Whether to skip building and just print extra-app packages.")
 	trampoline      = flag.String("trampoline", "", "If set, a binary to invoke tools with.")
 	trampolineFlags = flag.String("trampoline_flags", "", "Comma-separated flags to pass to trampoline.")
 	unsafe          = flag.Bool("unsafe", false, "Permit unsafe packages.")
-	useAllPackages  = flag.Bool("use_all_packages", false, "Whether to link all packages into the binary.")
 	verbose         = flag.Bool("v", false, "Noisy output.")
+	vm              = flag.Bool("vm", false, "Whether to build for Managed VMs (implies -unsafe).")
 	workDir         = flag.String("work_dir", "/tmp", "Directory to use for intermediate and output files.")
 )
 
@@ -119,6 +119,10 @@ func main() {
 	}
 	if *printExtrasHash {
 		printExtraFilesHash(os.Stdout, app)
+		return
+	}
+	if *printExtraPkgs {
+		printExtraPackages(os.Stdout, app)
 		return
 	}
 
@@ -194,7 +198,7 @@ func buildApp(app *App) error {
 			"-I", *workDir,
 			"-o", objectFile,
 		}
-		if !*unsafe {
+		if !*unsafe && !*vm {
 			// reject unsafe code
 			args = append(args, "-u")
 		}
@@ -282,7 +286,7 @@ func buildApp(app *App) error {
 		// force the binary to be statically linked, disable dwarf generation, and strip binary
 		args = append(args, "-d", "-w", "-s")
 	}
-	if !*unsafe {
+	if !*unsafe && !*vm {
 		// reject unsafe code
 		args = append(args, "-u")
 	}
@@ -329,7 +333,7 @@ func (t *timer) String() string {
 func printExtraFiles(w io.Writer, app *App) {
 	for _, pkg := range app.Packages {
 		if pkg.BaseDir == "" {
-			continue // app file
+			continue // app package
 		}
 		for _, f := range pkg.Files {
 			// The app-relative path should always use forward slash.
@@ -349,7 +353,7 @@ func printExtraFilesHash(w io.Writer, app *App) {
 	sort.Sort(byImportPath(app.Packages)) // be deterministic
 	for _, pkg := range app.Packages {
 		if pkg.BaseDir == "" {
-			continue // app file
+			continue // app package
 		}
 		sort.Sort(byFileName(pkg.Files)) // be deterministic
 		for _, f := range pkg.Files {
@@ -362,6 +366,41 @@ func printExtraFilesHash(w io.Writer, app *App) {
 		}
 	}
 	fmt.Fprintf(w, "%x", h.Sum(nil))
+}
+
+func printExtraPackages(w io.Writer, app *App) {
+	// Print all the packages that aren't in the app that look like they aren't in the standard library.
+	// This is a heuristic approach, but should be good enough for its intended use,
+	// namely finding the packages we need to fetch.
+	appPkgs, extPkgs := make(map[string]bool), make(map[string]bool)
+	for _, pkg := range app.Packages {
+		appPkgs[pkg.ImportPath] = true
+	}
+	for _, pkg := range app.Packages {
+		// Look at all the imports for all packages (even ones we get from GOPATH).
+		for _, f := range pkg.Files {
+			for _, imp := range f.ImportPaths {
+				if appPkgs[imp] {
+					// The imported path is in the app, or in GOPATH.
+					continue
+				}
+				// Heuristic: If an import path has no dot, assume it is in the standard library.
+				if !strings.Contains(imp, ".") {
+					continue
+				}
+				extPkgs[imp] = true
+			}
+		}
+	}
+
+	imps := make([]string, 0, len(extPkgs))
+	for imp := range extPkgs {
+		imps = append(imps, imp)
+	}
+	sort.Strings(imps)
+	for _, imp := range imps {
+		fmt.Fprintln(w, imp)
+	}
 }
 
 func toolPath(x string) string {
