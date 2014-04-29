@@ -242,6 +242,8 @@ func buildApp(app *App) error {
 		// Turn the object file into an archive file, stripped of file path information.
 		// The paths we strip depends on whether this object file is based on user code
 		// or the synthetic main code.
+		// TODO: For go1.3 this will need to be removed in favour of passing -trimpath to 6g.
+		// See https://codereview.appspot.com/88300045 for the change.
 		archiveFile := filepath.Join(*workDir, pkg.ImportPath) + ".a"
 		srcDir := *appBase
 		if i == len(app.Packages)-1 {
