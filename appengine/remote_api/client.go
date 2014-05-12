@@ -124,7 +124,7 @@ func (c *context) Call(service, method string, in, out appengine_internal.ProtoM
 }
 
 // This is a forgiving regexp designed to parse the app ID from YAML.
-var appIDRE = regexp.MustCompile(`app_id["']?\s*:\s*['"?]([-a-z0-9.:~]+)`)
+var appIDRE = regexp.MustCompile(`app_id["']?\s*:\s*['"]?([-a-z0-9.:~]+)`)
 
 func getAppID(client *http.Client, url string) (string, error) {
 	// Generate a pseudo-random token for handshaking.

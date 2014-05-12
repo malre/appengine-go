@@ -3,6 +3,13 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.9.5 - May 2014
+========================
+appengine/datastore:
+  - Add Query.EventualConsistency method for ancestor queries.
+  ! Change GeoPoint storage to be consistent with other runtimes.
+    Data stored before this release will have Lat and Lng reversed.
+
 Version 1.9.4 - April 2014
 ==========================
 appengine/datastore:

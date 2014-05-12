@@ -138,6 +138,9 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 			return vfs.readDir(dir)
 		},
 	}
+	if *vm {
+		ctxt.BuildTags = append(ctxt.BuildTags, "appenginevm")
+	}
 
 	dirs := make(map[string]bool)
 	for _, f := range filenames {

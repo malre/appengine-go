@@ -38,6 +38,8 @@ polling for detecting source code changes, as opposed to inotify watches.
 The -admin_port flag controls the port to which the admin server should bind
 (default 8000).
 
+The -clear_datastore flag clears the local datastore on startup.
+
 This command wraps the dev_appserver.py command provided as part of the
 App Engine SDK. For help using that command directly, run:
   ./dev_appserver.py --help
@@ -49,6 +51,7 @@ var (
 	servePort       int    // serve -port flag
 	serveUseModTime bool   // serve -use_mtime_file_watcher flag
 	serveAdminPort  int    // serve -admin_port flag
+	clearDatastore  bool   // serve -clear_datastore flag
 )
 
 func init() {
@@ -59,6 +62,7 @@ func init() {
 	cmdServe.Flag.IntVar(&servePort, "port", 8080, "")
 	cmdServe.Flag.BoolVar(&serveUseModTime, "use_mtime_file_watcher", false, "")
 	cmdServe.Flag.IntVar(&serveAdminPort, "admin_port", 8000, "")
+	cmdServe.Flag.BoolVar(&clearDatastore, "clear_datastore", false, "")
 }
 
 func runServe(cmd *Command, args []string) {
@@ -74,6 +78,9 @@ func runServe(cmd *Command, args []string) {
 	}
 	if serveUseModTime {
 		toolArgs = append(toolArgs, "--use_mtime_file_watcher", "yes")
+	}
+	if clearDatastore {
+		toolArgs = append(toolArgs, "--clear_datastore", "yes")
 	}
 	files, err := resolveAppFiles(args)
 	if err != nil {
