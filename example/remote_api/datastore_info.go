@@ -6,7 +6,7 @@ package main
 // This tool can be invoked using the goapp tool bundled with the SDK.
 // $ goapp run demos/remote_api/datastore_info.go \
 //   -email admin@example.com \
-//   -host my-app@appspot.com \
+//   -host my-app.appspot.com \
 //   -password_file ~/.my_password
 
 import (

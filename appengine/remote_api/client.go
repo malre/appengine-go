@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"appengine"
@@ -37,7 +38,7 @@ func NewRemoteContext(host string, client *http.Client) (appengine.Context, erro
 		Host:   host,
 		Path:   "/_ah/remote_api",
 	}
-	if host == "localhost" {
+	if host == "localhost" || strings.HasPrefix(host, "localhost:") {
 		url.Scheme = "http"
 	}
 	u := url.String()
