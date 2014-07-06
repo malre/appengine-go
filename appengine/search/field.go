@@ -23,6 +23,10 @@ type Field struct {
 	//  - float64,
 	//  - appengine.GeoPoint.
 	Value interface{}
+	// Language is a two-letter ISO 693-1 code for the field's language,
+	// defaulting to "en" if nothing is specified. It may only be specified for
+	// fields of type string and search.HTML.
+	Language string
 }
 
 // FieldLoadSaver can be converted from and to a slice of Fields.

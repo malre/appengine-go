@@ -4,7 +4,7 @@
 
 /*
 Package runtime exposes information about the resource usage of the application.
-It also provides a way to run code in a new background context of a backend.
+It also provides a way to run code in a new background context of a module.
 */
 package runtime
 

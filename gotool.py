@@ -44,6 +44,7 @@ if __name__ == '__main__':
     os.environ.pop(e, None)
 
   # Set a GOPATH if one is not set.
-  os.environ.setdefault('GOPATH', os.path.join(SDK_BASE, 'gopath'))
+  if not os.environ.get('GOPATH'):
+    os.environ['GOPATH'] = os.path.join(SDK_BASE, 'gopath')
 
   os.execve(bin, new_argv, os.environ)

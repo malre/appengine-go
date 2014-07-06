@@ -45,6 +45,7 @@ type Config struct {
 	AuthDomain       *string       `protobuf:"bytes,16,req,name=auth_domain" json:"auth_domain,omitempty"`
 	MaxInstances     *int32        `protobuf:"varint,18,opt,name=max_instances" json:"max_instances,omitempty"`
 	VmConfig         *VMConfig     `protobuf:"bytes,19,opt,name=vm_config" json:"vm_config,omitempty"`
+	ServerPort       *int32        `protobuf:"varint,20,opt,name=server_port" json:"server_port,omitempty"`
 	XXX_unrecognized []byte        `json:"-"`
 }
 
@@ -189,6 +190,13 @@ func (m *Config) GetVmConfig() *VMConfig {
 		return m.VmConfig
 	}
 	return nil
+}
+
+func (m *Config) GetServerPort() int32 {
+	if m != nil && m.ServerPort != nil {
+		return *m.ServerPort
+	}
+	return 0
 }
 
 type PhpConfig struct {

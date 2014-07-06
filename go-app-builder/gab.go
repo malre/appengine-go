@@ -35,6 +35,10 @@ import (
 	"time"
 )
 
+// go13build indicates whether we are building with go1.3 tools.
+// This switches from using gopack to passing -trimpath to 6g.
+const go13build = false
+
 var (
 	appBase         = flag.String("app_base", ".", "Path to app root. Command-line filenames are relative to this.")
 	arch            = flag.String("arch", defaultArch(), `The Go architecture specifier (e.g. "5", "6", "8").`)
@@ -205,6 +209,8 @@ func buildApp(app *App) error {
 		if *gcFlags != "" {
 			args = append(args, parseToolFlags(*gcFlags)...)
 		}
+		stripDir := *appBase
+		var files []string
 		if i < len(app.Packages)-1 {
 			// regular package
 			base := *appBase
@@ -212,7 +218,7 @@ func buildApp(app *App) error {
 				base = pkg.BaseDir
 			}
 			for _, f := range pkg.Files {
-				args = append(args, filepath.Join(base, f.Name))
+				files = append(files, filepath.Join(base, f.Name))
 			}
 			// Don't generate synthetic extra imports for dupe packages.
 			// They won't be linked into the binary anyway,
@@ -228,55 +234,65 @@ func buildApp(app *App) error {
 				if err := ioutil.WriteFile(extraImportsFile, []byte(extraImportsStr), 0640); err != nil {
 					return fmt.Errorf("failed writing extra-imports file: %v", err)
 				}
-				args = append(args, extraImportsFile)
+				files = append(files, extraImportsFile)
 			}
 		} else {
 			// synthetic main package
-			args = append(args, mainFile)
+			files = []string{mainFile}
+			stripDir = *workDir
 		}
+		if go13build {
+			// gc at go1.3 only accepts one -trimpath flag unfortunately.
+			// We'd ideally trim *workDir for regular packages too,
+			// since that is where the _extra_imports_nnn.go files end up.
+			// TODO: Copy the appBase structure to workDir,
+			// and then only ever strip workDir (but only if len(extra) > 0).
+			args = append(args, "-trimpath", stripDir)
+		}
+		args = append(args, files...)
 		defer os.Remove(objectFile)
 		if err := gTimer.run(args, env); err != nil {
 			return err
 		}
 
-		// Turn the object file into an archive file, stripped of file path information.
-		// The paths we strip depends on whether this object file is based on user code
-		// or the synthetic main code.
-		// TODO: For go1.3 this will need to be removed in favour of passing -trimpath to 6g.
-		// See https://codereview.appspot.com/88300045 for the change.
-		archiveFile := filepath.Join(*workDir, pkg.ImportPath) + ".a"
-		srcDir := *appBase
-		if i == len(app.Packages)-1 {
-			srcDir = *workDir
-		}
-		srcDir, _ = filepath.Abs(srcDir) // assume os.Getwd doesn't fail
-		args = []string{
-			gopack,
-			"grcP", srcDir,
-			archiveFile,
-			objectFile,
-		}
-		defer os.Remove(archiveFile)
-		if err := pTimer.run(args, env); err != nil {
-			return err
-		}
-		if i != len(app.Packages)-1 && len(extra) > 0 {
-			// Run gopack again, this time stripping the absolute workDir prefix.
-			absWorkDir, _ := filepath.Abs(*workDir) // assume os.Getwd doesn't fail
+		if !go13build {
+			// Turn the object file into an archive file, stripped of file path information.
+			// The paths we strip depends on whether this object file is based on user code
+			// or the synthetic main code.
+			archiveFile := filepath.Join(*workDir, pkg.ImportPath) + ".a"
+			stripDir, _ = filepath.Abs(stripDir) // assume os.Getwd doesn't fail
 			args = []string{
 				gopack,
-				"grcP", absWorkDir,
+				"grcP", stripDir,
 				archiveFile,
+				objectFile,
 			}
+			defer os.Remove(archiveFile)
 			if err := pTimer.run(args, env); err != nil {
 				return err
+			}
+			if i != len(app.Packages)-1 && len(extra) > 0 {
+				// Run gopack again, this time stripping the absolute workDir prefix.
+				absWorkDir, _ := filepath.Abs(*workDir) // assume os.Getwd doesn't fail
+				args = []string{
+					gopack,
+					"grcP", absWorkDir,
+					archiveFile,
+				}
+				if err := pTimer.run(args, env); err != nil {
+					return err
+				}
 			}
 		}
 	}
 
 	// Link phase.
 	linker := toolPath(*arch + "l")
-	archiveFile := filepath.Join(*workDir, app.Packages[len(app.Packages)-1].ImportPath) + ".a"
+	ext := ".a"
+	if go13build {
+		ext = "." + *arch
+	}
+	archiveFile := filepath.Join(*workDir, app.Packages[len(app.Packages)-1].ImportPath) + ext
 	binaryFile := filepath.Join(*workDir, *binaryName)
 	args := []string{
 		linker,

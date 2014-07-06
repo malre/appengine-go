@@ -238,6 +238,7 @@ type RequestLog struct {
 	Line                    []*LogLine `protobuf:"bytes,29,rep,name=line" json:"line,omitempty"`
 	LinesIncomplete         *bool      `protobuf:"varint,36,opt,name=lines_incomplete" json:"lines_incomplete,omitempty"`
 	AppEngineRelease        []byte     `protobuf:"bytes,38,opt,name=app_engine_release" json:"app_engine_release,omitempty"`
+	TraceId                 *string    `protobuf:"bytes,39,opt,name=trace_id" json:"trace_id,omitempty"`
 	ExitReason              *int32     `protobuf:"varint,30,opt,name=exit_reason" json:"exit_reason,omitempty"`
 	WasThrottledForTime     *bool      `protobuf:"varint,31,opt,name=was_throttled_for_time" json:"was_throttled_for_time,omitempty"`
 	WasThrottledForRequests *bool      `protobuf:"varint,32,opt,name=was_throttled_for_requests" json:"was_throttled_for_requests,omitempty"`
@@ -483,6 +484,13 @@ func (m *RequestLog) GetAppEngineRelease() []byte {
 		return m.AppEngineRelease
 	}
 	return nil
+}
+
+func (m *RequestLog) GetTraceId() string {
+	if m != nil && m.TraceId != nil {
+		return *m.TraceId
+	}
+	return ""
 }
 
 func (m *RequestLog) GetExitReason() int32 {

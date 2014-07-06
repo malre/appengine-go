@@ -491,7 +491,8 @@ func checkImport(path string) bool {
 		return false
 	}
 	if path == "syscall" || path == "unsafe" {
-		return false
+		// VM apps may import "syscall" and "unsafe"
+		return *vm
 	}
 	return true
 }
@@ -600,10 +601,14 @@ func isStandardPackage(s string) bool {
 
 // gopathPackage imports information about a package in GOPATH.
 func gopathPackage(s string) (*build.Package, error) {
+	tags := []string{"appengine"}
+	if *vm {
+		tags = append(tags, "appenginevm")
+	}
 	ctxt := build.Default
 	ctxt.GOROOT = *goRoot
 	ctxt.GOPATH = *goPath
-	ctxt.BuildTags = append([]string{"appengine"}, ctxt.BuildTags...) // don't affect build.Default
+	ctxt.BuildTags = append(tags, ctxt.BuildTags...) // don't affect build.Default
 	ctxt.Compiler = "gc"
 	// Don't use FindOnly or AllowBinary because we want import information
 	// and we require the source files.

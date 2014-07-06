@@ -34,11 +34,9 @@ type namespacedContext struct {
 }
 
 func (n *namespacedContext) Call(service, method string, in, out appengine_internal.ProtoMessage, opts *appengine_internal.CallOptions) error {
-	// Apply any namespace mods, but only if we have a non-empty namespace.
-	if n.namespace != "" {
-		if mod, ok := appengine_internal.NamespaceMods[service]; ok {
-			mod(in, n.namespace)
-		}
+	// Apply any namespace mods.
+	if mod, ok := appengine_internal.NamespaceMods[service]; ok {
+		mod(in, n.namespace)
 	}
 	if service == "__go__" && method == "GetNamespace" {
 		out.(*basepb.StringProto).Value = proto.String(n.namespace)
