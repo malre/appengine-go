@@ -9,6 +9,7 @@ package blobstore
 import (
 	"bufio"
 	"crypto/sha512"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -45,6 +46,10 @@ type BlobInfo struct {
 	CreationTime time.Time `datastore:"creation"`
 	Filename     string    `datastore:"filename"`
 	Size         int64     `datastore:"size"`
+	MD5          string    `datastore:"md5_hash"`
+
+	// ObjectName is the Google Cloud Storage name for this blob.
+	ObjectName string `datastore:"gs_object_name"`
 }
 
 // isErrFieldMismatch returns whether err is a datastore.ErrFieldMismatch.
@@ -227,6 +232,17 @@ func ParseUpload(req *http.Request) (blobs map[string][]*BlobInfo, other url.Val
 		if err != nil {
 			return nil, nil, errorf("error parsing X-AppEngine-Upload-Creation: %s", err)
 		}
+
+		if hdr := header.Get("Content-MD5"); hdr != "" {
+			md5, err := base64.URLEncoding.DecodeString(hdr)
+			if err != nil {
+				return nil, nil, errorf("bad Content-MD5 %q: %v", hdr, err)
+			}
+			bi.MD5 = string(md5)
+		}
+
+		// If the GCS object name was provided, record it.
+		bi.ObjectName = header.Get("X-AppEngine-Cloud-Storage-Object")
 
 		blobs[formKey] = append(blobs[formKey], bi)
 	}

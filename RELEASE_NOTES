@@ -3,6 +3,14 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.9.8 - July 2014
+=========================
+appengine/blobstore:
+  - Add BlobInfo.MD5 and BlobInfo.ObjectName fields.
+appengine/search:
+  - Add DocumentMetadata type.
+  - Add FieldMetadataLoadSaver interface.
+
 Version 1.9.7 - July 2014
 =========================
 appengine/search:

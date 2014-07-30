@@ -100,7 +100,7 @@ func btos(b bool) string {
 func NewContext(opts *Options) (Context, error) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	c := &context{
-		appID:   opts.appID(),
+		opts:    opts,
 		req:     req,
 		session: newSessionID(),
 	}
@@ -123,6 +123,9 @@ type Options struct {
 	// AppID specifies the App ID to use during tests.
 	// By default, "testapp".
 	AppID string
+	// StronglyConsistentDatastore is whether the local datastore should be
+	// strongly consistent. This will diverge from production behaviour.
+	StronglyConsistentDatastore bool
 }
 
 func (o *Options) appID() string {
@@ -130,6 +133,14 @@ func (o *Options) appID() string {
 		return "testapp"
 	}
 	return o.AppID
+}
+
+func (o *Options) extraAppserverFlags() []string {
+	var fs []string
+	if o != nil && o.StronglyConsistentDatastore {
+		fs = append(fs, "--datastore_consistency_policy=consistent")
+	}
+	return fs
 }
 
 // PrepareDevAppserver is a hook which, if set, will be called before the
@@ -140,7 +151,7 @@ var PrepareDevAppserver func() error
 // context implements appengine.Context by running an api_server.py
 // process as a child and proxying all Context calls to the child.
 type context struct {
-	appID    string
+	opts     *Options
 	req      *http.Request
 	child    *exec.Cmd
 	apiURL   string // base URL of API HTTP server
@@ -149,9 +160,9 @@ type context struct {
 	session  string
 }
 
-func (c *context) AppID() string               { return c.appID }
+func (c *context) AppID() string               { return c.opts.appID() }
 func (c *context) Request() interface{}        { return c.req }
-func (c *context) FullyQualifiedAppID() string { return "dev~" + c.appID }
+func (c *context) FullyQualifiedAppID() string { return "dev~" + c.opts.appID() }
 
 func (c *context) logf(level, format string, args ...interface{}) {
 	log.Printf(level+": "+format, args...)
@@ -376,15 +387,21 @@ func (c *context) startChild() (err error) {
 		return err
 	}
 
-	c.child = exec.Command(
-		python,
+	appserverArgs := []string{
 		devAppserver,
 		"--port=0",
 		"--api_port=0",
 		"--admin_port=0",
 		"--skip_sdk_update_check=true",
 		"--clear_datastore=true",
-		c.appDir,
+		"--datastore_path", filepath.Join(c.appDir, "datastore"),
+	}
+	appserverArgs = append(appserverArgs, c.opts.extraAppserverFlags()...)
+	appserverArgs = append(appserverArgs, c.appDir)
+
+	c.child = exec.Command(
+		python,
+		appserverArgs...,
 	)
 	c.child.Stdout = os.Stdout
 	var stderr io.Reader
@@ -433,7 +450,7 @@ func (c *context) startChild() (err error) {
 }
 
 func (c *context) appYAML() string {
-	return fmt.Sprintf(appYAMLTemplate, c.appID)
+	return fmt.Sprintf(appYAMLTemplate, c.opts.appID())
 }
 
 const appYAMLTemplate = `

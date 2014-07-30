@@ -25,6 +25,8 @@ It has these top-level messages:
 	CompositeProperty
 	Index
 	CompositeIndex
+	SearchIndexEntry
+	SearchIndexExternalId
 	IndexPostfix
 	IndexPosition
 	Snapshot
@@ -222,17 +224,20 @@ func (x *EntityProto_Kind) UnmarshalJSON(data []byte) error {
 type Index_Property_Direction int32
 
 const (
-	Index_Property_ASCENDING  Index_Property_Direction = 1
-	Index_Property_DESCENDING Index_Property_Direction = 2
+	Index_Property_DIRECTION_UNSPECIFIED Index_Property_Direction = 0
+	Index_Property_ASCENDING             Index_Property_Direction = 1
+	Index_Property_DESCENDING            Index_Property_Direction = 2
 )
 
 var Index_Property_Direction_name = map[int32]string{
+	0: "DIRECTION_UNSPECIFIED",
 	1: "ASCENDING",
 	2: "DESCENDING",
 }
 var Index_Property_Direction_value = map[string]int32{
-	"ASCENDING":  1,
-	"DESCENDING": 2,
+	"DIRECTION_UNSPECIFIED": 0,
+	"ASCENDING":             1,
+	"DESCENDING":            2,
 }
 
 func (x Index_Property_Direction) Enum() *Index_Property_Direction {
@@ -249,6 +254,39 @@ func (x *Index_Property_Direction) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*x = Index_Property_Direction(value)
+	return nil
+}
+
+type Index_Property_Mode int32
+
+const (
+	Index_Property_MODE_UNSPECIFIED Index_Property_Mode = 0
+	Index_Property_GEOSPATIAL       Index_Property_Mode = 3
+)
+
+var Index_Property_Mode_name = map[int32]string{
+	0: "MODE_UNSPECIFIED",
+	3: "GEOSPATIAL",
+}
+var Index_Property_Mode_value = map[string]int32{
+	"MODE_UNSPECIFIED": 0,
+	"GEOSPATIAL":       3,
+}
+
+func (x Index_Property_Mode) Enum() *Index_Property_Mode {
+	p := new(Index_Property_Mode)
+	*p = x
+	return p
+}
+func (x Index_Property_Mode) String() string {
+	return proto.EnumName(Index_Property_Mode_name, int32(x))
+}
+func (x *Index_Property_Mode) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(Index_Property_Mode_value, data, "Index_Property_Mode")
+	if err != nil {
+		return err
+	}
+	*x = Index_Property_Mode(value)
 	return nil
 }
 
@@ -1215,6 +1253,7 @@ func (m *Index) GetProperty() []*Index_Property {
 type Index_Property struct {
 	Name             *string                   `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
 	Direction        *Index_Property_Direction `protobuf:"varint,4,opt,name=direction,enum=datastore.Index_Property_Direction,def=1" json:"direction,omitempty"`
+	Mode             *Index_Property_Mode      `protobuf:"varint,6,opt,name=mode,enum=datastore.Index_Property_Mode,def=0" json:"mode,omitempty"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
 
@@ -1223,6 +1262,7 @@ func (m *Index_Property) String() string { return proto.CompactTextString(m) }
 func (*Index_Property) ProtoMessage()    {}
 
 const Default_Index_Property_Direction Index_Property_Direction = Index_Property_ASCENDING
+const Default_Index_Property_Mode Index_Property_Mode = Index_Property_MODE_UNSPECIFIED
 
 func (m *Index_Property) GetName() string {
 	if m != nil && m.Name != nil {
@@ -1238,13 +1278,22 @@ func (m *Index_Property) GetDirection() Index_Property_Direction {
 	return Default_Index_Property_Direction
 }
 
+func (m *Index_Property) GetMode() Index_Property_Mode {
+	if m != nil && m.Mode != nil {
+		return *m.Mode
+	}
+	return Default_Index_Property_Mode
+}
+
 type CompositeIndex struct {
-	AppId             *string               `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	Id                *int64                `protobuf:"varint,2,req,name=id" json:"id,omitempty"`
-	Definition        *Index                `protobuf:"bytes,3,req,name=definition" json:"definition,omitempty"`
-	State             *CompositeIndex_State `protobuf:"varint,4,req,name=state,enum=datastore.CompositeIndex_State" json:"state,omitempty"`
-	OnlyUseIfRequired *bool                 `protobuf:"varint,6,opt,name=only_use_if_required,def=0" json:"only_use_if_required,omitempty"`
-	XXX_unrecognized  []byte                `json:"-"`
+	AppId               *string               `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
+	Id                  *int64                `protobuf:"varint,2,req,name=id" json:"id,omitempty"`
+	Definition          *Index                `protobuf:"bytes,3,req,name=definition" json:"definition,omitempty"`
+	State               *CompositeIndex_State `protobuf:"varint,4,req,name=state,enum=datastore.CompositeIndex_State" json:"state,omitempty"`
+	OnlyUseIfRequired   *bool                 `protobuf:"varint,6,opt,name=only_use_if_required,def=0" json:"only_use_if_required,omitempty"`
+	ReadDivisionFamily  []string              `protobuf:"bytes,7,rep,name=read_division_family" json:"read_division_family,omitempty"`
+	WriteDivisionFamily *string               `protobuf:"bytes,8,opt,name=write_division_family" json:"write_division_family,omitempty"`
+	XXX_unrecognized    []byte                `json:"-"`
 }
 
 func (m *CompositeIndex) Reset()         { *m = CompositeIndex{} }
@@ -1288,10 +1337,89 @@ func (m *CompositeIndex) GetOnlyUseIfRequired() bool {
 	return Default_CompositeIndex_OnlyUseIfRequired
 }
 
+func (m *CompositeIndex) GetReadDivisionFamily() []string {
+	if m != nil {
+		return m.ReadDivisionFamily
+	}
+	return nil
+}
+
+func (m *CompositeIndex) GetWriteDivisionFamily() string {
+	if m != nil && m.WriteDivisionFamily != nil {
+		return *m.WriteDivisionFamily
+	}
+	return ""
+}
+
+type SearchIndexEntry struct {
+	IndexId          *int64   `protobuf:"varint,1,req,name=index_id" json:"index_id,omitempty"`
+	DivisionFamily   []string `protobuf:"bytes,2,rep,name=division_family" json:"division_family,omitempty"`
+	Fingerprint_1999 *uint64  `protobuf:"fixed64,3,opt,name=fingerprint_1999" json:"fingerprint_1999,omitempty"`
+	Fingerprint_2011 *uint64  `protobuf:"fixed64,4,opt,name=fingerprint_2011" json:"fingerprint_2011,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (m *SearchIndexEntry) Reset()         { *m = SearchIndexEntry{} }
+func (m *SearchIndexEntry) String() string { return proto.CompactTextString(m) }
+func (*SearchIndexEntry) ProtoMessage()    {}
+
+func (m *SearchIndexEntry) GetIndexId() int64 {
+	if m != nil && m.IndexId != nil {
+		return *m.IndexId
+	}
+	return 0
+}
+
+func (m *SearchIndexEntry) GetDivisionFamily() []string {
+	if m != nil {
+		return m.DivisionFamily
+	}
+	return nil
+}
+
+func (m *SearchIndexEntry) GetFingerprint_1999() uint64 {
+	if m != nil && m.Fingerprint_1999 != nil {
+		return *m.Fingerprint_1999
+	}
+	return 0
+}
+
+func (m *SearchIndexEntry) GetFingerprint_2011() uint64 {
+	if m != nil && m.Fingerprint_2011 != nil {
+		return *m.Fingerprint_2011
+	}
+	return 0
+}
+
+type SearchIndexExternalId struct {
+	IndexId          *int64     `protobuf:"varint,1,req,name=index_id" json:"index_id,omitempty"`
+	PrimaryKey       *Reference `protobuf:"bytes,2,req,name=primary_key" json:"primary_key,omitempty"`
+	XXX_unrecognized []byte     `json:"-"`
+}
+
+func (m *SearchIndexExternalId) Reset()         { *m = SearchIndexExternalId{} }
+func (m *SearchIndexExternalId) String() string { return proto.CompactTextString(m) }
+func (*SearchIndexExternalId) ProtoMessage()    {}
+
+func (m *SearchIndexExternalId) GetIndexId() int64 {
+	if m != nil && m.IndexId != nil {
+		return *m.IndexId
+	}
+	return 0
+}
+
+func (m *SearchIndexExternalId) GetPrimaryKey() *Reference {
+	if m != nil {
+		return m.PrimaryKey
+	}
+	return nil
+}
+
 type IndexPostfix struct {
 	IndexValue       []*IndexPostfix_IndexValue `protobuf:"bytes,1,rep,name=index_value" json:"index_value,omitempty"`
 	Key              *Reference                 `protobuf:"bytes,2,opt,name=key" json:"key,omitempty"`
 	Before           *bool                      `protobuf:"varint,3,opt,name=before,def=1" json:"before,omitempty"`
+	BeforeAscending  *bool                      `protobuf:"varint,4,opt,name=before_ascending" json:"before_ascending,omitempty"`
 	XXX_unrecognized []byte                     `json:"-"`
 }
 
@@ -1320,6 +1448,13 @@ func (m *IndexPostfix) GetBefore() bool {
 		return *m.Before
 	}
 	return Default_IndexPostfix_Before
+}
+
+func (m *IndexPostfix) GetBeforeAscending() bool {
+	if m != nil && m.BeforeAscending != nil {
+		return *m.BeforeAscending
+	}
+	return false
 }
 
 type IndexPostfix_IndexValue struct {
@@ -1982,6 +2117,8 @@ func (m *CompiledQuery_EntityFilter) GetAncestor() *Reference {
 
 type CompiledCursor struct {
 	Position         *CompiledCursor_Position `protobuf:"group,2,opt" json:"position,omitempty"`
+	PostfixPosition  *IndexPostfix            `protobuf:"bytes,1,opt,name=postfix_position" json:"postfix_position,omitempty"`
+	AbsolutePosition *IndexPosition           `protobuf:"bytes,3,opt,name=absolute_position" json:"absolute_position,omitempty"`
 	XXX_unrecognized []byte                   `json:"-"`
 }
 
@@ -1996,11 +2133,26 @@ func (m *CompiledCursor) GetPosition() *CompiledCursor_Position {
 	return nil
 }
 
+func (m *CompiledCursor) GetPostfixPosition() *IndexPostfix {
+	if m != nil {
+		return m.PostfixPosition
+	}
+	return nil
+}
+
+func (m *CompiledCursor) GetAbsolutePosition() *IndexPosition {
+	if m != nil {
+		return m.AbsolutePosition
+	}
+	return nil
+}
+
 type CompiledCursor_Position struct {
 	StartKey         *string                               `protobuf:"bytes,27,opt,name=start_key" json:"start_key,omitempty"`
 	Indexvalue       []*CompiledCursor_Position_IndexValue `protobuf:"group,29,rep,name=IndexValue" json:"indexvalue,omitempty"`
 	Key              *Reference                            `protobuf:"bytes,32,opt,name=key" json:"key,omitempty"`
 	StartInclusive   *bool                                 `protobuf:"varint,28,opt,name=start_inclusive,def=1" json:"start_inclusive,omitempty"`
+	BeforeAscending  *bool                                 `protobuf:"varint,33,opt,name=before_ascending" json:"before_ascending,omitempty"`
 	XXX_unrecognized []byte                                `json:"-"`
 }
 
@@ -2036,6 +2188,13 @@ func (m *CompiledCursor_Position) GetStartInclusive() bool {
 		return *m.StartInclusive
 	}
 	return Default_CompiledCursor_Position_StartInclusive
+}
+
+func (m *CompiledCursor_Position) GetBeforeAscending() bool {
+	if m != nil && m.BeforeAscending != nil {
+		return *m.BeforeAscending
+	}
+	return false
 }
 
 type CompiledCursor_Position_IndexValue struct {
@@ -2490,14 +2649,15 @@ func (m *TouchResponse) GetCost() *Cost {
 }
 
 type DeleteRequest struct {
-	Header           *InternalHeader `protobuf:"bytes,10,opt,name=header" json:"header,omitempty"`
-	Key              []*Reference    `protobuf:"bytes,6,rep,name=key" json:"key,omitempty"`
-	Transaction      *Transaction    `protobuf:"bytes,5,opt,name=transaction" json:"transaction,omitempty"`
-	Trusted          *bool           `protobuf:"varint,4,opt,name=trusted,def=0" json:"trusted,omitempty"`
-	Force            *bool           `protobuf:"varint,7,opt,name=force,def=0" json:"force,omitempty"`
-	MarkChanges      *bool           `protobuf:"varint,8,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
-	Snapshot         []*Snapshot     `protobuf:"bytes,9,rep,name=snapshot" json:"snapshot,omitempty"`
-	XXX_unrecognized []byte          `json:"-"`
+	Header           *InternalHeader   `protobuf:"bytes,10,opt,name=header" json:"header,omitempty"`
+	Key              []*Reference      `protobuf:"bytes,6,rep,name=key" json:"key,omitempty"`
+	Transaction      *Transaction      `protobuf:"bytes,5,opt,name=transaction" json:"transaction,omitempty"`
+	CompositeIndex   []*CompositeIndex `protobuf:"bytes,11,rep,name=composite_index" json:"composite_index,omitempty"`
+	Trusted          *bool             `protobuf:"varint,4,opt,name=trusted,def=0" json:"trusted,omitempty"`
+	Force            *bool             `protobuf:"varint,7,opt,name=force,def=0" json:"force,omitempty"`
+	MarkChanges      *bool             `protobuf:"varint,8,opt,name=mark_changes,def=0" json:"mark_changes,omitempty"`
+	Snapshot         []*Snapshot       `protobuf:"bytes,9,rep,name=snapshot" json:"snapshot,omitempty"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (m *DeleteRequest) Reset()         { *m = DeleteRequest{} }
@@ -2525,6 +2685,13 @@ func (m *DeleteRequest) GetKey() []*Reference {
 func (m *DeleteRequest) GetTransaction() *Transaction {
 	if m != nil {
 		return m.Transaction
+	}
+	return nil
+}
+
+func (m *DeleteRequest) GetCompositeIndex() []*CompositeIndex {
+	if m != nil {
+		return m.CompositeIndex
 	}
 	return nil
 }
@@ -2750,12 +2917,15 @@ type AllocateIdsRequest struct {
 	Size             *int64          `protobuf:"varint,2,opt,name=size" json:"size,omitempty"`
 	Max              *int64          `protobuf:"varint,3,opt,name=max" json:"max,omitempty"`
 	Reserve          []*Reference    `protobuf:"bytes,5,rep,name=reserve" json:"reserve,omitempty"`
+	Trusted          *bool           `protobuf:"varint,6,opt,name=trusted,def=0" json:"trusted,omitempty"`
 	XXX_unrecognized []byte          `json:"-"`
 }
 
 func (m *AllocateIdsRequest) Reset()         { *m = AllocateIdsRequest{} }
 func (m *AllocateIdsRequest) String() string { return proto.CompactTextString(m) }
 func (*AllocateIdsRequest) ProtoMessage()    {}
+
+const Default_AllocateIdsRequest_Trusted bool = false
 
 func (m *AllocateIdsRequest) GetHeader() *InternalHeader {
 	if m != nil {
@@ -2790,6 +2960,13 @@ func (m *AllocateIdsRequest) GetReserve() []*Reference {
 		return m.Reserve
 	}
 	return nil
+}
+
+func (m *AllocateIdsRequest) GetTrusted() bool {
+	if m != nil && m.Trusted != nil {
+		return *m.Trusted
+	}
+	return Default_AllocateIdsRequest_Trusted
 }
 
 type AllocateIdsResponse struct {
@@ -2967,6 +3144,7 @@ func init() {
 	proto.RegisterEnum("datastore.Property_FtsTokenizationOption", Property_FtsTokenizationOption_name, Property_FtsTokenizationOption_value)
 	proto.RegisterEnum("datastore.EntityProto_Kind", EntityProto_Kind_name, EntityProto_Kind_value)
 	proto.RegisterEnum("datastore.Index_Property_Direction", Index_Property_Direction_name, Index_Property_Direction_value)
+	proto.RegisterEnum("datastore.Index_Property_Mode", Index_Property_Mode_name, Index_Property_Mode_value)
 	proto.RegisterEnum("datastore.CompositeIndex_State", CompositeIndex_State_name, CompositeIndex_State_value)
 	proto.RegisterEnum("datastore.Snapshot_Status", Snapshot_Status_name, Snapshot_Status_value)
 	proto.RegisterEnum("datastore.Query_Hint", Query_Hint_name, Query_Hint_value)

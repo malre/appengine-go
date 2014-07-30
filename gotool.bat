@@ -13,6 +13,8 @@ set GOOS=
 :: "--dev_appserver Z:\path\to\dev_appserver.py" arguments are
 :: provided, they must appear exactly as the first and second
 :: arguments after the command name for this to work properly.
+:: Also note that shifting args messes up the value of %~n0.
+set EXENAME=%~n0.exe
 if "%1"=="--dev_appserver" (
     set APPENGINE_DEV_APPSERVER=%2
     shift & shift
@@ -24,4 +26,4 @@ set GOPATH=%~dp0\gopath
 :havepath
 
 :: Note that %* can not be used with shift.
-%GOROOT%\bin\%~n0.exe %1 %2 %3 %4 %5 %6 %7 %8 %9
+%GOROOT%\bin\%EXENAME% %1 %2 %3 %4 %5 %6 %7 %8 %9

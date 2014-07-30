@@ -1935,9 +1935,10 @@ func (m *SearchRequest) GetAppId() []byte {
 }
 
 type FacetResultValue struct {
-	Name             *string `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
-	Count            *int32  `protobuf:"varint,2,req,name=count" json:"count,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Name             *string          `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Count            *int32           `protobuf:"varint,2,req,name=count" json:"count,omitempty"`
+	Refinement       *FacetRefinement `protobuf:"bytes,3,req,name=refinement" json:"refinement,omitempty"`
+	XXX_unrecognized []byte           `json:"-"`
 }
 
 func (m *FacetResultValue) Reset()         { *m = FacetResultValue{} }
@@ -1956,6 +1957,13 @@ func (m *FacetResultValue) GetCount() int32 {
 		return *m.Count
 	}
 	return 0
+}
+
+func (m *FacetResultValue) GetRefinement() *FacetRefinement {
+	if m != nil {
+		return m.Refinement
+	}
+	return nil
 }
 
 type FacetResult struct {

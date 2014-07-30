@@ -29,10 +29,31 @@ type Field struct {
 	Language string
 }
 
+// DocumentMetadata is a struct containing information describing a given
+// document.
+type DocumentMetadata struct {
+	// Rank is an integer specifying the order the document will be returned in
+	// search results. If zero, the rank will be set to the number of seconds since
+	// 2011-01-01 00:00:00 UTC when being Put into an index.
+	Rank int
+}
+
 // FieldLoadSaver can be converted from and to a slice of Fields.
+// New implementations should use FieldMetadataLoadSaver instead of this
+// interface.
 type FieldLoadSaver interface {
 	Load([]Field) error
 	Save() ([]Field, error)
+}
+
+// FieldMetadataLoadSaver can be converted from and to a slice of Fields with
+// additional document metadata.
+type FieldMetadataLoadSaver interface {
+	// Load converts a slice of Field and a *DocumentMetadata into a document.
+	Load([]Field, *DocumentMetadata) error
+	// Save converts a document into a slice of Field and an optional
+	// *DocumentMetadata.
+	Save() ([]Field, *DocumentMetadata, error)
 }
 
 // FieldList converts a []Field to implement FieldLoadSaver.
