@@ -1291,6 +1291,7 @@ type CompositeIndex struct {
 	Definition          *Index                `protobuf:"bytes,3,req,name=definition" json:"definition,omitempty"`
 	State               *CompositeIndex_State `protobuf:"varint,4,req,name=state,enum=datastore.CompositeIndex_State" json:"state,omitempty"`
 	OnlyUseIfRequired   *bool                 `protobuf:"varint,6,opt,name=only_use_if_required,def=0" json:"only_use_if_required,omitempty"`
+	DisabledIndex       *bool                 `protobuf:"varint,9,opt,name=disabled_index,def=0" json:"disabled_index,omitempty"`
 	ReadDivisionFamily  []string              `protobuf:"bytes,7,rep,name=read_division_family" json:"read_division_family,omitempty"`
 	WriteDivisionFamily *string               `protobuf:"bytes,8,opt,name=write_division_family" json:"write_division_family,omitempty"`
 	XXX_unrecognized    []byte                `json:"-"`
@@ -1301,6 +1302,7 @@ func (m *CompositeIndex) String() string { return proto.CompactTextString(m) }
 func (*CompositeIndex) ProtoMessage()    {}
 
 const Default_CompositeIndex_OnlyUseIfRequired bool = false
+const Default_CompositeIndex_DisabledIndex bool = false
 
 func (m *CompositeIndex) GetAppId() string {
 	if m != nil && m.AppId != nil {
@@ -1335,6 +1337,13 @@ func (m *CompositeIndex) GetOnlyUseIfRequired() bool {
 		return *m.OnlyUseIfRequired
 	}
 	return Default_CompositeIndex_OnlyUseIfRequired
+}
+
+func (m *CompositeIndex) GetDisabledIndex() bool {
+	if m != nil && m.DisabledIndex != nil {
+		return *m.DisabledIndex
+	}
+	return Default_CompositeIndex_DisabledIndex
 }
 
 func (m *CompositeIndex) GetReadDivisionFamily() []string {
@@ -1484,6 +1493,7 @@ func (m *IndexPostfix_IndexValue) GetValue() *PropertyValue {
 type IndexPosition struct {
 	Key              *string `protobuf:"bytes,1,opt,name=key" json:"key,omitempty"`
 	Before           *bool   `protobuf:"varint,2,opt,name=before,def=1" json:"before,omitempty"`
+	BeforeAscending  *bool   `protobuf:"varint,3,opt,name=before_ascending" json:"before_ascending,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -1505,6 +1515,13 @@ func (m *IndexPosition) GetBefore() bool {
 		return *m.Before
 	}
 	return Default_IndexPosition_Before
+}
+
+func (m *IndexPosition) GetBeforeAscending() bool {
+	if m != nil && m.BeforeAscending != nil {
+		return *m.BeforeAscending
+	}
+	return false
 }
 
 type Snapshot struct {

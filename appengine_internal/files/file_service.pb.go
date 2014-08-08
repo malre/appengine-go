@@ -560,7 +560,7 @@ func (*FileContentType) ProtoMessage()    {}
 type CreateRequest struct {
 	Filesystem            *string                      `protobuf:"bytes,1,req,name=filesystem" json:"filesystem,omitempty"`
 	ContentType           *FileContentType_ContentType `protobuf:"varint,2,req,name=content_type,enum=files.FileContentType_ContentType" json:"content_type,omitempty"`
-	Filename              *string                      `protobuf:"bytes,3,opt,name=filename" json:"filename,omitempty"`
+	Filename              *string                      `protobuf:"bytes,3,opt,name=filename,def=" json:"filename,omitempty"`
 	Parameters            []*CreateRequest_Parameter   `protobuf:"bytes,4,rep,name=parameters" json:"parameters,omitempty"`
 	ExpirationTimeSeconds *int64                       `protobuf:"varint,5,opt,name=expiration_time_seconds" json:"expiration_time_seconds,omitempty"`
 	XXX_unrecognized      []byte                       `json:"-"`

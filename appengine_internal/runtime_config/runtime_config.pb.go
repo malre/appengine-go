@@ -15,6 +15,7 @@ It has these top-level messages:
 	Library
 	Environ
 	VMConfig
+	DartConfig
 */
 package appengine_tools_devappserver2
 
@@ -344,8 +345,9 @@ func (m *Environ) GetValue() []byte {
 }
 
 type VMConfig struct {
-	DockerDaemonUrl  *string `protobuf:"bytes,1,opt,name=docker_daemon_url" json:"docker_daemon_url,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	DockerDaemonUrl  *string     `protobuf:"bytes,1,opt,name=docker_daemon_url" json:"docker_daemon_url,omitempty"`
+	DartConfig       *DartConfig `protobuf:"bytes,2,opt,name=dart_config" json:"dart_config,omitempty"`
+	XXX_unrecognized []byte      `json:"-"`
 }
 
 func (m *VMConfig) Reset()         { *m = VMConfig{} }
@@ -357,6 +359,53 @@ func (m *VMConfig) GetDockerDaemonUrl() string {
 		return *m.DockerDaemonUrl
 	}
 	return ""
+}
+
+func (m *VMConfig) GetDartConfig() *DartConfig {
+	if m != nil {
+		return m.DartConfig
+	}
+	return nil
+}
+
+type DartConfig struct {
+	DartSdk          *string `protobuf:"bytes,1,opt,name=dart_sdk" json:"dart_sdk,omitempty"`
+	DartDevMode      *string `protobuf:"bytes,2,opt,name=dart_dev_mode" json:"dart_dev_mode,omitempty"`
+	DartPubServeHost *string `protobuf:"bytes,3,opt,name=dart_pub_serve_host" json:"dart_pub_serve_host,omitempty"`
+	DartPubServePort *int32  `protobuf:"varint,4,opt,name=dart_pub_serve_port" json:"dart_pub_serve_port,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *DartConfig) Reset()         { *m = DartConfig{} }
+func (m *DartConfig) String() string { return proto.CompactTextString(m) }
+func (*DartConfig) ProtoMessage()    {}
+
+func (m *DartConfig) GetDartSdk() string {
+	if m != nil && m.DartSdk != nil {
+		return *m.DartSdk
+	}
+	return ""
+}
+
+func (m *DartConfig) GetDartDevMode() string {
+	if m != nil && m.DartDevMode != nil {
+		return *m.DartDevMode
+	}
+	return ""
+}
+
+func (m *DartConfig) GetDartPubServeHost() string {
+	if m != nil && m.DartPubServeHost != nil {
+		return *m.DartPubServeHost
+	}
+	return ""
+}
+
+func (m *DartConfig) GetDartPubServePort() int32 {
+	if m != nil && m.DartPubServePort != nil {
+		return *m.DartPubServePort
+	}
+	return 0
 }
 
 func init() {

@@ -47,6 +47,8 @@ type Package struct {
 	HasInit      bool       // whether the package has any init functions
 	HasMain      bool       // whether the file has internal.Main
 	Dupe         bool       // whether the package is a duplicate
+
+	compiled chan struct{} // closed when the package has finished compiling
 }
 
 func (p *Package) String() string {
@@ -572,7 +574,11 @@ func (c *compLitChecker) Visit(node ast.Node) ast.Visitor {
 }
 
 // Cache of standard package status.
-var stdPackageCache = make(map[string]bool)
+var stdPackageCache = map[string]bool{
+	// There's no unsafe.a, but "unsafe" is a standard package.
+	// Mention it explicitly here so we avoid a useless warning.
+	"unsafe": true,
+}
 
 // isStandardPackage reports whether import path s is a standard package.
 func isStandardPackage(s string) bool {

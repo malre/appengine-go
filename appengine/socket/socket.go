@@ -179,7 +179,7 @@ func (cn *Conn) Read(b []byte) (n int, err error) {
 	if !cn.readDeadline.IsZero() {
 		req.TimeoutSeconds = proto.Float64(cn.readDeadline.Sub(time.Now()).Seconds())
 	}
-	if err := cn.c.Call("remote_socket", "Receive", req, res, nil); err != nil {
+	if err := cn.c.Call("remote_socket", "Receive", req, res, opts(cn.readDeadline)); err != nil {
 		return 0, err
 	}
 	if len(res.Data) == 0 {
@@ -209,7 +209,7 @@ func (cn *Conn) Write(b []byte) (n int, err error) {
 		if !cn.writeDeadline.IsZero() {
 			req.TimeoutSeconds = proto.Float64(cn.writeDeadline.Sub(time.Now()).Seconds())
 		}
-		if err = cn.c.Call("remote_socket", "Send", req, res, nil); err != nil {
+		if err = cn.c.Call("remote_socket", "Send", req, res, opts(cn.writeDeadline)); err != nil {
 			// assume zero bytes were sent in this RPC
 			break
 		}

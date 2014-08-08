@@ -32,6 +32,7 @@ import (
 	"runtime"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -51,6 +52,7 @@ var (
 	ldFlags         = flag.String("ldflags", "", "Comma-separated list of extra linker flags.")
 	logFile         = flag.String("log_file", "", "If set, a file to write messages to.")
 	noBuildFiles    = flag.String("nobuild_files", "", "Regular expression matching files to not build.")
+	parallelism     = flag.Int("parallelism", 1, "Maximum number of compiles to run in parallel.")
 	pkgDupes        = flag.String("pkg_dupe_whitelist", "", "Comma-separated list of packages that are okay to duplicate.")
 	printExtras     = flag.Bool("print_extras", false, "Whether to skip building and just print extra-app files.")
 	printExtrasHash = flag.Bool("print_extras_hash", false, "Whether to skip building and just print a hash of the extra-app files.")
@@ -152,10 +154,6 @@ func plural(n int, suffix string) string {
 }
 
 func buildApp(app *App) error {
-	var extra []string
-	if *extraImports != "" {
-		extra = strings.Split(*extraImports, ",")
-	}
 	mainStr, err := MakeMain(app)
 	if err != nil {
 		return fmt.Errorf("failed creating main: %v", err)
@@ -174,7 +172,13 @@ func buildApp(app *App) error {
 				// don't care about ImportPaths
 			},
 		},
+		Dependencies: app.RootPackages,
 	})
+
+	// Prepare dependency channels.
+	for _, pkg := range app.Packages {
+		pkg.compiled = make(chan struct{})
+	}
 
 	// Common environment for compiler and linker.
 	env := []string{
@@ -188,102 +192,68 @@ func buildApp(app *App) error {
 	goRootSearchPath := filepath.Join(*goRoot, "pkg", runtime.GOOS+"_"+runtime.GOARCH)
 
 	// Compile phase.
-	compiler := toolPath(*arch + "g")
-	gopack := toolPath("pack")
-	for i, pkg := range app.Packages {
-		objectFile := filepath.Join(*workDir, pkg.ImportPath) + "." + *arch
-		objectDir, _ := filepath.Split(objectFile)
-		if err := os.MkdirAll(objectDir, 0750); err != nil {
-			return fmt.Errorf("failed creating directory %v: %v", objectDir, err)
-		}
-		args := []string{
-			compiler,
-			"-I", goRootSearchPath,
-			"-I", *workDir,
-			"-o", objectFile,
-		}
-		if !*unsafe && !*vm {
-			// reject unsafe code
-			args = append(args, "-u")
-		}
-		if *gcFlags != "" {
-			args = append(args, parseToolFlags(*gcFlags)...)
-		}
-		stripDir := *appBase
-		var files []string
-		if i < len(app.Packages)-1 {
-			// regular package
-			base := *appBase
-			if pkg.BaseDir != "" {
-				base = pkg.BaseDir
-			}
-			for _, f := range pkg.Files {
-				files = append(files, filepath.Join(base, f.Name))
-			}
-			// Don't generate synthetic extra imports for dupe packages.
-			// They won't be linked into the binary anyway,
-			// and this avoids triggering a circular import.
-			if len(pkg.Files) > 0 && len(extra) > 0 && !pkg.Dupe {
-				// synthetic extra imports
-				extraImportsStr, err := MakeExtraImports(pkg.Files[0].PackageName, extra)
-				if err != nil {
-					return fmt.Errorf("failed creating extra-imports file: %v", err)
-				}
-				extraImportsFile := filepath.Join(*workDir, fmt.Sprintf("_extra_imports_%d.go", i))
-				defer os.Remove(extraImportsFile)
-				if err := ioutil.WriteFile(extraImportsFile, []byte(extraImportsStr), 0640); err != nil {
-					return fmt.Errorf("failed writing extra-imports file: %v", err)
-				}
-				files = append(files, extraImportsFile)
-			}
-		} else {
-			// synthetic main package
-			files = []string{mainFile}
-			stripDir = *workDir
-		}
-		if go13build {
-			// gc at go1.3 only accepts one -trimpath flag unfortunately.
-			// We'd ideally trim *workDir for regular packages too,
-			// since that is where the _extra_imports_nnn.go files end up.
-			// TODO: Copy the appBase structure to workDir,
-			// and then only ever strip workDir (but only if len(extra) > 0).
-			args = append(args, "-trimpath", stripDir)
-		}
-		args = append(args, files...)
-		defer os.Remove(objectFile)
-		if err := gTimer.run(args, env); err != nil {
-			return err
-		}
+	c := &compiler{
+		app:              app,
+		mainFile:         mainFile,
+		goRootSearchPath: goRootSearchPath,
+		compiler:         toolPath(*arch + "g"),
+		gopack:           toolPath("pack"),
+		env:              env,
+	}
+	if *extraImports != "" {
+		c.extra = strings.Split(*extraImports, ",")
+	}
+	defer c.removeFiles()
 
-		if !go13build {
-			// Turn the object file into an archive file, stripped of file path information.
-			// The paths we strip depends on whether this object file is based on user code
-			// or the synthetic main code.
-			archiveFile := filepath.Join(*workDir, pkg.ImportPath) + ".a"
-			stripDir, _ = filepath.Abs(stripDir) // assume os.Getwd doesn't fail
-			args = []string{
-				gopack,
-				"grcP", stripDir,
-				archiveFile,
-				objectFile,
-			}
-			defer os.Remove(archiveFile)
-			if err := pTimer.run(args, env); err != nil {
-				return err
-			}
-			if i != len(app.Packages)-1 && len(extra) > 0 {
-				// Run gopack again, this time stripping the absolute workDir prefix.
-				absWorkDir, _ := filepath.Abs(*workDir) // assume os.Getwd doesn't fail
-				args = []string{
-					gopack,
-					"grcP", absWorkDir,
-					archiveFile,
-				}
-				if err := pTimer.run(args, env); err != nil {
-					return err
+	// Each package gets its own goroutine that blocks on the completion
+	// of its dependencies' compilations.
+	errc := make(chan error, 1)
+	abortc := make(chan struct{}) // closed if we need to abort the build
+	sem := make(chan int, *parallelism)
+	var wg sync.WaitGroup
+	for i, pkg := range app.Packages {
+		wg.Add(1)
+		go func(i int, pkg *Package) {
+			defer wg.Done()
+
+			// Wait for this package's dependencies to have been compiled.
+			for _, dep := range pkg.Dependencies {
+				select {
+				case <-dep.compiled:
+				case <-abortc:
+					return
 				}
 			}
-		}
+			// Acquire semaphore, and release it when we're done.
+			select {
+			case sem <- 1:
+				defer func() { <-sem }()
+			case <-abortc:
+				return
+			}
+
+			if err := c.compile(i, pkg); err != nil {
+				// We only care about the first compile to fail.
+				// If this error is the first, tell the others to abort.
+				select {
+				case errc <- err:
+					close(abortc)
+				default:
+				}
+				return
+			}
+
+			// Mark this package as being compiled; unblocks dependent packages.
+			close(pkg.compiled)
+		}(i, pkg)
+	}
+
+	// Wait for either a compile error, or for the main package to be compiled.
+	wg.Wait()
+	select {
+	case err := <-errc:
+		return err
+	default:
 	}
 
 	// Link phase.
@@ -328,8 +298,134 @@ func buildApp(app *App) error {
 	return nil
 }
 
+type compiler struct {
+	app              *App
+	mainFile         string
+	goRootSearchPath string
+	compiler         string
+	gopack           string
+	env              []string
+	extra            []string
+
+	mu            sync.Mutex
+	filesToRemove []string
+}
+
+func (c *compiler) removeLater(filename string) {
+	c.mu.Lock()
+	c.filesToRemove = append(c.filesToRemove, filename)
+	c.mu.Unlock()
+}
+
+func (c *compiler) removeFiles() {
+	c.mu.Lock()
+	for _, filename := range c.filesToRemove {
+		os.Remove(filename)
+	}
+	c.mu.Unlock()
+}
+
+func (c *compiler) compile(i int, pkg *Package) error {
+	objectFile := filepath.Join(*workDir, pkg.ImportPath) + "." + *arch
+	objectDir, _ := filepath.Split(objectFile)
+	if err := os.MkdirAll(objectDir, 0750); err != nil {
+		return fmt.Errorf("failed creating directory %v: %v", objectDir, err)
+	}
+	args := []string{
+		c.compiler,
+		"-I", c.goRootSearchPath,
+		"-I", *workDir,
+		"-o", objectFile,
+	}
+	if !*unsafe && !*vm {
+		// reject unsafe code
+		args = append(args, "-u")
+	}
+	if *gcFlags != "" {
+		args = append(args, parseToolFlags(*gcFlags)...)
+	}
+	stripDir := *appBase
+	var files []string
+	if i < len(c.app.Packages)-1 {
+		// regular package
+		base := *appBase
+		if pkg.BaseDir != "" {
+			base = pkg.BaseDir
+		}
+		for _, f := range pkg.Files {
+			files = append(files, filepath.Join(base, f.Name))
+		}
+		// Don't generate synthetic extra imports for dupe packages.
+		// They won't be linked into the binary anyway,
+		// and this avoids triggering a circular import.
+		if len(pkg.Files) > 0 && len(c.extra) > 0 && !pkg.Dupe {
+			// synthetic extra imports
+			extraImportsStr, err := MakeExtraImports(pkg.Files[0].PackageName, c.extra)
+			if err != nil {
+				return fmt.Errorf("failed creating extra-imports file: %v", err)
+			}
+			extraImportsFile := filepath.Join(*workDir, fmt.Sprintf("_extra_imports_%d.go", i))
+			c.removeLater(extraImportsFile)
+			if err := ioutil.WriteFile(extraImportsFile, []byte(extraImportsStr), 0640); err != nil {
+				return fmt.Errorf("failed writing extra-imports file: %v", err)
+			}
+			files = append(files, extraImportsFile)
+		}
+	} else {
+		// synthetic main package
+		files = []string{c.mainFile}
+		stripDir = *workDir
+	}
+	if go13build {
+		// gc at go1.3 only accepts one -trimpath flag unfortunately.
+		// We'd ideally trim *workDir for regular packages too,
+		// since that is where the _extra_imports_nnn.go files end up.
+		// TODO: Copy the appBase structure to workDir,
+		// and then only ever strip workDir (but only if len(extra) > 0).
+		args = append(args, "-trimpath", stripDir)
+	}
+	args = append(args, files...)
+	c.removeLater(objectFile)
+	if err := gTimer.run(args, c.env); err != nil {
+		return err
+	}
+
+	if !go13build {
+		// Turn the object file into an archive file, stripped of file path information.
+		// The paths we strip depends on whether this object file is based on user code
+		// or the synthetic main code.
+		archiveFile := filepath.Join(*workDir, pkg.ImportPath) + ".a"
+		stripDir, _ = filepath.Abs(stripDir) // assume os.Getwd doesn't fail
+		args = []string{
+			c.gopack,
+			"grcP", stripDir,
+			archiveFile,
+			objectFile,
+		}
+		c.removeLater(archiveFile)
+		if err := pTimer.run(args, c.env); err != nil {
+			return err
+		}
+		if i != len(c.app.Packages)-1 && len(c.extra) > 0 {
+			// Run gopack again, this time stripping the absolute workDir prefix.
+			absWorkDir, _ := filepath.Abs(*workDir) // assume os.Getwd doesn't fail
+			args = []string{
+				c.gopack,
+				"grcP", absWorkDir,
+				archiveFile,
+			}
+			if err := pTimer.run(args, c.env); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 type timer struct {
-	name  string
+	name string
+
+	mu    sync.Mutex
 	n     int
 	total time.Duration
 }
@@ -338,14 +434,21 @@ func (t *timer) run(args, env []string) error {
 	start := time.Now()
 	err := run(args, env)
 
+	t.mu.Lock()
 	t.n++
 	t.total += time.Since(start)
+	t.mu.Unlock()
 
 	return err
 }
 
 func (t *timer) String() string {
-	return fmt.Sprintf("%d×%s (%v total)", t.n, t.name, t.total)
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	// Display total only to millisecond resolution.
+	tot := t.total - (t.total % time.Millisecond)
+	return fmt.Sprintf("%d×%s (%v total)", t.n, t.name, tot)
 }
 
 func printExtraFiles(w io.Writer, app *App) {
