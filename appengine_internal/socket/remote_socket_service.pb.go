@@ -1080,15 +1080,30 @@ func (m *CreateSocketRequest) GetAppId() string {
 }
 
 type CreateSocketReply struct {
-	SocketDescriptor *string      `protobuf:"bytes,1,opt,name=socket_descriptor" json:"socket_descriptor,omitempty"`
-	ServerAddress    *AddressPort `protobuf:"bytes,3,opt,name=server_address" json:"server_address,omitempty"`
-	ProxyExternalIp  *AddressPort `protobuf:"bytes,4,opt,name=proxy_external_ip" json:"proxy_external_ip,omitempty"`
-	XXX_unrecognized []byte       `json:"-"`
+	SocketDescriptor *string                   `protobuf:"bytes,1,opt,name=socket_descriptor" json:"socket_descriptor,omitempty"`
+	ServerAddress    *AddressPort              `protobuf:"bytes,3,opt,name=server_address" json:"server_address,omitempty"`
+	ProxyExternalIp  *AddressPort              `protobuf:"bytes,4,opt,name=proxy_external_ip" json:"proxy_external_ip,omitempty"`
+	XXX_extensions   map[int32]proto.Extension `json:"-"`
+	XXX_unrecognized []byte                    `json:"-"`
 }
 
 func (m *CreateSocketReply) Reset()         { *m = CreateSocketReply{} }
 func (m *CreateSocketReply) String() string { return proto.CompactTextString(m) }
 func (*CreateSocketReply) ProtoMessage()    {}
+
+var extRange_CreateSocketReply = []proto.ExtensionRange{
+	{1000, 536870911},
+}
+
+func (*CreateSocketReply) ExtensionRangeArray() []proto.ExtensionRange {
+	return extRange_CreateSocketReply
+}
+func (m *CreateSocketReply) ExtensionMap() map[int32]proto.Extension {
+	if m.XXX_extensions == nil {
+		m.XXX_extensions = make(map[int32]proto.Extension)
+	}
+	return m.XXX_extensions
+}
 
 func (m *CreateSocketReply) GetSocketDescriptor() string {
 	if m != nil && m.SocketDescriptor != nil {
@@ -1354,13 +1369,28 @@ func (m *ConnectRequest) GetTimeoutSeconds() float64 {
 }
 
 type ConnectReply struct {
-	ProxyExternalIp  *AddressPort `protobuf:"bytes,1,opt,name=proxy_external_ip" json:"proxy_external_ip,omitempty"`
-	XXX_unrecognized []byte       `json:"-"`
+	ProxyExternalIp  *AddressPort              `protobuf:"bytes,1,opt,name=proxy_external_ip" json:"proxy_external_ip,omitempty"`
+	XXX_extensions   map[int32]proto.Extension `json:"-"`
+	XXX_unrecognized []byte                    `json:"-"`
 }
 
 func (m *ConnectReply) Reset()         { *m = ConnectReply{} }
 func (m *ConnectReply) String() string { return proto.CompactTextString(m) }
 func (*ConnectReply) ProtoMessage()    {}
+
+var extRange_ConnectReply = []proto.ExtensionRange{
+	{1000, 536870911},
+}
+
+func (*ConnectReply) ExtensionRangeArray() []proto.ExtensionRange {
+	return extRange_ConnectReply
+}
+func (m *ConnectReply) ExtensionMap() map[int32]proto.Extension {
+	if m.XXX_extensions == nil {
+		m.XXX_extensions = make(map[int32]proto.Extension)
+	}
+	return m.XXX_extensions
+}
 
 func (m *ConnectReply) GetProxyExternalIp() *AddressPort {
 	if m != nil {

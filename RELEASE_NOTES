@@ -3,6 +3,14 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.9.10 - September 2014
+===============================
+No changes.
+
+Version 1.9.9 - August 2014
+===========================
+No changes.
+
 Version 1.9.8 - July 2014
 =========================
 appengine/blobstore:

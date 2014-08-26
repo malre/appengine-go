@@ -1665,10 +1665,9 @@ func (m *FacetAutoDetectParam) GetValueLimit() int32 {
 }
 
 type FacetRequest struct {
-	Name             *string                 `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
-	Type             *FacetValue_ContentType `protobuf:"varint,2,req,name=type,enum=search.FacetValue_ContentType" json:"type,omitempty"`
-	Params           *FacetRequestParam      `protobuf:"bytes,3,opt,name=params" json:"params,omitempty"`
-	XXX_unrecognized []byte                  `json:"-"`
+	Name             *string            `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Params           *FacetRequestParam `protobuf:"bytes,2,opt,name=params" json:"params,omitempty"`
+	XXX_unrecognized []byte             `json:"-"`
 }
 
 func (m *FacetRequest) Reset()         { *m = FacetRequest{} }
@@ -1682,13 +1681,6 @@ func (m *FacetRequest) GetName() string {
 	return ""
 }
 
-func (m *FacetRequest) GetType() FacetValue_ContentType {
-	if m != nil && m.Type != nil {
-		return *m.Type
-	}
-	return FacetValue_ATOM
-}
-
 func (m *FacetRequest) GetParams() *FacetRequestParam {
 	if m != nil {
 		return m.Params
@@ -1697,11 +1689,10 @@ func (m *FacetRequest) GetParams() *FacetRequestParam {
 }
 
 type FacetRefinement struct {
-	Name             *string                 `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
-	Type             *FacetValue_ContentType `protobuf:"varint,2,req,name=type,enum=search.FacetValue_ContentType" json:"type,omitempty"`
-	Value            *string                 `protobuf:"bytes,3,opt,name=value" json:"value,omitempty"`
-	Range            *FacetRefinement_Range  `protobuf:"bytes,4,opt,name=range" json:"range,omitempty"`
-	XXX_unrecognized []byte                  `json:"-"`
+	Name             *string                `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Value            *string                `protobuf:"bytes,2,opt,name=value" json:"value,omitempty"`
+	Range            *FacetRefinement_Range `protobuf:"bytes,3,opt,name=range" json:"range,omitempty"`
+	XXX_unrecognized []byte                 `json:"-"`
 }
 
 func (m *FacetRefinement) Reset()         { *m = FacetRefinement{} }
@@ -1713,13 +1704,6 @@ func (m *FacetRefinement) GetName() string {
 		return *m.Name
 	}
 	return ""
-}
-
-func (m *FacetRefinement) GetType() FacetValue_ContentType {
-	if m != nil && m.Type != nil {
-		return *m.Type
-	}
-	return FacetValue_ATOM
 }
 
 func (m *FacetRefinement) GetValue() string {
@@ -1967,10 +1951,9 @@ func (m *FacetResultValue) GetRefinement() *FacetRefinement {
 }
 
 type FacetResult struct {
-	Name             *string                 `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
-	Type             *FacetValue_ContentType `protobuf:"varint,2,req,name=type,enum=search.FacetValue_ContentType" json:"type,omitempty"`
-	Value            []*FacetResultValue     `protobuf:"bytes,3,rep,name=value" json:"value,omitempty"`
-	XXX_unrecognized []byte                  `json:"-"`
+	Name             *string             `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Value            []*FacetResultValue `protobuf:"bytes,2,rep,name=value" json:"value,omitempty"`
+	XXX_unrecognized []byte              `json:"-"`
 }
 
 func (m *FacetResult) Reset()         { *m = FacetResult{} }
@@ -1982,13 +1965,6 @@ func (m *FacetResult) GetName() string {
 		return *m.Name
 	}
 	return ""
-}
-
-func (m *FacetResult) GetType() FacetValue_ContentType {
-	if m != nil && m.Type != nil {
-		return *m.Type
-	}
-	return FacetValue_ATOM
 }
 
 func (m *FacetResult) GetValue() []*FacetResultValue {
