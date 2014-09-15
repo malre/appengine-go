@@ -11,6 +11,7 @@ It has these top-level messages:
 	Config
 	PhpConfig
 	PythonConfig
+	JavaConfig
 	CloudSQL
 	Library
 	Environ
@@ -38,6 +39,7 @@ type Config struct {
 	StaticFiles      *string       `protobuf:"bytes,8,opt,name=static_files,def=^$" json:"static_files,omitempty"`
 	PythonConfig     *PythonConfig `protobuf:"bytes,14,opt,name=python_config" json:"python_config,omitempty"`
 	PhpConfig        *PhpConfig    `protobuf:"bytes,9,opt,name=php_config" json:"php_config,omitempty"`
+	JavaConfig       *JavaConfig   `protobuf:"bytes,21,opt,name=java_config" json:"java_config,omitempty"`
 	Environ          []*Environ    `protobuf:"bytes,10,rep,name=environ" json:"environ,omitempty"`
 	CloudSqlConfig   *CloudSQL     `protobuf:"bytes,11,opt,name=cloud_sql_config" json:"cloud_sql_config,omitempty"`
 	Datacenter       *string       `protobuf:"bytes,12,req,name=datacenter" json:"datacenter,omitempty"`
@@ -133,6 +135,13 @@ func (m *Config) GetPythonConfig() *PythonConfig {
 func (m *Config) GetPhpConfig() *PhpConfig {
 	if m != nil {
 		return m.PhpConfig
+	}
+	return nil
+}
+
+func (m *Config) GetJavaConfig() *JavaConfig {
+	if m != nil {
+		return m.JavaConfig
 	}
 	return nil
 }
@@ -246,6 +255,22 @@ func (m *PythonConfig) GetStartupArgs() string {
 		return *m.StartupArgs
 	}
 	return ""
+}
+
+type JavaConfig struct {
+	JvmArgs          []string `protobuf:"bytes,1,rep,name=jvm_args" json:"jvm_args,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (m *JavaConfig) Reset()         { *m = JavaConfig{} }
+func (m *JavaConfig) String() string { return proto.CompactTextString(m) }
+func (*JavaConfig) ProtoMessage()    {}
+
+func (m *JavaConfig) GetJvmArgs() []string {
+	if m != nil {
+		return m.JvmArgs
+	}
+	return nil
 }
 
 type CloudSQL struct {

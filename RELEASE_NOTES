@@ -3,8 +3,21 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
-Version 1.9.10 - September 2014
+Version 1.9.11 - September 2014
 ===============================
+appengine/aetest:
+  - Add aetest.Instance to allow a single dev API server to be used with
+    multiple contexts.
+  - Add aetest.Login and aetest.Logout which work on *http.Request objects.
+appengine/datastore:
+  - Add ByteString type to allow short indexable byte slices.
+  ! Values in entities created by other runtimes with types db.ByteString
+    (python) or datastore.ShortBlob (Java) will load in PropertyLoadSaver as
+    ByteString; previously these loaded as string. This has no effect on code
+    not using PropertyLoadSaver.
+
+Version 1.9.10 - August 2014
+============================
 No changes.
 
 Version 1.9.9 - August 2014

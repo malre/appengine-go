@@ -169,9 +169,10 @@ func (m *CreateLogoutURLResponse) GetLogoutUrl() string {
 }
 
 type GetOAuthUserRequest struct {
-	Scope            *string  `protobuf:"bytes,1,opt,name=scope" json:"scope,omitempty"`
-	Scopes           []string `protobuf:"bytes,2,rep,name=scopes" json:"scopes,omitempty"`
-	XXX_unrecognized []byte   `json:"-"`
+	Scope                   *string  `protobuf:"bytes,1,opt,name=scope" json:"scope,omitempty"`
+	Scopes                  []string `protobuf:"bytes,2,rep,name=scopes" json:"scopes,omitempty"`
+	RequestWriterPermission *bool    `protobuf:"varint,3,opt,name=request_writer_permission" json:"request_writer_permission,omitempty"`
+	XXX_unrecognized        []byte   `json:"-"`
 }
 
 func (m *GetOAuthUserRequest) Reset()         { *m = GetOAuthUserRequest{} }
@@ -192,6 +193,13 @@ func (m *GetOAuthUserRequest) GetScopes() []string {
 	return nil
 }
 
+func (m *GetOAuthUserRequest) GetRequestWriterPermission() bool {
+	if m != nil && m.RequestWriterPermission != nil {
+		return *m.RequestWriterPermission
+	}
+	return false
+}
+
 type GetOAuthUserResponse struct {
 	Email            *string  `protobuf:"bytes,1,req,name=email" json:"email,omitempty"`
 	UserId           *string  `protobuf:"bytes,2,req,name=user_id" json:"user_id,omitempty"`
@@ -200,6 +208,7 @@ type GetOAuthUserResponse struct {
 	IsAdmin          *bool    `protobuf:"varint,5,opt,name=is_admin,def=0" json:"is_admin,omitempty"`
 	ClientId         *string  `protobuf:"bytes,6,opt,name=client_id,def=" json:"client_id,omitempty"`
 	Scopes           []string `protobuf:"bytes,7,rep,name=scopes" json:"scopes,omitempty"`
+	IsProjectWriter  *bool    `protobuf:"varint,8,opt,name=is_project_writer" json:"is_project_writer,omitempty"`
 	XXX_unrecognized []byte   `json:"-"`
 }
 
@@ -256,6 +265,13 @@ func (m *GetOAuthUserResponse) GetScopes() []string {
 		return m.Scopes
 	}
 	return nil
+}
+
+func (m *GetOAuthUserResponse) GetIsProjectWriter() bool {
+	if m != nil && m.IsProjectWriter != nil {
+		return *m.IsProjectWriter
+	}
+	return false
 }
 
 type CheckOAuthSignatureRequest struct {

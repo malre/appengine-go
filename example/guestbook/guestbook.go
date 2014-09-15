@@ -45,15 +45,19 @@ wrote <blockquote>{{.Content}}</blockquote>
 `))
 
 func handleMainPage(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" || r.URL.Path != "/" {
+	if r.Method != "GET" {
+		http.Error(w, "GET requests only", http.StatusMethodNotAllowed)
+		return
+	}
+	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
 	}
+
 	c := appengine.NewContext(r)
 	q := datastore.NewQuery("Greeting").Ancestor(guestbookKey(c)).Order("-Date").Limit(10)
 	var gg []*Greeting
-	_, err := q.GetAll(c, &gg)
-	if err != nil {
+	if _, err := q.GetAll(c, &gg); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -65,14 +69,10 @@ func handleMainPage(w http.ResponseWriter, r *http.Request) {
 
 func handleSign(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
-		http.NotFound(w, r)
+		http.Error(w, "POST requests only", http.StatusMethodNotAllowed)
 		return
 	}
 	c := appengine.NewContext(r)
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	g := &Greeting{
 		Content: r.FormValue("content"),
 		Date:    time.Now(),
@@ -85,5 +85,5 @@ func handleSign(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

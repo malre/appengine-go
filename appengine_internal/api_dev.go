@@ -92,7 +92,7 @@ func handleFilteredHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	ctxsMu.Lock()
-	ctxs[r] = &context{req: &creq}
+	ctxs[r] = &httpContext{req: &creq}
 	ctxsMu.Unlock()
 
 	http.DefaultServeMux.ServeHTTP(w, r)
@@ -111,7 +111,7 @@ var (
 	}
 
 	ctxsMu sync.Mutex
-	ctxs   = make(map[*http.Request]*context)
+	ctxs   = make(map[*http.Request]context)
 
 	instanceConfig = struct {
 		AppID      string
@@ -225,13 +225,25 @@ func call(service, method string, data []byte, requestID string, timeout time.Du
 	return res.Response, nil
 }
 
-// context represents the context of an in-flight HTTP request.
+// context echos the public appengine.Context interface.
+type context interface {
+	Debugf(format string, args ...interface{})
+	Infof(format string, args ...interface{})
+	Warningf(format string, args ...interface{})
+	Errorf(format string, args ...interface{})
+	Criticalf(format string, args ...interface{})
+	Call(service, method string, in, out ProtoMessage, opts *CallOptions) error
+	FullyQualifiedAppID() string
+	Request() interface{}
+}
+
+// httpContext represents the context of an in-flight HTTP request.
 // It implements the appengine.Context interface.
-type context struct {
+type httpContext struct {
 	req *http.Request
 }
 
-func NewContext(req *http.Request) *context {
+func NewContext(req *http.Request) context {
 	ctxsMu.Lock()
 	defer ctxsMu.Unlock()
 	c := ctxs[req]
@@ -245,7 +257,25 @@ func NewContext(req *http.Request) *context {
 	return c
 }
 
-func (c *context) Call(service, method string, in, out ProtoMessage, opts *CallOptions) error {
+// RegisterTestContext associates a test context with the given HTTP request,
+// returning a closure to delete the association. It should only be used by the
+// aetest package, and never directly. It is only available in the SDK.
+func RegisterTestContext(req *http.Request, c context) func() {
+	ctxsMu.Lock()
+	defer ctxsMu.Unlock()
+	if _, ok := ctxs[req]; ok {
+		log.Panic("req already associated with context")
+	}
+	ctxs[req] = c
+
+	return func() {
+		ctxsMu.Lock()
+		delete(ctxs, req)
+		ctxsMu.Unlock()
+	}
+}
+
+func (c *httpContext) Call(service, method string, in, out ProtoMessage, opts *CallOptions) error {
 	if service == "__go__" {
 		if method == "GetNamespace" {
 			out.(*basepb.StringProto).Value = proto.String(c.req.Header.Get("X-AppEngine-Current-Namespace"))
@@ -276,11 +306,11 @@ func (c *context) Call(service, method string, in, out ProtoMessage, opts *CallO
 	return proto.Unmarshal(res, out)
 }
 
-func (c *context) Request() interface{} {
+func (c *httpContext) Request() interface{} {
 	return c.req
 }
 
-func (c *context) logf(level int64, levelName, format string, args ...interface{}) {
+func (c *httpContext) logf(level int64, levelName, format string, args ...interface{}) {
 	s := fmt.Sprintf(format, args...)
 	s = strings.TrimRight(s, "\n") // Remove any trailing newline characters.
 	log.Println(levelName + ": " + s)
@@ -313,17 +343,19 @@ func (c *context) logf(level int64, levelName, format string, args ...interface{
 	}
 }
 
-func (c *context) Debugf(format string, args ...interface{})   { c.logf(0, "DEBUG", format, args...) }
-func (c *context) Infof(format string, args ...interface{})    { c.logf(1, "INFO", format, args...) }
-func (c *context) Warningf(format string, args ...interface{}) { c.logf(2, "WARNING", format, args...) }
-func (c *context) Errorf(format string, args ...interface{})   { c.logf(3, "ERROR", format, args...) }
-func (c *context) Criticalf(format string, args ...interface{}) {
+func (c *httpContext) Debugf(format string, args ...interface{}) { c.logf(0, "DEBUG", format, args...) }
+func (c *httpContext) Infof(format string, args ...interface{})  { c.logf(1, "INFO", format, args...) }
+func (c *httpContext) Warningf(format string, args ...interface{}) {
+	c.logf(2, "WARNING", format, args...)
+}
+func (c *httpContext) Errorf(format string, args ...interface{}) { c.logf(3, "ERROR", format, args...) }
+func (c *httpContext) Criticalf(format string, args ...interface{}) {
 	c.logf(4, "CRITICAL", format, args...)
 }
 
 // FullyQualifiedAppID returns the fully-qualified application ID.
 // This may contain a partition prefix (e.g. "s~" for High Replication apps),
 // or a domain prefix (e.g. "example.com:").
-func (c *context) FullyQualifiedAppID() string {
+func (c *httpContext) FullyQualifiedAppID() string {
 	return instanceConfig.AppID
 }

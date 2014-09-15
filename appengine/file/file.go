@@ -13,6 +13,7 @@ import (
 
 	"appengine"
 	"appengine_internal"
+	aipb "appengine_internal/app_identity"
 	blobpb "appengine_internal/blobstore"
 	filepb "appengine_internal/files"
 	"code.google.com/p/goprotobuf/proto"
@@ -79,15 +80,14 @@ func (fi fileInfo) Size() int64 {
 // DefaultBucketName returns the name of this application's
 // default Google Cloud Storage bucket.
 func DefaultBucketName(c appengine.Context) (string, error) {
-	req := new(filepb.GetDefaultGsBucketNameRequest)
-	res := new(filepb.GetDefaultGsBucketNameResponse)
-	if err := c.Call("file", "GetDefaultGsBucketName", req, res, nil); err != nil {
-		return "", err
-	}
-	if res.DefaultGsBucketName == nil {
+	req := &aipb.GetDefaultGcsBucketNameRequest{}
+	res := &aipb.GetDefaultGcsBucketNameResponse{}
+
+	err := c.Call("app_identity_service", "GetDefaultGcsBucketName", req, res, nil)
+	if err != nil {
 		return "", fmt.Errorf("file: no default bucket name returned in RPC response: %v", res)
 	}
-	return *res.DefaultGsBucketName, nil
+	return res.GetDefaultGcsBucketName(), nil
 }
 
 // Delete deletes a file.
