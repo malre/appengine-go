@@ -296,6 +296,42 @@ func (x *CompositeIndex_State) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type CompositeIndex_WorkflowState int32
+
+const (
+	CompositeIndex_PENDING   CompositeIndex_WorkflowState = 1
+	CompositeIndex_ACTIVE    CompositeIndex_WorkflowState = 2
+	CompositeIndex_COMPLETED CompositeIndex_WorkflowState = 3
+)
+
+var CompositeIndex_WorkflowState_name = map[int32]string{
+	1: "PENDING",
+	2: "ACTIVE",
+	3: "COMPLETED",
+}
+var CompositeIndex_WorkflowState_value = map[string]int32{
+	"PENDING":   1,
+	"ACTIVE":    2,
+	"COMPLETED": 3,
+}
+
+func (x CompositeIndex_WorkflowState) Enum() *CompositeIndex_WorkflowState {
+	p := new(CompositeIndex_WorkflowState)
+	*p = x
+	return p
+}
+func (x CompositeIndex_WorkflowState) String() string {
+	return proto.EnumName(CompositeIndex_WorkflowState_name, int32(x))
+}
+func (x *CompositeIndex_WorkflowState) UnmarshalJSON(data []byte) error {
+	value, err := proto.UnmarshalJSONEnum(CompositeIndex_WorkflowState_value, data, "CompositeIndex_WorkflowState")
+	if err != nil {
+		return err
+	}
+	*x = CompositeIndex_WorkflowState(value)
+	return nil
+}
+
 type Snapshot_Status int32
 
 const (
@@ -1185,7 +1221,7 @@ func (m *Index) GetProperty() []*Index_Property {
 
 type Index_Property struct {
 	Name             *string                   `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
-	Direction        *Index_Property_Direction `protobuf:"varint,4,opt,name=direction,enum=datastore.Index_Property_Direction,def=1" json:"direction,omitempty"`
+	Direction        *Index_Property_Direction `protobuf:"varint,4,opt,name=direction,enum=datastore.Index_Property_Direction,def=0" json:"direction,omitempty"`
 	Mode             *Index_Property_Mode      `protobuf:"varint,6,opt,name=mode,enum=datastore.Index_Property_Mode,def=0" json:"mode,omitempty"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
@@ -1194,7 +1230,7 @@ func (m *Index_Property) Reset()         { *m = Index_Property{} }
 func (m *Index_Property) String() string { return proto.CompactTextString(m) }
 func (*Index_Property) ProtoMessage()    {}
 
-const Default_Index_Property_Direction Index_Property_Direction = Index_Property_ASCENDING
+const Default_Index_Property_Direction Index_Property_Direction = Index_Property_DIRECTION_UNSPECIFIED
 const Default_Index_Property_Mode Index_Property_Mode = Index_Property_MODE_UNSPECIFIED
 
 func (m *Index_Property) GetName() string {
@@ -1219,15 +1255,17 @@ func (m *Index_Property) GetMode() Index_Property_Mode {
 }
 
 type CompositeIndex struct {
-	AppId               *string               `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
-	Id                  *int64                `protobuf:"varint,2,req,name=id" json:"id,omitempty"`
-	Definition          *Index                `protobuf:"bytes,3,req,name=definition" json:"definition,omitempty"`
-	State               *CompositeIndex_State `protobuf:"varint,4,req,name=state,enum=datastore.CompositeIndex_State" json:"state,omitempty"`
-	OnlyUseIfRequired   *bool                 `protobuf:"varint,6,opt,name=only_use_if_required,def=0" json:"only_use_if_required,omitempty"`
-	DisabledIndex       *bool                 `protobuf:"varint,9,opt,name=disabled_index,def=0" json:"disabled_index,omitempty"`
-	ReadDivisionFamily  []string              `protobuf:"bytes,7,rep,name=read_division_family" json:"read_division_family,omitempty"`
-	WriteDivisionFamily *string               `protobuf:"bytes,8,opt,name=write_division_family" json:"write_division_family,omitempty"`
-	XXX_unrecognized    []byte                `json:"-"`
+	AppId               *string                       `protobuf:"bytes,1,req,name=app_id" json:"app_id,omitempty"`
+	Id                  *int64                        `protobuf:"varint,2,req,name=id" json:"id,omitempty"`
+	Definition          *Index                        `protobuf:"bytes,3,req,name=definition" json:"definition,omitempty"`
+	State               *CompositeIndex_State         `protobuf:"varint,4,req,name=state,enum=datastore.CompositeIndex_State" json:"state,omitempty"`
+	WorkflowState       *CompositeIndex_WorkflowState `protobuf:"varint,10,opt,name=workflow_state,enum=datastore.CompositeIndex_WorkflowState" json:"workflow_state,omitempty"`
+	ErrorMessage        *string                       `protobuf:"bytes,11,opt,name=error_message" json:"error_message,omitempty"`
+	OnlyUseIfRequired   *bool                         `protobuf:"varint,6,opt,name=only_use_if_required,def=0" json:"only_use_if_required,omitempty"`
+	DisabledIndex       *bool                         `protobuf:"varint,9,opt,name=disabled_index,def=0" json:"disabled_index,omitempty"`
+	ReadDivisionFamily  []string                      `protobuf:"bytes,7,rep,name=read_division_family" json:"read_division_family,omitempty"`
+	WriteDivisionFamily *string                       `protobuf:"bytes,8,opt,name=write_division_family" json:"write_division_family,omitempty"`
+	XXX_unrecognized    []byte                        `json:"-"`
 }
 
 func (m *CompositeIndex) Reset()         { *m = CompositeIndex{} }
@@ -1263,6 +1301,20 @@ func (m *CompositeIndex) GetState() CompositeIndex_State {
 		return *m.State
 	}
 	return CompositeIndex_WRITE_ONLY
+}
+
+func (m *CompositeIndex) GetWorkflowState() CompositeIndex_WorkflowState {
+	if m != nil && m.WorkflowState != nil {
+		return *m.WorkflowState
+	}
+	return CompositeIndex_PENDING
+}
+
+func (m *CompositeIndex) GetErrorMessage() string {
+	if m != nil && m.ErrorMessage != nil {
+		return *m.ErrorMessage
+	}
+	return ""
 }
 
 func (m *CompositeIndex) GetOnlyUseIfRequired() bool {
@@ -3095,6 +3147,7 @@ func init() {
 	proto.RegisterEnum("datastore.Index_Property_Direction", Index_Property_Direction_name, Index_Property_Direction_value)
 	proto.RegisterEnum("datastore.Index_Property_Mode", Index_Property_Mode_name, Index_Property_Mode_value)
 	proto.RegisterEnum("datastore.CompositeIndex_State", CompositeIndex_State_name, CompositeIndex_State_value)
+	proto.RegisterEnum("datastore.CompositeIndex_WorkflowState", CompositeIndex_WorkflowState_name, CompositeIndex_WorkflowState_value)
 	proto.RegisterEnum("datastore.Snapshot_Status", Snapshot_Status_name, Snapshot_Status_value)
 	proto.RegisterEnum("datastore.Query_Hint", Query_Hint_name, Query_Hint_value)
 	proto.RegisterEnum("datastore.Query_Filter_Operator", Query_Filter_Operator_name, Query_Filter_Operator_value)

@@ -30,7 +30,7 @@ type Property struct {
 	//	- bool
 	//	- string
 	//	- float64
-	//  - ByteString
+	//	- ByteString
 	//	- *Key
 	//	- time.Time
 	//	- appengine.BlobKey
