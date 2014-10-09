@@ -228,15 +228,18 @@ type Index_Property_Mode int32
 
 const (
 	Index_Property_MODE_UNSPECIFIED Index_Property_Mode = 0
+	Index_Property_SEGMENT          Index_Property_Mode = 2
 	Index_Property_GEOSPATIAL       Index_Property_Mode = 3
 )
 
 var Index_Property_Mode_name = map[int32]string{
 	0: "MODE_UNSPECIFIED",
+	2: "SEGMENT",
 	3: "GEOSPATIAL",
 }
 var Index_Property_Mode_value = map[string]int32{
 	"MODE_UNSPECIFIED": 0,
+	"SEGMENT":          2,
 	"GEOSPATIAL":       3,
 }
 
@@ -911,6 +914,7 @@ type Property struct {
 	Name             *string           `protobuf:"bytes,3,req,name=name" json:"name,omitempty"`
 	Value            *PropertyValue    `protobuf:"bytes,5,req,name=value" json:"value,omitempty"`
 	Multiple         *bool             `protobuf:"varint,4,req,name=multiple" json:"multiple,omitempty"`
+	Embedded         *bool             `protobuf:"varint,6,opt,name=embedded,def=0" json:"embedded,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
 }
 
@@ -919,6 +923,7 @@ func (m *Property) String() string { return proto.CompactTextString(m) }
 func (*Property) ProtoMessage()    {}
 
 const Default_Property_Meaning Property_Meaning = Property_NO_MEANING
+const Default_Property_Embedded bool = false
 
 func (m *Property) GetMeaning() Property_Meaning {
 	if m != nil && m.Meaning != nil {
@@ -953,6 +958,13 @@ func (m *Property) GetMultiple() bool {
 		return *m.Multiple
 	}
 	return false
+}
+
+func (m *Property) GetEmbedded() bool {
+	if m != nil && m.Embedded != nil {
+		return *m.Embedded
+	}
+	return Default_Property_Embedded
 }
 
 type Path struct {
