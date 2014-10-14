@@ -346,6 +346,12 @@ func (m *TaskPayload) Marshal() ([]byte, error) {
 func (m *TaskPayload) Unmarshal(buf []byte) error {
 	return proto.UnmarshalMessageSet(buf, m.ExtensionMap())
 }
+func (m *TaskPayload) MarshalJSON() ([]byte, error) {
+	return proto.MarshalMessageSetJSON(m.XXX_extensions)
+}
+func (m *TaskPayload) UnmarshalJSON(buf []byte) error {
+	return proto.UnmarshalMessageSetJSON(buf, m.XXX_extensions)
+}
 
 // ensure TaskPayload satisfies proto.Marshaler and proto.Unmarshaler
 var _ proto.Marshaler = (*TaskPayload)(nil)

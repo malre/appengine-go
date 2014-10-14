@@ -1358,11 +1358,11 @@ func (m *CompositeIndex) GetWriteDivisionFamily() string {
 }
 
 type SearchIndexEntry struct {
-	IndexId          *int64   `protobuf:"varint,1,req,name=index_id" json:"index_id,omitempty"`
-	DivisionFamily   []string `protobuf:"bytes,2,rep,name=division_family" json:"division_family,omitempty"`
-	Fingerprint_1999 *uint64  `protobuf:"fixed64,3,opt,name=fingerprint_1999" json:"fingerprint_1999,omitempty"`
-	Fingerprint_2011 *uint64  `protobuf:"fixed64,4,opt,name=fingerprint_2011" json:"fingerprint_2011,omitempty"`
-	XXX_unrecognized []byte   `json:"-"`
+	IndexId             *int64  `protobuf:"varint,1,req,name=index_id" json:"index_id,omitempty"`
+	WriteDivisionFamily *string `protobuf:"bytes,2,req,name=write_division_family" json:"write_division_family,omitempty"`
+	Fingerprint_1999    *uint64 `protobuf:"fixed64,3,opt,name=fingerprint_1999" json:"fingerprint_1999,omitempty"`
+	Fingerprint_2011    *uint64 `protobuf:"fixed64,4,opt,name=fingerprint_2011" json:"fingerprint_2011,omitempty"`
+	XXX_unrecognized    []byte  `json:"-"`
 }
 
 func (m *SearchIndexEntry) Reset()         { *m = SearchIndexEntry{} }
@@ -1376,11 +1376,11 @@ func (m *SearchIndexEntry) GetIndexId() int64 {
 	return 0
 }
 
-func (m *SearchIndexEntry) GetDivisionFamily() []string {
-	if m != nil {
-		return m.DivisionFamily
+func (m *SearchIndexEntry) GetWriteDivisionFamily() string {
+	if m != nil && m.WriteDivisionFamily != nil {
+		return *m.WriteDivisionFamily
 	}
-	return nil
+	return ""
 }
 
 func (m *SearchIndexEntry) GetFingerprint_1999() uint64 {
