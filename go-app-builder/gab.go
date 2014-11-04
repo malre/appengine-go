@@ -36,7 +36,7 @@ import (
 	"time"
 )
 
-// go13build indicates whether we are building with go1.3 tools.
+// go13build indicates whether we are building with go1.3 (or later) tools.
 // This switches from using gopack to passing -trimpath to 6g.
 const go13build = false
 

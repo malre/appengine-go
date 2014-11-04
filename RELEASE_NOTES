@@ -3,6 +3,12 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.9.15 - November 2014
+==============================
+appengine/search:
+  - Add Fields and Expressions to SearchOptions struct.
+  - Add Derived to Field struct.
+
 Version 1.9.14 - October 2014
 =============================
 No changes.

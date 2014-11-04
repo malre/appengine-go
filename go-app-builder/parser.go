@@ -120,8 +120,7 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		GOOS:        build.Default.GOOS,
 		GOROOT:      *goRoot,
 		GOPATH:      baseDir,
-		BuildTags:   []string{"appengine"},
-		ReleaseTags: build.Default.ReleaseTags,
+		ReleaseTags: []string{"go1.1", "go1.2"},
 		Compiler:    "gc",
 		HasSubdir: func(root, dir string) (rel string, ok bool) {
 			// Override the default HasSubdir, which evaluates symlinks.
@@ -141,7 +140,12 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 		},
 	}
 	if *vm {
-		ctxt.BuildTags = append(ctxt.BuildTags, "appenginevm")
+		ctxt.BuildTags = []string{"appenginevm"}
+	} else {
+		ctxt.BuildTags = []string{"appengine"}
+	}
+	if go13build {
+		ctxt.ReleaseTags = append(ctxt.ReleaseTags, "go1.3")
 	}
 
 	dirs := make(map[string]bool)
@@ -262,7 +266,13 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 			if !ok {
 				// A file declared an import we don't know.
 				// It could be a package from the standard library.
+				if _, ok := findInternal(path); ok {
+					return nil, fmt.Errorf("package %q cannot import internal package %q", p.ImportPath, path)
+				}
 				continue
+			}
+			if !checkInternal(p, pkg) {
+				return nil, fmt.Errorf("package %q cannot import internal package %q", p.ImportPath, path)
 			}
 			p.Dependencies = append(p.Dependencies, pkg)
 		}
@@ -699,6 +709,42 @@ func findCycle(pkgs []*Package) []*Package {
 		seen[dep] = len(cycle)
 		cycle = append(cycle, dep)
 	}
+}
+
+// checkInternal enforces internal package path semantics as per
+// https://golang.org/s/go14internal (as planned for Go 1.5).
+// Neither pkg nor dep should belong to the standard library.
+// Cribbed from src/cmd/go/pkg.go, but modified to work with gab's *Package.
+func checkInternal(pkg, dep *Package) bool {
+	// Check for "internal" element: four cases depending on begin of string and/or end of string.
+	i, ok := findInternal(dep.ImportPath)
+	if !ok {
+		return true
+	}
+	prefix := dep.ImportPath[:i]
+	// TODO: Consider checking the package BasePaths once Go 1.5 is
+	// enforcing internal path semantics in the users' gopaths.
+	return pkg.ImportPath == strings.TrimSuffix(prefix, "/") || strings.HasPrefix(pkg.ImportPath, prefix)
+}
+
+// findInternal looks for the final "internal" path element in the given import path.
+// If there isn't one, findInternal returns ok=false.
+// Otherwise, findInternal returns ok=true and the index of the "internal".
+// Copied from src/cmd/go/pkg.go
+func findInternal(path string) (index int, ok bool) {
+	// Four cases, depending on internal at start/end of string or not.
+	// The order matters: we must return the index of the final element,
+	// because the final one produces the most restrictive requirement
+	// on the importer.
+	switch {
+	case strings.HasSuffix(path, "/internal"):
+		return len(path) - len("internal"), true
+	case strings.Contains(path, "/internal/"):
+		return strings.LastIndex(path, "/internal/") + 1, true
+	case path == "internal", strings.HasPrefix(path, "internal/"):
+		return 0, true
+	}
+	return 0, false
 }
 
 func init() {

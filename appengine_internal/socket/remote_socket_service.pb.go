@@ -1021,6 +1021,7 @@ type CreateSocketRequest struct {
 	ListenBacklog    *int32                              `protobuf:"varint,5,opt,name=listen_backlog,def=0" json:"listen_backlog,omitempty"`
 	RemoteIp         *AddressPort                        `protobuf:"bytes,6,opt,name=remote_ip" json:"remote_ip,omitempty"`
 	AppId            *string                             `protobuf:"bytes,9,opt,name=app_id" json:"app_id,omitempty"`
+	ProjectId        *int64                              `protobuf:"varint,10,opt,name=project_id" json:"project_id,omitempty"`
 	XXX_unrecognized []byte                              `json:"-"`
 }
 
@@ -1077,6 +1078,13 @@ func (m *CreateSocketRequest) GetAppId() string {
 		return *m.AppId
 	}
 	return ""
+}
+
+func (m *CreateSocketRequest) GetProjectId() int64 {
+	if m != nil && m.ProjectId != nil {
+		return *m.ProjectId
+	}
+	return 0
 }
 
 type CreateSocketReply struct {

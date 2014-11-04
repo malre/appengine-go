@@ -372,6 +372,7 @@ func (m *Environ) GetValue() []byte {
 type VMConfig struct {
 	DockerDaemonUrl  *string     `protobuf:"bytes,1,opt,name=docker_daemon_url" json:"docker_daemon_url,omitempty"`
 	DartConfig       *DartConfig `protobuf:"bytes,2,opt,name=dart_config" json:"dart_config,omitempty"`
+	EnableLogs       *bool       `protobuf:"varint,3,opt,name=enable_logs" json:"enable_logs,omitempty"`
 	XXX_unrecognized []byte      `json:"-"`
 }
 
@@ -391,6 +392,13 @@ func (m *VMConfig) GetDartConfig() *DartConfig {
 		return m.DartConfig
 	}
 	return nil
+}
+
+func (m *VMConfig) GetEnableLogs() bool {
+	if m != nil && m.EnableLogs != nil {
+		return *m.EnableLogs
+	}
+	return false
 }
 
 type DartConfig struct {
