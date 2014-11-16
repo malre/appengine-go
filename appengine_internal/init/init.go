@@ -17,7 +17,7 @@ type failingTransport struct{}
 
 func (failingTransport) RoundTrip(*http.Request) (*http.Response, error) {
 	return nil, errors.New("http.DefaultTransport and http.DefaultClient are not available in App Engine. " +
-		"See https://developers.google.com/appengine/docs/go/urlfetch/overview")
+		"See https://cloud.google.com/appengine/docs/go/urlfetch/")
 }
 
 func init() {

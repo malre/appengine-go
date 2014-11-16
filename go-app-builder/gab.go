@@ -351,6 +351,27 @@ func (c *compiler) compile(i int, pkg *Package) error {
 		base := *appBase
 		if pkg.BaseDir != "" {
 			base = pkg.BaseDir
+		} else if go13build {
+			// gc at go1.3 only accepts one -trimpath flag unfortunately,
+			// so copy the source files into workDir for compilation.
+			pkgDir := filepath.Join(*workDir, pkg.ImportPath)
+			if err := os.MkdirAll(pkgDir, 0750); err != nil {
+				return fmt.Errorf("failed creating directory %v: %v", pkgDir, err)
+			}
+			for _, f := range pkg.Files {
+				src := filepath.Join(*appBase, f.Name)
+				dst := filepath.Join(*workDir, f.Name)
+				if src == dst {
+					// The usual cases can have -app_base and -work_dir the same.
+					continue
+				}
+				c.removeLater(dst)
+				if err := cp(src, dst); err != nil {
+					return err
+				}
+			}
+			base = *workDir
+			stripDir = *workDir
 		}
 		for _, f := range pkg.Files {
 			files = append(files, filepath.Join(base, f.Name))
@@ -377,11 +398,7 @@ func (c *compiler) compile(i int, pkg *Package) error {
 		stripDir = *workDir
 	}
 	if go13build {
-		// gc at go1.3 only accepts one -trimpath flag unfortunately.
-		// We'd ideally trim *workDir for regular packages too,
-		// since that is where the _extra_imports_nnn.go files end up.
-		// TODO: Copy the appBase structure to workDir,
-		// and then only ever strip workDir (but only if len(extra) > 0).
+		stripDir, _ = filepath.Abs(stripDir) // assume os.Getwd doesn't fail
 		args = append(args, "-trimpath", stripDir)
 	}
 	args = append(args, files...)
@@ -420,6 +437,23 @@ func (c *compiler) compile(i int, pkg *Package) error {
 		}
 	}
 	return nil
+}
+
+func cp(src, dst string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return fmt.Errorf("os.Open: %v", err)
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return fmt.Errorf("os.Create: %v", err)
+	}
+	if _, err := io.Copy(out, in); err != nil {
+		out.Close()
+		return fmt.Errorf("io.Copy: %v", err)
+	}
+	return out.Close()
 }
 
 type timer struct {

@@ -33,7 +33,7 @@ var (
 	passwordFile = flag.String("password_file", "", "file which contains the user's password")
 )
 
-// See https://developers.google.com/appengine/docs/go/datastore/stats
+// See https://cloud.google.com/appengine/docs/go/datastore/stats
 const DatastoreKindName = "__Stat_Kind__"
 
 type DatastoreKind struct {
