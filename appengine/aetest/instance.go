@@ -231,6 +231,7 @@ func (i *instance) startChild() (err error) {
 		"--admin_port=0",
 		"--skip_sdk_update_check=true",
 		"--clear_datastore=true",
+		"--clear_search_indexes=true",
 		"--datastore_path", filepath.Join(i.appDir, "datastore"),
 	}
 	appserverArgs = append(appserverArgs, i.opts.extraAppserverFlags()...)

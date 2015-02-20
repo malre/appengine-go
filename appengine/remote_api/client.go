@@ -19,7 +19,7 @@ import (
 	"appengine"
 	"appengine_internal"
 	pb "appengine_internal/remote_api"
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 )
 
 // NewRemoteContext returns a context that gives access to the production

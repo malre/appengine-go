@@ -13,7 +13,7 @@ import (
 
 	"appengine"
 	pb "appengine_internal/files"
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 )
 
 const writeBufferSize = 512 * 1024

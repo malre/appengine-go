@@ -146,15 +146,14 @@ func ServiceAccount(c Context) (string, error) {
 }
 
 // SignBytes signs bytes using a private key unique to your application.
-func SignBytes(c Context, bytes []byte) (string, []byte, error) {
+func SignBytes(c Context, bytes []byte) (keyName string, signature []byte, err error) {
 	req := &pb.SignForAppRequest{BytesToSign: bytes}
 	res := &pb.SignForAppResponse{}
 
-	err := c.Call("app_identity_service", "SignForApp", req, res, nil)
-	if err != nil {
+	if err := c.Call("app_identity_service", "SignForApp", req, res, nil); err != nil {
 		return "", nil, err
 	}
-	return res.GetKeyName(), res.GetSignatureBytes(), err
+	return res.GetKeyName(), res.GetSignatureBytes(), nil
 }
 
 func init() {

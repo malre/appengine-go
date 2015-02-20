@@ -29,18 +29,17 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 )
 
-// go13build indicates whether we are building with go1.3 (or later) tools.
-// This switches from using gopack to passing -trimpath to 6g.
-const go13build = false
-
 var (
+	apiVersion      = flag.String("api_version", "go1", "API version to build for.")
 	appBase         = flag.String("app_base", ".", "Path to app root. Command-line filenames are relative to this.")
 	arch            = flag.String("arch", defaultArch(), `The Go architecture specifier (e.g. "5", "6", "8").`)
 	binaryName      = flag.String("binary_name", "_go_app.bin", "Name of final binary, relative to --work_dir.")
@@ -88,6 +87,30 @@ func fullArch(c string) string {
 		return "386"
 	}
 	return "amd64"
+}
+
+var apiVersionBeta = regexp.MustCompile(`go1.(\d+)beta`)
+
+// Extracts the minor version (x) from an API version string if it is of the form "go1.xbeta"
+func betaVersion(apiVersion string) (v int, ok bool) {
+	if m := apiVersionBeta.FindStringSubmatch(apiVersion); m != nil {
+		v, err := strconv.Atoi(m[1])
+		return v, err == nil
+	}
+	return 0, false
+}
+
+func releaseTags(apiVersion string) []string {
+	v, ok := betaVersion(apiVersion)
+	if !ok {
+		v = 4 // we support up to go1.4
+	}
+
+	var tags []string
+	for i := 1; i <= v; i++ {
+		tags = append(tags, "go1."+strconv.Itoa(i))
+	}
+	return tags
 }
 
 func main() {
@@ -258,10 +281,7 @@ func buildApp(app *App) error {
 
 	// Link phase.
 	linker := toolPath(*arch + "l")
-	ext := ".a"
-	if go13build {
-		ext = "." + *arch
-	}
+	ext := "." + *arch
 	archiveFile := filepath.Join(*workDir, app.Packages[len(app.Packages)-1].ImportPath) + ext
 	binaryFile := filepath.Join(*workDir, *binaryName)
 	args := []string{
@@ -351,8 +371,8 @@ func (c *compiler) compile(i int, pkg *Package) error {
 		base := *appBase
 		if pkg.BaseDir != "" {
 			base = pkg.BaseDir
-		} else if go13build {
-			// gc at go1.3 only accepts one -trimpath flag unfortunately,
+		} else {
+			// gc at go1.4.1 only accepts one -trimpath flag unfortunately,
 			// so copy the source files into workDir for compilation.
 			pkgDir := filepath.Join(*workDir, pkg.ImportPath)
 			if err := os.MkdirAll(pkgDir, 0750); err != nil {
@@ -397,45 +417,17 @@ func (c *compiler) compile(i int, pkg *Package) error {
 		files = []string{c.mainFile}
 		stripDir = *workDir
 	}
-	if go13build {
-		stripDir, _ = filepath.Abs(stripDir) // assume os.Getwd doesn't fail
-		args = append(args, "-trimpath", stripDir)
-	}
+
+	// Add the right -trimpath flag.
+	stripDir, _ = filepath.Abs(stripDir) // assume os.Getwd doesn't fail
+	args = append(args, "-trimpath", stripDir)
+
 	args = append(args, files...)
 	c.removeLater(objectFile)
 	if err := gTimer.run(args, c.env); err != nil {
 		return err
 	}
 
-	if !go13build {
-		// Turn the object file into an archive file, stripped of file path information.
-		// The paths we strip depends on whether this object file is based on user code
-		// or the synthetic main code.
-		archiveFile := filepath.Join(*workDir, pkg.ImportPath) + ".a"
-		stripDir, _ = filepath.Abs(stripDir) // assume os.Getwd doesn't fail
-		args = []string{
-			c.gopack,
-			"grcP", stripDir,
-			archiveFile,
-			objectFile,
-		}
-		c.removeLater(archiveFile)
-		if err := pTimer.run(args, c.env); err != nil {
-			return err
-		}
-		if i != len(c.app.Packages)-1 && len(c.extra) > 0 {
-			// Run gopack again, this time stripping the absolute workDir prefix.
-			absWorkDir, _ := filepath.Abs(*workDir) // assume os.Getwd doesn't fail
-			args = []string{
-				c.gopack,
-				"grcP", absWorkDir,
-				archiveFile,
-			}
-			if err := pTimer.run(args, c.env); err != nil {
-				return err
-			}
-		}
-	}
 	return nil
 }
 

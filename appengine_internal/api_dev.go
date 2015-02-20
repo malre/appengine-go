@@ -23,7 +23,7 @@ import (
 	lpb "appengine_internal/log"
 	"appengine_internal/remote_api"
 	rpb "appengine_internal/runtime_config"
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 )
 
 // IsDevAppServer returns whether the App Engine app is running in the

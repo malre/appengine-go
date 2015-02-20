@@ -10,7 +10,7 @@ import (
 
 	"appengine_internal"
 	basepb "appengine_internal/base"
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 )
 
 // Namespace returns a replacement context that operates within the given namespace.

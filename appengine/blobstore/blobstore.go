@@ -4,6 +4,10 @@
 
 // Package blobstore provides a client for App Engine's persistent blob
 // storage service.
+//
+// NOTE: The Files API was deprecated on June 11, 2013 (v1.8.1) and will
+// be shut down soon, at which point these functions will no longer
+// work.  Use Google Cloud Storage instead (https://cloud.google.com/storage/).
 package blobstore
 
 import (
@@ -25,7 +29,7 @@ import (
 	"appengine"
 	"appengine/datastore"
 	"appengine/file"
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 
 	basepb "appengine_internal/base"
 	blobpb "appengine_internal/blobstore"

@@ -28,7 +28,7 @@ import (
 	basepb "appengine_internal/base"
 	dspb "appengine_internal/datastore"
 	pb "appengine_internal/taskqueue"
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 )
 
 var (

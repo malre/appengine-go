@@ -9,7 +9,7 @@ package module
 import (
 	"appengine"
 	pb "appengine_internal/modules"
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 )
 
 // List returns the names of modules belonging to this application.

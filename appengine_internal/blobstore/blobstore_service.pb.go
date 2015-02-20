@@ -23,7 +23,7 @@ It has these top-level messages:
 */
 package appengine
 
-import proto "code.google.com/p/goprotobuf/proto"
+import proto "github.com/golang/protobuf/proto"
 import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -97,6 +97,7 @@ type CreateUploadURLRequest struct {
 	MaxUploadSizeBytes        *int64  `protobuf:"varint,2,opt,name=max_upload_size_bytes" json:"max_upload_size_bytes,omitempty"`
 	MaxUploadSizePerBlobBytes *int64  `protobuf:"varint,3,opt,name=max_upload_size_per_blob_bytes" json:"max_upload_size_per_blob_bytes,omitempty"`
 	GsBucketName              *string `protobuf:"bytes,4,opt,name=gs_bucket_name" json:"gs_bucket_name,omitempty"`
+	UrlExpiryTimeSeconds      *int32  `protobuf:"varint,5,opt,name=url_expiry_time_seconds" json:"url_expiry_time_seconds,omitempty"`
 	XXX_unrecognized          []byte  `json:"-"`
 }
 
@@ -130,6 +131,13 @@ func (m *CreateUploadURLRequest) GetGsBucketName() string {
 		return *m.GsBucketName
 	}
 	return ""
+}
+
+func (m *CreateUploadURLRequest) GetUrlExpiryTimeSeconds() int32 {
+	if m != nil && m.UrlExpiryTimeSeconds != nil {
+		return *m.UrlExpiryTimeSeconds
+	}
+	return 0
 }
 
 type CreateUploadURLResponse struct {

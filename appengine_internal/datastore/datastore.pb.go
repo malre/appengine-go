@@ -58,7 +58,7 @@ It has these top-level messages:
 */
 package datastore
 
-import proto "code.google.com/p/goprotobuf/proto"
+import proto "github.com/golang/protobuf/proto"
 import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -228,18 +228,15 @@ type Index_Property_Mode int32
 
 const (
 	Index_Property_MODE_UNSPECIFIED Index_Property_Mode = 0
-	Index_Property_SEGMENT          Index_Property_Mode = 2
 	Index_Property_GEOSPATIAL       Index_Property_Mode = 3
 )
 
 var Index_Property_Mode_name = map[int32]string{
 	0: "MODE_UNSPECIFIED",
-	2: "SEGMENT",
 	3: "GEOSPATIAL",
 }
 var Index_Property_Mode_value = map[string]int32{
 	"MODE_UNSPECIFIED": 0,
-	"SEGMENT":          2,
 	"GEOSPATIAL":       3,
 }
 
@@ -1646,7 +1643,7 @@ type Query struct {
 	Distinct            *bool             `protobuf:"varint,24,opt,name=distinct" json:"distinct,omitempty"`
 	MinSafeTimeSeconds  *int64            `protobuf:"varint,35,opt,name=min_safe_time_seconds" json:"min_safe_time_seconds,omitempty"`
 	SafeReplicaName     []string          `protobuf:"bytes,36,rep,name=safe_replica_name" json:"safe_replica_name,omitempty"`
-	PersistOffset       *bool             `protobuf:"varint,37,opt,name=persist_offset,def=0" json:"persist_offset,omitempty"`
+	PersistOffset       *bool             `protobuf:"varint,37,opt,name=persist_offset,def=1" json:"persist_offset,omitempty"`
 	XXX_unrecognized    []byte            `json:"-"`
 }
 
@@ -1658,7 +1655,7 @@ const Default_Query_Offset int32 = 0
 const Default_Query_RequirePerfectPlan bool = false
 const Default_Query_KeysOnly bool = false
 const Default_Query_Compile bool = false
-const Default_Query_PersistOffset bool = false
+const Default_Query_PersistOffset bool = true
 
 func (m *Query) GetHeader() *InternalHeader {
 	if m != nil {

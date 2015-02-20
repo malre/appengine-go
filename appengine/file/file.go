@@ -3,6 +3,10 @@
 // license that can be found in the LICENSE file.
 
 // Package file provides a client for Google Cloud Storage.
+//
+// NOTE: The Files API was deprecated on June 11, 2013 (v1.8.1) and will
+// be shut down soon, at which point these functions will no longer
+// work.  Use Google Cloud Storage instead (https://cloud.google.com/storage/).
 package file
 
 import (
@@ -16,7 +20,7 @@ import (
 	aipb "appengine_internal/app_identity"
 	blobpb "appengine_internal/blobstore"
 	filepb "appengine_internal/files"
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 )
 
 // gsFilePrefix is the prefix for all Google Cloud Storage files.

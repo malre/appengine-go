@@ -3,6 +3,15 @@ App Engine Go SDK - Release Notes
 Changes that are not backward compatible
 are marked with an exclamation mark ("!").
 
+Version 1.9.18 - February 2015
+==============================
+This release is based on Go 1.4.1.
+
+appengine/datastore:
+  - Support []*S with nil elements as a destination for GetMulti.
+appengine/remote_api:
+  - Allow all services through server-side interface.
+
 Version 1.9.17 - November 2014
 ==============================
 No changes.

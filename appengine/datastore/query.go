@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"appengine"
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 
 	pb "appengine_internal/datastore"
 )

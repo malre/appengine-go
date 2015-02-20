@@ -14,6 +14,7 @@ It has these top-level messages:
 	FieldValue
 	Field
 	FieldTypes
+	IndexShardSettings
 	FacetValue
 	Facet
 	DocumentMetadata
@@ -54,7 +55,7 @@ It has these top-level messages:
 */
 package search
 
-import proto "code.google.com/p/goprotobuf/proto"
+import proto "github.com/golang/protobuf/proto"
 import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -733,6 +734,32 @@ func (m *FieldTypes) GetType() []FieldValue_ContentType {
 	return nil
 }
 
+type IndexShardSettings struct {
+	PrevNumShards    []int32 `protobuf:"varint,1,rep,name=prev_num_shards" json:"prev_num_shards,omitempty"`
+	NumShards        *int32  `protobuf:"varint,2,req,name=num_shards,def=1" json:"num_shards,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *IndexShardSettings) Reset()         { *m = IndexShardSettings{} }
+func (m *IndexShardSettings) String() string { return proto.CompactTextString(m) }
+func (*IndexShardSettings) ProtoMessage()    {}
+
+const Default_IndexShardSettings_NumShards int32 = 1
+
+func (m *IndexShardSettings) GetPrevNumShards() []int32 {
+	if m != nil {
+		return m.PrevNumShards
+	}
+	return nil
+}
+
+func (m *IndexShardSettings) GetNumShards() int32 {
+	if m != nil && m.NumShards != nil {
+		return *m.NumShards
+	}
+	return Default_IndexShardSettings_NumShards
+}
+
 type FacetValue struct {
 	Type             *FacetValue_ContentType `protobuf:"varint,1,opt,name=type,enum=search.FacetValue_ContentType,def=2" json:"type,omitempty"`
 	StringValue      *string                 `protobuf:"bytes,3,opt,name=string_value" json:"string_value,omitempty"`
@@ -784,8 +811,9 @@ func (m *Facet) GetValue() *FacetValue {
 }
 
 type DocumentMetadata struct {
-	Version          *int64 `protobuf:"varint,1,opt,name=version" json:"version,omitempty"`
-	XXX_unrecognized []byte `json:"-"`
+	Version            *int64 `protobuf:"varint,1,opt,name=version" json:"version,omitempty"`
+	CommittedStVersion *int64 `protobuf:"varint,2,opt,name=committed_st_version" json:"committed_st_version,omitempty"`
+	XXX_unrecognized   []byte `json:"-"`
 }
 
 func (m *DocumentMetadata) Reset()         { *m = DocumentMetadata{} }
@@ -795,6 +823,13 @@ func (*DocumentMetadata) ProtoMessage()    {}
 func (m *DocumentMetadata) GetVersion() int64 {
 	if m != nil && m.Version != nil {
 		return *m.Version
+	}
+	return 0
+}
+
+func (m *DocumentMetadata) GetCommittedStVersion() int64 {
+	if m != nil && m.CommittedStVersion != nil {
+		return *m.CommittedStVersion
 	}
 	return 0
 }

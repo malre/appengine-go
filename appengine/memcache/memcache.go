@@ -37,7 +37,7 @@ import (
 
 	"appengine"
 	"appengine_internal"
-	"code.google.com/p/goprotobuf/proto"
+	"github.com/golang/protobuf/proto"
 
 	pb "appengine_internal/memcache"
 )
@@ -195,7 +195,7 @@ func DeleteMulti(c appengine.Context, key []string) error {
 // by delta and returns the new value. The value must fit in a uint64.
 // Overflow wraps around, and underflow is capped to zero. The
 // provided delta may be negative. If the key doesn't exist in
-// memcacheg, the provided initial value is used to atomically
+// memcache, the provided initial value is used to atomically
 // populate it before the delta is applied.
 // The key must be at most 250 bytes in length.
 func Increment(c appengine.Context, key string, delta int64, initialValue uint64) (newValue uint64, err error) {
@@ -458,6 +458,7 @@ func gobUnmarshal(data []byte, v interface{}) error {
 }
 
 // Statistics represents a set of statistics about the memcache cache.
+// This may include items that have expired but have not yet been removed from the cache.
 type Statistics struct {
 	Hits     uint64 // Counter of cache hits
 	Misses   uint64 // Counter of cache misses

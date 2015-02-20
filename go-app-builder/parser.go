@@ -102,6 +102,23 @@ func (v vfs) readDir(dir string) (fis []os.FileInfo, err error) {
 	return fis, nil
 }
 
+func buildContext(goPath string) *build.Context {
+	ctxt := &build.Context{
+		GOARCH:      build.Default.GOARCH,
+		GOOS:        build.Default.GOOS,
+		GOROOT:      *goRoot,
+		GOPATH:      goPath,
+		ReleaseTags: releaseTags(*apiVersion),
+		Compiler:    "gc",
+	}
+	if *vm {
+		ctxt.BuildTags = []string{"appenginevm"}
+	} else {
+		ctxt.BuildTags = []string{"appengine"}
+	}
+	return ctxt
+}
+
 // ParseFiles parses the named files, deduces their package structure,
 // and returns the dependency DAG as an App.
 // Elements of filenames are considered relative to baseDir.
@@ -115,37 +132,23 @@ func ParseFiles(baseDir string, filenames []string) (*App, error) {
 	pkgFiles := make(map[string][]*File) // app package name => its files
 
 	vfs := vfs{baseDir, filenames}
-	ctxt := &build.Context{
-		GOARCH:      build.Default.GOARCH,
-		GOOS:        build.Default.GOOS,
-		GOROOT:      *goRoot,
-		GOPATH:      baseDir,
-		ReleaseTags: []string{"go1.1", "go1.2"},
-		Compiler:    "gc",
-		HasSubdir: func(root, dir string) (rel string, ok bool) {
-			// Override the default HasSubdir, which evaluates symlinks.
-			const sep = string(filepath.Separator)
-			root = filepath.Clean(root)
-			if !strings.HasSuffix(root, sep) {
-				root += sep
-			}
-			dir = filepath.Clean(dir)
-			if !strings.HasPrefix(dir, root) {
-				return "", false
-			}
-			return dir[len(root):], true
-		},
-		ReadDir: func(dir string) ([]os.FileInfo, error) {
-			return vfs.readDir(dir)
-		},
+
+	ctxt := buildContext(baseDir)
+	ctxt.HasSubdir = func(root, dir string) (rel string, ok bool) {
+		// Override the default HasSubdir, which evaluates symlinks.
+		const sep = string(filepath.Separator)
+		root = filepath.Clean(root)
+		if !strings.HasSuffix(root, sep) {
+			root += sep
+		}
+		dir = filepath.Clean(dir)
+		if !strings.HasPrefix(dir, root) {
+			return "", false
+		}
+		return dir[len(root):], true
 	}
-	if *vm {
-		ctxt.BuildTags = []string{"appenginevm"}
-	} else {
-		ctxt.BuildTags = []string{"appengine"}
-	}
-	if go13build {
-		ctxt.ReleaseTags = append(ctxt.ReleaseTags, "go1.3", "go1.4")
+	ctxt.ReadDir = func(dir string) ([]os.FileInfo, error) {
+		return vfs.readDir(dir)
 	}
 
 	dirs := make(map[string]bool)
@@ -599,9 +602,7 @@ func isStandardPackage(s string) bool {
 		return false
 	}
 
-	ctxt := build.Default
-	ctxt.GOROOT = *goRoot
-	ctxt.Compiler = "gc"
+	ctxt := buildContext("")
 	pkg, err := ctxt.Import(s, "/nowhere", build.FindOnly|build.AllowBinary)
 	if err != nil {
 		stdPackageCache[s] = false
@@ -614,15 +615,7 @@ func isStandardPackage(s string) bool {
 
 // gopathPackage imports information about a package in GOPATH.
 func gopathPackage(s string) (*build.Package, error) {
-	tags := []string{"appengine"}
-	if *vm {
-		tags = append(tags, "appenginevm")
-	}
-	ctxt := build.Default
-	ctxt.GOROOT = *goRoot
-	ctxt.GOPATH = *goPath
-	ctxt.BuildTags = append(tags, ctxt.BuildTags...) // don't affect build.Default
-	ctxt.Compiler = "gc"
+	ctxt := buildContext(*goPath)
 	// Don't use FindOnly or AllowBinary because we want import information
 	// and we require the source files.
 	return ctxt.Import(s, "/nowhere", 0)

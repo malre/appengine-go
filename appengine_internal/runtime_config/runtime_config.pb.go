@@ -16,11 +16,10 @@ It has these top-level messages:
 	Library
 	Environ
 	VMConfig
-	DartConfig
 */
 package appengine_tools_devappserver2
 
-import proto "code.google.com/p/goprotobuf/proto"
+import proto "github.com/golang/protobuf/proto"
 import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -49,6 +48,7 @@ type Config struct {
 	MaxInstances     *int32        `protobuf:"varint,18,opt,name=max_instances" json:"max_instances,omitempty"`
 	VmConfig         *VMConfig     `protobuf:"bytes,19,opt,name=vm_config" json:"vm_config,omitempty"`
 	ServerPort       *int32        `protobuf:"varint,20,opt,name=server_port" json:"server_port,omitempty"`
+	Vm               *bool         `protobuf:"varint,22,opt,name=vm,def=0" json:"vm,omitempty"`
 	XXX_unrecognized []byte        `json:"-"`
 }
 
@@ -61,6 +61,7 @@ const Default_Config_ApiHost string = "localhost"
 const Default_Config_SkipFiles string = "^$"
 const Default_Config_StaticFiles string = "^$"
 const Default_Config_StderrLogLevel int64 = 1
+const Default_Config_Vm bool = false
 
 func (m *Config) GetAppId() []byte {
 	if m != nil {
@@ -209,10 +210,19 @@ func (m *Config) GetServerPort() int32 {
 	return 0
 }
 
+func (m *Config) GetVm() bool {
+	if m != nil && m.Vm != nil {
+		return *m.Vm
+	}
+	return Default_Config_Vm
+}
+
 type PhpConfig struct {
-	PhpExecutablePath []byte `protobuf:"bytes,1,opt,name=php_executable_path" json:"php_executable_path,omitempty"`
-	EnableDebugger    *bool  `protobuf:"varint,3,req,name=enable_debugger" json:"enable_debugger,omitempty"`
-	XXX_unrecognized  []byte `json:"-"`
+	PhpExecutablePath   []byte `protobuf:"bytes,1,opt,name=php_executable_path" json:"php_executable_path,omitempty"`
+	EnableDebugger      *bool  `protobuf:"varint,3,req,name=enable_debugger" json:"enable_debugger,omitempty"`
+	GaeExtensionPath    []byte `protobuf:"bytes,4,opt,name=gae_extension_path" json:"gae_extension_path,omitempty"`
+	XdebugExtensionPath []byte `protobuf:"bytes,5,opt,name=xdebug_extension_path" json:"xdebug_extension_path,omitempty"`
+	XXX_unrecognized    []byte `json:"-"`
 }
 
 func (m *PhpConfig) Reset()         { *m = PhpConfig{} }
@@ -231,6 +241,20 @@ func (m *PhpConfig) GetEnableDebugger() bool {
 		return *m.EnableDebugger
 	}
 	return false
+}
+
+func (m *PhpConfig) GetGaeExtensionPath() []byte {
+	if m != nil {
+		return m.GaeExtensionPath
+	}
+	return nil
+}
+
+func (m *PhpConfig) GetXdebugExtensionPath() []byte {
+	if m != nil {
+		return m.XdebugExtensionPath
+	}
+	return nil
 }
 
 type PythonConfig struct {
@@ -370,10 +394,9 @@ func (m *Environ) GetValue() []byte {
 }
 
 type VMConfig struct {
-	DockerDaemonUrl  *string     `protobuf:"bytes,1,opt,name=docker_daemon_url" json:"docker_daemon_url,omitempty"`
-	DartConfig       *DartConfig `protobuf:"bytes,2,opt,name=dart_config" json:"dart_config,omitempty"`
-	EnableLogs       *bool       `protobuf:"varint,3,opt,name=enable_logs" json:"enable_logs,omitempty"`
-	XXX_unrecognized []byte      `json:"-"`
+	DockerDaemonUrl  *string `protobuf:"bytes,1,opt,name=docker_daemon_url" json:"docker_daemon_url,omitempty"`
+	EnableLogs       *bool   `protobuf:"varint,3,opt,name=enable_logs" json:"enable_logs,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (m *VMConfig) Reset()         { *m = VMConfig{} }
@@ -387,58 +410,11 @@ func (m *VMConfig) GetDockerDaemonUrl() string {
 	return ""
 }
 
-func (m *VMConfig) GetDartConfig() *DartConfig {
-	if m != nil {
-		return m.DartConfig
-	}
-	return nil
-}
-
 func (m *VMConfig) GetEnableLogs() bool {
 	if m != nil && m.EnableLogs != nil {
 		return *m.EnableLogs
 	}
 	return false
-}
-
-type DartConfig struct {
-	DartSdk          *string `protobuf:"bytes,1,opt,name=dart_sdk" json:"dart_sdk,omitempty"`
-	DartDevMode      *string `protobuf:"bytes,2,opt,name=dart_dev_mode" json:"dart_dev_mode,omitempty"`
-	DartPubServeHost *string `protobuf:"bytes,3,opt,name=dart_pub_serve_host" json:"dart_pub_serve_host,omitempty"`
-	DartPubServePort *int32  `protobuf:"varint,4,opt,name=dart_pub_serve_port" json:"dart_pub_serve_port,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
-}
-
-func (m *DartConfig) Reset()         { *m = DartConfig{} }
-func (m *DartConfig) String() string { return proto.CompactTextString(m) }
-func (*DartConfig) ProtoMessage()    {}
-
-func (m *DartConfig) GetDartSdk() string {
-	if m != nil && m.DartSdk != nil {
-		return *m.DartSdk
-	}
-	return ""
-}
-
-func (m *DartConfig) GetDartDevMode() string {
-	if m != nil && m.DartDevMode != nil {
-		return *m.DartDevMode
-	}
-	return ""
-}
-
-func (m *DartConfig) GetDartPubServeHost() string {
-	if m != nil && m.DartPubServeHost != nil {
-		return *m.DartPubServeHost
-	}
-	return ""
-}
-
-func (m *DartConfig) GetDartPubServePort() int32 {
-	if m != nil && m.DartPubServePort != nil {
-		return *m.DartPubServePort
-	}
-	return 0
 }
 
 func init() {
